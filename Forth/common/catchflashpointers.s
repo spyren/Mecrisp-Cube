@@ -25,8 +25,9 @@
 
    @ Hardware sets return stack pointer on startup from vector table.
    @ Set Return stack pointer here (again) just in case this might be a software re-entry.
-   ldr r0, =returnstackanfang
-   mov sp, r0
+@ use the system settings in startup_stm32wb55xx_cm4.s _estack
+@   ldr r0, =returnstackanfang
+@   mov sp, r0
 
    @ Return stack pointer already set up. Time to set data stack pointer !
    @ Normaler Stackpointer bereits gesetzt. Setze den Datenstackpointer:

@@ -54,9 +54,9 @@ uart_init:
 	ldr	r0, =7<<GPIOB_AFSEL7_Shift + 7<<GPIOB_AFSEL6_Shift
 	str	r0, [r1]
 
-	@ Configure BRR by deviding the bus clock with the baud rate
+	@ Configure BRR by deviding the 32 MHz bus clock with the baud rate
 	ldr	r1, =USART1_BRR
-	ldr	r0, =(4000000 + (115200/2)) / 115200  @ 115200 bps, ein ganz kleines bisschen langsamer...
+	ldr	r0, =(32000000 + (115200/2)) / 115200  @ 115200 bps, ein ganz kleines bisschen langsamer...
 	str	r0, [r1]
 
 	@ disable overrun detection before UE to avoid USART blocking on overflow
@@ -71,17 +71,6 @@ uart_init:
 
 	bx	lr
 
-.ifdef turbo
-@ change baudrate for 48 MHz mode
-@ -----------------------------------------------------------------------------
-serial_115200_48MHZ:
-        @ set usart1 baudrate to 115200 baud at 48 MHz
-@ -----------------------------------------------------------------------------
-	ldr	r0, =USART1_BRR
-	ldr	r1, =(48000000 + 115200 / 2) / 115200
-	str	r1, [r0]
-	bx	lr
-.endif
 
 @ Following code is the same as for STM32F051
 .include "../Forth/common/terminalhooks.s"

@@ -68,6 +68,7 @@ static void MX_RF_Init(void);
 static void MX_RNG_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
+void Forth(void);
 
 /* USER CODE END PFP */
 
@@ -113,7 +114,7 @@ int main(void)
   MX_RNG_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-
+  Forth();
   /* USER CODE END 2 */
  
  

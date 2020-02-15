@@ -27,7 +27,6 @@
 @ -----------------------------------------------------------------------------
 
 .equ flash16bytesblockwrite, 1
-@.equ turbo, 1
 
 @ .equ charkommaavailable, 1  Not available.
 
@@ -44,13 +43,13 @@
 
 @ Konstanten für die Größe des Ram-Speichers
 
-.equ RamAnfang, 0x20000000 @ Start of RAM                   Porting: Change this !
+.equ RamAnfang, 0x20001000 @ Start of RAM                   Porting: Change this !
 .equ RamEnde,   0x20020000 @ End   of RAM.  128 KiB. on SRAM2 Porting: Change this !
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 
-.equ Kernschutzadresse,     0x08008000 @ Darunter wird niemals etwas geschrieben ! Mecrisp core never writes flash below this address.
-.equ FlashDictionaryAnfang, 0x08008000 @ 20 KiB für den Kern reserviert...            20 KiB Flash reserved for core.
+.equ Kernschutzadresse,     0x08010000 @ Darunter wird niemals etwas geschrieben ! Mecrisp core never writes flash below this address.
+.equ FlashDictionaryAnfang, 0x08010000 @ 64 KiB für den Kern reserviert...            20 KiB Flash reserved for core.
 .equ FlashDictionaryEnde,   0x080C0000 @ 1024 - 256 KiB Platz für das Flash-Dictionary    1024 KiB Flash available. Porting: Change this !
 .equ Backlinkgrenze,        RamAnfang  @ Ab dem Ram-Start.
 
