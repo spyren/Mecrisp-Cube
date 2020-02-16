@@ -70,8 +70,7 @@ Löse Unterschiede auf: 100% (33/33), Fertig.
 Import the project into the IDE:
 
 ```
-File -> Import -> General -> Existing Projects into Workspace ->
-Select root directory
+File -> Import -> General -> Existing Projects into Workspace -> Select root directory
 Copy project into workspace
 Browse to Mecrisp-Cube directory
 ```
@@ -115,7 +114,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Matthias Koch** - *Forth on ARM Cortex M0/M4* - [Mecrisp Stellaris](http://mecrisp.sourceforge.net/)
-* **Peter Schmid** - *Initial work* - [Mecrisp Cube](http://spyr.ch/twiki/bin/view/Cosmac/ForthSTM32WB)
+* **Peter Schmid** - *Initial work* - [Mecrisp Cube](http://spyr.ch/twiki/bin/view/Cosmac/MecrispCube)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
