@@ -20,8 +20,9 @@ machine (STM32 Nucleo board) for development and testing purposes.
   * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
   * [Realterm](http://realterm.sourceforge.net/) - Windows
   * minicom, microcom, screen - Linux
+  * Use the built in Eclipse console (but no LF)
  
-Flash the [binary](Release/minimal.bin) to the Nucleo Board.
+Flash the Mecrisp-Cube [binary](Release/minimal.bin) to the Nucleo Board.
 
 1. Connect the Nucleo Board USB ST-LINK to the PC
 2. Copy [binary](Release/minimal.bin) (`minimal.bin`) to the USB mass 
@@ -38,28 +39,55 @@ I set the putty terminal configuration to
   
 ```forth
 Mecrisp-Stellaris 2.5.2 for STM32WB55 by Matthias Koch
-23 5 / . 4<RETURN>  ok.
-: hello ." World" ;<RETURN>  ok.
-hello<RETURN> World ok.
+23 5 / .<CR> 4  ok.
+: hello ." World" ;<CR>  ok.
+hello<CR> World ok.
 ```
 
 ### Installing
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
+Install the IDE [STM32CubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html), 
+it is Eclipse and GCC based. 
+[STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
+is included in the IDE, you need a stand alone installation only if 
+you do not want to use the STM32CubeIDE.  
+
+Get the sources from github:
 
 ```
-Give the example
+psi@homer:~> git clone https://github.com/spyren/Mecrisp-Cube
+Klone nach 'Mecrisp-Cube' ...
+remote: Enumerating objects: 106, done.
+remote: Counting objects: 100% (106/106), done.
+remote: Compressing objects: 100% (71/71), done.
+remote: Total 106 (delta 33), reused 106 (delta 33), pack-reused 0
+Empfange Objekte: 100% (106/106), 938.96 KiB | 2.39 MiB/s, Fertig.
+Löse Unterschiede auf: 100% (33/33), Fertig.
 ```
 
-And repeat
+Import the project into the IDE:
 
 ```
-until finished
+File -> Import -> General -> Existing Projects into Workspace ->
+Select root directory
+Copy project into workspace
+Browse to Mecrisp-Cube directory
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Generate code from the STM32CubeMX `minimal.ioc` file:
+
+```
+Project -> Generate Code 
+```
+
+Select the Build Configuration (Debug if you want to debug the project) and Build the project:
+
+```
+Project -> Build Configurations -> Set Active -> Debug/Reelease 
+Project -> Build Project
+```
 
 
 ## Built With
@@ -108,7 +136,10 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+* http://mecrisp.sourceforge.net/ Original Mecrisp project, **Matthias Koch**
+* https://mecrisp-stellaris-folkdoc.sourceforge.io/ Mecrisp Stellaris Unofficial UserDoc, **Terry Porter**
+* https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
+* https://forth-ev.de/ Forth-Gesellschaft e.V.
+* https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
+
 
