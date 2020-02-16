@@ -1,23 +1,46 @@
 # Mecrisp-Cube
 
-Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. Only the STM32WB is supported yet. 
+Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
+The STM32WB Nucleo Board is working out of the box yet. 
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local 
+machine (STM32 Nucleo board) for development and testing purposes. 
 
 ### Prerequisites
 
 * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) - 
-* []() - Terminal program like 
+  The highly affordable STM32 Nucleo boards allow anyone to try out 
+  new ideas and to quickly create prototypes with any STM32 MCU. 
+  The STM32 Nucleo boards integrate an ST-Link debugger/programmer, 
+  so there is no need for a separate probe.
+* Terminal emulator application for PC, e.g.: 
+  * [PuTTY](http://www.putty.org/) - Windows and Linux
+  * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
+  * [Realterm](http://realterm.sourceforge.net/) - Windows
+  * minicom, microcom, screen - Linux
+ 
+Flash the [binary](Release/minimal.bin) to the Nucleo Board.
 
-    STM32CubeMX
-    STM32CubeIDE 
+1. Connect the Nucleo Board USB ST-LINK to the PC
+2. Copy [binary](Release/minimal.bin) (`minimal.bin`) to the USB mass 
+   storage NODE_WB55RG
 
-What things you need to install the software and how to install them
+Start the terminal emulator application on the PC. 
+Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`) 
+and set the speed to 115200 baud. 
+I set the putty terminal configuration to 
 
-```
-Give examples
+  * Implicit CR in every LF 
+  * Local echo: Auto
+  * Local line editing: Auto
+  
+```forth
+Mecrisp-Stellaris 2.5.2 for STM32WB55 by Matthias Koch
+23 5 / . 4<RETURN>  ok.
+: hello ." World" ;<RETURN>  ok.
+hello<RETURN> World ok.
 ```
 
 ### Installing
@@ -38,29 +61,6 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
@@ -80,10 +80,6 @@ Add additional notes about how to deploy this on a live system
 The STM tools work on Linux, Windows, and Mac.
 
 
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
@@ -97,18 +93,18 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 ## License
 
-This project *Mecrsip Cube* is free software: you can redistribute it
+This project *Mecrsip-Cube* is free software: you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
-*Mecrsip Cube* is distributed in the hope that it will be useful,
+*Mecrsip-Cube* is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
-with *Mecrsip Cube*. If not, see http://www.gnu.org/licenses/.
+with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 ## Acknowledgments
 
