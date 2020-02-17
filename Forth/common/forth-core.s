@@ -174,113 +174,113 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 @ -----------------------------------------------------------------------------
 
   .ifdef registerallocator
-  .include "../common/ra/ra-infrastructure.s"
-  .include "../common/ra/ra-tools.s"
+  .include "ra/ra-infrastructure.s"
+  .include "ra/ra-tools.s"
   .ltorg
 
-  .include "../common/ra/double.s"
-  .include "../common/ra/stackjugglers.s"
-  .include "../common/ra/logic.s"
-  .include "../common/ra/ra-logic.s"
-  .include "../common/ra/comparisions.s"
+  .include "ra/double.s"
+  .include "ra/stackjugglers.s"
+  .include "ra/logic.s"
+  .include "ra/ra-logic.s"
+  .include "ra/comparisions.s"
   .ltorg
-  .include "../common/ra/memory.s"
-  .include "flash.s"
+  .include "ra/memory.s"
+  .include "flash-wb.s"
   .ltorg
 
   .ifdef emulated16bitflashwrites
-  .include "../common/flash4bytesblockwrite.s"
+  .include "flash4bytesblockwrite.s"
   .ltorg
   .endif
 
   .ifdef flash8bytesblockwrite
-  .include "../common/flash8bytesblockwrite.s"
+  .include "flash8bytesblockwrite.s"
   .ltorg
   .endif
 
   .ifdef flash16bytesblockwrite
-  .include "../common/flash16bytesblockwrite.s"
+  .include "flash16bytesblockwrite.s"
   .ltorg
   .endif
 
-  .include "../common/ra/calculations.s"
+  .include "ra/calculations.s"
   .include "terminal.s"
-  .include "../common/query.s"
+  .include "query.s"
   .ltorg
-  .include "../common/strings.s"
-  .include "../common/deepinsight.s"
+  .include "strings.s"
+  .include "deepinsight.s"
   .ltorg
-  .include "../common/compiler.s"
-  .include "../common/compiler-flash.s"
+  .include "compiler.s"
+  .include "compiler-flash.s"
   .ltorg 
-  .include "../common/ra/controlstructures.s"
+  .include "ra/controlstructures.s"
   .ltorg
-  .include "../common/ra/doloop.s"
-  .include "../common/ra/case.s"
-  .include "../common/token.s"
+  .include "ra/doloop.s"
+  .include "ra/case.s"
+  .include "token.s"
   .ltorg
-  .include "../common/numberstrings.s"
+  .include "numberstrings.s"
   .ltorg
 
-  .include "../common/ra/ra-kompilator.s"
-  .include "../common/ra/ra-inline.s"
-  .include "../common/ra/interpreter.s"
+  .include "ra/ra-kompilator.s"
+  .include "ra/ra-inline.s"
+  .include "ra/interpreter.s"
   .ltorg
 
   .ifndef within_os
-  .include "../common/interrupts-common.s"
+  .include "interrupts-common.s"
   .include "interrupts.s" @ You have to change interrupt handlers for Porting !
   .endif
 
   .else
 
-  .include "../Forth/common/double.s"
-  .include "../Forth/common/stackjugglers.s"
-  .include "../Forth/common/logic.s"
-  .include "../Forth/common/comparisions.s"
+  .include "double.s"
+  .include "stackjugglers.s"
+  .include "logic.s"
+  .include "comparisions.s"
   .ltorg
-  .include "../Forth/common/memory.s"
-  .include "../Forth/stm32wb/flash.s"
+  .include "memory.s"
+  .include "flash-wb.s"
   .ltorg
 
   .ifdef emulated16bitflashwrites
-  .include "../common/flash4bytesblockwrite.s"
+  .include "flash4bytesblockwrite.s"
   .ltorg
   .endif
 
   .ifdef flash8bytesblockwrite
-  .include "../common/flash8bytesblockwrite.s"
+  .include "flash8bytesblockwrite.s"
   .ltorg
   .endif
 
   .ifdef flash16bytesblockwrite
-  .include "../Forth/common/flash16bytesblockwrite.s"
+  .include "flash16bytesblockwrite.s"
   .ltorg
   .endif
 
-  .include "../Forth/common/calculations.s"
-  .include "../Forth/stm32wb/terminal.s"
-  .include "../Forth/common/query.s"
+  .include "calculations.s"
+  .include "terminal.s"
+  .include "query.s"
   .ltorg
-  .include "../Forth/common/strings.s"
-  .include "../Forth/common/deepinsight.s"
+  .include "strings.s"
+  .include "deepinsight.s"
   .ltorg
-  .include "../Forth/common/compiler.s"
-  .include "../Forth/common/compiler-flash.s"
-  .include "../Forth/common/controlstructures.s"
+  .include "compiler.s"
+  .include "compiler-flash.s"
+  .include "controlstructures.s"
   .ltorg
-  .include "../Forth/common/doloop.s"
-  .include "../Forth/common/case.s"
-  .include "../Forth/common/token.s"
+  .include "doloop.s"
+  .include "case.s"
+  .include "token.s"
   .ltorg
-  .include "../Forth/common/numberstrings.s"
+  .include "numberstrings.s"
   .ltorg
-  .include "../Forth/common/interpreter.s"
+  .include "interpreter.s"
   .ltorg
 
   .ifndef within_os
-  .include "../Forth/common/interrupts-common.s"
-  .include "../Forth/stm32wb/interrupts.s" @ You have to change interrupt handlers for Porting !
+  .include "interrupts-common.s"
+  .include "interrupts.s" @ You have to change interrupt handlers for Porting !
   .endif
 
   .endif

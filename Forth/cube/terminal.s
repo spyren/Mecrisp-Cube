@@ -73,7 +73,7 @@ uart_init:
 
 
 @ Following code is the same as for STM32F051
-.include "../Forth/common/terminalhooks.s"
+.include "terminalhooks.s"
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit"

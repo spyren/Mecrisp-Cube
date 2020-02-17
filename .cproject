@@ -73,9 +73,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="stm32wb/STM32WBxx_CM4.svd.equates.s|stm32wb/vectors.s|stm32wb/turbo.s|stm32wb/terminal.s|stm32wb/interrupts.s|stm32wb/hse-clock.s|stm32wb/flash.s|common" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry excluding="cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|stm32wb/flash.s|stm32wb/interrupts.s|common|stm32wb/terminal.s|stm32wb/flash-wb.s|stm32wb/STM32WBxx_CM4.svd.equates.s|stm32wb/hse-clock.s|stm32wb/turbo.s|stm32wb/vectors.s" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -109,6 +109,10 @@
 							<builder buildPath="${workspace_loc:/minimal}/Release" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.builder.1592891147" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="optimal" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.builder"/>
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.1067636889" name="MCU GCC Assembler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler">
 								<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.option.debuglevel.185510066" name="Debug level" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.option.debuglevel" value="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.option.debuglevel.value.g0" valueType="enumerated"/>
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.option.includepaths.318995880" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.option.includepaths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/minimal/Forth/cube}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/minimal/Forth/common}&quot;"/>
+								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.935391946" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
 							</tool>
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.975093571" name="MCU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler">
@@ -124,6 +128,7 @@
 									<listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32WBxx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32WBxx/Include"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/minimal/Forth/Inc}&quot;"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.423449888" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -152,9 +157,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="stm32wb/STM32WBxx_CM4.svd.equates.s|stm32wb/vectors.s|stm32wb/turbo.s|stm32wb/terminal.s|stm32wb/interrupts.s|stm32wb/hse-clock.s|stm32wb/flash.s|common" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry excluding="Forth/cube/terminal.s|Forth/cube/STM32WBxx_CM4.svd.equates.s|Forth/cube/interrupts.s|Forth/cube/flash-wb.s|Forth/common" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

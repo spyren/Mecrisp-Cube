@@ -20,7 +20,7 @@
 .thumb
 
 	@ from CMSIS-SVD generated equates for STM32WB peripherals
-.include "../Forth/stm32wb/STM32WBxx_CM4.svd.equates.s"
+.include "STM32WBxx_CM4.svd.equates.s"
 
 @ -----------------------------------------------------------------------------
 @ Swiches for capabilities of this chip
@@ -34,7 +34,7 @@
 @ Start with some essential macro definitions
 @ -----------------------------------------------------------------------------
 
-.include "../Forth/common/datastackandmacros.s"
+.include "datastackandmacros.s"
 
 @ -----------------------------------------------------------------------------
 @ Speicherkarte für Flash und RAM
@@ -59,13 +59,13 @@
 @ Flash start - Vector table has to be placed here
 @ -----------------------------------------------------------------------------
 .text    @ Hier beginnt das Vergnügen mit der Stackadresse und der Einsprungadresse
-@.include "../Forth/stm32wb/vectors.s" @ You have to change vectors for Porting !
+@.include "vectors.s" @ You have to change vectors for Porting !
 
 @ -----------------------------------------------------------------------------
 @ Include the Forth core of Mecrisp-Stellaris
 @ -----------------------------------------------------------------------------
 
-.include "../Forth/common/forth-core.s"
+.include "forth-core.s"
 
 
 .global     Forth
@@ -81,9 +81,9 @@ Reset:	@ Einsprung zu Beginn
 
 
 	@ Catch the pointers for Flash dictionary
-.include "../Forth/common/catchflashpointers.s"
+.include "catchflashpointers.s"
 
 	welcome " for STM32WB55 by Matthias Koch "
 
 	@ Ready to fly !
-.include "../Forth/common/boot.s"
+.include "boot.s"

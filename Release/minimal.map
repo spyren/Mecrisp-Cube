@@ -1245,8 +1245,32 @@ Discarded input sections
                 0x0000000000000000      0x19c Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usb.o
  .text.USB_ReadPMA
                 0x0000000000000000       0x36 Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usb.o
- .data          0x0000000000000000        0x0 Forth/stm32wb/mecrisp-stellaris-stm32wb55.o
- .bss           0x0000000000000000        0x0 Forth/stm32wb/mecrisp-stellaris-stm32wb55.o
+ .text          0x0000000000000000        0x0 Forth/Src/ble-vsp.o
+ .data          0x0000000000000000        0x0 Forth/Src/ble-vsp.o
+ .bss           0x0000000000000000        0x0 Forth/Src/ble-vsp.o
+ .comment       0x0000000000000000       0x7c Forth/Src/ble-vsp.o
+ .ARM.attributes
+                0x0000000000000000       0x39 Forth/Src/ble-vsp.o
+ .text          0x0000000000000000        0x0 Forth/Src/flash.o
+ .data          0x0000000000000000        0x0 Forth/Src/flash.o
+ .bss           0x0000000000000000        0x0 Forth/Src/flash.o
+ .comment       0x0000000000000000       0x7c Forth/Src/flash.o
+ .ARM.attributes
+                0x0000000000000000       0x39 Forth/Src/flash.o
+ .text          0x0000000000000000        0x0 Forth/Src/uart.o
+ .data          0x0000000000000000        0x0 Forth/Src/uart.o
+ .bss           0x0000000000000000        0x0 Forth/Src/uart.o
+ .comment       0x0000000000000000       0x7c Forth/Src/uart.o
+ .ARM.attributes
+                0x0000000000000000       0x39 Forth/Src/uart.o
+ .text          0x0000000000000000        0x0 Forth/Src/usb-cdc.o
+ .data          0x0000000000000000        0x0 Forth/Src/usb-cdc.o
+ .bss           0x0000000000000000        0x0 Forth/Src/usb-cdc.o
+ .comment       0x0000000000000000       0x7c Forth/Src/usb-cdc.o
+ .ARM.attributes
+                0x0000000000000000       0x39 Forth/Src/usb-cdc.o
+ .data          0x0000000000000000        0x0 Forth/cube/mecrisp.o
+ .bss           0x0000000000000000        0x0 Forth/cube/mecrisp.o
  .text          0x0000000000000000        0x0 /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc_nano.a(lib_a-errno.o)
  .data          0x0000000000000000        0x0 /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc_nano.a(lib_a-errno.o)
  .bss           0x0000000000000000        0x0 /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc_nano.a(lib_a-errno.o)
@@ -1347,7 +1371,11 @@ LOAD Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_tim_ex.o
 LOAD Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_uart.o
 LOAD Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_uart_ex.o
 LOAD Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usb.o
-LOAD Forth/stm32wb/mecrisp-stellaris-stm32wb55.o
+LOAD Forth/Src/ble-vsp.o
+LOAD Forth/Src/flash.o
+LOAD Forth/Src/uart.o
+LOAD Forth/Src/usb-cdc.o
+LOAD Forth/cube/mecrisp.o
 START GROUP
 LOAD /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc_nano.a
 LOAD /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libm.a
@@ -1383,7 +1411,7 @@ LOAD /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
                 0x0000000008000140                . = ALIGN (0x4)
  *(.text)
  .text          0x0000000008000140       0x40 /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
- .text          0x0000000008000180     0x3a70 Forth/stm32wb/mecrisp-stellaris-stm32wb55.o
+ .text          0x0000000008000180     0x3a70 Forth/cube/mecrisp.o
                 0x0000000008003a76                Forth
  .text          0x0000000008003bf0       0x30 /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/thumb/v7e-m/fpv4-sp/hard/libgcc.a(_aeabi_uldivmod.o)
                 0x0000000008003bf0                __aeabi_uldivmod
@@ -1870,7 +1898,7 @@ LOAD /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .ARM.attributes
                 0x00000000000004eb       0x39 Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usb.o
  .ARM.attributes
-                0x0000000000000524       0x25 Forth/stm32wb/mecrisp-stellaris-stm32wb55.o
+                0x0000000000000524       0x25 Forth/cube/mecrisp.o
  .ARM.attributes
                 0x0000000000000549       0x34 /opt/st/stm32cubeide_1.2.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.7-2018-q2-update.linux64_1.0.0.201904181610/tools/bin/../lib/gcc/arm-none-eabi/7.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/libc_nano.a(lib_a-init.o)
  .ARM.attributes
