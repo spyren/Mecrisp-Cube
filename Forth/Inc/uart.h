@@ -1,9 +1,36 @@
-/*
- * uart.h
+/**
+ *  @brief
+ *      UART terminal console
  *
- *  Created on: 17.02.2020
- *      Author: psi
+ *      Line buffered serial communication.
+ *      CR is end of line for Rx.
+ *      LF is end of line for Tx.
+ *  @file
+ *      uart.h
+ *  @author
+ *      Peter Schmid, peter@spyr.ch
+ *  @date
+ *      2020-02-19
+ *  @remark
+ *      Language: C, STM32CubeIDE GCC
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This project Mecrsip-Cube is free software: you can redistribute it
+ *      and/or modify it under the terms of the GNU General Public License
+ *      as published by the Free Software Foundation, either version 3 of
+ *      the License, or (at your option) any later version.
+ *
+ *      Mecrsip-Cube is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *      General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
+
+
 
 #ifndef INC_UART_H_
 #define INC_UART_H_
