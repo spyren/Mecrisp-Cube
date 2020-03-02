@@ -35,6 +35,12 @@
 #ifndef INC_UART_H_
 #define INC_UART_H_
 
-
+void UART_init(void);
+int UART_getc(void);
+int UART_gets(char *str, int length);
+int UART_RxReady(void);
+int UART_putc(int c);
+int UART_puts(const char *s);
+int UART_TxReady(void);
 
 #endif /* INC_UART_H_ */

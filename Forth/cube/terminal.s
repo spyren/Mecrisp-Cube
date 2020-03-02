@@ -27,48 +27,6 @@ uart_init:
         @ ( -- ) A few bits are different
 @ -----------------------------------------------------------------------------
 
-	@ Enable all GPIO peripheral clock
-	ldr	r1, =RCC_AHB2ENR
-	ldr	r0, =BIT7+BIT6+BIT5+BIT4+BIT3+BIT2+BIT1+BIT0 @ $0 is Reset value
-	str	r0, [r1]
-
-	@ Enable the USART1 peripheral clock
-	ldr	r1, =RCC_APB2ENR
-	ldr	r0, =1<<RCC_USART1EN_Shift
-	str	r0, [r1]
-
-	@ Set PORTB pins 6 and 7 in alternate function mode 2
-	@ green LED2 PB0 and red LED3 PB1 output mode 1
-	@ other pins are input mode 0
-	ldr	r1, =GPIOB_MODER
-	ldr	r0, =2<<GPIOB_MODER7_Shift + 2<<GPIOB_MODER6_Shift + 1<<GPIOB_MODER1_Shift +  1<<GPIOB_MODER0_Shift 
-	str	r0, [r1]
-
-	@ set green LED PB0
-	ldr	r1, =GPIOB_BSRR
-	ldr	r0, =1<<GPIOB_BS0_Shift
-	str	r0, [r1]
-
-	@ Set alternate function 7 to enable USART 1 pins on Port B6 and B7
-	ldr	r1, =GPIOB_AFRL
-	ldr	r0, =7<<GPIOB_AFSEL7_Shift + 7<<GPIOB_AFSEL6_Shift
-	str	r0, [r1]
-
-	@ Configure BRR by deviding the 32 MHz bus clock with the baud rate
-	ldr	r1, =USART1_BRR
-	ldr	r0, =(32000000 + (115200/2)) / 115200  @ 115200 bps, ein ganz kleines bisschen langsamer...
-	str	r0, [r1]
-
-	@ disable overrun detection before UE to avoid USART blocking on overflow
-	ldr	r1, =USART1_CR3
-	ldr	r0, =1<<USART1_OVRDIS_Shift
-	str	r0, [r1]
-
-	@ Enable the USART, TX, and RX circuit
-	ldr	r1, =USART1_CR1
-	ldr	r0, =1<<USART1_UE_Shift + 1<<USART1_TE_Shift + 1<<USART1_RE_Shift
-	str	r0, [r1]
-
 	bx	lr
 
 
@@ -82,14 +40,8 @@ serial_emit:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 
-1:	bl	serial_qemit
-	cmp	tos, #0
-	drop
-	beq	1b
-
-	ldr	r2, =USART1_TDR
-	strb	tos, [r2]			@ Output the character
-	drop
+    ldr r0, tos
+	bl	UART_putc
 
 	pop	{pc}
 

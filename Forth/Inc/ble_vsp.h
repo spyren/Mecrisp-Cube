@@ -1,5 +1,5 @@
 /*
- * ble-vsp.h
+ * ble_vsp.h
  *
  *  Created on: 17.02.2020
  *      Author: psi
