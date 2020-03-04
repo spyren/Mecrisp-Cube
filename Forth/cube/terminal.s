@@ -38,63 +38,47 @@ uart_init:
 serial_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r4-r7, lr}
 
-    ldr r0, tos
+	movs	r0, tos
 	bl	UART_putc
 
-	pop	{pc}
+	pop	{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key"
 serial_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r4-r7, lr}
 
-1:	bl	serial_qkey
-	cmp	tos, #0
-	drop
-	beq	1b
+	bl	UART_getc
+	movs	tos, r0
 
-	pushdatos
-	ldr	r2, =USART1_RDR
-	ldrb	tos, [r2]			@ Fetch the character
-
-	pop	{pc}
+	pop	{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit?"
 serial_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	bl	pause
+	push	{r4-r7, lr}
 
-	pushdaconst 0				@ False Flag
-	ldr	r0, =USART1_ISR
-	ldr	r1, [r0]			@ Fetch status
-	ldr	r0, =1<<USART1_TXE_Shift
-	ands	r1, r1, r0
-	beq	1f
-	mvns	tos, tos 			@ True Flag
-1:	pop	{pc}
+	bl	UART_TxReady
+	movs	tos, r0
+
+	pop	{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key?"
 serial_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	bl	pause
+	push	{r4-r7, lr}
 
-	pushdaconst 0				@ False Flag
-	ldr	r0, =USART1_ISR
-	ldr	r1, [r0]			@ Fetch status
-	ldr	r0, =1<<USART1_RXNE_Shift
-	ands	r1, r1, r0
-	beq	1f
-	mvns	tos, tos			@ True Flag
-1:	pop	{pc}
+	bl	UART_RxReady
+	movs	tos, r0
+
+	pop	{r4-r7, pc}
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !

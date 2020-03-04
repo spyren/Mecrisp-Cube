@@ -35,10 +35,10 @@
 // ********************
 #include "cmsis_os.h"
 #include <stdio.h>
-#include <stdbool.h>
 
 // Application include files
 // *************************
+#include "app_common.h"
 #include "main.h"
 #include "uart.h"
 
@@ -70,13 +70,13 @@ static const osThreadAttr_t uart_thread_attributes = {
 // Definitions for TxQueue
 osMessageQueueId_t UART_TxQueueId;
 static const osMessageQueueAttr_t uart_TxQueue_attributes = {
-  .name = "UART_TxQueue"
+		.name = "UART_TxQueue"
 };
 
 // Definitions for RxQueue
 osMessageQueueId_t UART_RxQueueId;
 static const osMessageQueueAttr_t uart_RxQueue_attributes = {
-  .name = "UART_RxQueue"
+		.name = "UART_RxQueue"
 };
 
 // Private Variables
@@ -101,7 +101,17 @@ void UART_init(void) {
 
 	// creation of UART_Thread
 	UART_ThreadId = osThreadNew(uart_thread, NULL, &uart_thread_attributes);
+}
 
+/**
+ *  @brief
+ *      Resets the UART queues.
+ *  @return
+ *      None
+ */
+void UART_reset(void) {
+	osMessageQueueReset(UART_RxQueueId);
+	osMessageQueueReset(UART_TxQueueId);
 }
 
 
@@ -159,13 +169,13 @@ int UART_gets(char *str, int length) {
  *  @brief
  *		There is a character in the queue (key pressed).
  *  @return
- *		True if a character has been received.
+ *		TRUE if a character has been received.
  */
 int UART_RxReady(void) {
 	if (osMessageQueueGetCount(UART_RxQueueId) == 0) {
-		return false;
+		return FALSE;
 	} else {
-		return true;
+		return TRUE;
 	}
 }
 
@@ -216,13 +226,13 @@ int UART_puts(const char *s) {
  *  @brief
  *      Tx queue ready for next char.
  *  @return
- *      False if the buffer is full.
+ *      FALSE if the buffer is full.
  */
 int UART_TxReady(void) {
 	if (osMessageQueueGetSpace(UART_TxQueueId) > 0) {
-		return true;
+		return TRUE;
 	} else {
-		return false;
+		return FALSE;
 	}
 }
 

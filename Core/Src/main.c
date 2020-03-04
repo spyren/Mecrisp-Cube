@@ -499,8 +499,7 @@ void StartDefaultTask(void *argument)
 	Forth();
 
   /* Infinite loop */
-  for(;;)
-  {
+  for(;;) {
     osDelay(1);
   }
   /* USER CODE END 5 */ 
