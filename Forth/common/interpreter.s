@@ -569,7 +569,7 @@ quit:
   ldr r0, =returnstackanfang
   mov sp, r0
   .else
-  ldr sp, =returnstackanfang
+@  ldr sp, =returnstackanfang
   .endif
 
   ldr psp, =datenstackanfang

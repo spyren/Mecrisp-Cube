@@ -152,6 +152,7 @@ minusrot:
 @ -----------------------------------------------------------------------------
   pushdatos
   mov tos, sp
+@ todo: returnstackanfang belongs to the thread
   ldr r1, =returnstackanfang @ Anfang laden  Calculate stack fill gauge
   subs r1, tos @ und aktuellen Stackpointer abziehen
   asrs tos, r1, #2 @ Durch 4 teilen  Divide through 4 Bytes/element.

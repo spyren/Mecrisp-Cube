@@ -55,12 +55,12 @@ RTC_HandleTypeDef hrtc;
 
 UART_HandleTypeDef huart1;
 
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
+/* Definitions for Main */
+osThreadId_t MainHandle;
+const osThreadAttr_t Main_attributes = {
+  .name = "Main",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
+  .stack_size = 256 * 4
 };
 /* USER CODE BEGIN PV */
 
@@ -75,7 +75,7 @@ static void MX_PKA_Init(void);
 static void MX_RF_Init(void);
 static void MX_RNG_Init(void);
 static void MX_RTC_Init(void);
-void StartDefaultTask(void *argument);
+void MainThread(void *argument);
 
 /* USER CODE BEGIN PFP */
 void Forth(void);
@@ -145,8 +145,8 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of Main */
+  MainHandle = osThreadNew(MainThread, NULL, &Main_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -483,14 +483,14 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_MainThread */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the Main thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_MainThread */
+void MainThread(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	UART_init();

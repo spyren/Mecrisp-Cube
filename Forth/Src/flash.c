@@ -84,7 +84,7 @@ void FLASH_init(void) {
 static void flash_thread(void *argument) {
 	// Infinite loop
 	for(;;) {
-		osDelay(1);
+		osDelay(100);
 	}
 }
 

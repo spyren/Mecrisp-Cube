@@ -53,10 +53,12 @@ _Min_Heap_Size = 0x200 ;      /* required amount of heap  */
 _Min_Stack_Size = 0x400 ;   /* required amount of stack */
 
 /* Specify the memory areas */
+/* RAM1 (xrw)                 : ORIGIN = 0x20000004, LENGTH = 0x2FFFC */
 MEMORY
 {
 FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 512K
-RAM1 (xrw)                 : ORIGIN = 0x20000004, LENGTH = 0x2FFFC
+RAM_FORTH (xrw)            : ORIGIN = 0X20000004, LENGTH = 0xFFFC
+RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 192K
 RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 

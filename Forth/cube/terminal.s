@@ -38,11 +38,10 @@ uart_init:
 serial_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{r4-r7, lr}
-
 	movs	r0, tos
+	drop
+	push	{r4-r7, lr}
 	bl	UART_putc
-
 	pop	{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
@@ -50,35 +49,32 @@ serial_emit:
 serial_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{r4-r7, lr}
-
+	pushdatos
+	push	{r4, r5, r7, lr}
 	bl	UART_getc
 	movs	tos, r0
-
-	pop	{r4-r7, pc}
+	pop	{r4, r5, r7, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit?"
 serial_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{r4-r7, lr}
-
+	pushdatos
+	push	{r4, r5, r7, lr}
 	bl	UART_TxReady
 	movs	tos, r0
-
-	pop	{r4-r7, pc}
+	pop	{r4, r5, r7, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key?"
 serial_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{r4-r7, lr}
-
+	pushdatos
+	push	{r4, r5, r7, lr}
 	bl	UART_RxReady
 	movs	tos, r0
-
-	pop	{r4-r7, pc}
+	pop	{r4, r5, r7, pc}
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !
