@@ -277,6 +277,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
   .ltorg
   .include "interpreter.s"
   .ltorg
+  .include "rtos.s"
 
   .ifndef within_os
   .include "interrupts-common.s"
