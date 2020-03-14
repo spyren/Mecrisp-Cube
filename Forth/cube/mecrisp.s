@@ -20,7 +20,7 @@
 .thumb
 
 	@ from CMSIS-SVD generated equates for STM32WB peripherals
-.include "STM32WBxx_CM4.svd.equates.s"
+//.include "STM32WBxx_CM4.svd.equates.s"
 
 @ -----------------------------------------------------------------------------
 @ Swiches for capabilities of this chip
@@ -72,7 +72,6 @@
 
 @ -----------------------------------------------------------------------------
 Forth:
-Reset:	@ Einsprung zu Beginn
 @ -----------------------------------------------------------------------------
 	@ Initialisierungen der Hardware, habe und brauche noch keinen Datenstack dafür
 

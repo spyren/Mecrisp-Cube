@@ -22,6 +22,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "usb_device.h"
+#include "usb_cdc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -494,6 +495,7 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN 5 */
 	UART_init();
+	CDC_init();
 	FLASH_init();
 
 	Forth();

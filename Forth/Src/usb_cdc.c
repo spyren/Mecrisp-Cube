@@ -2,7 +2,7 @@
  *  @brief
  *      USB CDC terminal console
  *
- *      Line buffered serial communication. Using DMA and interrupts.
+ *      Line buffered serial communication.
  *      CR is end of line for Rx.
  *      LF is end of line for Tx.
  *  @file
@@ -36,7 +36,13 @@
 
 // Application include files
 // *************************
+#include "app_common.h"
+#include "main.h"
 #include "usb_cdc.h"
+#include "usbd_cdc_if.h"
+
+
+#define CDC_TX_SENT	0x01
 
 
 // Private function prototypes
@@ -46,12 +52,27 @@ static void cdc_thread(void *argument);
 // Global Variables
 // ****************
 
+// RTOS resources
+// **************
+
 // Definitions for CDC thread
 osThreadId_t CDC_ThreadID;
 const osThreadAttr_t cdc_thread_attributes = {
 		.name = "CDC_Thread",
 		.priority = (osPriority_t) osPriorityNormal,
 		.stack_size = 128
+};
+
+// Definitions for TxQueue
+osMessageQueueId_t CDC_TxQueueId;
+static const osMessageQueueAttr_t cdc_TxQueue_attributes = {
+		.name = "CDC_TxQueue"
+};
+
+// Definitions for RxQueue
+osMessageQueueId_t CDC_RxQueueId;
+static const osMessageQueueAttr_t cdc_RxQueue_attributes = {
+		.name = "CDC_RxQueue"
 };
 
 // Private Variables
@@ -67,88 +88,83 @@ const osThreadAttr_t cdc_thread_attributes = {
  *      None
  */
 void CDC_init(void) {
+	// Create the queue(s)
+	// creation of TxQueue
+	CDC_TxQueueId = osMessageQueueNew(200, sizeof(uint8_t), &cdc_TxQueue_attributes);
+	// creation of RxQueue
+	CDC_RxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &cdc_RxQueue_attributes);
+
 	// creation of CDC_Thread
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
-
 }
 
 
 /**
  *  @brief
  *		Reads a char from the CDC Rx (serial in). Blocking until char is
- *      ready (the line is written).
+ *      ready.
  *  @return
  *      Return the character read as an unsigned char cast to an int or EOF on
  *      error.
  */
 int CDC_getc(void) {
-	return 0;
+	uint8_t c;
+	if (osMessageQueueGet(CDC_RxQueueId, &c, NULL, osWaitForever) == osOK) {
+		return c;
+	} else {
+		Error_Handler();
+		return EOF;
+	}
 }
+
 
 
 /**
  *  @brief
- *      Reads a line from the CDC Rx (serial in). Blocking until line is
- *      ready (newline character CR is read) or max length is reached.
- *  @param[out]
- *  	str This is the pointer to an array of chars where the C string is stored
- *  @param[in]
- *      length  max. string length
+ *		There is a character in the queue (key pressed).
  *  @return
- *      Return 0 if successful, -1 on error
+ *		TRUE if a character has been received.
  */
-int CDC_gets(char *str, int length) {
-	return 0;
+int CDC_RxReady(void) {
+	if (osMessageQueueGetCount(CDC_RxQueueId) == 0) {
+		return FALSE;
+	} else {
+		return TRUE;
+	}
 }
 
 
 /**
  *  @brief
- *		Rx End Of Line.
- *  @return
- *		True if a line has been received (CR) or the buffer is full.
- */
-int CDC_RxEOL(void) {
-	return 0;
-}
-
-
-/**
- *  @brief
- *      Writes a char to the CDC Tx (serial out). Blocking until char can be
- *      written into the buffer. The buffer will be send after LF is written.
+ *      Writes a char to the USB CDC Tx (serial out). Blocking until char can be
+ *      written into the queue.
  *  @param[in]
  *      c  char to write
  *  @return
  *      Return EOF on error, 0 on success.
  */
 int CDC_putc(int c) {
-	return 0;
+	if (osMessageQueuePut(CDC_TxQueueId, &c, 0, osWaitForever) == osOK) {
+		return 0;
+	} else {
+		Error_Handler();
+		return EOF;
+	}
 }
 
 
 /**
  *  @brief
- *      Writes a line (string) to the CDC Tx (serial out). Blocking until
- *      string can be written into the buffer.
- *  @param
- *      s  string to write
+ *      Tx queue ready for next char.
  *  @return
- *      Return EOF on error, 0 on success.
- */
-int CDC_puts(const char *s) {
-	return 0;
-}
-
-
-/**
- *  @brief
- *      Tx buffer ready for next char.
- *  @return
- *      False if the buffer is full.
+ *      FALSE if the buffer is full.
  */
 int CDC_TxReady(void) {
-	return 0;
+	if (osMessageQueueGetSpace(CDC_TxQueueId) > 0) {
+		return TRUE;
+	} else {
+		return FALSE;
+	}
 }
 
 
@@ -164,9 +180,21 @@ int CDC_TxReady(void) {
   * 	None
   */
 static void cdc_thread(void *argument) {
+	uint8_t buffer;
+
 	// Infinite loop
 	for(;;) {
-		osDelay(1);
+		// blocked till a character is in the Tx queue
+		if (osMessageQueueGet(CDC_TxQueueId, &buffer, 0, osWaitForever) == osOK) {
+			// send the character
+			if (CDC_Transmit_FS(&buffer, 1) != USBD_OK) {
+				// can't send char
+				Error_Handler();
+			}
+		} else {
+			// can't write to the queue
+			Error_Handler();
+		}
 	}
 }
 

@@ -48,7 +48,6 @@
 // Private function prototypes
 // ***************************
 static void uart_thread(void *argument);
-static void error_handler(void);
 
 // Global Variables
 // ****************
@@ -129,7 +128,7 @@ int UART_getc(void) {
 	if (osMessageQueueGet(UART_RxQueueId, &c, NULL, osWaitForever) == osOK) {
 		return c;
 	} else {
-		error_handler();
+		Error_Handler();
 		return EOF;
 	}
 }
@@ -158,7 +157,7 @@ int UART_gets(char *str, int length) {
 				return 0;
 			}
 		} else {
-			error_handler();
+			Error_Handler();
 			str[i] = EOF;
 			str[i+1] = 0;
 			return EOF;
@@ -196,7 +195,7 @@ int UART_putc(int c) {
 	if (osMessageQueuePut(UART_TxQueueId, &c, 0, osWaitForever) == osOK) {
 		return 0;
 	} else {
-		error_handler();
+		Error_Handler();
 		return EOF;
 	}
 }
@@ -218,7 +217,7 @@ int UART_puts(const char *s) {
 	while (s[i] != 0) {
 		buffer = (uint8_t) s[i];
 		if (osMessageQueuePut(UART_TxQueueId, &buffer, 0, osWaitForever) != osOK) {
-			error_handler();
+			Error_Handler();
 			return EOF;
 		}
 		i++;
@@ -259,7 +258,7 @@ static void uart_thread(void *argument) {
 	// wait for the first Rx character
 	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
 		// something went wrong
-		error_handler();
+		Error_Handler();
 	}
 
 	// Infinite loop
@@ -269,13 +268,13 @@ static void uart_thread(void *argument) {
 			// send the character
 			if (HAL_UART_Transmit_IT(&huart1, &buffer, 1) == HAL_ERROR) {
 				// can't send char
-				error_handler();
+				Error_Handler();
 			}
 			// blocked till character is sent
 			osThreadFlagsWait(UART_TX_SENT, osFlagsWaitAny, 2);
 		} else {
 			// can't write to the queue
-			error_handler();
+			Error_Handler();
 		}
 	}
 }
@@ -308,12 +307,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	// put the received character into the queue
 	if (osMessageQueuePut(UART_RxQueueId, &uart_rx_buffer, 0, 0) != osOK) {
 		// can't put char into queue
-		error_handler();
+		Error_Handler();
 	}
 	// wait for the next character
 	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
 		// can't receive char
-		error_handler();
+		Error_Handler();
 	};
 }
 
@@ -326,10 +325,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
 
-	error_handler();
+	Error_Handler();
 }
 
-static void error_handler(void) {
-	;
-}
 
