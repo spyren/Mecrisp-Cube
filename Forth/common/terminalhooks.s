@@ -25,7 +25,8 @@
   pushdatos
   ldr tos, =hook_emit
   bx lr
-  .word serial_emit  @ Serial communication for default
+//  .word serial_emit  @ Serial communication for default
+	.word cdc_emit		// USB CDC for terminal
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key" @ ( -- addr )
@@ -34,8 +35,8 @@
   pushdatos
   ldr tos, =hook_key
   bx lr
-  .word serial_key  @ Serial communication for default
-
+//  .word serial_key  @ Serial communication for default
+	.word	cdc_key		// USB CDC for terminal
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-emit?" @ ( -- addr )
   CoreVariable hook_qemit
@@ -43,7 +44,8 @@
   pushdatos
   ldr tos, =hook_qemit
   bx lr
-  .word serial_qemit  @ Serial communication for default
+//  .word serial_qemit  @ Serial communication for default
+	.word	cdc_qemit	//USB CDC for terminal
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key?" @ ( -- addr )
@@ -52,7 +54,8 @@
   pushdatos
   ldr tos, =hook_qkey
   bx lr
-  .word serial_qkey  @ Serial communication for default
+//  .word serial_qkey  @ Serial communication for default
+	.word	cdc_qkey	// USB CDC for terminal
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-pause" @ ( -- addr )
@@ -62,6 +65,7 @@
   ldr tos, =hook_pause
   bx lr
   .word nop_vektor  @ No Pause defined for default
+//	.word	odelay		// CMSIS-RTOS
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "emit" @ ( c -- )

@@ -47,7 +47,7 @@ osThreadId_t FLASH_ThreadID;
 const osThreadAttr_t flash_thread_attributes = {
 		.name = "FLASH_Thread",
 		.priority = (osPriority_t) osPriorityNormal,
-		.stack_size = 128
+		.stack_size = 512
 };
 
 // Private Variables

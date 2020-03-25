@@ -61,7 +61,7 @@ osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
   .name = "Main",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 256 * 4
+  .stack_size = 512 * 4
 };
 /* USER CODE BEGIN PV */
 
@@ -481,7 +481,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
+	 for(;;) {
+		;
+	 }
+}
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_MainThread */

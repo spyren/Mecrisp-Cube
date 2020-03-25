@@ -22,7 +22,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 /* USER CODE BEGIN Includes */
-
+#include "cmsis_os.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +64,8 @@
 void HAL_MspInit(void)
 {
   /* USER CODE BEGIN MspInit 0 */
+  // RTOS SysTick has lowest priority
+  HAL_NVIC_SetPriority(SysTick_IRQn, configLIBRARY_LOWEST_INTERRUPT_PRIORITY, 0);
 
   /* USER CODE END MspInit 0 */
 
@@ -72,6 +74,7 @@ void HAL_MspInit(void)
   /* System interrupt init*/
   /* PendSV_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+
 
   /* USER CODE BEGIN MspInit 1 */
 

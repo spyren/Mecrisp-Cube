@@ -60,7 +60,7 @@ osThreadId_t CDC_ThreadID;
 const osThreadAttr_t cdc_thread_attributes = {
 		.name = "CDC_Thread",
 		.priority = (osPriority_t) osPriorityNormal,
-		.stack_size = 128
+		.stack_size = 512
 };
 
 // Definitions for TxQueue
@@ -74,6 +74,9 @@ osMessageQueueId_t CDC_RxQueueId;
 static const osMessageQueueAttr_t cdc_RxQueue_attributes = {
 		.name = "CDC_RxQueue"
 };
+
+osEventFlagsId_t CDC_EvtFlagsID;
+
 
 // Private Variables
 // *****************
@@ -91,8 +94,23 @@ void CDC_init(void) {
 	// Create the queue(s)
 	// creation of TxQueue
 	CDC_TxQueueId = osMessageQueueNew(200, sizeof(uint8_t), &cdc_TxQueue_attributes);
+	if (CDC_TxQueueId == NULL) {
+		// no queue created
+		Error_Handler();
+	}
 	// creation of RxQueue
 	CDC_RxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &cdc_RxQueue_attributes);
+	if (CDC_RxQueueId == NULL) {
+		// no queue created
+		Error_Handler();
+	}
+
+	// Create Event Flags
+	CDC_EvtFlagsID = osEventFlagsNew(NULL);
+	if (CDC_EvtFlagsID == NULL) {
+		// no event flags created
+		Error_Handler();
+	}
 
 	// creation of CDC_Thread
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
@@ -181,14 +199,25 @@ int CDC_TxReady(void) {
   */
 static void cdc_thread(void *argument) {
 	uint8_t buffer;
+	uint8_t return_value;
 
 	// Infinite loop
 	for(;;) {
+		// blocked till USB_CDC is connected
+		osEventFlagsWait(CDC_EvtFlagsID, CDC_CONNECTED,
+				osFlagsWaitAny | osFlagsNoClear, osWaitForever);
 		// blocked till a character is in the Tx queue
 		if (osMessageQueueGet(CDC_TxQueueId, &buffer, 0, osWaitForever) == osOK) {
+			// blocked till CDC transmit ready
+			osEventFlagsWait(CDC_EvtFlagsID, CDC_TX_READY,
+					osFlagsWaitAny | osFlagsNoClear, osWaitForever);
 			// send the character
-			if (CDC_Transmit_FS(&buffer, 1) != USBD_OK) {
+			return_value = CDC_Transmit_FS(&buffer, 1);
+			if (return_value == USBD_FAIL) {
 				// can't send char
+				Error_Handler();
+			} else if (return_value == USBD_BUSY) {
+				// transmit busy
 				Error_Handler();
 			}
 		} else {
@@ -197,4 +226,5 @@ static void cdc_thread(void *argument) {
 		}
 	}
 }
+
 

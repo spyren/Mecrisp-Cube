@@ -64,7 +64,7 @@ osThreadId_t UART_ThreadId;
 static const osThreadAttr_t uart_thread_attributes = {
 		.name = "UART_Thread",
 		.priority = (osPriority_t) osPriorityNormal,
-		.stack_size = 128
+		.stack_size = 512
 };
 
 // Definitions for TxQueue

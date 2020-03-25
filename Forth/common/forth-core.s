@@ -129,6 +129,7 @@ ramallot Eingabepuffer, Maximaleeingabe  @ Eingabepuffer wird einen Adresse-Län
   ramallot datenstackanfang, 0
   .endif
 
+@ not nedded anymore, stack is set by RTOS
   ramallot returnstackende, 256  @ Return stack
   ramallot returnstackanfang, 0
   

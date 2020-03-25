@@ -569,6 +569,7 @@ quit:
   ldr r0, =returnstackanfang
   mov sp, r0
   .else
+@ not nedded anymore, stack is set by RTOS
 @  ldr sp, =returnstackanfang
   .endif
 
