@@ -1,5 +1,11 @@
 /**
  *  @brief
+ *      HAL Flash routines.
+ *
+ *      Program and erase are blocking (busy wait)!
+ *      The STM32WB has only one flash bank and the access to the flash
+ *      during program/erase is not possible.
+ *      Erase takes about 20 ms, program 2 ms.
  *  @file
  *      flash.c
  *  @author

@@ -87,7 +87,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="cube/rtos.s|cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|stm32wb/flash.s|stm32wb/interrupts.s|common|stm32wb/terminal.s|stm32wb/flash-wb.s|stm32wb/STM32WBxx_CM4.svd.equates.s|stm32wb/hse-clock.s|stm32wb/turbo.s|stm32wb/vectors.s" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
+						<entry excluding="cube/stm-flash.s|cube/rtos.s|cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|stm32wb/flash.s|stm32wb/interrupts.s|common|stm32wb/terminal.s|stm32wb/flash-wb.s|stm32wb/STM32WBxx_CM4.svd.equates.s|stm32wb/hse-clock.s|stm32wb/turbo.s|stm32wb/vectors.s" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_Device"/>
 					</sourceEntries>
@@ -180,7 +180,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="cube/rtos.s|cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|common" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
+						<entry excluding="cube/stm-flash.s|cube/rtos.s|cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|common" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_Device"/>
 					</sourceEntries>

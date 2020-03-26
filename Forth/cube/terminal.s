@@ -27,13 +27,6 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
-@ -----------------------------------------------------------------------------
-uart_init:
-        @ ( -- ) Nothing todo here
-@ -----------------------------------------------------------------------------
-
-	bx	lr
-
 
 .include "terminalhooks.s"
 
