@@ -96,7 +96,7 @@ void BSP_setLED1(unsigned state) {
  *  @return
  *      FALSE for dark LED, TRUE for bright LED.
  */
-unsigned BSP_getLED1(void) {
+int BSP_getLED1(void) {
 	if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
 		return TRUE;
 	} else {
@@ -131,7 +131,7 @@ void BSP_setLED2(unsigned state) {
  *  @return
  *      FALSE for dark LED, TRUE for bright LED.
  */
-unsigned BSP_getLED2(void) {
+int BSP_getLED2(void) {
 	if (HAL_GPIO_ReadPin(LD2_GPIO_Port, LD2_Pin) == GPIO_PIN_SET) {
 		return TRUE;
 	} else {
@@ -165,7 +165,7 @@ void BSP_setLED3(unsigned state) {
  *  @return
  *      FALSE for dark LED, TRUE for bright LED.
  */
-unsigned BSP_getLED3(void) {
+int BSP_getLED3(void) {
 	if (HAL_GPIO_ReadPin(LD3_GPIO_Port, LD3_Pin) == GPIO_PIN_SET) {
 		return TRUE;
 	} else {
@@ -182,7 +182,7 @@ unsigned BSP_getLED3(void) {
  *  @return
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
-unsigned BSP_getSwitch1(void) {
+int BSP_getSwitch1(void) {
 	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
 		return TRUE;
 	} else {
@@ -198,7 +198,7 @@ unsigned BSP_getSwitch1(void) {
  *  @return
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
-unsigned BSP_getSwitch2(void) {
+int BSP_getSwitch2(void) {
 	if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == GPIO_PIN_RESET) {
 		return TRUE;
 	} else {
@@ -214,7 +214,7 @@ unsigned BSP_getSwitch2(void) {
  *  @return
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
-unsigned BSP_getSwitch3(void) {
+int BSP_getSwitch3(void) {
 	if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin) == GPIO_PIN_RESET) {
 		return TRUE;
 	} else {

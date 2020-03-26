@@ -22,12 +22,14 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "usb_device.h"
-#include "usb_cdc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_common.h"
 #include "uart.h"
 #include "flash.h"
+#include "usb_cdc.h"
+#include "bsp.h"
 
 /* USER CODE END Includes */
 
@@ -462,7 +464,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LD2_Pin LD3_Pin LD1_Pin */
@@ -475,16 +477,17 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : B2_Pin B3_Pin */
   GPIO_InitStruct.Pin = B2_Pin|B3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 }
 
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	 for(;;) {
+	BSP_setLED3(TRUE);
+	for(;;) {
 		;
-	 }
+	}
 }
 /* USER CODE END 4 */
 
@@ -540,7 +543,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
+	BSP_setLED3(TRUE);
   /* USER CODE END Error_Handler_Debug */
 }
 

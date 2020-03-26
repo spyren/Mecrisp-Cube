@@ -93,11 +93,15 @@ uint8_t uart_rx_buffer;
  *      None
  */
 void UART_init(void) {
+	HAL_UARTEx_EnableFifoMode(&huart1);
+	HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8);
+	HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8);
+
 	// Create the queue(s)
 	// creation of TxQueue
 	UART_TxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &uart_TxQueue_attributes);
 	// creation of RxQueue
-	UART_RxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &uart_RxQueue_attributes);
+	UART_RxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &uart_RxQueue_attributes);
 
 	// creation of UART_Thread
 	UART_ThreadId = osThreadNew(uart_thread, NULL, &uart_thread_attributes);
@@ -254,6 +258,7 @@ int UART_TxReady(void) {
   */
 static void uart_thread(void *argument) {
 	uint8_t buffer;
+	osStatus_t status;
 
 	// wait for the first Rx character
 	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
@@ -263,8 +268,17 @@ static void uart_thread(void *argument) {
 
 	// Infinite loop
 	for(;;) {
+		if (HAL_UART_GetState(&huart1) != 0) {
+			HAL_UART_AbortReceive(&huart1);
+			if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
+				// something went wrong
+				Error_Handler();
+			}
+//			Error_Handler();
+		}
 		// blocked till a character is in the Tx queue
-		if (osMessageQueueGet(UART_TxQueueId, &buffer, 0, osWaitForever) == osOK) {
+		status = osMessageQueueGet(UART_TxQueueId, &buffer, 0, 100);
+		if (status == osOK) {
 			// send the character
 			if (HAL_UART_Transmit_IT(&huart1, &buffer, 1) == HAL_ERROR) {
 				// can't send char
@@ -272,6 +286,8 @@ static void uart_thread(void *argument) {
 			}
 			// blocked till character is sent
 			osThreadFlagsWait(UART_TX_SENT, osFlagsWaitAny, 2);
+		} else if (status == osErrorTimeout) {
+			; // go ahead
 		} else {
 			// can't write to the queue
 			Error_Handler();
@@ -328,4 +344,16 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	Error_Handler();
 }
 
+
+/**
+  * @brief  UART RX Fifo full callback.
+  * @param  huart UART handle.
+  * @retval None
+  */
+void HAL_UARTEx_RxFifoFullCallback(UART_HandleTypeDef *huart) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(huart);
+
+	Error_Handler();
+}
 

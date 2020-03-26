@@ -36,13 +36,13 @@
 void BSP_init(void);
 
 void BSP_setLED1(unsigned state);
-unsigned BSP_getLED1(void);
+int BSP_getLED1(void);
 void BSP_setLED2(unsigned state);
-unsigned BSP_getLED2(void);
+int BSP_getLED2(void);
 void BSP_setLED3(unsigned state);
-unsigned BSP_getLED3(void);
-unsigned BSP_getSwitch1(void);
-unsigned BSP_getSwitch2(void);
-unsigned BSP_getSwitch3(void);
+int BSP_getLED3(void);
+int BSP_getSwitch1(void);
+int BSP_getSwitch2(void);
+int BSP_getSwitch3(void);
 
 #endif /* INC_BSP_H_ */

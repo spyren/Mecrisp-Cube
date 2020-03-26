@@ -99,7 +99,7 @@ void CDC_init(void) {
 		Error_Handler();
 	}
 	// creation of RxQueue
-	CDC_RxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &cdc_RxQueue_attributes);
+	CDC_RxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &cdc_RxQueue_attributes);
 	if (CDC_RxQueueId == NULL) {
 		// no queue created
 		Error_Handler();
