@@ -269,12 +269,12 @@ static void uart_thread(void *argument) {
 	// Infinite loop
 	for(;;) {
 		if (HAL_UART_GetState(&huart1) != 0) {
+			// there is a problem with the USART -> abort and restart Rx
 			HAL_UART_AbortReceive(&huart1);
 			if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
 				// something went wrong
 				Error_Handler();
 			}
-//			Error_Handler();
 		}
 		// blocked till a character is in the Tx queue
 		status = osMessageQueueGet(UART_TxQueueId, &buffer, 0, 100);

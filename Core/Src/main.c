@@ -63,7 +63,7 @@ osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
   .name = "Main",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512 * 4
+  .stack_size = 128 * 4
 };
 /* USER CODE BEGIN PV */
 
@@ -433,7 +433,7 @@ static void MX_USART1_UART_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+  if (HAL_UARTEx_EnableFifoMode(&huart1) != HAL_OK)
   {
     Error_Handler();
   }
