@@ -1,15 +1,16 @@
 /**
  *  @brief
- *      Interface to the CMSIS-RTOSv2 functions.
-
+ *      Board Support Package.
+ *
+ *      LEDs and switches.
  *  @file
- *      rtos.s
+ *      bsp.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2020-03-11
+ *      2020-03-26
  *  @remark
- *      Language: ARM Assembler, STM32CubeIDE GCC
+ *      Language: C, STM32CubeIDE GCC
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -27,15 +28,21 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
- @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "osdelay"
-rtos_osdelay:
-		@ ( u -- n ) waits for a time period specified in kernel ticks
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	bl		osDelay
-	movs	tos, r0
-	pop		{pc}
 
-@ -----------------------------------------------------------------------------
+
+#ifndef INC_BSP_H_
+#define INC_BSP_H_
+
+void BSP_init(void);
+
+void BSP_setLED1(unsigned state);
+unsigned BSP_getLED1(void);
+void BSP_setLED2(unsigned state);
+unsigned BSP_getLED2(void);
+void BSP_setLED3(unsigned state);
+unsigned BSP_getLED3(void);
+unsigned BSP_getSwitch1(void);
+unsigned BSP_getSwitch2(void);
+unsigned BSP_getSwitch3(void);
+
+#endif /* INC_BSP_H_ */

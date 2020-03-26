@@ -60,6 +60,11 @@
 .equ	flash8bytesblockwrite, 1
 @.equ	charkommaavailable, 1  Not available.
 
+// set the default terminal
+//.equ	CDC_TERMINAL,	1
+.equ	UART_TERMINAL,	1
+//.equ	BLE_TERMINAL,	1
+
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
 @ -----------------------------------------------------------------------------
@@ -86,8 +91,8 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 */
 
-.equ	RamAnfang,				0x20000000	@ Start of RAM Porting: Change this !
-.equ	RamEnde,				0x20010000	@ End   of RAM.  64 KiB. on SRAM2 Porting: Change this !
+.equ	RamAnfang,				0x20000000	@ Start of RAM
+.equ	RamEnde,				0x20010000	@ End   of RAM. (64 KiB RAM dictionary)
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 
@@ -225,6 +230,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interpreter.s"
 .ltorg
 .include "rtos.s"
+.include "bsp.s"
 
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
