@@ -27,7 +27,7 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
- @ -----------------------------------------------------------------------------
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osdelay"
 rtos_osdelay:
 		@ ( u -- n ) waits for a time period specified in kernel ticks
@@ -37,5 +37,29 @@ rtos_osdelay:
 	bl		osDelay
 	movs	tos, r0
 	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osthreadnew"
+rtos_osthreadnew:
+		@ ( addr addr addr -- u ) Create a thread and add it to Active Threads.
+// Create a thread and add it to Active Threads.
+// \param[in]     func          thread function.
+// \param[in]     argument      pointer that is passed to the thread function as start argument.
+// \param[in]     attr          thread attributes; NULL: default values.
+// \return thread ID for reference by other functions or NULL in case of error.
+// osThreadId_t osThreadNew (osThreadFunc_t func, void *argument, const osThreadAttr_t *attr);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r2, tos		// set attr
+	drop
+	movs	r1, tos		// set argument
+	drop
+	movs	r0, tos		// set func
+	bl		osThreadNew
+	movs	tos, r0
+	pop		{pc}
+
+
 
 @ -----------------------------------------------------------------------------

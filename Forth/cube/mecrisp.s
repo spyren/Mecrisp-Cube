@@ -61,8 +61,8 @@
 @.equ	charkommaavailable, 1  Not available.
 
 // set the default terminal
-//.equ	CDC_TERMINAL,	1
-.equ	UART_TERMINAL,	1
+.equ	CDC_TERMINAL,	1
+//.equ	UART_TERMINAL,	1
 //.equ	BLE_TERMINAL,	1
 
 @ -----------------------------------------------------------------------------

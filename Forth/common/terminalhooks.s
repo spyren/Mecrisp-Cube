@@ -28,7 +28,7 @@
 .ifdef	UART_TERMINAL
 	.word	serial_emit		// Serial (UART) for terminal
 .endif
-.ifdef	CDC_TERMNAL
+.ifdef	CDC_TERMINAL
 	.word	cdc_emit		// USB CDC for terminal
 .endif
 

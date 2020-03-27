@@ -2,9 +2,7 @@
  *  @brief
  *      USB CDC terminal console
  *
- *      Line buffered serial communication.
- *      CR is end of line for Rx.
- *      LF is end of line for Tx.
+ *      Buffered serial communication.
  *  @file
  *      usb_cdc.c
  *  @author
