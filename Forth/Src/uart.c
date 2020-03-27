@@ -44,7 +44,6 @@
 
 #define UART_TX_SENT	0x01
 
-
 // Private function prototypes
 // ***************************
 static void uart_thread(void *argument);
@@ -63,8 +62,8 @@ extern UART_HandleTypeDef huart1;
 osThreadId_t UART_ThreadId;
 static const osThreadAttr_t uart_thread_attributes = {
 		.name = "UART_Thread",
-		.priority = (osPriority_t) osPriorityNormal,
-		.stack_size = 512
+		.priority = (osPriority_t) osPriorityHigh,
+		.stack_size = 1024
 };
 
 // Definitions for TxQueue
@@ -93,10 +92,6 @@ uint8_t uart_rx_buffer;
  *      None
  */
 void UART_init(void) {
-	HAL_UARTEx_EnableFifoMode(&huart1);
-	HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8);
-	HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8);
-
 	// Create the queue(s)
 	// creation of TxQueue
 	UART_TxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &uart_TxQueue_attributes);
@@ -261,33 +256,31 @@ static void uart_thread(void *argument) {
 	osStatus_t status;
 
 	// wait for the first Rx character
-	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
+	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) != HAL_OK) {
 		// something went wrong
 		Error_Handler();
 	}
 
 	// Infinite loop
 	for(;;) {
-		if (HAL_UART_GetState(&huart1) != 0) {
-			// there is a problem with the USART -> abort and restart Rx
-			HAL_UART_AbortReceive(&huart1);
-			if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
-				// something went wrong
-				Error_Handler();
-			}
-		}
 		// blocked till a character is in the Tx queue
-		status = osMessageQueueGet(UART_TxQueueId, &buffer, 0, 100);
+		status = osMessageQueueGet(UART_TxQueueId, &buffer, 0, osWaitForever);
 		if (status == osOK) {
-			// send the character
-			if (HAL_UART_Transmit_IT(&huart1, &buffer, 1) == HAL_ERROR) {
-				// can't send char
-				Error_Handler();
+			if (buffer == 0) {
+				// there was a busy problem -> try again
+				if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) != HAL_OK) {
+					// something went wrong
+					Error_Handler();
+				}
+			} else {
+				// send the character
+				if (HAL_UART_Transmit_IT(&huart1, &buffer, 1) == HAL_ERROR) {
+					// can't send char
+					Error_Handler();
+				}
+				// blocked till character is sent
+				status = osThreadFlagsWait(UART_TX_SENT, osFlagsWaitAny, 2);
 			}
-			// blocked till character is sent
-			osThreadFlagsWait(UART_TX_SENT, osFlagsWaitAny, 2);
-		} else if (status == osErrorTimeout) {
-			; // go ahead
 		} else {
 			// can't write to the queue
 			Error_Handler();
@@ -319,17 +312,26 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
+	HAL_StatusTypeDef status;
+	uint8_t buffer = 0;
 
 	// put the received character into the queue
 	if (osMessageQueuePut(UART_RxQueueId, &uart_rx_buffer, 0, 0) != osOK) {
 		// can't put char into queue
 		Error_Handler();
 	}
-	// wait for the next character
-	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) == HAL_ERROR) {
+	// receive the next character
+	status = HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1);
+	if (status == HAL_ERROR) {
 		// can't receive char
 		Error_Handler();
-	};
+	} else if (status == HAL_BUSY) {
+		// try again in the thread (send a 0 character to the thread)
+		if (osMessageQueuePut(UART_TxQueueId, &buffer, 0, 0) != osOK) {
+			// can't put char into queue
+			Error_Handler();
+		}
+	}
 }
 
 /**
