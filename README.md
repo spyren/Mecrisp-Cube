@@ -106,10 +106,13 @@ Project -> Build Project
 
 The STM tools work on Linux, Windows, and Mac.
 
+Tab size is 4 for C and assembler source files. 
+Append ?ts=4 to the URL to change the tab-size.
 
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+
 
 ## Authors
 
