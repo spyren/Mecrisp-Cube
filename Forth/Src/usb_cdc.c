@@ -112,6 +112,10 @@ void CDC_init(void) {
 
 	// creation of CDC_Thread
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
+	if (CDC_ThreadID == NULL) {
+		// no thread created
+		Error_Handler();
+	}
 }
 
 

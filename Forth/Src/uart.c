@@ -2,7 +2,8 @@
  *  @brief
  *      Buffered serial communication.
  *
- *      Using interrupt for USART1 peripheral.
+ *      Using interrupt for USART1 peripheral. Separate threads for transmitting
+ *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion UART resource
  *      CMSIS-RTOS queues as buffers.
  *      CR is end of line for Rx.
  *      LF is end of line for Tx.
@@ -42,11 +43,18 @@
 #include "main.h"
 #include "uart.h"
 
-#define UART_TX_SENT	0x01
+// Rx/Tx Buffer Length
+// *******************
+#define UART_TX_BUFFER_LENGTH	1024
+#define UART_RX_BUFFER_LENGTH	(20 * 1024)
+
+#define UART_CHAR_SENT		0x01
+#define UART_CHAR_RECEIVED	0x01
 
 // Private function prototypes
 // ***************************
-static void uart_thread(void *argument);
+static void UART_TxThread(void *argument);
+static void UART_RxThread(void *argument);
 
 // Global Variables
 // ****************
@@ -58,29 +66,46 @@ extern UART_HandleTypeDef huart1;
 // RTOS resources
 // **************
 
-// Definitions for UART thread
-osThreadId_t UART_ThreadId;
-static const osThreadAttr_t uart_thread_attributes = {
-		.name = "UART_Thread",
+// Definitions for UART Tx thread
+static osThreadId_t UART_TxThreadId;
+static const osThreadAttr_t UART_TxThreadAttr = {
+		.name = "UART_TxThread",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 1024
+		.stack_size = 512 * 2
+};
+
+// Definitions for UART Rx thread
+static osThreadId_t UART_RxThreadId;
+static const osThreadAttr_t UART_RxThreadAttr = {
+		.name = "UART_RxThread",
+		.priority = (osPriority_t) osPriorityHigh,
+		.stack_size = 512 * 2
+};
+
+static osMutexId_t UART_MutexID;
+const osMutexAttr_t UART_MutexAttr = {
+		NULL,				// no name required
+		osMutexPrioInherit,	// attr_bits
+		NULL,				// memory for control block
+		0U					// size for control block
 };
 
 // Definitions for TxQueue
-osMessageQueueId_t UART_TxQueueId;
+static osMessageQueueId_t UART_TxQueueId;
 static const osMessageQueueAttr_t uart_TxQueue_attributes = {
 		.name = "UART_TxQueue"
 };
 
 // Definitions for RxQueue
-osMessageQueueId_t UART_RxQueueId;
+static osMessageQueueId_t UART_RxQueueId;
 static const osMessageQueueAttr_t uart_RxQueue_attributes = {
 		.name = "UART_RxQueue"
 };
 
 // Private Variables
 // *****************
-uint8_t uart_rx_buffer;
+static uint8_t UART_TxBuffer;
+static uint8_t UART_RxBuffer;
 
 // Public Functions
 // ****************
@@ -94,12 +119,35 @@ uint8_t uart_rx_buffer;
 void UART_init(void) {
 	// Create the queue(s)
 	// creation of TxQueue
-	UART_TxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &uart_TxQueue_attributes);
+	UART_TxQueueId = osMessageQueueNew(UART_TX_BUFFER_LENGTH, sizeof(uint8_t),
+			&uart_TxQueue_attributes);
+	if (UART_TxQueueId == NULL) {
+		Error_Handler();
+	}
 	// creation of RxQueue
-	UART_RxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &uart_RxQueue_attributes);
+	UART_RxQueueId = osMessageQueueNew(UART_RX_BUFFER_LENGTH, sizeof(uint8_t),
+			&uart_RxQueue_attributes);
+	if (UART_RxQueueId == NULL) {
+		Error_Handler();
+	}
 
-	// creation of UART_Thread
-	UART_ThreadId = osThreadNew(uart_thread, NULL, &uart_thread_attributes);
+	UART_MutexID = osMutexNew(&UART_MutexAttr);
+	if (UART_MutexID == NULL) {
+		Error_Handler();
+	}
+
+	// creation of UART_TxThread
+	UART_TxThreadId = osThreadNew(UART_TxThread, NULL, &UART_TxThreadAttr);
+	if (UART_TxThreadId == NULL) {
+		Error_Handler();
+	}
+
+	// creation of UART_RxThread
+	UART_RxThreadId = osThreadNew(UART_RxThread, NULL, &UART_RxThreadAttr);
+	if (UART_RxThreadId == NULL) {
+		Error_Handler();
+	}
+
 }
 
 /**
@@ -245,49 +293,78 @@ int UART_TxReady(void) {
 
 /**
   * @brief
-  * 	Function implementing the UART thread.
+  * 	Function implementing the UART Tx thread.
   * @param
   * 	argument: Not used
   * @retval
   * 	None
   */
-static void uart_thread(void *argument) {
-	uint8_t buffer;
+static void UART_TxThread(void *argument) {
 	osStatus_t status;
-
-	// wait for the first Rx character
-	if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) != HAL_OK) {
-		// something went wrong
-		Error_Handler();
-	}
 
 	// Infinite loop
 	for(;;) {
 		// blocked till a character is in the Tx queue
-		status = osMessageQueueGet(UART_TxQueueId, &buffer, 0, osWaitForever);
+		status = osMessageQueueGet(UART_TxQueueId, &UART_TxBuffer, 0, osWaitForever);
 		if (status == osOK) {
-			if (buffer == 0) {
-				// there was a busy problem -> try again
-				if (HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1) != HAL_OK) {
-					// something went wrong
-					Error_Handler();
-				}
-			} else {
-				// send the character
-				if (HAL_UART_Transmit_IT(&huart1, &buffer, 1) == HAL_ERROR) {
-					// can't send char
-					Error_Handler();
-				}
-				// blocked till character is sent
-				status = osThreadFlagsWait(UART_TX_SENT, osFlagsWaitAny, 2);
+			// only one thread is allowed to use the UART
+			osMutexAcquire(UART_MutexID, osWaitForever);
+			// send the character
+			if (HAL_UART_Transmit_IT(&huart1, &UART_TxBuffer, 1) == HAL_ERROR) {
+				// can't send char
+				Error_Handler();
 			}
+			osMutexRelease(UART_MutexID);
+
+			// blocked till character is sent
+			status = osThreadFlagsWait(UART_CHAR_SENT, osFlagsWaitAny, 5);
 		} else {
-			// can't write to the queue
+			// can't read the queue
 			Error_Handler();
 		}
 	}
 }
 
+
+/**
+  * @brief
+  * 	Function implementing the UART Rx thread.
+  * @param
+  * 	argument: Not used
+  * @retval
+  * 	None
+  */
+static void UART_RxThread(void *argument) {
+	osStatus_t status;
+
+	osMutexAcquire(UART_MutexID, osWaitForever);
+	// wait for the first Rx character
+	if (HAL_UART_Receive_IT(&huart1, &UART_RxBuffer, 1) != HAL_OK) {
+		// something went wrong
+		Error_Handler();
+	}
+	osMutexRelease(UART_MutexID);
+
+	// Infinite loop
+	for(;;) {
+		// blocked till a character is received
+		status = osThreadFlagsWait(UART_CHAR_RECEIVED, osFlagsWaitAny, osWaitForever);
+		// put the received character into the queue
+		status = osMessageQueuePut(UART_RxQueueId, &UART_RxBuffer, 0, 100);
+		if (status != osOK) {
+			// can't put char into queue
+			Error_Handler();
+		}
+		// receive the next character
+		osMutexAcquire(UART_MutexID, osWaitForever);
+		status = HAL_UART_Receive_IT(&huart1, &UART_RxBuffer, 1);
+		osMutexRelease(UART_MutexID);
+		if (status != osOK) {
+			// can't receive char
+			Error_Handler();
+		}
+	}
+}
 
 // Callbacks
 // *********
@@ -301,7 +378,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
 
-	osThreadFlagsSet(UART_ThreadId, UART_TX_SENT);
+	osThreadFlagsSet(UART_TxThreadId, UART_CHAR_SENT);
 }
 
 /**
@@ -312,26 +389,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
-	HAL_StatusTypeDef status;
-	uint8_t buffer = 0;
 
-	// put the received character into the queue
-	if (osMessageQueuePut(UART_RxQueueId, &uart_rx_buffer, 0, 0) != osOK) {
-		// can't put char into queue
-		Error_Handler();
-	}
-	// receive the next character
-	status = HAL_UART_Receive_IT(&huart1, &uart_rx_buffer, 1);
-	if (status == HAL_ERROR) {
-		// can't receive char
-		Error_Handler();
-	} else if (status == HAL_BUSY) {
-		// try again in the thread (send a 0 character to the thread)
-		if (osMessageQueuePut(UART_TxQueueId, &buffer, 0, 0) != osOK) {
-			// can't put char into queue
-			Error_Handler();
-		}
-	}
+	osThreadFlagsSet(UART_RxThreadId, UART_CHAR_RECEIVED);
 }
 
 /**

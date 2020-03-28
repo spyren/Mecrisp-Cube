@@ -42,8 +42,6 @@
 #include "flash.h"
 
 
-#define FLASH_END_OF_OPERATION	0x01
-#define FLASH_OPERATION_ERROR	0x02
 
 // Private function prototypes
 // ***************************
@@ -54,15 +52,16 @@
 // RTOS resources
 // **************
 
-osMutexId_t FLASH_MutexID;
-const osMutexAttr_t FLASH_MutexAttr = {
+static osMutexId_t FLASH_MutexID;
+static const osMutexAttr_t FLASH_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
 		NULL,				// memory for control block
 		0U					// size for control block
 };
 
-osSemaphoreId_t FLASH_SemaphoreID;
+static osSemaphoreId_t FLASH_SemaphoreID;
+
 
 // Private Variables
 // *****************
@@ -71,6 +70,7 @@ osSemaphoreId_t FLASH_SemaphoreID;
 static FLASH_EraseInitTypeDef EraseInitStruct;
 static volatile uint32_t PageOrAddress;
 static volatile uint8_t FlashError = FALSE;
+
 
 // Public Functions
 // ****************
@@ -83,7 +83,14 @@ static volatile uint8_t FlashError = FALSE;
  */
 void FLASH_init(void) {
 	FLASH_MutexID = osMutexNew(&FLASH_MutexAttr);
+	if (FLASH_MutexID == NULL) {
+		Error_Handler();
+	}
+
 	FLASH_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (FLASH_SemaphoreID == NULL) {
+		Error_Handler();
+	}
 
 	HAL_NVIC_SetPriority(FLASH_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+1, 0);
 	HAL_NVIC_EnableIRQ(FLASH_IRQn);
@@ -124,7 +131,7 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	return_value = HAL_FLASH_Program_IT(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 			data.doubleword);
 	// blocked till programming is finished
-	osSemaphoreAcquire(FLASH_SemaphoreID, osWaitForever);
+	osSemaphoreAcquire(FLASH_SemaphoreID, 100);
 	HAL_FLASH_Lock();
 	if (FlashError) {
 		return_value = HAL_ERROR;
@@ -181,9 +188,6 @@ int FLASH_erasePage(uint32_t Address) {
   * @retval None
   */
 void HAL_FLASH_EndOfOperationCallback(uint32_t ReturnValue) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(ReturnValue);
-
 	PageOrAddress = ReturnValue;
 	osSemaphoreRelease(FLASH_SemaphoreID);
 }
@@ -196,9 +200,6 @@ void HAL_FLASH_EndOfOperationCallback(uint32_t ReturnValue) {
   * @retval None
   */
 void HAL_FLASH_OperationErrorCallback(uint32_t ReturnValue) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(ReturnValue);
-
 	FlashError = TRUE;
 	PageOrAddress = ReturnValue;
 //	osSemaphoreRelease(FLASH_SemaphoreID);

@@ -1,9 +1,9 @@
 /**
  *  @brief
- *      Mecrisp-Stellaris Forth tailored for using STM Cube ecosystem.
+ *      Mecrisp-Stellaris Forth tailored for using the STM Cube ecosystem.
  *
- *      Forth is CMSIS-RTOS Thread (FreeRTOS Task) MainThread.
- *      Derived from Mecrisp-Stellaris forth-core.s
+ *      Forth is a CMSIS-RTOS Thread (FreeRTOS Task) MainThread.
+ *      This file is derived from Mecrisp-Stellaris forth-core.s
  *      All the assembler files from common directory are included here.
  *  @file
  *      mecrisp.s
@@ -61,8 +61,8 @@
 @.equ	charkommaavailable, 1  Not available.
 
 // set the default terminal
-.equ	CDC_TERMINAL,	1
-//.equ	UART_TERMINAL,	1
+//.equ	CDC_TERMINAL,	1
+.equ	UART_TERMINAL,	1
 //.equ	BLE_TERMINAL,	1
 
 @ -----------------------------------------------------------------------------
@@ -142,7 +142,7 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	datenstackende, 256		@ Data stack
 	ramallot	datenstackanfang, 0
 
-@ not nedded anymore, stack is set by RTOS
+@ not needed anymore, stack is set by RTOS
 	ramallot	returnstackende, 0		@ Return stack
 	ramallot	returnstackanfang, 0
 
@@ -259,3 +259,4 @@ Forth:
 
 	@ Ready to fly !
 .include "boot.s"
+

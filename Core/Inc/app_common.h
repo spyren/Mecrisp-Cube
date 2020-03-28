@@ -40,6 +40,7 @@
 #undef TRUE
 #define TRUE                    (!0)
 
+#define USE_FULL_ASSERT	1
 
 // Critical Section definition
 // ***************************

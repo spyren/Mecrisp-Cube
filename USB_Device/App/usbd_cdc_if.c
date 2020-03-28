@@ -325,6 +325,9 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
   /* USER CODE BEGIN 7 */
   USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
   if (hcdc->TxState != 0){
+	  // should never happen -> see
+	  // Middlewares/ST/STM32_UB_Device_Library/Class/CDC/Src/usbd_cdc.c
+	  Error_Handler();
     return USBD_BUSY;
   }
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);

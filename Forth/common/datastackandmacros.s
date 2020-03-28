@@ -371,7 +371,7 @@ psp .req r7
 .macro welcome Meldung
   bl dotgaensefuesschen
         .byte 8f - 7f         @ Compute length of name field.
-7:      .ascii "MecrispCube based on Mecrisp-Stellaris 2.5.2"
+7:      .ascii "Mecrisp-Cube, based on Mecrisp-Stellaris 2.5.2"
         .ascii "\Meldung\n"
 8:      .p2align 1
 .endm
