@@ -150,15 +150,14 @@ minusrot:
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "rdepth"
 @ -----------------------------------------------------------------------------
-  pushdatos
-  mov tos, sp
-@ todo: returnstackanfang belongs to the thread
-  ldr r1, =returnstackanfang @ Anfang laden  Calculate stack fill gauge
-  subs r1, tos @ und aktuellen Stackpointer abziehen
-  asrs tos, r1, #2 @ Durch 4 teilen  Divide through 4 Bytes/element.
-  bx lr
+	pushdatos
+//	ldr		r0, =MainHandle
+//	ldr		r0, [r0]
+//	bl		rtos_osThreadGetStackSpace
+//	asrs	tos, r0, #2 @ Durch 4 teilen  Divide through 4 Bytes/element.
+	ldr		tos, =16
+	bx lr
 
-@ Returnstack
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_inline, ">r" @ Legt das oberste Element des Datenstacks auf den Returnstack.

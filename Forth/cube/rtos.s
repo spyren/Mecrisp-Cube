@@ -28,10 +28,10 @@
  */
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "osdelay"
-rtos_osdelay:
+		Wortbirne Flag_visible, "osDelay"
 		@ ( u -- n ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
+rtos_osDelay:
 	push	{lr}
 	movs	r0, tos
 	bl		osDelay
@@ -40,8 +40,8 @@ rtos_osdelay:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "osthreadnew"
-rtos_osthreadnew:
+		Wortbirne Flag_visible, "osThreadNew"
+
 		@ ( addr addr addr -- u ) Create a thread and add it to Active Threads.
 // Create a thread and add it to Active Threads.
 // \param[in]     func          thread function.
@@ -50,6 +50,7 @@ rtos_osthreadnew:
 // \return thread ID for reference by other functions or NULL in case of error.
 // osThreadId_t osThreadNew (osThreadFunc_t func, void *argument, const osThreadAttr_t *attr);
 @ -----------------------------------------------------------------------------
+rtos_osThreadNew:
 	push	{lr}
 	movs	r2, tos		// set attr
 	drop
@@ -60,6 +61,23 @@ rtos_osthreadnew:
 	movs	tos, r0
 	pop		{pc}
 
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osThreadGetStackSpace"
+		@ ( u -- u ) returns the size of unused stack space of the specified thread
+// Create a thread and add it to Active Threads.
+// \param[in]	thread_id	thread ID obtained by osThreadNew or osThreadGetId.
+// \return		unused stack size in bytes
+// uint32_t osThreadGetStackSpace(osThreadId_t thread_id)
+@ -----------------------------------------------------------------------------
+.global		rtos_osThreadGetStackSpace
+rtos_osThreadGetStackSpace:
+	push	{lr}
+	movs	r0, tos		// set Thread ID
+	bl		osThreadGetStackSpace
+	movs	tos, r0		// return size
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------

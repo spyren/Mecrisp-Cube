@@ -246,7 +246,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 @  End of Dictionary
 @ -----------------------------------------------------------------------------
 
-.global     Forth
+.global		Forth
 
 @ -----------------------------------------------------------------------------
 Forth:

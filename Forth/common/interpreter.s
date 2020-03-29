@@ -566,8 +566,9 @@ quit:
   @ Stacks zurücksetzen
   @ Clear stacks and tidy up.
   .ifdef m0core
-  ldr r0, =returnstackanfang
-  mov sp, r0
+@ not nedded anymore, stack is set by RTOS
+@  ldr r0, =returnstackanfang
+@  mov sp, r0
   .else
 @ not nedded anymore, stack is set by RTOS
 @  ldr sp, =returnstackanfang

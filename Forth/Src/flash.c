@@ -114,6 +114,7 @@ void FLASH_init(void) {
  */
 int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	int return_value;
+	osStatus_t status;
 
 	union number {
 		uint32_t word[2];
@@ -130,12 +131,17 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	data.word[1] = word2;
 	return_value = HAL_FLASH_Program_IT(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 			data.doubleword);
-	// blocked till programming is finished
-	osSemaphoreAcquire(FLASH_SemaphoreID, 100);
-	HAL_FLASH_Lock();
-	if (FlashError) {
-		return_value = HAL_ERROR;
+	if (return_value == HAL_OK) {
+		// blocked till programming is finished
+		status = osSemaphoreAcquire(FLASH_SemaphoreID, 100);
+		if (FlashError || (status != osOK)) {
+			return_value = HAL_ERROR;
+			Error_Handler();
+		}
+	} else {
+		Error_Handler();
 	}
+	HAL_FLASH_Lock();
 
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
@@ -152,6 +158,7 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
  */
 int FLASH_erasePage(uint32_t Address) {
 	int return_value;
+	osStatus_t status;
 
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
@@ -162,12 +169,17 @@ int FLASH_erasePage(uint32_t Address) {
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
 	return_value = HAL_FLASHEx_Erase_IT(&EraseInitStruct);
-	// blocked till programming is finished
-	osSemaphoreAcquire(FLASH_SemaphoreID, osWaitForever);
-	HAL_FLASH_Lock();
-	if (FlashError) {
-		return_value = HAL_ERROR;
+	if (return_value == HAL_OK) {
+		// blocked till erasing is finished
+		status = osSemaphoreAcquire(FLASH_SemaphoreID, 100);
+		if (FlashError || (status != osOK)) {
+			return_value = HAL_ERROR;
+			Error_Handler();
+		}
+	} else {
+		Error_Handler();
 	}
+	HAL_FLASH_Lock();
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
 }

@@ -69,24 +69,24 @@ eraseflash_intern:
 	ldr	r2, =0xFFFF
 
 1:	ldrh	r3, [r0]
-	cmp	r3, r2
-	beq	2f
+	cmp		r3, r2
+	beq		2f
 	pushda	r0
 	dup
 //	write	"Erase block at  "
 //	bl	hexdot
 //	writeln " from Flash"
-	bl	flashpageerase
+	bl		flashpageerase
 2:	adds	r0, r0, #2
-	cmp	r0, r1
-	bne	1b
+	cmp		r0, r1
+	bne		1b
 //	writeln	"Finished. Reset !"
-	bl	Restart
+	bl		Restart
 
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "eraseflashfrom" @ ( Addr -- )
 	@ Beginnt an der angegebenen Adresse mit dem Löschen des Dictionaries.
 @ -----------------------------------------------------------------------------
 	popda	r0
-	b.n	eraseflash_intern
+	b.n		eraseflash_intern
 .ltorg
