@@ -129,11 +129,14 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	data.word[0] = word1;
 	data.word[1] = word2;
+	if (HAL_FLASHEx_IsOperationSuspended()) {
+		Error_Handler();
+	}
 	return_value = HAL_FLASH_Program_IT(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 			data.doubleword);
 	if (return_value == HAL_OK) {
 		// blocked till programming is finished
-		status = osSemaphoreAcquire(FLASH_SemaphoreID, 100);
+		status = osSemaphoreAcquire(FLASH_SemaphoreID, osWaitForever);
 		if (FlashError || (status != osOK)) {
 			return_value = HAL_ERROR;
 			Error_Handler();
@@ -168,10 +171,13 @@ int FLASH_erasePage(uint32_t Address) {
 	// Clear OPTVERR bit set on virgin samples
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
+	if (HAL_FLASHEx_IsOperationSuspended()) {
+		Error_Handler();
+	}
 	return_value = HAL_FLASHEx_Erase_IT(&EraseInitStruct);
 	if (return_value == HAL_OK) {
 		// blocked till erasing is finished
-		status = osSemaphoreAcquire(FLASH_SemaphoreID, 100);
+		status = osSemaphoreAcquire(FLASH_SemaphoreID, osWaitForever);
 		if (FlashError || (status != osOK)) {
 			return_value = HAL_ERROR;
 			Error_Handler();
@@ -214,6 +220,6 @@ void HAL_FLASH_EndOfOperationCallback(uint32_t ReturnValue) {
 void HAL_FLASH_OperationErrorCallback(uint32_t ReturnValue) {
 	FlashError = TRUE;
 	PageOrAddress = ReturnValue;
-//	osSemaphoreRelease(FLASH_SemaphoreID);
+	osSemaphoreRelease(FLASH_SemaphoreID);
 }
 

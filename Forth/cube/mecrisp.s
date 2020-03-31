@@ -255,7 +255,7 @@ Forth:
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"
 
-	welcome " for STM32WB55 by Matthias Koch "
+	welcome " by Matthias Koch "
 
 	@ Ready to fly !
 .include "boot.s"

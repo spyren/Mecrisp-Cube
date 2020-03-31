@@ -163,7 +163,7 @@ minusrot:
   Wortbirne Flag_visible|Flag_inline, ">r" @ Legt das oberste Element des Datenstacks auf den Returnstack.
 @------------------------------------------------------------------------------
   push {tos}
-  ldm psp!, {tos}
+  ldm psp!, {tos}	// drop
   bx lr
 
 @------------------------------------------------------------------------------
