@@ -485,11 +485,18 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	BSP_setLED3(TRUE);
+	Error_Handler();
 	for(;;) {
 		;
 	}
 }
+
+
+void vApplicationMallocFailedHook(void) {
+	Error_Handler();
+} // vApplicationMallocFailedHook
+
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_MainThread */
@@ -562,7 +569,6 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-	Error_Handler();
 }
 #endif /* USE_FULL_ASSERT */
 

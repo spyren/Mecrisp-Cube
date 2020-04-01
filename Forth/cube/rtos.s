@@ -66,7 +66,6 @@ rtos_osThreadNew:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osThreadGetStackSpace"
 		@ ( u -- u ) returns the size of unused stack space of the specified thread
-// Create a thread and add it to Active Threads.
 // \param[in]	thread_id	thread ID obtained by osThreadNew or osThreadGetId.
 // \return		unused stack size in bytes
 // uint32_t osThreadGetStackSpace(osThreadId_t thread_id)
@@ -77,6 +76,33 @@ rtos_osThreadGetStackSpace:
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetStackSpace
 	movs	tos, r0		// return size
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMainThreadID"
+		@ (  -- u ) returns the the main thread ID
+@ -----------------------------------------------------------------------------
+.global		rtos_osMainThreadID
+rtos_osMainThreadID:
+	push	{lr}
+	pushdatos
+	ldr		r0, =MainHandle
+	ldr		tos, [r0]
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "xPortGetFreeHeapSize"
+		@ (  -- u ) returns the total amount of heap space that remains
+		@			unallocated when the function is called
+@ -----------------------------------------------------------------------------
+.global		rtos_xPortGetFreeHeapSize
+rtos_xPortGetFreeHeapSize:
+	push	{lr}
+	pushdatos
+	bl		xPortGetFreeHeapSize
+	movs	tos, r0
 	pop		{pc}
 
 

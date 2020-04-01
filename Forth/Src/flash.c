@@ -121,12 +121,20 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 		uint64_t doubleword;
 	} data;
 
+	if (Address < 0x08040000) {
+		return -1;
+	}
+
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
 	FlashError = FALSE;
-	HAL_FLASH_Unlock();
+	if (HAL_FLASH_Unlock() == HAL_ERROR) {
+		Error_Handler();
+	}
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+
 	data.word[0] = word1;
 	data.word[1] = word2;
 	if (HAL_FLASHEx_IsOperationSuspended()) {
@@ -144,7 +152,9 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	} else {
 		Error_Handler();
 	}
-	HAL_FLASH_Lock();
+	if (HAL_FLASH_Lock() == HAL_ERROR) {
+		Error_Handler();
+	}
 
 	osMutexRelease(FLASH_MutexID);
 	return return_value;

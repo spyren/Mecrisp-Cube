@@ -47,7 +47,9 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   uint32_t              pFLatency;
   
   /*Configure the TIM17 IRQ priority */
-  HAL_NVIC_SetPriority(TIM1_TRG_COM_TIM17_IRQn, TickPriority ,0); 
+//  HAL_NVIC_SetPriority(TIM1_TRG_COM_TIM17_IRQn, TickPriority ,0);
+//  Tick priority is used for timeouts, must work in other ISRs
+  HAL_NVIC_SetPriority(TIM1_TRG_COM_TIM17_IRQn, 0 ,0);
   
   /* Enable the TIM17 global Interrupt */
   HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM17_IRQn); 

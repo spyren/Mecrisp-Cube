@@ -62,11 +62,11 @@ flashpageerase:
 	Wortbirne Flag_visible, "eraseflash" @ ( -- )
 	@ Löscht den gesamten Inhalt des Flashdictionaries.
 @ -----------------------------------------------------------------------------
-	ldr	r0, =FlashDictionaryAnfang
+	ldr		r0, =FlashDictionaryAnfang
 eraseflash_intern:
 	cpsid	i
-	ldr	r1, =FlashDictionaryEnde
-	ldr	r2, =0xFFFF
+	ldr		r1, =FlashDictionaryEnde
+	ldr		r2, =0xFFFF
 
 1:	ldrh	r3, [r0]
 	cmp		r3, r2

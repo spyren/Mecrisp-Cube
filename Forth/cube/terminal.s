@@ -38,8 +38,8 @@ serial_emit:
 	push	{lr}
 	movs	r0, tos
 	drop
-	bl	UART_putc
-	pop	{pc}
+	bl		UART_putc
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key"
@@ -48,9 +48,9 @@ serial_key:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl	UART_getc
+	bl		UART_getc
 	movs	tos, r0
-	pop	{pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit?"
@@ -59,9 +59,9 @@ serial_qemit:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl	UART_TxReady
+	bl		UART_TxReady
 	movs	tos, r0
-	pop	{pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key?"
@@ -70,9 +70,9 @@ serial_qkey:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl	UART_RxReady
+	bl		UART_RxReady
 	movs	tos, r0
-	pop	{pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -83,8 +83,8 @@ cdc_emit:
 	push	{lr}
 	movs	r0, tos
 	drop
-	bl	CDC_putc
-	pop	{pc}
+	bl		CDC_putc
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-key"
@@ -93,9 +93,9 @@ cdc_key:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl	CDC_getc
+	bl		CDC_getc
 	movs	tos, r0
-	pop	{pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-emit?"
@@ -104,9 +104,9 @@ cdc_qemit:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl	CDC_TxReady
+	bl		CDC_TxReady
 	movs	tos, r0
-	pop	{pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-key?"
@@ -115,8 +115,8 @@ cdc_qkey:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl	CDC_RxReady
+	bl		CDC_RxReady
 	movs	tos, r0
-	pop	{pc}
+	pop		{pc}
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !
