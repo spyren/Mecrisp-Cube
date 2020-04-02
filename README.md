@@ -38,7 +38,8 @@ I set the putty terminal configuration to
   * Local line editing: Auto
   
 ```forth
-Mecrisp-Stellaris 2.5.2 for STM32WB55 by Matthias Koch
+Mecrisp-Cube 1.0.0 for STM32WB55 (C) peter@spyr.ch
+Based on Mecrisp-Stellaris 2.5.2 by Matthias Koch
 23 5 / .<CR> 4  ok.
 : hello ." World" ;<CR>  ok.
 hello<CR> World ok.
@@ -113,6 +114,10 @@ Append ?ts=4 to the URL to change the tab-size.
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
+### v1.0.0 Initial Release
+* USART0 default terminal console, 115200 Baud, 20 KiB Rx buffer
+* USB-CDC secondary terminal console, type `cdc` to change console, back with `uart`.
+* 512 KiB Flash dictionary, 60 KiB RAM dictionary
 
 ## Authors
 
