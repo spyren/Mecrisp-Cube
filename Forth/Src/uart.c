@@ -185,6 +185,8 @@ int UART_getc(void) {
  *  @brief
  *      Reads a line from the UART Rx (serial in). Blocking until line is
  *      ready (newline character CR is read) or max length is reached.
+ *
+ *      Does not work in ISRs.
  *  @param[out]
  *  	str This is the pointer to an array of chars where the C string is stored
  *  @param[in]
@@ -233,13 +235,18 @@ int UART_RxReady(void) {
  *  @brief
  *      Writes a char to the UART Tx (serial out). Blocking until char can be
  *      written into the queue.
+ *
+ *      Does not work in ISRs.
  *  @param[in]
  *      c  char to write
  *  @return
  *      Return EOF on error, 0 on success.
  */
 int UART_putc(int c) {
-	if (osMessageQueuePut(UART_TxQueueId, &c, 0, osWaitForever) == osOK) {
+	osStatus_t status;
+
+	status = osMessageQueuePut(UART_TxQueueId, &c, 0, osWaitForever);
+	if (status == osOK) {
 		return 0;
 	} else {
 		Error_Handler();
@@ -252,6 +259,8 @@ int UART_putc(int c) {
  *  @brief
  *      Writes a line (string) to the UART Tx (serial out). Blocking until
  *      string can be written into the queue.
+ *
+ *      Does not work in ISRs.
  *  @param
  *      s  string to write
  *  @return

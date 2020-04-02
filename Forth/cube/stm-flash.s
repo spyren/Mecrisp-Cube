@@ -32,7 +32,7 @@
 	Wortbirne Flag_visible, "8flash!" @ Writes 8 Bytes at once into Flash.
 eightflashstore: @ ( x1 x2 addr -- ) x1 contains LSB of those 64 bits.
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos		// set Address
 	drop
 	movs	r2, tos		// set word2
@@ -40,7 +40,7 @@ eightflashstore: @ ( x1 x2 addr -- ) x1 contains LSB of those 64 bits.
 	movs	r1, tos		// set word1
 	drop
 	bl		FLASH_programDouble
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -48,11 +48,11 @@ eightflashstore: @ ( x1 x2 addr -- ) x1 contains LSB of those 64 bits.
 	@ Deletes one 4 KiB Flash page
 flashpageerase:
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos		// set Address
 	drop
 	bl		FLASH_erasePage
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 
@@ -64,7 +64,7 @@ flashpageerase:
 @ -----------------------------------------------------------------------------
 	ldr		r0, =FlashDictionaryAnfang
 eraseflash_intern:
-	cpsid	i
+//	cpsid	i
 	ldr		r1, =FlashDictionaryEnde
 	ldr		r2, =0xFFFF
 
@@ -73,14 +73,17 @@ eraseflash_intern:
 	beq		2f
 	pushda	r0
 	dup
-//	write	"Erase block at  "
-//	bl	hexdot
-//	writeln " from Flash"
+	write	"Erase block at  "
+	bl	hexdot
+	writeln " from Flash"
 	bl		flashpageerase
 2:	adds	r0, r0, #2
 	cmp		r0, r1
 	bne		1b
-//	writeln	"Finished. Reset !"
+	writeln	"Finished. Reset !"
+	pushdatos
+	ldr		tos, =500			// wait 500 ms to give some time for writeln
+	bl		rtos_osDelay
 	bl		Restart
 
 @ -----------------------------------------------------------------------------

@@ -35,44 +35,44 @@
 serial_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos
 	drop
 	bl		UART_putc
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key"
 serial_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		UART_getc
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit?"
 serial_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		UART_TxReady
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key?"
 serial_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		UART_RxReady
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -80,43 +80,43 @@ serial_qkey:
 cdc_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos
 	drop
 	bl		CDC_putc
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-key"
 cdc_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		CDC_getc
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-emit?"
 cdc_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		CDC_TxReady
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-key?"
 cdc_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		CDC_RxReady
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !

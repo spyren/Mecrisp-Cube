@@ -33,66 +33,66 @@
 set_led1:
 		@ ( u --  ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos
 	drop
 	bl		BSP_setLED1
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1@"
 get_led1:
 		@ (  -- u ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		BSP_getLED1
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2!"
 set_led2:
 		@ ( u --  ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos
 	drop
 	bl		BSP_setLED2
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2@"
 get_led2:
 		@ (  -- u ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		BSP_getLED2
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 	@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3!"
 set_led3:
 		@ ( u --  ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos
 	drop
 	bl		BSP_setLED3
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3@"
 get_led3:
 		@ (  -- u ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		BSP_getLED3
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -100,11 +100,11 @@ get_led3:
 get_switch1:
 		@ (  -- u ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		BSP_getSwitch1
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -112,21 +112,21 @@ get_switch1:
 get_switch2:
 		@ (  -- u ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		BSP_getSwitch2
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch3?"
 get_switch3:
 		@ (  -- u ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		BSP_getSwitch3
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 

@@ -121,7 +121,8 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 		uint64_t doubleword;
 	} data;
 
-	if (Address < 0x08040000) {
+	if (Address < 0x08040000 || Address > 0x080C0000) {
+		Error_Handler();
 		return -1;
 	}
 

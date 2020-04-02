@@ -32,11 +32,11 @@
 		@ ( u -- n ) waits for a time period specified in kernel ticks
 @ -----------------------------------------------------------------------------
 rtos_osDelay:
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos
 	bl		osDelay
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -51,7 +51,7 @@ rtos_osDelay:
 // osThreadId_t osThreadNew (osThreadFunc_t func, void *argument, const osThreadAttr_t *attr);
 @ -----------------------------------------------------------------------------
 rtos_osThreadNew:
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r2, tos		// set attr
 	drop
 	movs	r1, tos		// set argument
@@ -59,7 +59,7 @@ rtos_osThreadNew:
 	movs	r0, tos		// set func
 	bl		osThreadNew
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 
@@ -72,11 +72,11 @@ rtos_osThreadNew:
 @ -----------------------------------------------------------------------------
 .global		rtos_osThreadGetStackSpace
 rtos_osThreadGetStackSpace:
-	push	{lr}
+	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetStackSpace
 	movs	tos, r0		// return size
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -85,11 +85,11 @@ rtos_osThreadGetStackSpace:
 @ -----------------------------------------------------------------------------
 .global		rtos_osMainThreadID
 rtos_osMainThreadID:
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	ldr		r0, =MainHandle
 	ldr		tos, [r0]
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -99,11 +99,11 @@ rtos_osMainThreadID:
 @ -----------------------------------------------------------------------------
 .global		rtos_xPortGetFreeHeapSize
 rtos_xPortGetFreeHeapSize:
-	push	{lr}
+	push	{r0-r3, lr}
 	pushdatos
 	bl		xPortGetFreeHeapSize
 	movs	tos, r0
-	pop		{pc}
+	pop		{r0-r3, pc}
 
 
 @ -----------------------------------------------------------------------------
