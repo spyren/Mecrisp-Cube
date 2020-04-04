@@ -28,6 +28,18 @@
  */
 
 
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osNewDataStack"
+		@ (  --  ) Creates an new data stack for a Forth thread.
+// -----------------------------------------------------------------------------
+rtos_osNewDataStack:
+	push	{r0-r3, lr}
+	ldr		r0, =256
+	bl		pvPortMalloc
+	adds	r7, r0, #256
+	movs	tos, 42
+	pop		{r0-r3, pc}
+
 
 //  ==== Kernel Management Functions ====
 
@@ -166,6 +178,7 @@ rtos_osDelayUntil:
 
 		@ ( addr addr addr -- u ) Create a thread and add it to Active Threads.
 // Create a thread and add it to Active Threads.
+// The new thread needs its own data stack!
 // \param[in]     func          thread function.
 // \param[in]     argument      pointer that is passed to the thread function as start argument.
 // \param[in]     attr          thread attributes; NULL: default values.
@@ -337,7 +350,7 @@ rtos_osThreadExit:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osThreadTerminate"
-		@ (  --  ) Pass control to next thread that is in state READY.
+		@ ( u -- n ) Pass control to next thread that is in state READY.
 /// \param[in]     thread_id     thread ID obtained by \ref osThreadNew or \ref osThreadGetId.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t 	osThreadTerminate (osThreadId_t thread_id)
