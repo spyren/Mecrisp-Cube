@@ -28,10 +28,20 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "blinkThread"
+blinkThread:
+		@ (  --  )
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		BSP_blinkThread
+	pop		{r0-r3, pc}
+
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1!"
 set_led1:
-		@ ( u --  ) waits for a time period specified in kernel ticks
+		@ ( n --  ) set LED1 (blue)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos
@@ -42,7 +52,7 @@ set_led1:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1@"
 get_led1:
-		@ (  -- u ) waits for a time period specified in kernel ticks
+		@ (  -- n ) get LED1 (blue)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	pushdatos
@@ -53,7 +63,7 @@ get_led1:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2!"
 set_led2:
-		@ ( u --  ) waits for a time period specified in kernel ticks
+		@ ( n --  ) set LED2 (green)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos
@@ -64,7 +74,7 @@ set_led2:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2@"
 get_led2:
-		@ (  -- u ) waits for a time period specified in kernel ticks
+		@ (  -- n ) get LED2 (green)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	pushdatos
@@ -75,7 +85,7 @@ get_led2:
 	@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3!"
 set_led3:
-		@ ( u --  ) waits for a time period specified in kernel ticks
+		@ ( n --  ) set LED3 (red)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos
@@ -86,7 +96,7 @@ set_led3:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3@"
 get_led3:
-		@ (  -- u ) waits for a time period specified in kernel ticks
+		@ (  -- n ) get LED3 (red)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	pushdatos
@@ -98,7 +108,7 @@ get_led3:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
 get_switch1:
-		@ (  -- u ) waits for a time period specified in kernel ticks
+		@ (  -- n ) get switch1
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	pushdatos
@@ -110,7 +120,7 @@ get_switch1:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch2?"
 get_switch2:
-		@ (  -- u ) waits for a time period specified in kernel ticks
+		@ (  -- n ) get switch2
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	pushdatos
@@ -121,7 +131,7 @@ get_switch2:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch3?"
 get_switch3:
-		@ (  -- u ) waits for a time period specified in kernel ticks
+		@ (  -- n ) get switch3
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	pushdatos

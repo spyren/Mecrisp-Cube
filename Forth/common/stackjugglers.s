@@ -147,16 +147,17 @@ minusrot:
   asrs tos, r1, #2 @ Durch 4 teilen  Divide through 4 Bytes/element.
   bx lr
 
-@ -----------------------------------------------------------------------------
-  Wortbirne Flag_visible, "rdepth"
-@ -----------------------------------------------------------------------------
-	pushdatos
+// CMSIS-RTOS / FreeRTOS does not support osThreadGetStackSize
+//@ -----------------------------------------------------------------------------
+//  Wortbirne Flag_visible, "rdepth"
+//@ -----------------------------------------------------------------------------
+//	pushdatos
 //	ldr		r0, =MainHandle
 //	ldr		r0, [r0]
 //	bl		rtos_osThreadGetStackSpace
 //	asrs	tos, r0, #2 @ Durch 4 teilen  Divide through 4 Bytes/element.
-	ldr		tos, =16
-	bx lr
+//	ldr		tos, =16
+//	bx lr
 
 
 @------------------------------------------------------------------------------

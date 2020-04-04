@@ -70,6 +70,26 @@ void BSP_init(void) {
 }
 
 
+void BSP_blinkThread(void *argument) {
+/*
+	: blink-thread  ( -- )
+	  begin
+	    led1@ 0= led1!   \ toggle blue LED
+	    200 osDelay drop
+	    switch1?
+	  until
+	  0 led1!
+	;
+*/
+	while (! BSP_getSwitch1()) {
+		BSP_setLED1(!BSP_getLED1());
+		osDelay(200);
+	}
+	BSP_setLED1(FALSE);
+	osThreadExit();
+}
+
+
 /**
  *  @brief
  *	    Sets the LED1 (blue).
@@ -80,7 +100,7 @@ void BSP_init(void) {
  *      none
  *
  */
-void BSP_setLED1(unsigned state) {
+void BSP_setLED1(int state) {
 	if (state) {
 		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 	} else {
@@ -98,7 +118,7 @@ void BSP_setLED1(unsigned state) {
  */
 int BSP_getLED1(void) {
 	if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
-		return TRUE;
+		return -1;
 	} else {
 		return FALSE;
 	}
@@ -115,7 +135,7 @@ int BSP_getLED1(void) {
  *      none
  *
  */
-void BSP_setLED2(unsigned state) {
+void BSP_setLED2(int state) {
 	if (state) {
 		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
 	} else {
@@ -133,7 +153,7 @@ void BSP_setLED2(unsigned state) {
  */
 int BSP_getLED2(void) {
 	if (HAL_GPIO_ReadPin(LD2_GPIO_Port, LD2_Pin) == GPIO_PIN_SET) {
-		return TRUE;
+		return -1;
 	} else {
 		return FALSE;
 	}
@@ -149,7 +169,7 @@ int BSP_getLED2(void) {
  *      none
  *
  */
-void BSP_setLED3(unsigned state) {
+void BSP_setLED3(int state) {
 	if (state) {
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 	} else {
@@ -167,7 +187,7 @@ void BSP_setLED3(unsigned state) {
  */
 int BSP_getLED3(void) {
 	if (HAL_GPIO_ReadPin(LD3_GPIO_Port, LD3_Pin) == GPIO_PIN_SET) {
-		return TRUE;
+		return -1;
 	} else {
 		return FALSE;
 	}
@@ -184,7 +204,7 @@ int BSP_getLED3(void) {
  */
 int BSP_getSwitch1(void) {
 	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
-		return TRUE;
+		return -1;
 	} else {
 		return FALSE;
 	}
@@ -200,7 +220,7 @@ int BSP_getSwitch1(void) {
  */
 int BSP_getSwitch2(void) {
 	if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == GPIO_PIN_RESET) {
-		return TRUE;
+		return -1;
 	} else {
 		return FALSE;
 	}
@@ -216,7 +236,7 @@ int BSP_getSwitch2(void) {
  */
 int BSP_getSwitch3(void) {
 	if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin) == GPIO_PIN_RESET) {
-		return TRUE;
+		return -1;
 	} else {
 		return FALSE;
 	}
