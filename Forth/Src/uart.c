@@ -3,7 +3,7 @@
  *      Buffered serial communication.
  *
  *      Using interrupt for USART1 peripheral. Separate threads for transmitting
- *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion UART resource
+ *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion UART resource.
  *      CMSIS-RTOS queues as buffers.
  *      CR is end of line for Rx.
  *      LF is end of line for Tx.
@@ -188,7 +188,8 @@ int UART_getc(void) {
  *
  *      Does not work in ISRs.
  *  @param[out]
- *  	str This is the pointer to an array of chars where the C string is stored
+ *  	str This is the pointer to an array of chars where the C string is
+ *  		stored. C style string.
  *  @param[in]
  *      length  max. string length
  *  @return
@@ -262,7 +263,7 @@ int UART_putc(int c) {
  *
  *      Does not work in ISRs.
  *  @param
- *      s  string to write
+ *      s  string to write. C style string.
  *  @return
  *      Return EOF on error, 0 on success.
  */

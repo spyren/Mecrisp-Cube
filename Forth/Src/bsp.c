@@ -2,6 +2,7 @@
  *  @brief
  *      Board Support Package.
  *
+ *		Forth TRUE is -1, C TRUE is 1.
  *      LEDs and switches.
  *  @file
  *      bsp.c
@@ -70,6 +71,7 @@ void BSP_init(void) {
 }
 
 
+// only for testing purposes
 void BSP_blinkThread(void *argument) {
 /*
 	: blink-thread  ( -- )

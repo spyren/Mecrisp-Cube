@@ -34,9 +34,9 @@
 // -----------------------------------------------------------------------------
 rtos_osNewDataStack:
 	push	{r0-r3, lr}
-	ldr		r0, =256
+	ldr		r0, =256		// 64 levels should be more than enough
 	bl		pvPortMalloc
-	adds	r7, r0, #256
+	adds	r7, r0, #256	// stack grows down
 	movs	tos, 42
 	pop		{r0-r3, pc}
 
@@ -150,7 +150,7 @@ rtos_osKernelGetSysTimerFreq:
 // -----------------------------------------------------------------------------
 rtos_osDelay:
 	push	{r0-r3, lr}
-	movs	r0, tos
+	movs	r0, tos		// ticks
 	bl		osDelay
 	movs	tos, r0
 	pop		{r0-r3, pc}
@@ -164,7 +164,7 @@ rtos_osDelay:
 // -----------------------------------------------------------------------------
 rtos_osDelayUntil:
 	push	{r0-r3, lr}
-	movs	r0, tos
+	movs	r0, tos		// ticks
 	bl		osDelay
 	movs	tos, r0
 	pop		{r0-r3, pc}
@@ -187,11 +187,11 @@ rtos_osDelayUntil:
 // -----------------------------------------------------------------------------
 rtos_osThreadNew:
 	push	{r0-r3, lr}
-	movs	r2, tos		// set attr
+	movs	r2, tos		// attr
 	drop
-	movs	r1, tos		// set argument
+	movs	r1, tos		// argument
 	drop
-	movs	r0, tos		// set func
+	movs	r0, tos		// func
 	bl		osThreadNew
 	movs	tos, r0
 	pop		{r0-r3, pc}
@@ -207,7 +207,7 @@ rtos_osThreadGetId:
 	push	{r0-r3, lr}
 	pushdatos
 	bl		osThreadGetId
-	movs	tos, r0		// return Thread ID
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -223,7 +223,7 @@ rtos_osThreadGetState:
 	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetState
-	movs	tos, r0		// return state
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -241,7 +241,7 @@ rtos_osThreadSetPriority:
 	drop
 	movs	r0, tos		// set Thread ID
 	bl		osThreadSetPriority
-	movs	tos, r0		// return state
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -257,20 +257,22 @@ rtos_osThreadGetPriority:
 	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetPriority
-	movs	tos, r0		// return priority
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osThreadYield"
-		@ (  --  ) Pass control to next thread that is in state READY.
+		@ (  -- u ) Pass control to next thread that is in state READY.
 /// \return status code that indicates the execution status of the function.
 // osPriority_t 	osThreadGetPriority (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadYield
 rtos_osThreadYield:
 	push	{r0-r3, lr}
+	pushdatos
 	bl		osThreadYield
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -286,7 +288,7 @@ rtos_osThreadSuspend:
 	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadSuspend
-	movs	tos, r0		// return state
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -302,7 +304,7 @@ rtos_osThreadResume:
 	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadResume
-	movs	tos, r0		// return state
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -332,7 +334,7 @@ rtos_osThreadResume:
 //	push	{r0-r3, lr}
 //	movs	r0, tos		// set Thread ID
 //	bl		osThreadJoin
-//	movs	tos, r0		// return state
+//	movs	tos, r0
 //	pop		{r0-r3, pc}
 
 
@@ -360,7 +362,7 @@ rtos_osThreadTerminate:
 	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadTerminate
-	movs	tos, r0		// return state
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -375,7 +377,7 @@ rtos_osThreadTerminate:
 //	push	{r0-r3, lr}
 //	movs	r0, tos		// set Thread ID
 //	bl		osThreadGetStackSize
-//	movs	tos, r0		// return size
+//	movs	tos, r0
 //	pop		{r0-r3, pc}
 
 
@@ -391,7 +393,7 @@ rtos_osThreadGetStackSpace:
 	push	{r0-r3, lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetStackSpace
-	movs	tos, r0		// return space
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -406,7 +408,7 @@ rtos_osThreadGetCount:
 	push	{r0-r3, lr}
 	pushdatos
 	bl		osThreadGetCount
-	movs	tos, r0		// return space
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -425,7 +427,7 @@ rtos_osThreadEnumerate:
 	drop
 	movs	r0, tos		// addr thread array
 	bl		osThreadEnumerate
-	movs	tos, r0		// return number of enumerated threads
+	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -445,264 +447,513 @@ rtos_xPortGetFreeHeapSize:
 
 //  ==== Timer Management Functions ====
 
-/// Create and Initialize a timer.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osTimerNew"
+		@ ( addr u addr addr -- u ) Create and Initialize a timer.
 /// \param[in]     func          function pointer to callback function.
 /// \param[in]     type          \ref osTimerOnce for one-shot or \ref osTimerPeriodic for periodic behavior.
 /// \param[in]     argument      argument to the timer callback function.
 /// \param[in]     attr          timer attributes; NULL: default values.
 /// \return timer ID for reference by other functions or NULL in case of error.
 // osTimerId_t osTimerNew (osTimerFunc_t func, osTimerType_t type, void *argument, const osTimerAttr_t *attr);
+// -----------------------------------------------------------------------------
+rtos_osTimerNew:
+	push	{r0-r3, lr}
+	movs	r3, tos		// attr
+	drop
+	movs	r2, tos		// argument
+	drop
+	movs	r1, tos		// type
+	drop
+	movs	r0, tos		// func
+	bl		osTimerNew
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get name of a timer.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osTimerGetName"
+		@ ( u -- u ) Get name of a timer.
 /// \param[in]     timer_id      timer ID obtained by \ref osTimerNew.
 /// \return name as NULL terminated string.
 // const char *osTimerGetName (osTimerId_t timer_id);
+// -----------------------------------------------------------------------------
+rtos_osTimerGetName:
+	push	{r0-r3, lr}
+	movs	r0, tos		// timer_id
+	bl		osTimerGetName
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Start or restart a timer.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osTimerStart"
+		@ ( u u -- u ) Start or restart a timer.
 /// \param[in]     timer_id      timer ID obtained by \ref osTimerNew.
 /// \param[in]     ticks         \ref CMSIS_RTOS_TimeOutValue "time ticks" value of the timer.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osTimerStart (osTimerId_t timer_id, uint32_t ticks);
+// -----------------------------------------------------------------------------
+rtos_osTimerStart:
+	push	{r0-r3, lr}
+	movs	r1, tos		// ticks
+	drop
+	movs	r0, tos		// timer_id
+	bl		osTimerStart
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Stop a timer.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osTimerStop"
+		@ ( u -- u ) Stop a timer.
 /// \param[in]     timer_id      timer ID obtained by \ref osTimerNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osTimerStop (osTimerId_t timer_id);
+// -----------------------------------------------------------------------------
+rtos_osTimerStop:
+	movs	r0, tos		// timer_id
+	bl		osTimerStop
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Check if a timer is running.
+///
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osTimerIsRunning"
+		@ ( u -- u ) Check if a timer is running.
 /// \param[in]     timer_id      timer ID obtained by \ref osTimerNew.
 /// \return 0 not running, 1 running.
 // uint32_t osTimerIsRunning (osTimerId_t timer_id);
+// -----------------------------------------------------------------------------
+rtos_osTimerIsRunning:
+	push	{r0-r3, lr}
+	movs	r0, tos		// timer_id
+	bl		osTimerIsRunning
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Delete a timer.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osTimerDelete"
+		@ ( u -- u ) Delete a timer.
 /// \param[in]     timer_id      timer ID obtained by \ref osTimerNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osTimerDelete (osTimerId_t timer_id);
+// -----------------------------------------------------------------------------
+rtos_osTimerDelete:
+	push	{r0-r3, lr}
+	movs	r0, tos		// timer_id
+	bl		osTimerDelete
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
 
 //  ==== Event Flags Management Functions ====
 
-/// Create and Initialize an Event Flags object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osEventFlagsNew"
+		@ ( addr -- u ) Create and Initialize an Event Flags object.
 /// \param[in]     attr          event flags attributes; NULL: default values.
 /// \return event flags ID for reference by other functions or NULL in case of error.
 // osEventFlagsId_t osEventFlagsNew (const osEventFlagsAttr_t *attr);
+// -----------------------------------------------------------------------------
+rtos_osEventFlagsNew:
+	push	{r0-r3, lr}
+	movs	r0, tos		// attr
+	bl		osEventFlagsNew
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get name of an Event Flags object.
-/// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
-/// \return name as NULL terminated string.
-// const char *osEventFlagsGetName (osEventFlagsId_t ef_id);
-
-/// Set the specified Event Flags.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osEventFlagsSet"
+		@ ( u u -- u ) Set the specified Event Flags.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \param[in]     flags         specifies the flags that shall be set.
 /// \return event flags after setting or error code if highest bit set.
 // uint32_t osEventFlagsSet (osEventFlagsId_t ef_id, uint32_t flags);
+// -----------------------------------------------------------------------------
+rtos_osEventFlagsSet:
+	movs	r1, tos		// flags
+	drop
+	movs	r0, tos		// ef_id
+	bl		osEventFlagsSet
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Clear the specified Event Flags.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osEventFlagsClear"
+		@ ( addr u addr addr -- u ) Clear the specified Event Flags.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \param[in]     flags         specifies the flags that shall be cleared.
 /// \return event flags before clearing or error code if highest bit set.
 // uint32_t osEventFlagsClear (osEventFlagsId_t ef_id, uint32_t flags);
+// -----------------------------------------------------------------------------
+rtos_osEventFlagsClear:
+	push	{r0-r3, lr}
+	movs	r1, tos		// flags
+	drop
+	movs	r0, tos		// ef_id
+	bl		osEventFlagsClear
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get the current Event Flags.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osEventFlagsGet"
+		@ ( u -- u ) Get the current Event Flags.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \return current event flags.
 // uint32_t osEventFlagsGet (osEventFlagsId_t ef_id);
+// -----------------------------------------------------------------------------
+rtos_osEventFlagsGet:
+	push	{r0-r3, lr}
+	movs	r0, tos		// ef_id
+	bl		osEventFlagsGet
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Wait for one or more Event Flags to become signaled.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osEventFlagsWait"
+		@ ( addr u addr addr -- u ) Wait for one or more Event Flags to become signaled.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \param[in]     flags         specifies the flags to wait for.
 /// \param[in]     options       specifies flags options (osFlagsXxxx).
 /// \param[in]     timeout       \ref CMSIS_RTOS_TimeOutValue or 0 in case of no time-out.
 /// \return event flags before clearing or error code if highest bit set.
 // uint32_t osEventFlagsWait (osEventFlagsId_t ef_id, uint32_t flags, uint32_t options, uint32_t timeout);
+// -----------------------------------------------------------------------------
+rtos_osEventFlagsWait:
+	push	{r0-r3, lr}
+	movs	r3, tos		// timeout
+	drop
+	movs	r2, tos		// options
+	drop
+	movs	r1, tos		// flags
+	drop
+	movs	r0, tos		// ef_id
+	bl		osEventFlagsWait
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Delete an Event Flags object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osEventFlagsDelete"
+		@ ( u  -- u ) Delete an Event Flags object.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osEventFlagsDelete (osEventFlagsId_t ef_id);
+// -----------------------------------------------------------------------------
+rtos_osEventFlagsDelete:
+	push	{r0-r3, lr}
+	movs	r0, tos		// ef_id
+	bl		osEventFlagsDelete
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
 
 //  ==== Mutex Management Functions ====
 
-/// Create and Initialize a Mutex object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMutexNew"
+		@ ( addr -- u ) Create and Initialize a Mutex object.
 /// \param[in]     attr          mutex attributes; NULL: default values.
 /// \return mutex ID for reference by other functions or NULL in case of error.
 // osMutexId_t osMutexNew (const osMutexAttr_t *attr);
+// -----------------------------------------------------------------------------
+rtos_osMutexNew:
+	push	{r0-r3, lr}
+	movs	r0, tos		// attr
+	bl		osMutexNew
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get name of a Mutex object.
-/// \param[in]     mutex_id      mutex ID obtained by \ref osMutexNew.
-/// \return name as NULL terminated string.
-// const char *osMutexGetName (osMutexId_t mutex_id);
-
-/// Acquire a Mutex or timeout if it is locked.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMutexAcquire"
+		@ ( u u -- u ) Acquire a Mutex or timeout if it is locked.
 /// \param[in]     mutex_id      mutex ID obtained by \ref osMutexNew.
 /// \param[in]     timeout       \ref CMSIS_RTOS_TimeOutValue or 0 in case of no time-out.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMutexAcquire (osMutexId_t mutex_id, uint32_t timeout);
+// -----------------------------------------------------------------------------
+rtos_osMutexAcquire:
+	push	{r0-r3, lr}
+	movs	r1, tos		// timeout
+	drop
+	movs	r0, tos		// mutex_id
+	bl		osMutexAcquire
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Release a Mutex that was acquired by \ref osMutexAcquire.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMutexRelease"
+		@ ( u -- u ) Release a Mutex that was acquired by \ref osMutexAcquire.
 /// \param[in]     mutex_id      mutex ID obtained by \ref osMutexNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMutexRelease (osMutexId_t mutex_id);
+// -----------------------------------------------------------------------------
+rtos_osMutexRelease:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mutex_id
+	bl		osMutexRelease
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get Thread which owns a Mutex object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMutexGetOwner"
+		@ ( u -- u ) Get Thread which owns a Mutex object.
 /// \param[in]     mutex_id      mutex ID obtained by \ref osMutexNew.
 /// \return thread ID of owner thread or NULL when mutex was not acquired.
 // osThreadId_t osMutexGetOwner (osMutexId_t mutex_id);
+// -----------------------------------------------------------------------------
+rtos_osMutexGetOwner:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mutex_id
+	bl		osMutexGetOwner
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Delete a Mutex object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMutexDelete"
+		@ ( u -- u ) Delete a Mutex object.
 /// \param[in]     mutex_id      mutex ID obtained by \ref osMutexNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMutexDelete (osMutexId_t mutex_id);
+// -----------------------------------------------------------------------------
+rtos_osMutexDelete:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mutex_id
+	bl		osMutexDelete
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
 
 //  ==== Semaphore Management Functions ====
 
-/// Create and Initialize a Semaphore object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osSemaphoreNew"
+		@ ( u u addr -- u ) Create and Initialize a Semaphore object.
 /// \param[in]     max_count     maximum number of available tokens.
 /// \param[in]     initial_count initial number of available tokens.
 /// \param[in]     attr          semaphore attributes; NULL: default values.
 /// \return semaphore ID for reference by other functions or NULL in case of error.
 // osSemaphoreId_t osSemaphoreNew (uint32_t max_count, uint32_t initial_count, const osSemaphoreAttr_t *attr);
+// -----------------------------------------------------------------------------
+rtos_osSemaphoreNew:
+	push	{r0-r3, lr}
+	movs	r2, tos		// attr
+	drop
+	movs	r1, tos		// initial_count
+	drop
+	movs	r0, tos		// max_count
+	bl		osSemaphoreNew
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get name of a Semaphore object.
-/// \param[in]     semaphore_id  semaphore ID obtained by \ref osSemaphoreNew.
-/// \return name as NULL terminated string.
-// const char *osSemaphoreGetName (osSemaphoreId_t semaphore_id);
 
-/// Acquire a Semaphore token or timeout if no tokens are available.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osSemaphoreAcquire"
+		@ ( u u -- u ) Acquire a Semaphore token or timeout if no tokens are available.
 /// \param[in]     semaphore_id  semaphore ID obtained by \ref osSemaphoreNew.
 /// \param[in]     timeout       \ref CMSIS_RTOS_TimeOutValue or 0 in case of no time-out.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osSemaphoreAcquire (osSemaphoreId_t semaphore_id, uint32_t timeout);
+// -----------------------------------------------------------------------------
+rtos_osSemaphoreAcquire:
+	push	{r0-r3, lr}
+	movs	r1, tos		// timeout
+	drop
+	movs	r0, tos		// semaphore_id
+	bl		osSemaphoreAcquire
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Release a Semaphore token up to the initial maximum count.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osSemaphoreRelease"
+		@ ( u -- u ) Release a Semaphore token up to the initial maximum count.
 /// \param[in]     semaphore_id  semaphore ID obtained by \ref osSemaphoreNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osSemaphoreRelease (osSemaphoreId_t semaphore_id);
+// -----------------------------------------------------------------------------
+rtos_osSemaphoreRelease:
+	push	{r0-r3, lr}
+	movs	r0, tos		// semaphore_id
+	bl		osSemaphoreRelease
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get current Semaphore token count.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osSemaphoreGetCount"
+		@ ( u -- u ) Get current Semaphore token count.
 /// \param[in]     semaphore_id  semaphore ID obtained by \ref osSemaphoreNew.
 /// \return number of tokens available.
 // uint32_t osSemaphoreGetCount (osSemaphoreId_t semaphore_id);
+// -----------------------------------------------------------------------------
+rtos_osSemaphoreGetCount:
+	push	{r0-r3, lr}
+	movs	r0, tos		// semaphore_id
+	bl		osSemaphoreGetCount
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Delete a Semaphore object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osSemaphoreDelete"
+		@ ( u -- u ) Delete a Semaphore object.
 /// \param[in]     semaphore_id  semaphore ID obtained by \ref osSemaphoreNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osSemaphoreDelete (osSemaphoreId_t semaphore_id);
+// -----------------------------------------------------------------------------
+rtos_osSemaphoreDelete:
+	push	{r0-r3, lr}
+	movs	r0, tos		// semaphore_id
+	bl		osSemaphoreDelete
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-
-//  ==== Memory Pool Management Functions ====
-
-/// Create and Initialize a Memory Pool object.
-/// \param[in]     block_count   maximum number of memory blocks in memory pool.
-/// \param[in]     block_size    memory block size in bytes.
-/// \param[in]     attr          memory pool attributes; NULL: default values.
-/// \return memory pool ID for reference by other functions or NULL in case of error.
-// osMemoryPoolId_t osMemoryPoolNew (uint32_t block_count, uint32_t block_size, const osMemoryPoolAttr_t *attr);
-
-/// Get name of a Memory Pool object.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \return name as NULL terminated string.
-// const char *osMemoryPoolGetName (osMemoryPoolId_t mp_id);
-
-/// Allocate a memory block from a Memory Pool.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \param[in]     timeout       \ref CMSIS_RTOS_TimeOutValue or 0 in case of no time-out.
-/// \return address of the allocated memory block or NULL in case of no memory is available.
-// void *osMemoryPoolAlloc (osMemoryPoolId_t mp_id, uint32_t timeout);
-
-/// Return an allocated memory block back to a Memory Pool.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \param[in]     block         address of the allocated memory block to be returned to the memory pool.
-/// \return status code that indicates the execution status of the function.
-// osStatus_t osMemoryPoolFree (osMemoryPoolId_t mp_id, void *block);
-
-/// Get maximum number of memory blocks in a Memory Pool.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \return maximum number of memory blocks.
-// uint32_t osMemoryPoolGetCapacity (osMemoryPoolId_t mp_id);
-
-/// Get memory block size in a Memory Pool.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \return memory block size in bytes.
-// uint32_t osMemoryPoolGetBlockSize (osMemoryPoolId_t mp_id);
-
-/// Get number of memory blocks used in a Memory Pool.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \return number of memory blocks used.
-// uint32_t osMemoryPoolGetCount (osMemoryPoolId_t mp_id);
-
-/// Get number of memory blocks available in a Memory Pool.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \return number of memory blocks available.
-// uint32_t osMemoryPoolGetSpace (osMemoryPoolId_t mp_id);
-
-/// Delete a Memory Pool object.
-/// \param[in]     mp_id         memory pool ID obtained by \ref osMemoryPoolNew.
-/// \return status code that indicates the execution status of the function.
-// osStatus_t osMemoryPoolDelete (osMemoryPoolId_t mp_id);
 
 
 //  ==== Message Queue Management Functions ====
 
-/// Create and Initialize a Message Queue object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueNew"
+		@ ( u u addr -- u ) Create and Initialize a Message Queue object.
 /// \param[in]     msg_count     maximum number of messages in queue.
 /// \param[in]     msg_size      maximum message size in bytes.
 /// \param[in]     attr          message queue attributes; NULL: default values.
 /// \return message queue ID for reference by other functions or NULL in case of error.
 // osMessageQueueId_t osMessageQueueNew (uint32_t msg_count, uint32_t msg_size, const osMessageQueueAttr_t *attr);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueNew:
+	push	{r0-r3, lr}
+	movs	r2, tos		// attr
+	drop
+	movs	r1, tos		// msg_size
+	drop
+	movs	r0, tos		// msg_count
+	bl		osMessageQueueNew
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get name of a Message Queue object.
-/// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
-/// \return name as NULL terminated string.
-// const char *osMessageQueueGetName (osMessageQueueId_t mq_id);
-
-/// Put a Message into a Queue or timeout if Queue is full.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueuePut"
+		@ ( u addr addr u -- u ) Put a Message into a Queue or timeout if Queue is full.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \param[in]     msg_ptr       pointer to buffer with message to put into a queue.
 /// \param[in]     msg_prio      message priority.
 /// \param[in]     timeout       \ref CMSIS_RTOS_TimeOutValue or 0 in case of no time-out.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMessageQueuePut (osMessageQueueId_t mq_id, const void *msg_ptr, uint8_t msg_prio, uint32_t timeout);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueuePut:
+	push	{r0-r3, lr}
+	movs	r3, tos		// timeout
+	drop
+	movs	r2, tos		// msg_prio
+	drop
+	movs	r1, tos		// msg_ptr
+	drop
+	movs	r0, tos		// mq_id
+	bl		osMessageQueuePut
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get a Message from a Queue or timeout if Queue is empty.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueGet"
+		@ ( u addr addr u -- u ) Get a Message from a Queue or timeout if Queue is empty.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \param[out]    msg_ptr       pointer to buffer for message to get from a queue.
 /// \param[out]    msg_prio      pointer to buffer for message priority or NULL.
 /// \param[in]     timeout       \ref CMSIS_RTOS_TimeOutValue or 0 in case of no time-out.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMessageQueueGet (osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *msg_prio, uint32_t timeout);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueGet:
+	push	{r0-r3, lr}
+	movs	r3, tos		// timeout
+	drop
+	movs	r2, tos		// msg_prio
+	drop
+	movs	r1, tos		// msg_ptr
+	drop
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueGet
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get maximum number of messages in a Message Queue.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueGetCapacity"
+		@ ( u -- u ) Get maximum number of messages in a Message Queue.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \return maximum number of messages.
 // uint32_t osMessageQueueGetCapacity (osMessageQueueId_t mq_id);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueGetCapacity:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueGetCapacity
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get maximum message size in a Memory Pool.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueGetMsgSize"
+		@ ( u -- u ) Get maximum message size in a Memory Pool.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \return maximum message size in bytes.
 // uint32_t osMessageQueueGetMsgSize (osMessageQueueId_t mq_id);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueGetMsgSize:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueGetMsgSize
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get number of queued messages in a Message Queue.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueGetCount"
+		@ ( u -- u ) Get number of queued messages in a Message Queue.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \return number of queued messages.
 // uint32_t osMessageQueueGetCount (osMessageQueueId_t mq_id);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueGetCount:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueGetCount
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Get number of available slots for messages in a Message Queue.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueGetSpace"
+		@ ( u -- u ) Get number of available slots for messages in a Message Queue.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \return number of available slots for messages.
 // uint32_t osMessageQueueGetSpace (osMessageQueueId_t mq_id);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueGetSpace:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueGetSpace
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Reset a Message Queue to initial empty state.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueReset"
+		@ ( u -- u ) Reset a Message Queue to initial empty state.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMessageQueueReset (osMessageQueueId_t mq_id);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueReset:
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueReset
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
-/// Delete a Message Queue object.
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osMessageQueueDelete"
+		@ ( u -- u ) Delete a Message Queue object.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \return status code that indicates the execution status of the function.
 // osStatus_t osMessageQueueDelete (osMessageQueueId_t mq_id);
+// -----------------------------------------------------------------------------
+rtos_osMessageQueueDelete:
+	push	{r0-r3, lr}
+	movs	r0, tos		// mq_id
+	bl		osMessageQueueDelete
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
 // -----------------------------------------------------------------------------
