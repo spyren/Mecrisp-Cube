@@ -286,7 +286,7 @@ void BSP_setDigitalPort(int state) {
 	uint8_t i;
 	for (i=0; i<16; i++) {
 		HAL_GPIO_WritePin(PortPin_a[i].port, PortPin_a[i].pin, state & 0x01);
-		state = 1 >> state;
+		state = state >> 1;
 	}
 }
 
@@ -300,11 +300,11 @@ void BSP_setDigitalPort(int state) {
  *
  */
 int BSP_getDigitalPort(void) {
-	int8_t i;
+	int i;
 	int return_value = 0;
 	for (i=15; i>-1; i--) {
+		return_value = return_value << 1;
 		return_value |= HAL_GPIO_ReadPin(PortPin_a[i].port, PortPin_a[i].pin);
-		return_value = 1 >> return_value;
 	}
 	return return_value;
 }

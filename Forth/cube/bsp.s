@@ -142,13 +142,13 @@ get_switch3:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "digital!"
 set_digital:
-		@ ( n -- n ) Sets the digital output port (D0 .. D15).
+		@ ( n --  ) Sets the digital output port (D0 .. D15).
 // void BSP_setDigitalPort(int state);
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos		// state
-	bl		BSP_getDigitalPort
-	movs	tos, r0
+	drop
+	bl		BSP_setDigitalPort
 	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
