@@ -245,6 +245,105 @@ int BSP_getSwitch3(void) {
 }
 
 
+// digital port pins D0 to D15 (Arduino numbering)
+// ***********************************************
+
+typedef struct {
+	GPIO_TypeDef* port;
+	uint16_t pin;
+} PortPin_t;
+
+static const PortPin_t PortPin_a[16] = {
+		{ D0_GPIO_Port, D0_Pin } ,
+		{ D1_GPIO_Port, D1_Pin } ,
+		{ D2_GPIO_Port, D2_Pin } ,
+		{ D3_GPIO_Port, D3_Pin } ,
+		{ D4_GPIO_Port, D4_Pin } ,
+		{ D5_GPIO_Port, D5_Pin } ,
+		{ D6_GPIO_Port, D6_Pin } ,
+		{ D7_GPIO_Port, D7_Pin } ,
+		{ D8_GPIO_Port, D9_Pin } ,
+		{ D9_GPIO_Port, D9_Pin } ,
+		{ D10_GPIO_Port, D10_Pin } ,
+		{ D11_GPIO_Port, D11_Pin } ,
+		{ D12_GPIO_Port, D12_Pin } ,
+		{ D13_GPIO_Port, D13_Pin } ,
+		{ D14_GPIO_Port, D14_Pin } ,
+		{ D15_GPIO_Port, D15_Pin }
+};
+
+/**
+ *  @brief
+ *	    Sets the digital output port pins (D0 .. D15).
+ *
+ *	@param[in]
+ *      state    lower word sets the pins.
+ *  @return
+ *      none
+ *
+ */
+void BSP_setDigitalPort(int state) {
+	uint8_t i;
+	for (i=0; i<16; i++) {
+		HAL_GPIO_WritePin(PortPin_a[i].port, PortPin_a[i].pin, state & 0x01);
+		state = 1 >> state;
+	}
+}
+
+
+/**
+ *  @brief
+ *	    Gets the digital output port pins (D0 .. D15).
+ *
+ *  @return
+ *      state port pins
+ *
+ */
+int BSP_getDigitalPort(void) {
+	int8_t i;
+	int return_value = 0;
+	for (i=15; i>-1; i--) {
+		return_value |= HAL_GPIO_ReadPin(PortPin_a[i].port, PortPin_a[i].pin);
+		return_value = 1 >> return_value;
+	}
+	return return_value;
+}
+
+
+/**
+ *  @brief
+ *	    Sets the digital output port pin (D0 .. D15).
+ *
+ *	@param[in]
+ *      pin_number    0 to 15.
+ *	@param[in]
+ *      state         0/1
+ *  @return
+ *      none
+ *
+ */
+void BSP_setDigitalPin(int pin_number, int state) {
+	HAL_GPIO_WritePin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin, state);
+}
+
+
+/**
+ *  @brief
+ *	    Gets the digital output port pin (D0 .. D15).
+ *
+ *	@param[in]
+ *      pin_number    0 to 15.
+ *  @return
+ *      state         0/1
+ *
+ */
+int BSP_getDigitalPin(int pin_number) {
+	return HAL_GPIO_ReadPin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin);
+}
+
+
+// analog port pins A0 to A5 (Arduino numbering)
+// *********************************************
 
 // Private Functions
 // *****************

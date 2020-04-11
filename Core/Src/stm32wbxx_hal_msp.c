@@ -80,6 +80,9 @@ void HAL_MspInit(void)
   HAL_NVIC_SetPriority(FLASH_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(FLASH_IRQn);
 
+  HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
+  HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
+
   /* USER CODE BEGIN MspInit 1 */
 
   /* USER CODE END MspInit 1 */

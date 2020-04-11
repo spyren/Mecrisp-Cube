@@ -44,5 +44,9 @@ int BSP_getLED3(void);
 int BSP_getSwitch1(void);
 int BSP_getSwitch2(void);
 int BSP_getSwitch3(void);
+void BSP_setDigitalPort(int state);
+int BSP_getDigitalPort(void);
+void BSP_setDigitalPin(int pin_number, int state);
+int BSP_getDigitalPin(int pin_number);
 
 #endif /* INC_BSP_H_ */

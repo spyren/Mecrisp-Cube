@@ -21,6 +21,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
+#include "app_entry.h"
+#include "app_common.h"
 #include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -97,7 +99,7 @@ void Forth(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	osStatus_t status;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -129,7 +131,10 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  osKernelInitialize();
+  status = osKernelInitialize();
+  if (status != osOK) {
+	Error_Handler();
+  }
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -150,11 +155,12 @@ int main(void)
   /* Create the thread(s) */
   /* creation of Main */
   MainHandle = osThreadNew(MainThread, NULL, &Main_attributes);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
+  /* Init code for STM32_WPAN */
+  APPE_Init();
   /* Start scheduler */
   osKernelStart();
  
@@ -379,8 +385,8 @@ static void MX_RTC_Init(void)
   */
   hrtc.Instance = RTC;
   hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
-  hrtc.Init.AsynchPrediv = 127;
-  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.AsynchPrediv = CFG_RTC_ASYNCH_PRESCALER;
+  hrtc.Init.SynchPrediv = CFG_RTC_SYNCH_PRESCALER;
   hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
   hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
   hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
@@ -460,20 +466,61 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|LD1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, D7_Pin|D2_Pin|D4_Pin|D8_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, D15_Pin|D14_Pin|LD2_Pin|LD3_Pin 
+                          |LD1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, D1_Pin|D0_Pin|D10_Pin|D13_Pin 
+                          |D12_Pin|D11_Pin|D6_Pin|D9_Pin 
+                          |D3_Pin|D5_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : D7_Pin D2_Pin D4_Pin D8_Pin */
+  GPIO_InitStruct.Pin = D7_Pin|D2_Pin|D4_Pin|D8_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : D15_Pin D14_Pin LD2_Pin LD3_Pin 
+                           LD1_Pin */
+  GPIO_InitStruct.Pin = D15_Pin|D14_Pin|LD2_Pin|LD3_Pin 
+                          |LD1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : A0_Pin A1_Pin A5_Pin */
+  GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A5_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : A3_Pin A2_Pin */
+  GPIO_InitStruct.Pin = A3_Pin|A2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : D1_Pin D0_Pin D10_Pin D13_Pin 
+                           D12_Pin D11_Pin D6_Pin D9_Pin 
+                           D3_Pin D5_Pin */
+  GPIO_InitStruct.Pin = D1_Pin|D0_Pin|D10_Pin|D13_Pin 
+                          |D12_Pin|D11_Pin|D6_Pin|D9_Pin 
+                          |D3_Pin|D5_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : LD2_Pin LD3_Pin LD1_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin|LD3_Pin|LD1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : B2_Pin B3_Pin */
   GPIO_InitStruct.Pin = B2_Pin|B3_Pin;
@@ -509,6 +556,7 @@ void vApplicationMallocFailedHook(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN 5 */
+	BSP_init();
 	UART_init();
 	CDC_init();
 	FLASH_init();

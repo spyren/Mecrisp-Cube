@@ -139,4 +139,56 @@ get_switch3:
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "digital!"
+set_digital:
+		@ ( n -- n ) Sets the digital output port (D0 .. D15).
+// void BSP_setDigitalPort(int state);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// state
+	bl		BSP_getDigitalPort
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "digital@"
+get_digital:
+		@ (  -- n ) Gets the digital output port (D0 .. D15).
+// int BSP_getDigitalPort(void);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		BSP_getDigitalPort
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pin!"
+set_pin:
+		@ ( u a --  ) Sets the digital output port pin (D0 .. D15).
+// void BSP_setDigitalPin(int pin_number, int state);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// state
+	drop
+	bl		BSP_setDigitalPin
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pin@"
+get_pin:
+		@ ( a -- u ) Gets the digital output port pin (D0 .. D15).
+// int BSP_getDigitalPin(int pin_number);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	bl		BSP_getDigitalPin
+	movs	tos, r0
+	pop		{r0-r3, pc}
 
