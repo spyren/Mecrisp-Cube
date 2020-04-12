@@ -50,6 +50,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 CRC_HandleTypeDef hcrc;
 
 PKA_HandleTypeDef hpka;
@@ -80,6 +82,7 @@ static void MX_PKA_Init(void);
 static void MX_RF_Init(void);
 static void MX_RNG_Init(void);
 static void MX_RTC_Init(void);
+static void MX_ADC1_Init(void);
 void MainThread(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -99,7 +102,6 @@ void Forth(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	osStatus_t status;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -127,14 +129,12 @@ int main(void)
   MX_RNG_Init();
   MX_RTC_Init();
   MX_USB_Device_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   /* USER CODE END 2 */
 
   /* Init scheduler */
-  status = osKernelInitialize();
-  if (status != osOK) {
-	Error_Handler();
-  }
+  osKernelInitialize();
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -155,6 +155,7 @@ int main(void)
   /* Create the thread(s) */
   /* creation of Main */
   MainHandle = osThreadNew(MainThread, NULL, &Main_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -237,15 +238,17 @@ void SystemClock_Config(void)
   */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP
                               |RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_USB|RCC_PERIPHCLK_RNG;
+                              |RCC_PERIPHCLK_USB|RCC_PERIPHCLK_RNG
+                              |RCC_PERIPHCLK_ADC;
   PeriphClkInitStruct.PLLSAI1.PLLN = 24;
   PeriphClkInitStruct.PLLSAI1.PLLP = RCC_PLLP_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLQ = RCC_PLLQ_DIV2;
   PeriphClkInitStruct.PLLSAI1.PLLR = RCC_PLLR_DIV2;
-  PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_USBCLK;
+  PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_USBCLK|RCC_PLLSAI1_ADCCLK;
   PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLLSAI1;
   PeriphClkInitStruct.RngClockSelection = RCC_RNGCLKSOURCE_LSI;
+  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;
   PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSI;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSE;
@@ -260,6 +263,63 @@ void SystemClock_Config(void)
   /** Enable MSI Auto calibration 
   */
   HAL_RCCEx_EnableMSIPLLMode();
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+  /** Common config 
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.NbrOfDiscConversion = 1;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel 
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -493,14 +553,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : A0_Pin A1_Pin A5_Pin */
-  GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A5_Pin;
+  /*Configure GPIO pins : A0_Pin A1_Pin A5_Pin A3_Pin */
+  GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A5_Pin|A3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : A3_Pin A2_Pin */
-  GPIO_InitStruct.Pin = A3_Pin|A2_Pin;
+  /*Configure GPIO pins : A3A0_Pin A2_Pin */
+  GPIO_InitStruct.Pin = A3A0_Pin|A2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);

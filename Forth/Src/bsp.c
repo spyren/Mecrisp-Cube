@@ -4,6 +4,9 @@
  *
  *		Forth TRUE is -1, C TRUE is 1.
  *      LEDs and switches.
+ *      D0 to D15 digital port pins.
+ *      No timeout (osWaitForever) for mutex ->
+ *        could be problematic in real world applications.
  *  @file
  *      bsp.c
  *  @author

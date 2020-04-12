@@ -59,6 +59,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_FS;
+extern ADC_HandleTypeDef hadc1;
 extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim17;
 
@@ -177,6 +178,20 @@ void FLASH_IRQHandler(void)
   /* USER CODE BEGIN FLASH_IRQn 1 */
 
   /* USER CODE END FLASH_IRQn 1 */
+}
+
+/**
+  * @brief This function handles ADC1 global interrupt.
+  */
+void ADC1_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_IRQn 0 */
+
+  /* USER CODE END ADC1_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc1);
+  /* USER CODE BEGIN ADC1_IRQn 1 */
+
+  /* USER CODE END ADC1_IRQn 1 */
 }
 
 /**
