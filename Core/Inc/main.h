@@ -70,10 +70,10 @@ void Error_Handler(void);
 #define A1_GPIO_Port GPIOC
 #define A5_Pin GPIO_PIN_2
 #define A5_GPIO_Port GPIOC
-#define A3_Pin GPIO_PIN_3
-#define A3_GPIO_Port GPIOC
-#define A3A0_Pin GPIO_PIN_0
-#define A3A0_GPIO_Port GPIOA
+#define A4_Pin GPIO_PIN_3
+#define A4_GPIO_Port GPIOC
+#define A3_Pin GPIO_PIN_0
+#define A3_GPIO_Port GPIOA
 #define A2_Pin GPIO_PIN_1
 #define A2_GPIO_Port GPIOA
 #define D1_Pin GPIO_PIN_2
