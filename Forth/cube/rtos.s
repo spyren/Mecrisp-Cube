@@ -176,7 +176,7 @@ rtos_osDelayUntil:
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osThreadNew"
 
-		@ ( addr addr addr -- u ) Create a thread and add it to Active Threads.
+		@ ( a a a -- u ) Create a thread and add it to Active Threads.
 // Create a thread and add it to Active Threads.
 // The new thread needs its own data stack!
 // \param[in]     func          thread function.
@@ -414,7 +414,7 @@ rtos_osThreadGetCount:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osThreadEnumerate"
-		@ ( addr u  -- u ) Enumerate active threads.
+		@ ( a u  -- u ) Enumerate active threads.
 /// \param[out]    thread_array  pointer to array for retrieving thread IDs.
 /// \param[in]     array_items   maximum number of items in array for retrieving thread IDs.
 /// \return number of enumerated threads.
@@ -449,7 +449,7 @@ rtos_xPortGetFreeHeapSize:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osTimerNew"
-		@ ( addr u addr addr -- u ) Create and Initialize a timer.
+		@ ( a u a a -- u ) Create and Initialize a timer.
 /// \param[in]     func          function pointer to callback function.
 /// \param[in]     type          \ref osTimerOnce for one-shot or \ref osTimerPeriodic for periodic behavior.
 /// \param[in]     argument      argument to the timer callback function.
@@ -548,7 +548,7 @@ rtos_osTimerDelete:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsNew"
-		@ ( addr -- u ) Create and Initialize an Event Flags object.
+		@ ( a -- u ) Create and Initialize an Event Flags object.
 /// \param[in]     attr          event flags attributes; NULL: default values.
 /// \return event flags ID for reference by other functions or NULL in case of error.
 // osEventFlagsId_t osEventFlagsNew (const osEventFlagsAttr_t *attr);
@@ -578,7 +578,7 @@ rtos_osEventFlagsSet:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsClear"
-		@ ( addr u addr addr -- u ) Clear the specified Event Flags.
+		@ ( a u a a -- u ) Clear the specified Event Flags.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \param[in]     flags         specifies the flags that shall be cleared.
 /// \return event flags before clearing or error code if highest bit set.
@@ -609,7 +609,7 @@ rtos_osEventFlagsGet:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsWait"
-		@ ( addr u addr addr -- u ) Wait for one or more Event Flags to become signaled.
+		@ ( a u a a -- u ) Wait for one or more Event Flags to become signaled.
 /// \param[in]     ef_id         event flags ID obtained by \ref osEventFlagsNew.
 /// \param[in]     flags         specifies the flags to wait for.
 /// \param[in]     options       specifies flags options (osFlagsXxxx).
@@ -649,7 +649,7 @@ rtos_osEventFlagsDelete:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMutexNew"
-		@ ( addr -- u ) Create and Initialize a Mutex object.
+		@ ( a -- u ) Create and Initialize a Mutex object.
 /// \param[in]     attr          mutex attributes; NULL: default values.
 /// \return mutex ID for reference by other functions or NULL in case of error.
 // osMutexId_t osMutexNew (const osMutexAttr_t *attr);
@@ -725,7 +725,7 @@ rtos_osMutexDelete:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osSemaphoreNew"
-		@ ( u u addr -- u ) Create and Initialize a Semaphore object.
+		@ ( u u a -- u ) Create and Initialize a Semaphore object.
 /// \param[in]     max_count     maximum number of available tokens.
 /// \param[in]     initial_count initial number of available tokens.
 /// \param[in]     attr          semaphore attributes; NULL: default values.
@@ -809,7 +809,7 @@ rtos_osSemaphoreDelete:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueNew"
-		@ ( u u addr -- u ) Create and Initialize a Message Queue object.
+		@ ( u u a -- u ) Create and Initialize a Message Queue object.
 /// \param[in]     msg_count     maximum number of messages in queue.
 /// \param[in]     msg_size      maximum message size in bytes.
 /// \param[in]     attr          message queue attributes; NULL: default values.
@@ -829,7 +829,7 @@ rtos_osMessageQueueNew:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueuePut"
-		@ ( u addr addr u -- u ) Put a Message into a Queue or timeout if Queue is full.
+		@ ( u a a u -- u ) Put a Message into a Queue or timeout if Queue is full.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \param[in]     msg_ptr       pointer to buffer with message to put into a queue.
 /// \param[in]     msg_prio      message priority.
@@ -852,7 +852,7 @@ rtos_osMessageQueuePut:
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueGet"
-		@ ( u addr addr u -- u ) Get a Message from a Queue or timeout if Queue is empty.
+		@ ( u a a u -- u ) Get a Message from a Queue or timeout if Queue is empty.
 /// \param[in]     mq_id         message queue ID obtained by \ref osMessageQueueNew.
 /// \param[out]    msg_ptr       pointer to buffer for message to get from a queue.
 /// \param[out]    msg_prio      pointer to buffer for message priority or NULL.

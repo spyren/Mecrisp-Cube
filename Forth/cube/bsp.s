@@ -140,8 +140,8 @@ get_switch3:
 	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "digital!"
-set_digital:
+		Wortbirne Flag_visible, "dport!"
+set_dport:
 		@ ( n --  ) Sets the digital output port (D0 .. D15).
 // void BSP_setDigitalPort(int state);
 @ -----------------------------------------------------------------------------
@@ -152,8 +152,8 @@ set_digital:
 	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "digital@"
-get_digital:
+		Wortbirne Flag_visible, "dport@"
+get_dport:
 		@ (  -- n ) Gets the digital output port (D0 .. D15).
 // int BSP_getDigitalPort(void);
 @ -----------------------------------------------------------------------------
@@ -165,8 +165,8 @@ get_digital:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "pin!"
-set_pin:
+		Wortbirne Flag_visible, "dpin!"
+set_dpin:
 		@ ( u a --  ) Sets the digital output port pin (D0 .. D15).
 // void BSP_setDigitalPin(int pin_number, int state);
 @ -----------------------------------------------------------------------------
@@ -181,8 +181,8 @@ set_pin:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "pin@"
-get_pin:
+		Wortbirne Flag_visible, "dpin@"
+get_dpin:
 		@ ( a -- u ) Gets the digital output port pin (D0 .. D15).
 // int BSP_getDigitalPin(int pin_number);
 @ -----------------------------------------------------------------------------

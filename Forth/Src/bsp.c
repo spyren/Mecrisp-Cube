@@ -53,6 +53,13 @@
 // RTOS resources
 // **************
 
+static osMutexId_t DigitalPort_MutexID;
+static const osMutexAttr_t DigitalPort_MutexAttr = {
+		NULL,				// no name required
+		osMutexPrioInherit,	// attr_bits
+		NULL,				// memory for control block
+		0U					// size for control block
+};
 
 
 // Private Variables
@@ -68,6 +75,10 @@
  *      None
  */
 void BSP_init(void) {
+	DigitalPort_MutexID = osMutexNew(&DigitalPort_MutexAttr);
+	if (DigitalPort_MutexID == NULL) {
+		Error_Handler();
+	}
 }
 
 
@@ -103,11 +114,16 @@ void BSP_blinkThread(void *argument) {
  *
  */
 void BSP_setLED1(int state) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (state) {
 		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
 }
 
 
@@ -119,11 +135,19 @@ void BSP_setLED1(int state) {
  *      FALSE for dark LED, TRUE for bright LED.
  */
 int BSP_getLED1(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
-		return -1;
+		return_value = -1;
 	} else {
-		return FALSE;
+		return_value = FALSE;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 
@@ -138,11 +162,16 @@ int BSP_getLED1(void) {
  *
  */
 void BSP_setLED2(int state) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (state) {
 		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
 }
 
 
@@ -154,11 +183,19 @@ void BSP_setLED2(int state) {
  *      FALSE for dark LED, TRUE for bright LED.
  */
 int BSP_getLED2(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (HAL_GPIO_ReadPin(LD2_GPIO_Port, LD2_Pin) == GPIO_PIN_SET) {
-		return -1;
+		return_value = -1;
 	} else {
-		return FALSE;
+		return_value = FALSE;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 /**
@@ -172,11 +209,16 @@ int BSP_getLED2(void) {
  *
  */
 void BSP_setLED3(int state) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (state) {
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
 }
 
 
@@ -188,11 +230,19 @@ void BSP_setLED3(int state) {
  *      FALSE for dark LED, TRUE for bright LED.
  */
 int BSP_getLED3(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (HAL_GPIO_ReadPin(LD3_GPIO_Port, LD3_Pin) == GPIO_PIN_SET) {
-		return -1;
+		return_value = -1;
 	} else {
-		return FALSE;
+		return_value = FALSE;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 
@@ -205,11 +255,19 @@ int BSP_getLED3(void) {
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
 int BSP_getSwitch1(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
-		return -1;
+		return_value = -1;
 	} else {
-		return FALSE;
+		return_value = FALSE;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 /**
@@ -221,11 +279,19 @@ int BSP_getSwitch1(void) {
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
 int BSP_getSwitch2(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == GPIO_PIN_RESET) {
-		return -1;
+		return_value = -1;
 	} else {
-		return FALSE;
+		return_value = FALSE;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 /**
@@ -237,11 +303,19 @@ int BSP_getSwitch2(void) {
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
 int BSP_getSwitch3(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin) == GPIO_PIN_RESET) {
-		return -1;
+		return_value =  -1;
 	} else {
-		return FALSE;
+		return_value = FALSE;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 
@@ -284,10 +358,15 @@ static const PortPin_t PortPin_a[16] = {
  */
 void BSP_setDigitalPort(int state) {
 	uint8_t i;
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	for (i=0; i<16; i++) {
 		HAL_GPIO_WritePin(PortPin_a[i].port, PortPin_a[i].pin, state & 0x01);
 		state = state >> 1;
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
 }
 
 
@@ -302,10 +381,15 @@ void BSP_setDigitalPort(int state) {
 int BSP_getDigitalPort(void) {
 	int i;
 	int return_value = 0;
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	for (i=15; i>-1; i--) {
 		return_value = return_value << 1;
 		return_value |= HAL_GPIO_ReadPin(PortPin_a[i].port, PortPin_a[i].pin);
 	}
+
+	osMutexRelease(DigitalPort_MutexID);
 	return return_value;
 }
 
@@ -323,7 +407,12 @@ int BSP_getDigitalPort(void) {
  *
  */
 void BSP_setDigitalPin(int pin_number, int state) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 	HAL_GPIO_WritePin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin, state);
+
+	osMutexRelease(DigitalPort_MutexID);
 }
 
 
@@ -338,7 +427,13 @@ void BSP_setDigitalPin(int pin_number, int state) {
  *
  */
 int BSP_getDigitalPin(int pin_number) {
-	return HAL_GPIO_ReadPin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin);
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	int return_value = HAL_GPIO_ReadPin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin);
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
 
 
