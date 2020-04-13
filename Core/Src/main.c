@@ -130,10 +130,13 @@ int main(void)
   MX_RTC_Init();
   MX_USB_Device_Init();
   MX_ADC1_Init();
-//  swo_write("Hallo Velo\n", 11);
-  printf("Hallo Velo\n");
-//  PRINT_MESG_DBG("Hello again\n");
+
   /* USER CODE BEGIN 2 */
+#if CFG_DEBUGGER_SUPPORTED == 1
+  // test for SWO debug trace
+  printf("Hallo Velo\n");
+#endif
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
