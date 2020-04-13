@@ -64,9 +64,22 @@ static const osMutexAttr_t DigitalPort_MutexAttr = {
 		0U					// size for control block
 };
 
+static osMutexId_t Adc_MutexID;
+static const osMutexAttr_t Adc_MutexAttr = {
+		NULL,				// no name required
+		osMutexPrioInherit,	// attr_bits
+		NULL,				// memory for control block
+		0U					// size for control block
+};
+
+static osSemaphoreId_t Adc_SemaphoreID;
+
 
 // Private Variables
 // *****************
+ADC_ChannelConfTypeDef sConfig = {0};
+extern ADC_HandleTypeDef hadc1;
+
 
 // Public Functions
 // ****************
@@ -82,6 +95,26 @@ void BSP_init(void) {
 	if (DigitalPort_MutexID == NULL) {
 		Error_Handler();
 	}
+	Adc_MutexID = osMutexNew(&Adc_MutexAttr);
+	if (Adc_MutexID == NULL) {
+		Error_Handler();
+	}
+	Adc_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (Adc_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+
+	// Configure Regular Channel
+	sConfig.Channel = ADC_CHANNEL_1;
+	sConfig.Rank = ADC_REGULAR_RANK_1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SingleDiff = ADC_SINGLE_ENDED;
+	sConfig.OffsetNumber = ADC_OFFSET_NONE;
+	sConfig.Offset = 0;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
 }
 
 
@@ -421,7 +454,7 @@ void BSP_setDigitalPin(int pin_number, int state) {
 
 /**
  *  @brief
- *	    Gets the digital output port pin (D0 .. D15).
+ *	    Gets the digital input port pin (D0 .. D15).
  *
  *	@param[in]
  *      pin_number    0 to 15.
@@ -442,7 +475,86 @@ int BSP_getDigitalPin(int pin_number) {
 
 // analog port pins A0 to A5 (Arduino numbering)
 // *********************************************
+static const uint32_t AnalogPortPin_a[6] = {
+		ADC_CHANNEL_1, // A0 PC0
+		ADC_CHANNEL_2, // A1 PC1
+		ADC_CHANNEL_6, // A2 PA1
+		ADC_CHANNEL_5, // A3 PA0
+		ADC_CHANNEL_4, // A4 PC3
+		ADC_CHANNEL_3   // A5 PC2
+};
+
+/**
+ *  @brief
+ *	    Gets the analog input port pin (A0 .. A5) ADC value.
+ *
+ *	@param[in]
+ *      pin_number    0 to 5.
+ *  @return
+ *      12 bit ADC value *
+ */
+int BSP_getAnalogPin(int pin_number) {
+	int return_value;
+	HAL_StatusTypeDef status;
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = AnalogPortPin_a[pin_number];
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+
+	return_value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+	return return_value;
+}
+
 
 // Private Functions
 // *****************
+
+// Callbacks
+// *********
+
+/**
+  * @brief  Conversion complete callback in non-blocking mode.
+  * @param hadc ADC handle
+  * @retval None
+  */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hadc);
+
+	osSemaphoreRelease(Adc_SemaphoreID);
+}
+
+
+/**
+  * @brief  ADC error callback in non-blocking mode
+  *         (ADC conversion with interruption or transfer by DMA).
+  * @note   In case of error due to overrun when using ADC with DMA transfer
+  *         (HAL ADC handle parameter "ErrorCode" to state "HAL_ADC_ERROR_OVR"):
+  *         - Reinitialize the DMA using function "HAL_ADC_Stop_DMA()".
+  *         - If needed, restart a new ADC conversion using function
+  *           "HAL_ADC_Start_DMA()"
+  *           (this function is also clearing overrun flag)
+  * @param hadc ADC handle
+  * @retval None
+  */
+void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc) {
+	/* Prevent unused argument(s) compilation warning */
+	UNUSED(hadc);
+
+	Error_Handler();
+	osSemaphoreRelease(Adc_SemaphoreID);
+}
 

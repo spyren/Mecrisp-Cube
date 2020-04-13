@@ -154,7 +154,7 @@ set_dport:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dport@"
 get_dport:
-		@ (  -- n ) Gets the digital output port (D0 .. D15).
+		@ (  -- n ) Gets the digital input port (D0 .. D15).
 // int BSP_getDigitalPort(void);
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -183,12 +183,25 @@ set_dpin:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dpin@"
 get_dpin:
-		@ ( a -- u ) Gets the digital output port pin (D0 .. D15).
+		@ ( a -- u ) Gets the digital input port pin (D0 .. D15).
 // int BSP_getDigitalPin(int pin_number);
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos		// pin_number
 	bl		BSP_getDigitalPin
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "apin@"
+get_apin:
+		@ ( a -- u ) Gets the analog input port pin (A0 .. A5).
+// int BSP_getAnalogPin(int pin_number)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	bl		BSP_getAnalogPin
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
