@@ -130,7 +130,6 @@ int main(void)
   MX_RTC_Init();
   MX_USB_Device_Init();
   MX_ADC1_Init();
-
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
