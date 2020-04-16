@@ -35,6 +35,7 @@
 #include "otp.h"
 #include "dis_app.h"
 #include "hrs_app.h"
+#include "crs_app.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -245,6 +246,7 @@ uint8_t  manuf_data[14] = {
 };
 
 /* USER CODE BEGIN PV */
+static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
 
@@ -377,6 +379,11 @@ void APP_BLE_Init( void )
   HRSAPP_Init();
 
   /**
+   * Initialize CRS (Cable Replacement Server) Application
+   */
+  CRSAPP_Init();
+
+  /**
    * Create timer to handle the connection state machine
    */
 
@@ -388,6 +395,8 @@ void APP_BLE_Init( void )
   BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
   Add_Advertisment_Service_UUID(HEART_RATE_SERVICE_UUID);
+//  Add_Advertisment_Service_UUID(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
   AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
@@ -574,7 +583,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           break; /* EVT_BLUE_GAP_KEY_PRESS_NOTIFICATION */
 
        case (EVT_BLUE_GAP_NUMERIC_COMPARISON_VALUE):
-          APP_DBG_MSG("numeric_value = %d\n",
+          APP_DBG_MSG("numeric_value = %u\n",
                       ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
 
           APP_DBG_MSG("Hex_value = %x\n",

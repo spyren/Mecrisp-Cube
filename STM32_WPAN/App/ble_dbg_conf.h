@@ -28,6 +28,7 @@
 #define BLE_DBG_APP_EN             1
 #define BLE_DBG_DIS_EN             1
 #define BLE_DBG_HRS_EN             1
+#define BLE_DBG_CRS_STM_EN         1
 #define BLE_DBG_SVCCTL_EN          1
 #define BLE_DBG_BLS_EN             0
 #define BLE_DBG_HTS_EN             0
@@ -192,6 +193,12 @@
 #else
 #define BLE_DBG_DTS_MSG             PRINT_NO_MESG
 #define BLE_DBG_DTS_BUF             PRINT_NO_MESG
+#endif
+
+#if ( BLE_DBG_CRS_STM_EN != 0 )
+#define BLE_DBG_CRS_STM_MSG         PRINT_MESG_DBG
+#else
+#define BLE_DBG_CRS_STM_MSG         PRINT_NO_MESG
 #endif
 
 #endif /*__BLE_DBG_CONF_H */

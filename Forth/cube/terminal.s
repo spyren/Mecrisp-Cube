@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Interface to the buffered terminal (UART, USB-CDC) functions.
+ *      Interface to the buffered terminal (UART, USB-CDC, BLE CRS) functions.
  *
  *  @file
  *      terminal.s
@@ -116,6 +116,50 @@ cdc_qkey:
 	push	{r0-r3, lr}
 	pushdatos
 	bl		CDC_RxReady
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "crs-emit"
+crs_emit:
+        @ ( c -- ) Emit one character
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos
+	drop
+	bl		CRSAPP_putc
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "crs-key"
+crs_key:
+        @ ( -- c ) Receive one character
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		CRSAPP_getc
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "crs-emit?"
+crs_qemit:
+        @ ( -- ? ) Ready to send a character ?
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		CRSAPP_TxReady
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "crs-key?"
+crs_qkey:
+        @ ( -- ? ) Is there a key press ?
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		CRSAPP_RxReady
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
