@@ -167,6 +167,27 @@ cdc_terminal:
 	str		r1, [r0]
 	bx		lr
 
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "crs" @ ( -- )
+@------------------------------------------------------------------------------
+crs_terminal:
+	ldr		r1, =crs_emit
+	ldr		r0, =hook_emit
+	str		r1, [r0]
+
+	ldr		r1, =crs_qemit
+	ldr		r0, =hook_qemit
+	str		r1, [r0]
+
+	ldr		r1, =crs_key
+	ldr		r0, =hook_key
+	str		r1, [r0]
+
+	ldr		r1, =crs_qkey
+	ldr		r0, =hook_qkey
+	str		r1, [r0]
+	bx		lr
+
 
 @------------------------------------------------------------------------------
 hook_intern:
