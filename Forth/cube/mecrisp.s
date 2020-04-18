@@ -255,7 +255,7 @@ Forth:
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"
 
-	welcome " by Matthias Koch "
+	welcome " by Matthias Koch. "
 
 	@ Ready to fly !
 .include "boot.s"
