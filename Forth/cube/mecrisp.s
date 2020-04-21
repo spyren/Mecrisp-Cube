@@ -60,10 +60,14 @@
 .equ	flash8bytesblockwrite, 1
 @.equ	charkommaavailable, 1  Not available.
 
-// set the default terminal
-//.equ	CDC_TERMINAL,	1
-.equ	UART_TERMINAL,	1
-//.equ	BLE_TERMINAL,	1
+// console redirection
+.equ	UART_TERMINAL, 		1
+.equ	CDC_TERMINAL, 		2
+.equ	CRS_TERMINAL,		3
+
+.equ	DEFAULT_TERMINAL, UART_TERMINAL
+
+.equ	TERMINAL_AUTO,		1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions

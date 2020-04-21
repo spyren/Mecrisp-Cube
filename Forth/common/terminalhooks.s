@@ -25,12 +25,18 @@
 	pushdatos
 	ldr 	tos, =hook_emit
 	bx lr
-.ifdef	UART_TERMINAL
+.if	DEFAULT_TERMINAL == UART_TERMINAL
 	.word	serial_emit		// Serial (UART) for terminal
-.endif
-.ifdef	CDC_TERMINAL
+.else
+.if DEFAULT_TERMINAL == CDC_TERMINAL
 	.word	cdc_emit		// USB CDC for terminal
+.else
+.if	DEFAULT_TERMINAL == CRS_TERMINAL
+	.word	crs_emit		// BLE CRS for terminal
 .endif
+.endif
+.endif
+
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key" @ ( -- addr )
@@ -39,11 +45,16 @@
 	pushdatos
 	ldr		tos, =hook_key
 	bx		lr
-.ifdef	UART_TERMINAL
+.if	DEFAULT_TERMINAL == UART_TERMINAL
 	.word	serial_key		// Serial (UART) for terminal
-.endif
-.ifdef	CDC_TERMINAL
+.else
+.if DEFAULT_TERMINAL == CDC_TERMINAL
 	.word	cdc_key			// USB CDC for terminal
+.else
+.if	DEFAULT_TERMINAL == CRS_TERMINAL
+	.word	crs_key			// BLE CRS for terminal
+.endif
+.endif
 .endif
 
 @------------------------------------------------------------------------------
@@ -53,11 +64,16 @@
 	pushdatos
 	ldr		tos, =hook_qemit
 	bx		lr
-.ifdef	UART_TERMINAL
-	.word	serial_qemit	// Serial (UART) for terminal
-.endif
-.ifdef	CDC_TERMINAL
+.if	DEFAULT_TERMINAL == UART_TERMINAL
+	.word	serial_qemit		// Serial (UART) for terminal
+.else
+.if DEFAULT_TERMINAL == CDC_TERMINAL
 	.word	cdc_qemit		// USB CDC for terminal
+.else
+.if	DEFAULT_TERMINAL == CRS_TERMINAL
+	.word	crs_qemit		// BLE CRS for terminal
+.endif
+.endif
 .endif
 
 @------------------------------------------------------------------------------
@@ -67,11 +83,16 @@
 	pushdatos
 	ldr		tos, =hook_qkey
 	bx		lr
-.ifdef	UART_TERMINAL
+.if	DEFAULT_TERMINAL == UART_TERMINAL
 	.word	serial_qkey		// Serial (UART) for terminal
-.endif
-.ifdef	CDC_TERMINAL
+.else
+.if DEFAULT_TERMINAL == CDC_TERMINAL
 	.word	cdc_qkey		// USB CDC for terminal
+.else
+.if	DEFAULT_TERMINAL == CRS_TERMINAL
+	.word	crs_qkey		// BLE CRS for terminal
+.endif
+.endif
 .endif
 
 @------------------------------------------------------------------------------
