@@ -149,6 +149,7 @@ pause:
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "uart" @ ( -- )
 @------------------------------------------------------------------------------
+.global		uart_terminal
 uart_terminal:
 	ldr		r1, =serial_emit
 	ldr		r0, =hook_emit
@@ -170,6 +171,7 @@ uart_terminal:
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "cdc" @ ( -- )
 @------------------------------------------------------------------------------
+.global		cdc_terminal
 cdc_terminal:
 	ldr		r1, =cdc_emit
 	ldr		r0, =hook_emit
@@ -191,6 +193,7 @@ cdc_terminal:
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "crs" @ ( -- )
 @------------------------------------------------------------------------------
+.global		crs_terminal
 crs_terminal:
 	ldr		r1, =crs_emit
 	ldr		r0, =hook_emit
