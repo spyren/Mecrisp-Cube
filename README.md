@@ -22,10 +22,10 @@ machine (STM32 Nucleo board) for development and testing purposes.
   * minicom, microcom, screen - Linux
   * Use the built in Eclipse console (but no LF)
  
-Flash the Mecrisp-Cube [binary](Release/minimal.bin) to the Nucleo Board.
+Flash the Mecrisp-Cube [binary](Release/MecrispCube.bin) to the Nucleo Board.
 
 1. Connect the Nucleo Board USB ST-LINK to the PC
-2. Copy [binary](Release/minimal.bin) (`minimal.bin`) to the USB mass 
+2. Copy [binary](Release/MecrispCube.bin) (`MecrispCube.bin`) to the USB mass 
    storage NODE_WB55RG
 
 Start the terminal emulator application on the PC. 
@@ -76,7 +76,7 @@ Copy project into workspace
 Browse to Mecrisp-Cube directory
 ```
 
-Generate code from the STM32CubeMX `minimal.ioc` file:
+Generate code from the STM32CubeMX `MecrispCube.ioc` file:
 
 ```
 Project -> Generate Code 
