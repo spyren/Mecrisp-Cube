@@ -206,8 +206,8 @@ static void cdc_thread(void *argument) {
 	// Infinite loop
 	for(;;) {
 		// blocked till USB_CDC is connected
-		osEventFlagsWait(CDC_EvtFlagsID, CDC_CONNECTED,
-				osFlagsWaitAny | osFlagsNoClear, osWaitForever);
+//		osEventFlagsWait(CDC_EvtFlagsID, CDC_CONNECTED,
+//				osFlagsWaitAny | osFlagsNoClear, osWaitForever);
 		// blocked till a character is in the Tx queue
 		if (osMessageQueueGet(CDC_TxQueueId, &buffer, 0, osWaitForever) == osOK) {
 			// blocked till CDC transmit ready

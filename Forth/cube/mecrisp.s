@@ -259,6 +259,15 @@ Forth:
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"
 
+	bl		BSP_getSwitch1
+	cmp		r0, #0
+	beq		1f
+	bl		uart_terminal		// button1 pressed on reset -> uart terminal
+1:	bl		BSP_getSwitch2
+	cmp		r0, #0
+	beq		2f
+	bl		cdc_terminal		// button2 pressed on reset -> usb cdc terminal
+2:
 	welcome " by Matthias Koch. "
 
 	@ Ready to fly !
