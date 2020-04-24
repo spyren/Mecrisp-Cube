@@ -245,7 +245,7 @@ uint8_t  manuf_data[14] = {
 };
 
 /* USER CODE BEGIN PV */
-static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
+//static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
 
@@ -397,8 +397,6 @@ void APP_BLE_Init( void )
   * Start to Advertise to be connected by Collector
    */
    Adv_Request(APP_BLE_FAST_ADV);
-
-//   Add_Advertisment_Service_UUID(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
   /**
