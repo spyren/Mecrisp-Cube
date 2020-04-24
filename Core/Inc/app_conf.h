@@ -101,7 +101,6 @@
  * Device name configuration for Generic Access Service
  */
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
-//#define CFG_GAP_DEVICE_NAME_LENGTH      (8)
 #define CFG_GAP_DEVICE_NAME_LENGTH      (13)
 
 /**
@@ -126,6 +125,10 @@
 #define CFG_BLE_ERK     {0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21,0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21}
 
 /* USER CODE BEGIN Generic_Parameters */
+#undef CFG_GAP_DEVICE_NAME
+#define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
+#undef CFG_GAP_DEVICE_NAME_LENGTH
+#define CFG_GAP_DEVICE_NAME_LENGTH      (13)
 
 /* USER CODE END Generic_Parameters */
 
@@ -493,6 +496,8 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
 #define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 6)
 
+
+/* USER CODE BEGIN FreeRTOS_Defines */
 #define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
 #define CFG_HRS_PROCESS_CB_MEM                (0)
@@ -500,9 +505,6 @@ typedef enum
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
 #define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
 #define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
-
-/* USER CODE BEGIN FreeRTOS_Defines */
-
 /* USER CODE END FreeRTOS_Defines */
 
 /******************************************************************************

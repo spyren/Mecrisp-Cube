@@ -178,7 +178,6 @@ static int8_t CDC_Init_FS(void)
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
   osEventFlagsSet(CDC_EvtFlagsID, CDC_CONNECTED);
-//  cdc_terminal();  // redirect console to USB-CDC
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -190,8 +189,7 @@ static int8_t CDC_Init_FS(void)
 static int8_t CDC_DeInit_FS(void)
 {
   /* USER CODE BEGIN 4 */
-  osEventFlagsClear(CDC_EvtFlagsID, CDC_CONNECTED);
-//  uart_terminal();  // redirect console to UART
+//  osEventFlagsClear(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 4 */
 }
