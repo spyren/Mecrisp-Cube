@@ -35,11 +35,10 @@
 #include "otp.h"
 #include "dis_app.h"
 #include "hrs_app.h"
-#include "crs_app.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "crs_app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -379,11 +378,6 @@ void APP_BLE_Init( void )
   HRSAPP_Init();
 
   /**
-   * Initialize CRS (Cable Replacement Server) Application
-   */
-  CRSAPP_Init();
-
-  /**
    * Create timer to handle the connection state machine
    */
 
@@ -395,8 +389,6 @@ void APP_BLE_Init( void )
   BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
   Add_Advertisment_Service_UUID(HEART_RATE_SERVICE_UUID);
-//  Add_Advertisment_Service_UUID(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
-
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
   AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
@@ -406,7 +398,13 @@ void APP_BLE_Init( void )
    */
    Adv_Request(APP_BLE_FAST_ADV);
 
+//   Add_Advertisment_Service_UUID(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+
 /* USER CODE BEGIN APP_BLE_Init_2 */
+  /**
+   * Initialize CRS (Cable Replacement Server) Application
+   */
+  CRSAPP_Init();
 
 /* USER CODE END APP_BLE_Init_2 */
   return;

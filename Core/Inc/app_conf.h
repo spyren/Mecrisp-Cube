@@ -100,8 +100,8 @@
 /**
  * Device name configuration for Generic Access Service
  */
-#define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
-#define CFG_GAP_DEVICE_NAME_LENGTH      (13)
+#define CFG_GAP_DEVICE_NAME             "TEMPLATE"
+#define CFG_GAP_DEVICE_NAME_LENGTH      (8)
 
 /**
  * Define PHY
@@ -129,6 +129,22 @@
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
 #undef CFG_GAP_DEVICE_NAME_LENGTH
 #define CFG_GAP_DEVICE_NAME_LENGTH      (13)
+
+/******************************************************************************
+ * Cable Replacement Service STM (CRS STM)
+ ******************************************************************************/
+/**< Options: Supported(1) or Not Supported(0) */
+#define CRS_STM_UUID128    0x00, 0x00, 0xfe, 0x60, 0xcc, 0x7a, 0x48, 0x2a, 0x98, 0x4a, 0x7f, 0x2e, 0xd5, 0xb3, 0xe5, 0x8f
+#define CRS_STM_TX_UUID128 0x00, 0x00, 0xfe, 0x61, 0x8e, 0x22, 0x45, 0x41, 0x9d, 0x4c, 0x21, 0xed, 0xae, 0x82, 0xed, 0x19
+#define CRS_STM_RX_UUID128 0x00, 0x00, 0xfe, 0x62, 0x8e, 0x22, 0x45, 0x41, 0x9d, 0x4c, 0x21, 0xed, 0xae, 0x82, 0xed, 0x19
+
+#define BLE_DBG_CRS_STM_EN         0
+
+#if ( BLE_DBG_CRS_STM_EN != 0 )
+#define BLE_DBG_CRS_STM_MSG         PRINT_MESG_DBG
+#else
+#define BLE_DBG_CRS_STM_MSG         PRINT_NO_MESG
+#endif
 
 /* USER CODE END Generic_Parameters */
 
@@ -403,14 +419,12 @@ typedef enum
 /**
  * When set to 1, the traces are enabled in the BLE services
  */
-//#define CFG_DEBUG_BLE_TRACE     0
-#define CFG_DEBUG_BLE_TRACE     1
+#define CFG_DEBUG_BLE_TRACE     0
 
 /**
  * Enable or Disable traces in application
  */
-//#define CFG_DEBUG_APP_TRACE     0
-#define CFG_DEBUG_APP_TRACE     1
+#define CFG_DEBUG_APP_TRACE     0
 
 #if (CFG_DEBUG_APP_TRACE != 0)
 #define APP_DBG_MSG                 PRINT_MESG_DBG
@@ -496,8 +510,6 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
 #define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 6)
 
-
-/* USER CODE BEGIN FreeRTOS_Defines */
 #define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
 #define CFG_HRS_PROCESS_CB_MEM                (0)
@@ -505,6 +517,8 @@ typedef enum
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
 #define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
 #define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
+
+/* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */
 
 /******************************************************************************
