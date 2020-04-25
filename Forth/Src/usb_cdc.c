@@ -205,6 +205,7 @@ static void cdc_thread(void *argument) {
 
 	// blocked till USB_CDC is connected
 	osEventFlagsWait(CDC_EvtFlagsID, CDC_CONNECTED, osFlagsWaitAny, osWaitForever);
+	osDelay(2000);
 
 	// Infinite loop
 	for(;;) {
