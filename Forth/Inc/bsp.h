@@ -48,5 +48,6 @@ void BSP_setDigitalPort(int state);
 int BSP_getDigitalPort(void);
 void BSP_setDigitalPin(int pin_number, int state);
 int BSP_getDigitalPin(int pin_number);
+int BSP_getAnalogPin(int pin_number);
 
 #endif /* INC_BSP_H_ */

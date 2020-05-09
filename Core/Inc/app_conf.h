@@ -486,37 +486,37 @@ typedef enum
 /******************************************************************************
  * FreeRTOS
  ******************************************************************************/
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
-#define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
-#define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 7)
+#define CFG_SHCI_USER_EVT_THREAD_NAME        "SHCI_USER_EVT_THREAD"
+#define CFG_SHCI_USER_EVT_THREAD_ATTR_BITS   (0)
+#define CFG_SHCI_USER_EVT_THREAD_CB_MEM      (0)
+#define CFG_SHCI_USER_EVT_THREAD_CB_SIZE     (0)
+#define CFG_SHCI_USER_EVT_THREAD_STACK_MEM   (0)
+#define CFG_SHCI_USER_EVT_THREAD_PRIORITY    osPriorityNone
+#define CFG_SHCI_USER_EVT_THREAD_STACK_SIZE  (128 * 7)
 
-#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
-#define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
-#define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
-#define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
-#define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
-#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
-#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
+#define CFG_HCI_USER_EVT_THREAD_NAME         "HCI_USER_EVT_THREAD"
+#define CFG_HCI_USER_EVT_THREAD_ATTR_BITS    (0)
+#define CFG_HCI_USER_EVT_THREAD_CB_MEM       (0)
+#define CFG_HCI_USER_EVT_THREAD_CB_SIZE      (0)
+#define CFG_HCI_USER_EVT_THREAD_STACK_MEM    (0)
+#define CFG_HCI_USER_EVT_THREAD_PRIORITY     osPriorityNone
+#define CFG_HCI_USER_EVT_THREAD_STACK_SIZE   (128 * 8)
 
-#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
-#define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
-#define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
-#define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
-#define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
-#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
-#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 6)
+#define CFG_ADV_UPDATE_THREAD_NAME           "ADV_UPDATE_THREAD"
+#define CFG_ADV_UPDATE_THREAD_ATTR_BITS      (0)
+#define CFG_ADV_UPDATE_THREAD_CB_MEM         (0)
+#define CFG_ADV_UPDATE_THREAD_CB_SIZE        (0)
+#define CFG_ADV_UPDATE_THREAD_STACK_MEM      (0)
+#define CFG_ADV_UPDATE_THREAD_PRIORITY       osPriorityNone
+#define CFG_ADV_UPDATE_THREAD_STACK_SIZE     (128 * 6)
 
-#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
-#define CFG_HRS_PROCESS_ATTR_BITS             (0)
-#define CFG_HRS_PROCESS_CB_MEM                (0)
-#define CFG_HRS_PROCESS_CB_SIZE               (0)
-#define CFG_HRS_PROCESS_STACK_MEM             (0)
-#define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
-#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
+#define CFG_HRS_THREAD_NAME                  "HRS_THREAD"
+#define CFG_HRS_THREAD_ATTR_BITS             (0)
+#define CFG_HRS_THREAD_CB_MEM                (0)
+#define CFG_HRS_THREAD_CB_SIZE               (0)
+#define CFG_HRS_THREAD_STACK_MEM             (0)
+#define CFG_HRS_THREAD_PRIORITY              osPriorityNone
+#define CFG_HRS_THREAD_STACK_SIZE            (512 * 4)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */

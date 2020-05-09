@@ -525,8 +525,7 @@ void vApplicationMallocFailedHook(void) {
   * @retval None
   */
 /* USER CODE END Header_MainThread */
-void MainThread(void *argument)
-{
+void MainThread(void *argument) {
   /* USER CODE BEGIN 5 */
 	BSP_init();
 	UART_init();
@@ -535,11 +534,11 @@ void MainThread(void *argument)
 
 	Forth();
 
-  /* Infinite loop */
-  for(;;) {
-    Error_Handler();
-  }
-  /* USER CODE END 5 */ 
+	/* Infinite loop */
+	for(;;) {
+		Error_Handler();
+	}
+	/* USER CODE END 5 */
 }
 
  /**

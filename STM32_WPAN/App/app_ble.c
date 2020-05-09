@@ -253,31 +253,31 @@ uint8_t  manuf_data[14] = {
 /* Global variables ----------------------------------------------------------*/
 osMutexId_t MtxHciId;
 osSemaphoreId_t SemHciId;
-osThreadId_t AdvUpdateProcessId;
-osThreadId_t HciUserEvtProcessId;
+osThreadId_t AdvUpdateThreadId;
+osThreadId_t HciUserEvtThreadId;
 
-const osThreadAttr_t AdvUpdateProcess_attr = {
-    .name = CFG_ADV_UPDATE_PROCESS_NAME,
-    .attr_bits = CFG_ADV_UPDATE_PROCESS_ATTR_BITS,
-    .cb_mem = CFG_ADV_UPDATE_PROCESS_CB_MEM,
-    .cb_size = CFG_ADV_UPDATE_PROCESS_CB_SIZE,
-    .stack_mem = CFG_ADV_UPDATE_PROCESS_STACK_MEM,
-    .priority = CFG_ADV_UPDATE_PROCESS_PRIORITY,
-    .stack_size = CFG_ADV_UPDATE_PROCESS_STACK_SIZE
+const osThreadAttr_t AdvUpdateThread_attr = {
+    .name = CFG_ADV_UPDATE_THREAD_NAME,
+    .attr_bits = CFG_ADV_UPDATE_THREAD_ATTR_BITS,
+    .cb_mem = CFG_ADV_UPDATE_THREAD_CB_MEM,
+    .cb_size = CFG_ADV_UPDATE_THREAD_CB_SIZE,
+    .stack_mem = CFG_ADV_UPDATE_THREAD_STACK_MEM,
+    .priority = CFG_ADV_UPDATE_THREAD_PRIORITY,
+    .stack_size = CFG_ADV_UPDATE_THREAD_STACK_SIZE
 };
 
-const osThreadAttr_t HciUserEvtProcess_attr = {
-    .name = CFG_HCI_USER_EVT_PROCESS_NAME,
-    .attr_bits = CFG_HCI_USER_EVT_PROCESS_ATTR_BITS,
-    .cb_mem = CFG_HCI_USER_EVT_PROCESS_CB_MEM,
-    .cb_size = CFG_HCI_USER_EVT_PROCESS_CB_SIZE,
-    .stack_mem = CFG_HCI_USER_EVT_PROCESS_STACK_MEM,
-    .priority = CFG_HCI_USER_EVT_PROCESS_PRIORITY,
-    .stack_size = CFG_HCI_USER_EVT_PROCESS_STACK_SIZE
+const osThreadAttr_t HciUserEvtThread_attr = {
+    .name = CFG_HCI_USER_EVT_THREAD_NAME,
+    .attr_bits = CFG_HCI_USER_EVT_THREAD_ATTR_BITS,
+    .cb_mem = CFG_HCI_USER_EVT_THREAD_CB_MEM,
+    .cb_size = CFG_HCI_USER_EVT_THREAD_CB_SIZE,
+    .stack_mem = CFG_HCI_USER_EVT_THREAD_STACK_MEM,
+    .priority = CFG_HCI_USER_EVT_THREAD_PRIORITY,
+    .stack_size = CFG_HCI_USER_EVT_THREAD_STACK_SIZE
 };
 
 /* Private function prototypes -----------------------------------------------*/
-static void HciUserEvtProcess(void *argument);
+static void HciUserEvtThread(void *argument);
 static void BLE_UserEvtRx( void * pPayload );
 static void BLE_StatusNot( HCI_TL_CmdStatus_t status );
 static void Ble_Tl_Init( void );
@@ -287,7 +287,7 @@ static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
 //static void Add_Advertisment_Service_UUID( uint16_t servUUID );
 static void Add_Advertisment_Service_UUID(const uint8_t *servUUID, uint8_t UUIDLength);
 static void Adv_Mgr( void );
-static void AdvUpdateProcess(void *argument);
+static void AdvUpdateThread(void *argument);
 static void Adv_Update( void );
 
 /* USER CODE BEGIN PFP */
@@ -336,7 +336,7 @@ void APP_BLE_Init( void )
   /**
    * Register the hci transport layer to handle BLE User Asynchronous Events
    */
-  HciUserEvtProcessId = osThreadNew(HciUserEvtProcess, NULL, &HciUserEvtProcess_attr);
+  HciUserEvtThreadId = osThreadNew(HciUserEvtThread, NULL, &HciUserEvtThread_attr);
 
   /**
    * Starts the BLE Stack on CPU2
@@ -361,7 +361,7 @@ void APP_BLE_Init( void )
   /**
    * From here, all initialization are BLE application specific
    */
-  AdvUpdateProcessId = osThreadNew(AdvUpdateProcess, NULL, &AdvUpdateProcess_attr);
+  AdvUpdateThreadId = osThreadNew(AdvUpdateThread, NULL, &AdvUpdateThread_attr);
 
   /**
    * Initialization of ADV - Ad Manufacturer Element - Support OTA Bit Mask
@@ -996,12 +996,12 @@ static void Adv_Mgr( void )
    * The background is the only place where the application can make sure a new aci command
    * is not sent if there is a pending one
    */
-  osThreadFlagsSet( AdvUpdateProcessId, 1 );
+  osThreadFlagsSet( AdvUpdateThreadId, 1 );
 
   return;
 }
 
-static void AdvUpdateProcess(void *argument)
+static void AdvUpdateThread(void *argument)
 {
   UNUSED(argument);
 
@@ -1019,7 +1019,7 @@ static void Adv_Update( void )
   return;
 }
 
-static void HciUserEvtProcess(void *argument)
+static void HciUserEvtThread(void *argument)
 {
   UNUSED(argument);
 
@@ -1041,7 +1041,7 @@ static void HciUserEvtProcess(void *argument)
 void hci_notify_asynch_evt(void* pdata)
 {
   UNUSED(pdata);
-  osThreadFlagsSet( HciUserEvtProcessId, 1 );
+  osThreadFlagsSet( HciUserEvtThreadId, 1 );
   return;
 }
 

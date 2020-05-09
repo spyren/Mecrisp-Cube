@@ -66,20 +66,20 @@ PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static uint8_t BleSpareEvtBuffer[sizeof(TL_
 /* Global variables ----------------------------------------------------------*/
 osMutexId_t MtxShciId;
 osSemaphoreId_t SemShciId;
-osThreadId_t ShciUserEvtProcessId;
+osThreadId_t ShciUserEvtThreadId;
 
-const osThreadAttr_t ShciUserEvtProcess_attr = {
-    .name = CFG_SHCI_USER_EVT_PROCESS_NAME,
-    .attr_bits = CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS,
-    .cb_mem = CFG_SHCI_USER_EVT_PROCESS_CB_MEM,
-    .cb_size = CFG_SHCI_USER_EVT_PROCESS_CB_SIZE,
-    .stack_mem = CFG_SHCI_USER_EVT_PROCESS_STACK_MEM,
-    .priority = CFG_SHCI_USER_EVT_PROCESS_PRIORITY,
-    .stack_size = CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE
+const osThreadAttr_t ShciUserEvtThread_attr = {
+    .name = CFG_SHCI_USER_EVT_THREAD_NAME,
+    .attr_bits = CFG_SHCI_USER_EVT_THREAD_ATTR_BITS,
+    .cb_mem = CFG_SHCI_USER_EVT_THREAD_CB_MEM,
+    .cb_size = CFG_SHCI_USER_EVT_THREAD_CB_SIZE,
+    .stack_mem = CFG_SHCI_USER_EVT_THREAD_STACK_MEM,
+    .priority = CFG_SHCI_USER_EVT_THREAD_PRIORITY,
+    .stack_size = CFG_SHCI_USER_EVT_THREAD_STACK_SIZE
 };
 
 /* Private functions prototypes-----------------------------------------------*/
-static void ShciUserEvtProcess(void *argument);
+static void ShciUserEvtThread(void *argument);
 static void SystemPower_Config( void );
 static void appe_Tl_Init( void );
 static void APPE_SysStatusNot( SHCI_TL_CmdStatus_t status );
@@ -169,7 +169,7 @@ static void appe_Tl_Init( void )
   SemShciId = osSemaphoreNew( 1, 0, NULL ); /*< Create the semaphore and make it busy at initialization */
 
   /** FreeRTOS system task creation */
-  ShciUserEvtProcessId = osThreadNew(ShciUserEvtProcess, NULL, &ShciUserEvtProcess_attr);
+  ShciUserEvtThreadId = osThreadNew(ShciUserEvtThread, NULL, &ShciUserEvtThread_attr);
 
   /**< System channel initialization */
   SHci_Tl_Init_Conf.p_cmdbuffer = (uint8_t*)&SystemCmdBuffer;
@@ -231,19 +231,19 @@ static void APPE_SysUserEvtRx( void * pPayload )
  * FREERTOS WRAPPER FUNCTIONS
  *
 *************************************************************/
-static void ShciUserEvtProcess(void *argument)
+static void ShciUserEvtThread(void *argument)
 {
   UNUSED(argument);
   for(;;)
   {
-    /* USER CODE BEGIN SHCI_USER_EVT_PROCESS_1 */
+    /* USER CODE BEGIN SHCI_USER_EVT_THREAD_1 */
 
-    /* USER CODE END SHCI_USER_EVT_PROCESS_1 */
+    /* USER CODE END SHCI_USER_EVT_THREAD_1 */
      osThreadFlagsWait(1, osFlagsWaitAny, osWaitForever);
      shci_user_evt_proc();
-    /* USER CODE BEGIN SHCI_USER_EVT_PROCESS_2 */
+    /* USER CODE BEGIN SHCI_USER_EVT_THREAD_2 */
 
-    /* USER CODE END SHCI_USER_EVT_PROCESS_2 */
+    /* USER CODE END SHCI_USER_EVT_THREAD_2 */
     }
 }
 
@@ -260,7 +260,7 @@ static void ShciUserEvtProcess(void *argument)
 void shci_notify_asynch_evt(void* pdata)
 {
   UNUSED(pdata);
-  osThreadFlagsSet( ShciUserEvtProcessId, 1 );
+  osThreadFlagsSet( ShciUserEvtThreadId, 1 );
   return;
 }
 
