@@ -236,6 +236,14 @@ void SystemClock_Config(void)
   }
   /* USER CODE BEGIN Smps */
 
+  /**
+   * This prevents the CPU2 to disable the HSI48 oscillator when
+   * it does not use anymore the RNG IP
+   */
+  LL_HSEM_1StepLock( HSEM, 5 );
+  LL_RCC_HSI48_Enable();
+
+
   /* USER CODE END Smps */
   /** Enable the SYSCFG APB clock 
   */

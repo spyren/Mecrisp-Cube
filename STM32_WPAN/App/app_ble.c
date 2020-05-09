@@ -227,6 +227,7 @@ PLACE_IN_SECTION("BLE_APP_CONTEXT") static BleApplicationContext_t BleApplicatio
 PLACE_IN_SECTION("BLE_APP_CONTEXT") static uint16_t AdvIntervalMin, AdvIntervalMax;
 
 static const char local_name[] = { AD_TYPE_COMPLETE_LOCAL_NAME ,'F','o','r','t','h'};
+static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 uint8_t  manuf_data[14] = {
     sizeof(manuf_data)-1, AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
     0x01/*SKD version */,
@@ -283,7 +284,8 @@ static void Ble_Tl_Init( void );
 static void Ble_Hci_Gap_Gatt_Init(void);
 static const uint8_t* BleGetBdAddress( void );
 static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
-static void Add_Advertisment_Service_UUID( uint16_t servUUID );
+//static void Add_Advertisment_Service_UUID( uint16_t servUUID );
+static void Add_Advertisment_Service_UUID(const uint8_t *servUUID, uint8_t UUIDLength);
 static void Adv_Mgr( void );
 static void AdvUpdateProcess(void *argument);
 static void Adv_Update( void );
@@ -386,9 +388,16 @@ void APP_BLE_Init( void )
   /**
    * Make device discoverable
    */
+  /*
   BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
   Add_Advertisment_Service_UUID(HEART_RATE_SERVICE_UUID);
+  */
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_128_BIT_SERV_UUID;
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
+
+  Add_Advertisment_Service_UUID(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
   AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
@@ -953,6 +962,7 @@ const uint8_t* BleGetBdAddress( void )
  *SPECIFIC FUNCTIONS
  *
  *************************************************************/
+/*
 static void Add_Advertisment_Service_UUID( uint16_t servUUID )
 {
   BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
@@ -964,6 +974,20 @@ static void Add_Advertisment_Service_UUID( uint16_t servUUID )
 
   return;
 }
+*/
+
+static void Add_Advertisment_Service_UUID(const uint8_t *servUUID, uint8_t UUIDLength) {
+	uint8_t i;
+
+	for(i = 0; i < UUIDLength; i++) {
+		BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
+				servUUID[i];
+		BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+	}
+
+	return;
+}
+
 
 static void Adv_Mgr( void )
 {
@@ -1028,11 +1052,11 @@ void hci_cmd_resp_release(uint32_t flag)
   return;
 }
 
-void hci_cmd_resp_wait(uint32_t timeout)
-{
-  UNUSED(timeout);
-  osSemaphoreAcquire( SemHciId, osWaitForever );
-  return;
+void hci_cmd_resp_wait(uint32_t timeout) {
+	osStatus_t status = osSemaphoreAcquire(SemHciId, timeout);
+	if (status != osOK) {
+		Error_Handler();
+	}
 }
 
 static void BLE_UserEvtRx( void * pPayload )
