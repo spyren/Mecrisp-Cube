@@ -519,6 +519,72 @@ int BSP_getAnalogPin(int pin_number) {
 }
 
 
+// digital port pin mode
+// *********************
+typedef struct {
+	uint32_t mode;
+	uint32_t pull;
+} PortPinMode_t;
+
+static const PortPinMode_t DigitalPortPinMode_a[6] = {
+				{ GPIO_MODE_INPUT,     GPIO_NOPULL } ,   // 0 in
+				{ GPIO_MODE_INPUT,     GPIO_PULLUP } ,   // 1 pullup
+				{ GPIO_MODE_INPUT,     GPIO_PULLDOWN } , // 2 pulldow
+				{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL } ,   // 3 pushpull
+				{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL } ,   // 4 opendrain
+				{ GPIO_MODE_AF_PP,     GPIO_NOPULL } ,   // 5 pwm
+		};
+/**
+ *  @brief
+ *	    Sets the digital port pin mode (D0 .. D15).
+ *
+ *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain, 5 out pwm.
+ *	@param[in]
+ *      pin_number    0 to 15.
+ *	@param[in]
+ *      mode          0 to 5
+ *  @return
+ *      none
+ *
+ */
+void BSP_setDigitalPinMode(int pin_number, int mode) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+    GPIO_InitStruct.Pin = PortPin_a[pin_number].pin;
+    GPIO_InitStruct.Mode = DigitalPortPinMode_a[mode].mode;
+    GPIO_InitStruct.Pull = DigitalPortPinMode_a[mode].pull;
+    HAL_GPIO_Init(PortPin_a[pin_number].port, &GPIO_InitStruct);
+
+	osMutexRelease(DigitalPort_MutexID);
+}
+
+
+/**
+ *  @brief
+ *	    Sets the digital output port pin (D3=3, D5=5, D6=6, D9=9, D10=10, D11=11) to a PWM value (0..1000).
+ *
+ *	@param[in]
+ *      pin_number    D3=3, D5=5, D6=6, D9=9, D10=10, D11=11
+ *	@param[in]
+ *      value         0 to 1000
+ *  @return
+ *      none
+ *
+ */
+void BSP_setPwmPin(int pin_number, int value) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// D3 TIM1CH3
+
+
+	osMutexRelease(DigitalPort_MutexID);
+}
+
+
 // Private Functions
 // *****************
 
@@ -557,4 +623,6 @@ void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc) {
 	Error_Handler();
 	osSemaphoreRelease(Adc_SemaphoreID);
 }
+
+
 

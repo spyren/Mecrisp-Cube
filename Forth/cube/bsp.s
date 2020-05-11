@@ -176,7 +176,6 @@ set_dpin:
 	movs	r1, tos		// state
 	drop
 	bl		BSP_setDigitalPin
-	movs	tos, r0
 	pop		{r0-r3, pc}
 
 
@@ -204,4 +203,35 @@ get_apin:
 	bl		BSP_getAnalogPin
 	movs	tos, r0
 	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "dmod"
+set_dmod:
+		@ ( u a --  ) sets the pin mode: 0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain.
+// int BSP_setDigitalPinMode(int pin_number, int mode)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// mode
+	drop
+	bl		BSP_setDigitalPinMode
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pwmpin!"
+set_pwmpin:
+		@ ( u a --  ) sets the digital output port pin (D3=3, D5=5, D6=6, D9=9, D10=10, D11=11) to a PWM value (0..1000). Frequency is 10 kHz
+// int BSP_setPwmPin(int pin_number, int value)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// value
+	drop
+	bl		BSP_setPwmPin
+	pop		{r0-r3, pc}
+
 

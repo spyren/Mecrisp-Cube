@@ -54,7 +54,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+#define CFG_DONGLE		0
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -125,6 +125,14 @@ void Error_Handler(void);
 #define STLINK_TX_Pin GPIO_PIN_7
 #define STLINK_TX_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
+#if (CFG_DONGLE == 1)
+// the dongle's button B1 (SW1) is on different port
+#undef B1_Pin
+#undef B1_GPIO_Port
+#define B1_Pin GPIO_PIN_10
+#define B1_GPIO_Port GPIOA
+#endif
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
