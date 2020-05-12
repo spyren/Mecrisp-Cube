@@ -153,10 +153,20 @@ void BSP_setLED1(int state) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (state) {
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle
+		if (state) {
+			HAL_GPIO_WritePin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin, GPIO_PIN_RESET);
+		}
 	} else {
-		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+		// Nucleo Board
+		if (state) {
+			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
+		}
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -176,10 +186,20 @@ int BSP_getLED1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
-		return_value = -1;
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle
+		if (HAL_GPIO_ReadPin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin) == GPIO_PIN_SET) {
+			return_value = -1;
+		} else {
+			return_value = FALSE;
+		}
 	} else {
-		return_value = FALSE;
+		// Nucleo Board
+		if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
+			return_value = -1;
+		} else {
+			return_value = FALSE;
+		}
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -296,10 +316,20 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
-		return_value = -1;
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle
+		if (HAL_GPIO_ReadPin(B1_DONGLE_GPIO_Port, B1_DONGLE_Pin) == GPIO_PIN_RESET) {
+			return_value = -1;
+		} else {
+			return_value = FALSE;
+		}
 	} else {
-		return_value = FALSE;
+		// Nucleo Board
+		if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
+			return_value = -1;
+		} else {
+			return_value = FALSE;
+		}
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -308,7 +338,7 @@ int BSP_getSwitch1(void) {
 
 /**
  *  @brief
- *      Gets the switch1 state
+ *      Gets the switch2 state
  *
  *      No debouncing
  *  @return
@@ -320,10 +350,16 @@ int BSP_getSwitch2(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == GPIO_PIN_RESET) {
-		return_value = -1;
-	} else {
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle has no switch2
 		return_value = FALSE;
+	} else {
+		// Nucleo Board
+		if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == GPIO_PIN_RESET) {
+			return_value = -1;
+		} else {
+			return_value = FALSE;
+		}
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -332,7 +368,7 @@ int BSP_getSwitch2(void) {
 
 /**
  *  @brief
- *      Gets the switch1 state
+ *      Gets the switch3 state
  *
  *      No debouncing
  *  @return
@@ -344,10 +380,16 @@ int BSP_getSwitch3(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin) == GPIO_PIN_RESET) {
-		return_value =  -1;
-	} else {
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle has no switch3
 		return_value = FALSE;
+	} else {
+		// Nucleo Board
+		if (HAL_GPIO_ReadPin(B3_GPIO_Port, B3_Pin) == GPIO_PIN_RESET) {
+			return_value =  -1;
+		} else {
+			return_value = FALSE;
+		}
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
