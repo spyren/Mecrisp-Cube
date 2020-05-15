@@ -284,8 +284,8 @@ static void Ble_Tl_Init( void );
 static void Ble_Hci_Gap_Gatt_Init(void);
 static const uint8_t* BleGetBdAddress( void );
 static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
-//static void Add_Advertisment_Service_UUID( uint16_t servUUID );
-static void Add_Advertisment_Service_UUID(const uint8_t *servUUID, uint8_t UUIDLength);
+//static void Add_Advertisment_Service_UUID_16b( uint16_t servUUID );
+static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength);
 static void Adv_Mgr( void );
 static void AdvUpdateThread(void *argument);
 static void Adv_Update( void );
@@ -388,15 +388,18 @@ void APP_BLE_Init( void )
   /**
    * Make device discoverable
    */
-  /*
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
-  Add_Advertisment_Service_UUID(HEART_RATE_SERVICE_UUID);
-  */
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_128_BIT_SERV_UUID;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
 
-  Add_Advertisment_Service_UUID(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
+//  Add_Advertisment_Service_UUID_16b(HEART_RATE_SERVICE_UUID);
+//
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+//  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_128_BIT_SERV_UUID;
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;;
+  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
 
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
@@ -962,24 +965,24 @@ const uint8_t* BleGetBdAddress( void )
  *SPECIFIC FUNCTIONS
  *
  *************************************************************/
-/*
-static void Add_Advertisment_Service_UUID( uint16_t servUUID )
-{
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
-      (uint8_t) (servUUID & 0xFF);
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
-      (uint8_t) (servUUID >> 8) & 0xFF;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
 
-  return;
-}
-*/
+//static void Add_Advertisment_Service_UUID_16b( uint16_t servUUID )
+//{
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
+//      (uint8_t) (servUUID & 0xFF);
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
+//      (uint8_t) (servUUID >> 8) & 0xFF;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+//
+//  return;
+//}
 
-static void Add_Advertisment_Service_UUID(const uint8_t *servUUID, uint8_t UUIDLength) {
-	uint8_t i;
 
-	for(i = 0; i < UUIDLength; i++) {
+static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength) {
+	int8_t i;
+
+	for(i = UUIDLength-1; i >= 0; i--) {
 		BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
 				servUUID[i];
 		BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
