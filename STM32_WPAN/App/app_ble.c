@@ -39,6 +39,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "crs_app.h"
+#include "bsp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -449,7 +450,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /* restart advertising */
       Adv_Request(APP_BLE_FAST_ADV);
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
-
+      BSP_setLED1(FALSE);
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
@@ -528,7 +529,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           }
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle = connection_complete_event->Connection_Handle;
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-
+          BSP_setLED1(TRUE);
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
         break; /* HCI_EVT_LE_CONN_COMPLETE */
