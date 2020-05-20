@@ -61,7 +61,7 @@ static void CRS_Thread(void *argument);
 // **************
 
 // Definitions for CRS thread
-static osThreadId_t CRS_ThreadId;
+osThreadId_t CRS_ThreadId;
 static const osThreadAttr_t crs_ThreadAttr = {
 		.name = "CRS_Thread",
 		.priority = (osPriority_t) osPriorityHigh,
@@ -251,6 +251,10 @@ static void CRS_Thread(void *argument) {
 	uint32_t count;
 	uint8_t i;
 	tBleStatus status;
+
+	// blocked till connected
+	osThreadFlagsWait(CRSAPP_CONNECTED, osFlagsWaitAny, osWaitForever);
+	osDelay(3000);
 
 	// Infinite loop
 	for(;;) {

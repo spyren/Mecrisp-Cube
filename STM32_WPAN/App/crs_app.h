@@ -32,7 +32,11 @@ extern "C"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
+extern osThreadId_t CRS_ThreadId;
+
 /* Exported macros -----------------------------------------------------------*/
+#define CRSAPP_CONNECTED	1
+
 /* Exported functions ------------------------------------------------------- */
 void CRSAPP_Init( void );
 

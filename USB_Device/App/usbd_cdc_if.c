@@ -23,9 +23,11 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
+#include "app_common.h"
 #include "cmsis_os.h"
 #include "main.h"
 #include "usb_cdc.h"
+#include "bsp.h"
 
 // function prototypes
 void cdc_terminal(void);
@@ -177,6 +179,7 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
+  BSP_setLED2(TRUE);
   osEventFlagsSet(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 3 */
