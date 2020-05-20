@@ -35,6 +35,8 @@
 #ifndef INC_UART_H_
 #define INC_UART_H_
 
+extern osMutexId_t UART_MutexID;
+
 void UART_init(void);
 int UART_getc(void);
 int UART_gets(char *str, int length);
@@ -42,5 +44,9 @@ int UART_RxReady(void);
 int UART_putc(int c);
 int UART_puts(const char *s);
 int UART_TxReady(void);
+void UART_setBaudrate(const int baudrate);
+void UART_setWordLength(const int wordlength);
+void UART_setParityBit(const int paritybit);
+void UART_setStopBits(const int stopbits);
 
 #endif /* INC_UART_H_ */

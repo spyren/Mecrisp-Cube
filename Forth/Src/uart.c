@@ -82,7 +82,7 @@ static const osThreadAttr_t UART_RxThreadAttr = {
 		.stack_size = 512 * 2
 };
 
-static osMutexId_t UART_MutexID;
+osMutexId_t UART_MutexID;
 const osMutexAttr_t UART_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
@@ -298,6 +298,134 @@ int UART_TxReady(void) {
 }
 
 
+/**
+ *  @brief
+ *      Sets the serial port's baud rate.
+ *
+ *      No checks whatsoever
+ *	@param[in]
+ *      baudrate    0 to 15.
+ *  @return
+ *      none
+ *
+ */
+void UART_setBaudrate(const int baudrate) {
+	// only one thread is allowed to use the UART
+	osMutexAcquire(UART_MutexID, osWaitForever);
+
+	huart1.Init.BaudRate = baudrate;
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+	osMutexRelease(UART_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Sets the serial port's word length.
+ *
+ *	@param[in]
+ *      wordlength    7, 8, 9 (including parity).
+ *  @return
+ *      none
+ *
+ */
+void UART_setWordLength(const int wordlength) {
+	// only one thread is allowed to use the UART
+	osMutexAcquire(UART_MutexID, osWaitForever);
+
+	switch (wordlength) {
+	case 7:
+		huart1.Init.WordLength = UART_WORDLENGTH_7B;
+		break;
+	case 8:
+		huart1.Init.WordLength = UART_WORDLENGTH_8B;
+		break;
+	case 9:
+		huart1.Init.WordLength = UART_WORDLENGTH_9B;
+		break;
+	default:
+		huart1.Init.WordLength = UART_WORDLENGTH_8B;
+		break;
+	}
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+	osMutexRelease(UART_MutexID);
+}
+
+
+/**  @brief
+*      Sets the serial port's parity bit.
+*
+*	@param[in]
+*      paritybit    0 none, 1 odd, 2 even.
+*  @return
+*      none
+*
+*/
+void UART_setParityBit(const int paritybit) {
+	// only one thread is allowed to use the UART
+	osMutexAcquire(UART_MutexID, osWaitForever);
+
+	switch (paritybit) {
+	case 0:
+		huart1.Init.Parity = UART_PARITY_NONE;
+		break;
+	case 1:
+		huart1.Init.Parity = UART_PARITY_ODD;
+		break;
+	case 2:
+		huart1.Init.Parity = UART_PARITY_EVEN;
+		break;
+	default:
+		huart1.Init.Parity = UART_PARITY_NONE;
+		break;
+	}
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	osMutexRelease(UART_MutexID);
+}
+
+/**
+ *  @brief
+ *	    Sets the serial port's stop bits.
+ *
+ *	@param[in]
+ *      stopbits    0 1 bit, 1 1.5 bit, 2 2 bit.
+ *  @return
+ *      none
+ *
+ */
+void UART_setStopBits(const int stopbits) {
+	// only one thread is allowed to use the UART
+	osMutexAcquire(UART_MutexID, osWaitForever);
+
+	switch (stopbits) {
+	case 0:
+		huart1.Init.StopBits = UART_STOPBITS_1;
+		break;
+	case 1:
+		huart1.Init.StopBits = UART_STOPBITS_1_5;
+		break;
+	case 2:
+		huart1.Init.StopBits = UART_STOPBITS_2;
+		break;
+	default:
+		huart1.Init.StopBits = UART_STOPBITS_1;
+		break;
+	}
+	if (HAL_UART_Init(&huart1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	osMutexRelease(UART_MutexID);
+}
+
+
 // Private Functions
 // *****************
 
@@ -375,6 +503,7 @@ static void UART_RxThread(void *argument) {
 		}
 	}
 }
+
 
 // Callbacks
 // *********

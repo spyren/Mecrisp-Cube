@@ -163,4 +163,59 @@ crs_qkey:
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "baudrate!"
+set_baudrate:
+		@ ( u --  ) sets baud rate (e.g. 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200)
+// void UART_setBaudrate(const int baudrate)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// baudrate
+	drop
+	bl		UART_setBaudrate
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "wordlength!"
+set_wordlength:
+		@ ( u --  ) sets word length 7, 8, 9 (including parity)
+// void UART_setWordLength(const int wordlength)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// baudrate
+	drop
+	bl		UART_setWordLength
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "paritybit!"
+set_paritybit:
+		@ ( u --  ) sets parity bit 0 none, 1 odd, 2 even
+// void UART_setParityBit(const int paritybit)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// baudrate
+	drop
+	bl		UART_setParityBit
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "stopbits!"
+set_stopbits:
+		@ ( u --  ) sets stop bits 0 1 bit, 1 1.5 bit, 2 2 bit
+// void UART_setStopBits(const int stopbits)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// baudrate
+	drop
+	bl		UART_setStopBits
+	pop		{r0-r3, pc}
+
+
+
+
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !
