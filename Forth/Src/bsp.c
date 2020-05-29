@@ -52,6 +52,7 @@
 
 // Hardware resources
 // ******************
+extern TIM_HandleTypeDef htim1;
 
 // RTOS resources
 // **************
@@ -114,6 +115,11 @@ void BSP_init(void) {
 	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
 		Error_Handler();
 	}
+
+	// start PWM
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
 
 }
 
@@ -566,15 +572,16 @@ int BSP_getAnalogPin(int pin_number) {
 typedef struct {
 	uint32_t mode;
 	uint32_t pull;
+	uint32_t alternate;
 } PortPinMode_t;
 
 static const PortPinMode_t DigitalPortPinMode_a[6] = {
-				{ GPIO_MODE_INPUT,     GPIO_NOPULL } ,   // 0 in
-				{ GPIO_MODE_INPUT,     GPIO_PULLUP } ,   // 1 pullup
-				{ GPIO_MODE_INPUT,     GPIO_PULLDOWN } , // 2 pulldow
-				{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL } ,   // 3 pushpull
-				{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL } ,   // 4 opendrain
-				{ GPIO_MODE_AF_PP,     GPIO_NOPULL } ,   // 5 pwm
+				{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,   // 0 in
+				{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,   // 1 pullup
+				{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,   // 2 pulldow
+				{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,   // 3 pushpull
+				{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,   // 4 opendrain
+				{ GPIO_MODE_AF_PP,     GPIO_NOPULL, GPIO_AF1_TIM1 } ,   // 5 pwm
 		};
 /**
  *  @brief
@@ -598,6 +605,8 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
     GPIO_InitStruct.Pin = PortPin_a[pin_number].pin;
     GPIO_InitStruct.Mode = DigitalPortPinMode_a[mode].mode;
     GPIO_InitStruct.Pull = DigitalPortPinMode_a[mode].pull;
+    GPIO_InitStruct.Alternate = DigitalPortPinMode_a[mode].alternate;
+//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(PortPin_a[pin_number].port, &GPIO_InitStruct);
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -606,10 +615,10 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 
 /**
  *  @brief
- *	    Sets the digital output port pin (D3=3, D5=5, D6=6, D9=9, D10=10, D11=11) to a PWM value (0..1000).
+ *	    Sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000).
  *
  *	@param[in]
- *      pin_number    D3=3, D5=5, D6=6, D9=9, D10=10, D11=11
+ *      pin_number    D3=3, D6=6, D9=9
  *	@param[in]
  *      value         0 to 1000
  *  @return
@@ -620,8 +629,21 @@ void BSP_setPwmPin(int pin_number, int value) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// D3 TIM1CH3
 
+	switch (pin_number) {
+	case 3:
+		// D3 TIM1CH3
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, value);
+		break;
+	case 6:
+		// D6 TIM1CH1
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, value);
+		break;
+	case 9:
+		// D9 TIM1CH2
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
+		break;
+	}
 
 	osMutexRelease(DigitalPort_MutexID);
 }
