@@ -45,6 +45,7 @@
 #include "flash.h"
 #include "usb_cdc.h"
 #include "bsp.h"
+#include "spi.h"
 #include "sd.h"
 
 /* USER CODE END Includes */
@@ -764,6 +765,7 @@ void MainThread(void *argument)
 	UART_init();
 	CDC_init();
 	FLASH_init();
+	SPI_init();
 	SD_init();
 
 	Forth();

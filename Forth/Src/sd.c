@@ -44,125 +44,119 @@
 
 // Defines
 // *******
-#define SD_DUMMY_BYTE            0xFF
+#define SD_DUMMY_BYTE			0xFF
 
-#define SD_MAX_FRAME_LENGTH        17    /* Lenght = 16 + 1 */
-#define SD_CMD_LENGTH               6
+#define SD_MAX_FRAME_LENGTH		17    /* Lenght = 16 + 1 */
+#define SD_CMD_LENGTH			6
 
-#define SD_MAX_TRY                100    /* Number of try */
+#define SD_MAX_TRY				100    /* Number of try */
 
-#define SD_CSD_STRUCT_V1          0x2    /* CSD struct version V1 */
-#define SD_CSD_STRUCT_V2          0x1    /* CSD struct version V2 */
+#define SD_CSD_STRUCT_V1		0x2    /* CSD struct version V1 */
+#define SD_CSD_STRUCT_V2		0x1    /* CSD struct version V2 */
 
 /**
   * @brief  Start Data tokens:
   *         Tokens (necessary because at nop/idle (and CS active) only 0xff is
   *         on the data/command line)
   */
-#define SD_TOKEN_START_DATA_SINGLE_BLOCK_READ    0xFE  /* Data token start byte, Start Single Block Read */
-#define SD_TOKEN_START_DATA_MULTIPLE_BLOCK_READ  0xFE  /* Data token start byte, Start Multiple Block Read */
-#define SD_TOKEN_START_DATA_SINGLE_BLOCK_WRITE   0xFE  /* Data token start byte, Start Single Block Write */
-#define SD_TOKEN_START_DATA_MULTIPLE_BLOCK_WRITE 0xFD  /* Data token start byte, Start Multiple Block Write */
-#define SD_TOKEN_STOP_DATA_MULTIPLE_BLOCK_WRITE  0xFD  /* Data toke stop byte, Stop Multiple Block Write */
+#define SD_TOKEN_START_DATA_SINGLE_BLOCK_READ		0xFE	/* Data token start byte, Start Single Block Read */
+#define SD_TOKEN_START_DATA_MULTIPLE_BLOCK_READ		0xFE	/* Data token start byte, Start Multiple Block Read */
+#define SD_TOKEN_START_DATA_SINGLE_BLOCK_WRITE		0xFE	/* Data token start byte, Start Single Block Write */
+#define SD_TOKEN_START_DATA_MULTIPLE_BLOCK_WRITE	0xFD	/* Data token start byte, Start Multiple Block Write */
+#define SD_TOKEN_STOP_DATA_MULTIPLE_BLOCK_WRITE		0xFD	/* Data toke stop byte, Stop Multiple Block Write */
 
 /**
   * @brief  Commands: CMDxx = CMD-number | 0x40
   */
-#define SD_CMD_GO_IDLE_STATE          0   /* CMD0 = 0x40  */
-#define SD_CMD_SEND_OP_COND           1   /* CMD1 = 0x41  */
-#define SD_CMD_SEND_IF_COND           8   /* CMD8 = 0x48  */
-#define SD_CMD_SEND_CSD               9   /* CMD9 = 0x49  */
-#define SD_CMD_SEND_CID               10  /* CMD10 = 0x4A */
-#define SD_CMD_STOP_TRANSMISSION      12  /* CMD12 = 0x4C */
-#define SD_CMD_SEND_STATUS            13  /* CMD13 = 0x4D */
-#define SD_CMD_SET_BLOCKLEN           16  /* CMD16 = 0x50 */
-#define SD_CMD_READ_SINGLE_BLOCK      17  /* CMD17 = 0x51 */
-#define SD_CMD_READ_MULT_BLOCK        18  /* CMD18 = 0x52 */
-#define SD_CMD_SET_BLOCK_COUNT        23  /* CMD23 = 0x57 */
-#define SD_CMD_WRITE_SINGLE_BLOCK     24  /* CMD24 = 0x58 */
-#define SD_CMD_WRITE_MULT_BLOCK       25  /* CMD25 = 0x59 */
-#define SD_CMD_PROG_CSD               27  /* CMD27 = 0x5B */
-#define SD_CMD_SET_WRITE_PROT         28  /* CMD28 = 0x5C */
-#define SD_CMD_CLR_WRITE_PROT         29  /* CMD29 = 0x5D */
-#define SD_CMD_SEND_WRITE_PROT        30  /* CMD30 = 0x5E */
-#define SD_CMD_SD_ERASE_GRP_START     32  /* CMD32 = 0x60 */
-#define SD_CMD_SD_ERASE_GRP_END       33  /* CMD33 = 0x61 */
-#define SD_CMD_UNTAG_SECTOR           34  /* CMD34 = 0x62 */
-#define SD_CMD_ERASE_GRP_START        35  /* CMD35 = 0x63 */
-#define SD_CMD_ERASE_GRP_END          36  /* CMD36 = 0x64 */
-#define SD_CMD_UNTAG_ERASE_GROUP      37  /* CMD37 = 0x65 */
-#define SD_CMD_ERASE                  38  /* CMD38 = 0x66 */
-#define SD_CMD_SD_APP_OP_COND         41  /* CMD41 = 0x69 */
-#define SD_CMD_APP_CMD                55  /* CMD55 = 0x77 */
-#define SD_CMD_READ_OCR               58  /* CMD55 = 0x79 */
+#define SD_CMD_GO_IDLE_STATE		0	/* CMD0 = 0x40  */
+#define SD_CMD_SEND_OP_COND			1	/* CMD1 = 0x41  */
+#define SD_CMD_SEND_IF_COND			8	/* CMD8 = 0x48  */
+#define SD_CMD_SEND_CSD				9	/* CMD9 = 0x49  */
+#define SD_CMD_SEND_CID				10	/* CMD10 = 0x4A */
+#define SD_CMD_STOP_TRANSMISSION	12	/* CMD12 = 0x4C */
+#define SD_CMD_SEND_STATUS			13	/* CMD13 = 0x4D */
+#define SD_CMD_SET_BLOCKLEN			16	/* CMD16 = 0x50 */
+#define SD_CMD_READ_SINGLE_BLOCK	17	/* CMD17 = 0x51 */
+#define SD_CMD_READ_MULT_BLOCK		18	/* CMD18 = 0x52 */
+#define SD_CMD_SET_BLOCK_COUNT		23	/* CMD23 = 0x57 */
+#define SD_CMD_WRITE_SINGLE_BLOCK	24	/* CMD24 = 0x58 */
+#define SD_CMD_WRITE_MULT_BLOCK		25	/* CMD25 = 0x59 */
+#define SD_CMD_PROG_CSD				27	/* CMD27 = 0x5B */
+#define SD_CMD_SET_WRITE_PROT		28	/* CMD28 = 0x5C */
+#define SD_CMD_CLR_WRITE_PROT		29	/* CMD29 = 0x5D */
+#define SD_CMD_SEND_WRITE_PROT		30	/* CMD30 = 0x5E */
+#define SD_CMD_SD_ERASE_GRP_START	32	/* CMD32 = 0x60 */
+#define SD_CMD_SD_ERASE_GRP_END		33	/* CMD33 = 0x61 */
+#define SD_CMD_UNTAG_SECTOR			34	/* CMD34 = 0x62 */
+#define SD_CMD_ERASE_GRP_START		35	/* CMD35 = 0x63 */
+#define SD_CMD_ERASE_GRP_END		36	/* CMD36 = 0x64 */
+#define SD_CMD_UNTAG_ERASE_GROUP	37	/* CMD37 = 0x65 */
+#define SD_CMD_ERASE				38	/* CMD38 = 0x66 */
+#define SD_CMD_SD_APP_OP_COND		41	/* CMD41 = 0x69 */
+#define SD_CMD_APP_CMD				55	/* CMD55 = 0x77 */
+#define SD_CMD_READ_OCR				58	/* CMD55 = 0x79 */
 
 
 // Private typedefs
 // ****************
 
 typedef struct {
-  uint8_t r1;
-  uint8_t r2;
-  uint8_t r3;
-  uint8_t r4;
-  uint8_t r5;
+	uint8_t r1;
+	uint8_t r2;
+	uint8_t r3;
+	uint8_t r4;
+	uint8_t r5;
 } SD_CmdAnswer_typedef;
 
 /**
   * @brief  SD answer format
   */
 typedef enum {
- SD_ANSWER_R1_EXPECTED,
- SD_ANSWER_R1B_EXPECTED,
- SD_ANSWER_R2_EXPECTED,
- SD_ANSWER_R3_EXPECTED,
- SD_ANSWER_R4R5_EXPECTED,
- SD_ANSWER_R7_EXPECTED,
-}SD_Answer_type;
+	SD_ANSWER_R1_EXPECTED,
+	SD_ANSWER_R1B_EXPECTED,
+	SD_ANSWER_R2_EXPECTED,
+	SD_ANSWER_R3_EXPECTED,
+	SD_ANSWER_R4R5_EXPECTED,
+	SD_ANSWER_R7_EXPECTED,
+} SD_Answer_type;
 
 /**
   * @brief  SD reponses and error flags
   */
-typedef enum
-{
+typedef enum {
 /* R1 answer value */
-  SD_R1_NO_ERROR            = (0x00),
-  SD_R1_IN_IDLE_STATE       = (0x01),
-  SD_R1_ERASE_RESET         = (0x02),
-  SD_R1_ILLEGAL_COMMAND     = (0x04),
-  SD_R1_COM_CRC_ERROR       = (0x08),
-  SD_R1_ERASE_SEQUENCE_ERROR= (0x10),
-  SD_R1_ADDRESS_ERROR       = (0x20),
-  SD_R1_PARAMETER_ERROR     = (0x40),
+	SD_R1_NO_ERROR            = (0x00),
+	SD_R1_IN_IDLE_STATE       = (0x01),
+	SD_R1_ERASE_RESET         = (0x02),
+	SD_R1_ILLEGAL_COMMAND     = (0x04),
+	SD_R1_COM_CRC_ERROR       = (0x08),
+	SD_R1_ERASE_SEQUENCE_ERROR= (0x10),
+	SD_R1_ADDRESS_ERROR       = (0x20),
+	SD_R1_PARAMETER_ERROR     = (0x40),
 
 /* R2 answer value */
-  SD_R2_NO_ERROR            = 0x00,
-  SD_R2_CARD_LOCKED         = 0x01,
-  SD_R2_LOCKUNLOCK_ERROR    = 0x02,
-  SD_R2_ERROR               = 0x04,
-  SD_R2_CC_ERROR            = 0x08,
-  SD_R2_CARD_ECC_FAILED     = 0x10,
-  SD_R2_WP_VIOLATION        = 0x20,
-  SD_R2_ERASE_PARAM         = 0x40,
-  SD_R2_OUTOFRANGE          = 0x80,
+	SD_R2_NO_ERROR            = 0x00,
+	SD_R2_CARD_LOCKED         = 0x01,
+	SD_R2_LOCKUNLOCK_ERROR    = 0x02,
+	SD_R2_ERROR               = 0x04,
+	SD_R2_CC_ERROR            = 0x08,
+	SD_R2_CARD_ECC_FAILED     = 0x10,
+	SD_R2_WP_VIOLATION        = 0x20,
+	SD_R2_ERASE_PARAM         = 0x40,
+	SD_R2_OUTOFRANGE          = 0x80,
 
 /**
   * @brief  Data response error
   */
-  SD_DATA_OK                = (0x05),
-  SD_DATA_CRC_ERROR         = (0x0B),
-  SD_DATA_WRITE_ERROR       = (0x0D),
-  SD_DATA_OTHER_ERROR       = (0xFF)
+	SD_DATA_OK                = (0x05),
+	SD_DATA_CRC_ERROR         = (0x0B),
+	SD_DATA_WRITE_ERROR       = (0x0D),
+	SD_DATA_OTHER_ERROR       = (0xFF)
 } SD_Error;
 
 
 // Private function prototypes
 // ***************************
-// SD IO functions
-void SD_IO_Init(void);
-void SD_IO_CSState(uint8_t state);
-void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
-uint8_t SD_IO_WriteByte(uint8_t Data);
 
 static uint8_t SD_GetCIDRegister(SD_CID* Cid);
 static uint8_t SD_GetCSDRegister(SD_CSD* Csd);
@@ -171,6 +165,12 @@ static uint8_t SD_GoIdleState(void);
 static SD_CmdAnswer_typedef SD_SendCmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer);
 static uint8_t SD_WaitData(uint8_t data);
 static uint8_t SD_ReadData(void);
+
+// SD IO functions
+static void SD_IO_Init(void);
+static void SD_IO_CSState(uint8_t state);
+static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
+static uint8_t SD_IO_WriteByte(uint8_t Data);
 
 
 // Global Variables
@@ -204,6 +204,8 @@ __IO uint8_t SdStatus = SD_NOT_PRESENT;
       1 : High capacity
 */
 uint16_t flag_SDHC = 0;
+
+uint8_t scratch_block[SD_BLOCK_SIZE];
 
 
 // Public Functions
@@ -293,9 +295,8 @@ uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) 
 	uint32_t offset = 0;
 	uint32_t addr;
 	uint8_t retr = SD_ERROR;
-	uint8_t *ptr = NULL;
 	SD_CmdAnswer_typedef response;
-	uint16_t BlockSize = 512;
+	uint16_t BlockSize = SD_BLOCK_SIZE;
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
@@ -306,11 +307,7 @@ uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) 
 		goto error;
 	}
 
-	ptr = malloc(sizeof(uint8_t)*BlockSize);
-	if( ptr == NULL ) {
-		goto error;
-	}
-	memset(ptr, SD_DUMMY_BYTE, sizeof(uint8_t)*BlockSize);
+	memset(&scratch_block[0], SD_DUMMY_BYTE, SD_BLOCK_SIZE);
 
 	/* Initialize the address */
 	addr = (ReadAddr * ((flag_SDHC == 1) ? 1 : BlockSize));
@@ -327,7 +324,7 @@ uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) 
 		/* Now look for the data token to signify the start of the data */
 		if (SD_WaitData(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
 			/* Read the SD block data : read NumByteToRead data */
-			SD_IO_WriteReadData(ptr, (uint8_t*)pData + offset, BlockSize);
+			SD_IO_WriteReadData(&scratch_block[0], (uint8_t*)pData + offset, BlockSize);
 
 			/* Set next read address*/
 			offset += BlockSize;
@@ -351,9 +348,6 @@ uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) 
 	/* Send dummy byte: 8 Clock pulses of delay */
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
-	if(ptr != NULL) {
-		free(ptr);
-	}
 
 	/* Return the reponse */
 	return retr;
@@ -377,7 +371,6 @@ uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks
 	uint32_t offset = 0;
 	uint32_t addr;
 	uint8_t retr = SD_ERROR;
-	uint8_t *ptr = NULL;
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = 512;
 
@@ -387,11 +380,6 @@ uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
 	if ( response.r1 != SD_R1_NO_ERROR) {
-		goto error;
-	}
-
-	ptr = malloc(sizeof(uint8_t)*BlockSize);
-	if (ptr == NULL) {
 		goto error;
 	}
 
@@ -415,7 +403,7 @@ uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks
 		SD_IO_WriteByte(SD_TOKEN_START_DATA_SINGLE_BLOCK_WRITE);
 
 		/* Write the block data to SD */
-		SD_IO_WriteReadData((uint8_t*)pData + offset, ptr, BlockSize);
+		SD_IO_WriteReadData((uint8_t*)pData + offset, &scratch_block[0], BlockSize);
 
 		/* Set next write address */
 		offset += BlockSize;
@@ -437,7 +425,6 @@ uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks
 	retr = SD_OK;
 
 	error :
-	if(ptr != NULL) free(ptr);
 	/* Send dummy byte: 8 Clock pulses of delay */
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
@@ -509,6 +496,9 @@ uint8_t SD_GetCardState(void) {
 }
 
 
+// Private Functions
+// *****************
+
 /**
   * @brief
   *     Reads the SD card SCD register.
@@ -520,7 +510,7 @@ uint8_t SD_GetCardState(void) {
   * @retval
   *     SD status
   */
-uint8_t SD_GetCSDRegister(SD_CSD* Csd) {
+static uint8_t SD_GetCSDRegister(SD_CSD* Csd) {
 	uint16_t counter = 0;
 	uint8_t CSD_Tab[16];
 	uint8_t retr = SD_ERROR;
@@ -631,7 +621,7 @@ uint8_t SD_GetCSDRegister(SD_CSD* Csd) {
   * @retval
   *     SD status
   */
-uint8_t SD_GetCIDRegister(SD_CID* Cid) {
+static uint8_t SD_GetCIDRegister(SD_CID* Cid) {
 	uint32_t counter = 0;
 	uint8_t retr = SD_ERROR;
 	uint8_t CID_Tab[16];
@@ -727,7 +717,7 @@ uint8_t SD_GetCIDRegister(SD_CID* Cid) {
   * @retval
   *     SD status
   */
-SD_CmdAnswer_typedef SD_SendCmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer) {
+static SD_CmdAnswer_typedef SD_SendCmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer) {
 	uint8_t frame[SD_CMD_LENGTH], frameout[SD_CMD_LENGTH];
 	SD_CmdAnswer_typedef retr = {0xFF, 0xFF , 0xFF, 0xFF, 0xFF};
 
@@ -792,7 +782,7 @@ SD_CmdAnswer_typedef SD_SendCmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t 
   *         - status 110: Data rejected due to a Write error.
   *         - status 111: Data rejected due to other error.
   */
-uint8_t SD_GetDataResponse(void) {
+static uint8_t SD_GetDataResponse(void) {
 	uint8_t dataresponse;
 	uint8_t rvalue = SD_DATA_OTHER_ERROR;
 
@@ -835,7 +825,7 @@ uint8_t SD_GetDataResponse(void) {
   * @retval
   *     SD status
   */
-uint8_t SD_GoIdleState(void) {
+static uint8_t SD_GoIdleState(void) {
 	SD_CmdAnswer_typedef response;
 	__IO uint8_t counter = 0;
 	/* Send CMD0 (SD_CMD_GO_IDLE_STATE) to put SD in SPI mode and
@@ -924,7 +914,7 @@ uint8_t SD_GoIdleState(void) {
   * @retval
   *     the value read
   */
-uint8_t SD_ReadData(void) {
+static uint8_t SD_ReadData(void) {
 	uint8_t timeout = 0x08;
 	uint8_t readvalue;
 
@@ -948,7 +938,7 @@ uint8_t SD_ReadData(void) {
   * @retval
   *     SD_OK or SD_TIMEOUT
   */
-uint8_t SD_WaitData(uint8_t data) {
+static uint8_t SD_WaitData(uint8_t data) {
 	uint16_t timeout = 0xFFFF;
 	uint8_t readvalue;
 
@@ -976,7 +966,7 @@ uint8_t SD_WaitData(uint8_t data) {
   * @retval
   *     None
   */
-void SD_IO_Init(void) {
+static void SD_IO_Init(void) {
 	uint8_t	counter;
 
 	// only one thread is allowed to use the SD
@@ -1004,7 +994,7 @@ void SD_IO_Init(void) {
   * @retval
   *     None
   */
-void SD_IO_CSState(uint8_t val) {
+static void SD_IO_CSState(uint8_t val) {
 	if(val != 0) {
 		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
 	} else {
@@ -1025,7 +1015,7 @@ void SD_IO_CSState(uint8_t val) {
   * @retval
   *     None
   */
-void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
+static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	/* Send the byte */
 	SPI_WriteReadData(DataIn, DataOut, DataLength);
 }
@@ -1039,20 +1029,11 @@ void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataL
   * @retval
   *     Data written
   */
-uint8_t SD_IO_WriteByte(uint8_t Data) {
+static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	uint8_t tmp;
 
 	/* Send the byte */
 	SPI_WriteReadData(&Data,&tmp,1);
 	return tmp;
 }
-
-
-// Private Functions
-// *****************
-
-
-
-// Callbacks
-// *********
 

@@ -125,17 +125,11 @@ typedef struct {
   */
 #define SD_CardInfo SD_CardInfo
 
-uint8_t SD_Init(void);
+void    SD_init(void);
 uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
 uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
 uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr);
 uint8_t SD_GetCardState(void);
 uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo);
-
-/* Link functions for SD Card peripheral*/
-void    SD_IO_Init(void);
-void    SD_IO_CSState(uint8_t state);
-void    SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
-uint8_t SD_IO_WriteByte(uint8_t Data);
 
 #endif /* INC_SD_H_ */
