@@ -223,7 +223,7 @@ set_dmod:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "pwmpin!"
 set_pwmpin:
-		@ ( u a --  ) sets the digital output port pin (D3=3, D5=5, D6=6, D9=9, D10=10, D11=11) to a PWM value (0..1000). Frequency is 10 kHz
+		@ ( u a --  ) sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Frequency is 1 kHz
 // int BSP_setPwmPin(int pin_number, int value)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -232,6 +232,89 @@ set_pwmpin:
 	movs	r1, tos		// value
 	drop
 	bl		BSP_setPwmPin
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pwmprescale"
+pwmprescale:
+		@ ( u --  ) Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
+// void BSP_setPwmPrescale(int16_t value)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// value
+	drop
+	bl		BSP_setPwmPrescale
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "empty-buffers"
+empty_buffers:
+		@ ( -- ) Marks all block buffers as empty
+// void SD_emptyBuffers(void)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		SD_emptyBuffers
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "update"
+update:
+		@ ( -- ) Mark most recent block as updated
+// void SD_updateBlock(void)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		SD_updateBlock
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "block"
+block:
+		@ ( n -- addr ) Return address of buffer for block n
+// uint8_t *SD_getBlock(int block_number)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// n
+	bl		SD_getBlock
+	movs	tos, r0		// addr
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "buffer"
+buffer:
+		@ ( n -- addr ) Return address of buffer for block n
+// uint8_t *SD_assignBlock(int block_number)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// n
+	bl		SD_assignBlock
+	movs	tos, r0		// addr
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "save-buffers"
+save_buffers:
+		@ ( -- ) Transfer the contents of each updated block buffer
+// void SD_saveBuffers(void)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		SD_saveBuffers
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "flush"
+flush:
+		@ ( -- ) save-buffers empty-buffers
+// void SD_flushBuffers(void)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		SD_flushBuffers
 	pop		{r0-r3, pc}
 
 

@@ -178,7 +178,6 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hspi);
 
-	SpiError = TRUE;
 	osSemaphoreRelease(SPI_SemaphoreID);
 }
 
@@ -193,6 +192,7 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hspi);
 
+	SpiError = TRUE;
 	osSemaphoreRelease(SPI_SemaphoreID);
 }
 

@@ -649,6 +649,26 @@ void BSP_setPwmPin(int pin_number, int value) {
 }
 
 
+/**
+ *  @brief
+ *	    Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
+ *
+ *	@param[in]
+ *      value         32 kHz / prescale, default 32 -> PWM frequency 1 kHz
+ *  @return
+ *      none
+ *
+ */
+void BSP_setPwmPrescale(uint16_t value) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	__HAL_TIM_SET_PRESCALER(&htim1, ++value);
+
+	osMutexRelease(DigitalPort_MutexID);
+}
+
+
 // Private Functions
 // *****************
 

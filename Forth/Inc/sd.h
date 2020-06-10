@@ -126,8 +126,15 @@ typedef struct {
 #define SD_CardInfo SD_CardInfo
 
 void    SD_init(void);
-uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
-uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
+void    SD_emptyBuffers(void);
+void    SD_updateBlock(void);
+uint8_t *SD_getBlock(int block_number);
+uint8_t *SD_assignBlock(int block_number);
+void    SD_saveBuffers(void);
+void    SD_flushBuffers(void);
+
+uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
+uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
 uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr);
 uint8_t SD_GetCardState(void);
 uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo);
