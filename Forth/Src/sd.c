@@ -32,7 +32,6 @@
 // System include files
 // ********************
 #include "cmsis_os.h"
-//#include "stm32wbxx_hal_spi.h"
 
 // Application include files
 // *************************
@@ -96,20 +95,9 @@
 #define SD_CMD_APP_CMD				55	/* CMD55 = 0x77 */
 #define SD_CMD_READ_OCR				58	/* CMD55 = 0x79 */
 
-#define BLOCK_BUFFER_COUNT			4
-#define BLOCK_BUFFER_SIZE			1024
-
 
 // Private typedefs
 // ****************
-
-typedef struct {
-	uint8_t Data[BLOCK_BUFFER_SIZE];
-	int BlockNumber;  // -1 = Buffer unassigned
-	uint8_t Current;
-	uint8_t Updated;
-} block_buffer_t;
-
 
 typedef struct {
 	uint8_t r1;
@@ -183,11 +171,6 @@ static void SD_IO_CSState(uint8_t state);
 static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
 static uint8_t SD_IO_WriteByte(uint8_t Data);
 
-// SD raw block functions
-static void get_block(int block_number, int buffer_index);
-static void save_buffer(int buffer_index);
-static void init_block(int block_number, int buffer_index);
-
 
 // Global Variables
 // ****************
@@ -221,12 +204,11 @@ __IO uint8_t SdStatus = SD_NOT_PRESENT;
 */
 uint16_t flag_SDHC = 0;
 
-uint8_t scratch_block[SD_BLOCK_SIZE];
-
-block_buffer_t BlockBuffers[BLOCK_BUFFER_COUNT];
-
 int sd_size = 0; // number of blocks
 SD_CardInfo CardInfo;
+
+uint8_t scratch_block[SD_BLOCK_SIZE];
+
 
 // Public Functions
 // ****************
@@ -248,6 +230,17 @@ void SD_init(void) {
 		Error_Handler();
 	}
 
+	SD_getSize();
+}
+
+
+/**
+ *  @brief
+ *      Initializes the Secure Digital Memory Card and get the size in KiB.
+ *  @return
+ *      None
+ */
+void SD_getSize(void) {
 	/* Configure IO functionalities for SD pin */
 	SD_IO_Init();
 
@@ -261,199 +254,21 @@ void SD_init(void) {
 	} else {
 		// get some card infos e.g. size
 		if (SD_GetCardInfo(&CardInfo) != SD_ERROR) {
-			sd_size = CardInfo.CardCapacity / BLOCK_BUFFER_SIZE;
+			sd_size = CardInfo.CardCapacity / 1024;
 		}
 	}
 
-	SD_emptyBuffers();
 }
-
 
 /**
  *  @brief
- *      Empties all buffers.
- *
- *      empty-buffers ( -- ) Marks all block buffers as empty
+ *      Get the SD size in KiB.
  *  @return
- *      None
+ *      size in KiB
  */
-void SD_emptyBuffers(void) {
-	int i;
-
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		BlockBuffers[i].BlockNumber = -1;
-		BlockBuffers[i].Current = FALSE;
-		BlockBuffers[i].Updated = FALSE;
-	}
+int SD_getBlocks(void) {
+	return sd_size;
 }
-
-
-/**
- *  @brief
- *      Makes the most recent block dirty (updated).
- *
- *      update	( -- )	Mark most recent block as updated
- *  @return
- *      none
- */
-void SD_updateBlock(void) {
-	int i;
-
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].Current) {
-			BlockBuffers[i].Updated = TRUE;
-			break;
-		}
-	}
-}
-
-
-/**
- *  @brief
- *      Gets a block from raw (unformatted) SD.
- *
- *      block ( n -- addr )	Return address of buffer for block n
- *      If a block buffer is assigned for block u, return its start address, a-addr.
- *      Otherwise, assign a block buffer for block u (if the assigned block buffer
- *      has been updated, transfer the contents to mass storage), read the block i
- *      to the block buffer and return its start address, a-addr.
- *  @param[in]
- *  	block_number
- *  @return
- *      Buffer Address
- */
-uint8_t *SD_getBlock(int block_number) {
-	int i;
-	int j;
-
-	// already assigned?
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].BlockNumber == block_number) {
-			// the block is already in the buffer -> make current
-			for (j=0; j<BLOCK_BUFFER_COUNT; j++) {
-				BlockBuffers[i].Current = FALSE;
-			}
-			BlockBuffers[i].Current = TRUE;
-			return &BlockBuffers[i].Data[0];
-		}
-	}
-
-	// is there an unassigned (empty) buffer?
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].BlockNumber < 0) {
-			// buffer is unassigned (empty)
-			get_block(block_number, i);
-			return &BlockBuffers[i].Data[0];
-		}
-	}
-
-	// take the first not current buffer
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (! BlockBuffers[i].Current) {
-			// buffer is not current
-			if (BlockBuffers[i].Updated) {
-				// Buffer is updated -> save buffer to SD
-				save_buffer(i);
-			}
-			get_block(block_number, i);
-			return &BlockBuffers[i].Data[0];
-		}
-	}
-
-	return NULL;
-
-}
-
-
-/**
- *  @brief
- *      Assigns a block. No file I/O.
- *
- *      buffer ( n -- addr )	Return address of buffer for block n
- *  @param[in]
- *  	block_number
- *  @return
- *      Buffer Address
- */
-uint8_t *SD_assignBlock(int block_number) {
-	int i;
-	int j;
-
-	// already assigned?
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].BlockNumber == block_number) {
-			// the block is already in the buffer -> make current
-			for (j=0; j<BLOCK_BUFFER_COUNT; j++) {
-				BlockBuffers[i].Current = FALSE;
-			}
-			BlockBuffers[i].Current = TRUE;
-			return &BlockBuffers[i].Data[0];
-		}
-	}
-
-	// is there an unassigned (empty) buffer?
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].BlockNumber < 0) {
-			// buffer is unassigned (empty)
-			init_block(block_number, i);
-			return &BlockBuffers[i].Data[0];
-		}
-	}
-
-	// take the first not current buffer
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (! BlockBuffers[i].Current) {
-			// buffer is not current
-			if (BlockBuffers[i].Updated) {
-				// Buffer is updated -> save buffer to SD
-				save_buffer(i);
-			}
-			// fill the block with spaces
-			init_block(block_number, i);
-			return &BlockBuffers[i].Data[0];
-		}
-	}
-
-	return NULL;
-
-}
-
-
-/**
- *  @brief
- *      Saves all updated buffers to SD.
- *
- *      save-buffers ( -- ) Transfer the contents of each updated block buffer
- *      to mass storage, then mark all block buffers as assigned-clean.
- *  @return
- *      none
- */
-void SD_saveBuffers(void) {
-	int i;
-
-	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].Updated) {
-			// save buffer
-			BlockBuffers[i].Updated = FALSE;
-		}
-	}
-}
-
-
-//		save-buffer ( n -- )
-/**
- *  @brief
- *      Saves and empties all updated buffers to SD.
- *
- *      flush ( -- ) save-buffers empty-buffers
- *  @return
- *      none
- */
-void SD_flushBuffers(void) {
-	SD_saveBuffers();
-	SD_emptyBuffers();
-}
-
 
 /**
   * @brief
@@ -1183,9 +998,6 @@ static uint8_t SD_WaitData(uint8_t data) {
 static void SD_IO_Init(void) {
 	uint8_t	counter;
 
-	// only one thread is allowed to use the SD
-	osMutexAcquire(SD_MutexID, osWaitForever);
-
 	/* SD chip select high */
 	SD_IO_CSState(1);
 
@@ -1195,8 +1007,6 @@ static void SD_IO_Init(void) {
 		/* Send dummy byte 0xFF */
 		SD_IO_WriteByte(SD_DUMMY_BYTE);
 	}
-
-	osMutexRelease(SD_MutexID);
 }
 
 
@@ -1250,61 +1060,5 @@ static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	SPI_WriteReadData(&Data,&tmp,1);
 	return tmp;
 }
-
-
-/**
- *  @brief
- *      Gets a block from raw (unformatted) SD.
- *
- *      The block consists of 2 SD blocks.
- *  @param[in]
- *  	block_number	raw block number.
- *  @param[in]
- *  	buffer_index	Buffer array index.
- *  @return
- *      none
- */
-static void get_block(int block_number, int buffer_index) {
-	SD_ReadBlocks(&BlockBuffers[buffer_index].Data[0], block_number*2, 2);
-	BlockBuffers[buffer_index].BlockNumber = block_number;
-	BlockBuffers[buffer_index].Current = TRUE;
-	BlockBuffers[buffer_index].Updated = FALSE;
-}
-
-
-/**
- *  @brief
- *      Inits a block with spaces.
- *
- *  @param[in]
- *  	block_number	raw block number.
- *  @param[in]
- *  	buffer_index	Buffer array index.
- *  @return
- *      none
- */
-static void init_block(int block_number, int buffer_index) {
-	memset(&BlockBuffers[buffer_index].Data[0], ' ', BLOCK_BUFFER_SIZE);
-	BlockBuffers[buffer_index].BlockNumber = block_number;
-	BlockBuffers[buffer_index].Current = TRUE;
-	BlockBuffers[buffer_index].Updated = FALSE;
-}
-
-
-/**
- *  @brief
- *      Saves a buffer to the SD.
- *
- *      The block consists of 2 SD blocks.
- *  @param[in]
- *  	buffer_index	Buffer array index.
- *  @return
- *      none
- */
-static void save_buffer(int buffer_index) {
-	SD_WriteBlocks(&BlockBuffers[buffer_index].Data[0], BlockBuffers[buffer_index].BlockNumber*2, 2);
-	BlockBuffers[buffer_index].Updated = FALSE;
-}
-
 
 

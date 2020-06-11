@@ -249,13 +249,37 @@ pwmprescale:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "sdinit"
+sdinit:
+		@ ( -- ) Initializes the sd, sets the block count
+// void SD_getSize(void)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		SD_getSize
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "sdblocks"
+sdblocks:
+		@ ( -- u ) Gets the block count
+// int SD_getBlocks(void)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		SD_getBlocks
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "empty-buffers"
 empty_buffers:
 		@ ( -- ) Marks all block buffers as empty
-// void SD_emptyBuffers(void)
+// void BLOCK_emptyBuffers(void)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
-	bl		SD_emptyBuffers
+	bl		BLOCK_emptyBuffers
 	pop		{r0-r3, pc}
 
 
@@ -263,10 +287,10 @@ empty_buffers:
 		Wortbirne Flag_visible, "update"
 update:
 		@ ( -- ) Mark most recent block as updated
-// void SD_updateBlock(void)
+// void BLOCK_update(void)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
-	bl		SD_updateBlock
+	bl		BLOCK_update
 	pop		{r0-r3, pc}
 
 
@@ -274,11 +298,11 @@ update:
 		Wortbirne Flag_visible, "block"
 block:
 		@ ( n -- addr ) Return address of buffer for block n
-// uint8_t *SD_getBlock(int block_number)
+// uint8_t *BLOCK_get(int block_number)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos		// n
-	bl		SD_getBlock
+	bl		BLOCK_get
 	movs	tos, r0		// addr
 	pop		{r0-r3, pc}
 
@@ -287,11 +311,11 @@ block:
 		Wortbirne Flag_visible, "buffer"
 buffer:
 		@ ( n -- addr ) Return address of buffer for block n
-// uint8_t *SD_assignBlock(int block_number)
+// uint8_t *BLOCK_assign(int block_number)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos		// n
-	bl		SD_assignBlock
+	bl		BLOCK_assign
 	movs	tos, r0		// addr
 	pop		{r0-r3, pc}
 
@@ -300,10 +324,10 @@ buffer:
 		Wortbirne Flag_visible, "save-buffers"
 save_buffers:
 		@ ( -- ) Transfer the contents of each updated block buffer
-// void SD_saveBuffers(void)
+// void BLOCK_saveBuffers(void)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
-	bl		SD_saveBuffers
+	bl		BLOCK_saveBuffers
 	pop		{r0-r3, pc}
 
 
@@ -311,10 +335,10 @@ save_buffers:
 		Wortbirne Flag_visible, "flush"
 flush:
 		@ ( -- ) save-buffers empty-buffers
-// void SD_flushBuffers(void)
+// void BLOCK_flushBuffers(void)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
-	bl		SD_flushBuffers
+	bl		BLOCK_flushBuffers
 	pop		{r0-r3, pc}
 
 
