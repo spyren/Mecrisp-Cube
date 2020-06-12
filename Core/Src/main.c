@@ -47,6 +47,7 @@
 #include "bsp.h"
 #include "spi.h"
 #include "sd.h"
+#include "block.h"
 
 /* USER CODE END Includes */
 
@@ -767,6 +768,7 @@ void MainThread(void *argument)
 	FLASH_init();
 	SPI_init();
 	SD_init();
+	BLOCK_init();
 
 	Forth();
 
