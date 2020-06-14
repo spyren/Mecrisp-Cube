@@ -290,7 +290,9 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 	{
 		pCardInfo->LogBlockSize = SD_BLOCK_SIZE;
 		pCardInfo->CardBlockSize = SD_BLOCK_SIZE;
-		pCardInfo->CardCapacity = (pCardInfo->Csd.version.v2.DeviceSize + 1) * 1024 * pCardInfo->LogBlockSize;
+		pCardInfo->CardCapacity =
+				(uint64_t)(pCardInfo->Csd.version.v2.DeviceSize + 1) *
+				1024ULL * (uint64_t) pCardInfo->LogBlockSize;
 		pCardInfo->LogBlockNbr = (pCardInfo->CardCapacity) / (pCardInfo->LogBlockSize);
 	}
 	else
