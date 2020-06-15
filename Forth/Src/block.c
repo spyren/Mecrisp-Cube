@@ -313,7 +313,7 @@ void BLOCK_saveBuffers(void) {
 
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
 		if (BlockBuffers[i].Updated) {
-			// save buffer
+			save_buffer(i);
 			BlockBuffers[i].Updated = FALSE;
 		}
 	}

@@ -48,6 +48,7 @@
 #include "spi.h"
 #include "sd.h"
 #include "block.h"
+#include "app_fatfs.h"
 
 /* USER CODE END Includes */
 
@@ -769,6 +770,9 @@ void MainThread(void *argument)
 	SPI_init();
 	SD_init();
 	BLOCK_init();
+	if (MX_FATFS_Init() != APP_OK) {
+		Error_Handler();
+	}
 
 	Forth();
 

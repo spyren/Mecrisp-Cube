@@ -127,6 +127,7 @@ typedef struct {
 
 void    SD_init(void);
 void    SD_getSize(void);
+int 	SD_getBlocks(void);
 void    SD_emptyBuffers(void);
 void    SD_updateBlock(void);
 uint8_t *SD_getBlock(int block_number);
