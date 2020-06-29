@@ -93,6 +93,8 @@ compare:                             @ ( c-addr1 len-1 c-addr2 len-2 -- f )
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "cr" @ Zeilenumbruch
 @ -----------------------------------------------------------------------------
+.global		FORTH_cr
+FORTH_cr:
   push {lr}
   writeln ""
   pop {pc}
@@ -283,6 +285,14 @@ type: @ ( str -- ) Gibt einen String aus  Print a counted string
   bl count
   bl stype
   pop {pc}
+
+.global		FORTH_type
+FORTH_type:
+		pushdatos
+		movs		tos, r0
+		pushdatos
+		movs		tos, r1
+		b.n			stype
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "type"

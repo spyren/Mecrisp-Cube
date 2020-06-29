@@ -49,6 +49,7 @@
 #include "sd.h"
 #include "block.h"
 #include "app_fatfs.h"
+#include "fs.h"
 
 /* USER CODE END Includes */
 
@@ -773,6 +774,7 @@ void MainThread(void *argument)
 	if (MX_FATFS_Init() != APP_OK) {
 		Error_Handler();
 	}
+	FS_init();
 
 	Forth();
 

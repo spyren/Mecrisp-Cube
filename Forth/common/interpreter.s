@@ -19,9 +19,18 @@
 @ Interpreter und Optimierungen
 @ Interpreter and optimisations
 
+.global		FORTH_evaluate
+FORTH_evaluate:
+		pushdatos
+		movs		tos, r0
+		pushdatos
+		movs		tos, r1
+		b.n			1f
+
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "evaluate" @ ( -- )
 @ -----------------------------------------------------------------------------
+1:
   push {lr}
   bl source             @ Save current source
 

@@ -79,10 +79,7 @@ Diskio_drvTypeDef  USER_Driver =
   * @param  pdrv: Physical drive number (0..)
   * @retval DSTATUS: Operation status
   */
-DSTATUS USER_initialize (
-	BYTE pdrv           /* Physical drive nmuber to identify the drive */
-)
-{
+DSTATUS USER_initialize (BYTE pdrv) {
   /* USER CODE BEGIN INIT */
     Stat = STA_NOINIT;
     SD_init();
@@ -95,28 +92,26 @@ DSTATUS USER_initialize (
     return Stat;
   /* USER CODE END INIT */
 }
- 
+
+
 /**
   * @brief  Gets Disk Status 
   * @param  pdrv: Physical drive number (0..)
   * @retval DSTATUS: Operation status
   */
-DSTATUS USER_status (
-	BYTE pdrv       /* Physical drive number to identify the drive */
-)
-{
-  /* USER CODE BEGIN STATUS */
-    Stat = STA_NOINIT;
-    if (SD_getBlocks() == 0) {
-    	// no SD card
-    	Stat = STA_NODISK;
-    } else {
-    	Stat = 0;
-    }
-    return Stat;
-    return Stat;
-  /* USER CODE END STATUS */
+DSTATUS USER_status (BYTE pdrv) {
+	/* USER CODE BEGIN STATUS */
+	Stat = STA_NOINIT;
+	if (SD_getBlocks() == 0) {
+		// no SD card
+		Stat = STA_NODISK;
+	} else {
+		Stat = 0;
+	}
+	return Stat;
+	/* USER CODE END STATUS */
 }
+
 
 /**
   * @brief  Reads Sector(s) 
@@ -126,16 +121,14 @@ DSTATUS USER_status (
   * @param  count: Number of sectors to read (1..128)
   * @retval DRESULT: Operation result
   */
-DRESULT USER_read (
-	BYTE pdrv,      /* Physical drive nmuber to identify the drive */
-	BYTE *buff,     /* Data buffer to store read data */
-	DWORD sector,   /* Sector address in LBA */
-	UINT count      /* Number of sectors to read */
-)
-{
-  /* USER CODE BEGIN READ */
-    return RES_OK;
-  /* USER CODE END READ */
+DRESULT USER_read(BYTE pdrv, BYTE *buff, DWORD sector, UINT count) {
+	/* USER CODE BEGIN READ */
+	DRESULT res = RES_ERROR;
+	if( SD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
+		res = RES_OK;
+	}
+	return res;
+	/* USER CODE END READ */
 }
 
 /**
@@ -147,17 +140,15 @@ DRESULT USER_read (
   * @retval DRESULT: Operation result
   */
 #if _USE_WRITE == 1
-DRESULT USER_write (
-	BYTE pdrv,          /* Physical drive nmuber to identify the drive */
-	const BYTE *buff,   /* Data to be written */
-	DWORD sector,       /* Sector address in LBA */
-	UINT count          /* Number of sectors to write */
-)
-{ 
-  /* USER CODE BEGIN WRITE */
-  /* USER CODE HERE */
-    return RES_OK;
-  /* USER CODE END WRITE */
+DRESULT USER_write(BYTE pdrv, const BYTE *buff, DWORD sector, UINT count) {
+	/* USER CODE BEGIN WRITE */
+	/* USER CODE HERE */
+	DRESULT res = RES_ERROR;
+	if (SD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
+		res = RES_OK;
+	}
+	return res;
+	/* USER CODE END WRITE */
 }
 #endif /* _USE_WRITE == 1 */
 
@@ -169,16 +160,46 @@ DRESULT USER_write (
   * @retval DRESULT: Operation result
   */
 #if _USE_IOCTL == 1
-DRESULT USER_ioctl (
-	BYTE pdrv,      /* Physical drive nmuber (0..) */
-	BYTE cmd,       /* Control code */
-	void *buff      /* Buffer to send/receive control data */
-)
-{
-  /* USER CODE BEGIN IOCTL */
-    DRESULT res = RES_ERROR;
-    return res;
-  /* USER CODE END IOCTL */
+DRESULT USER_ioctl(BYTE pdrv, BYTE cmd, void *buff) {
+	/* USER CODE BEGIN IOCTL */
+	DRESULT res = RES_ERROR;
+	SD_CardInfo CardInfo;
+
+	if (Stat & STA_NOINIT) return RES_NOTRDY;
+
+	switch (cmd) {
+	/* Make sure that no pending write process */
+	case CTRL_SYNC :
+		res = RES_OK;
+		break;
+
+		/* Get number of sectors on the disk (DWORD) */
+	case GET_SECTOR_COUNT :
+		SD_GetCardInfo(&CardInfo);
+		*(DWORD*)buff = CardInfo.LogBlockNbr;
+		res = RES_OK;
+		break;
+
+		/* Get R/W sector size (WORD) */
+	case GET_SECTOR_SIZE :
+		SD_GetCardInfo(&CardInfo);
+		*(WORD*)buff = CardInfo.LogBlockSize;
+		res = RES_OK;
+		break;
+
+		/* Get erase block size in unit of sector (DWORD) */
+	case GET_BLOCK_SIZE :
+		SD_GetCardInfo(&CardInfo);
+		*(DWORD*)buff = CardInfo.LogBlockSize / SD_BLOCK_SIZE;
+		res = RES_OK;
+		break;
+
+	default:
+		res = RES_PARERR;
+	}
+
+	return res;
+	/* USER CODE END IOCTL */
 }
 #endif /* _USE_IOCTL == 1 */
 

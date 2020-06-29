@@ -54,7 +54,7 @@
 /  1: Enable without LF-CRLF conversion.
 /  2: Enable with LF-CRLF conversion. */
 
-#define _USE_FIND            0
+#define _USE_FIND            2
 /* This option switches filtered directory read functions, f_findfirst() and
 /  f_findnext(). (0:Disable, 1:Enable 2:Enable with matching altname[] too) */
 
@@ -64,7 +64,7 @@
 #define _USE_FASTSEEK        1
 /* This option switches fast seek feature. (0:Disable or 1:Enable) */
 
-#define	_USE_EXPAND		0
+#define	_USE_EXPAND		1
 /* This option switches f_expand function. (0:Disable or 1:Enable) */
 
 #define _USE_CHMOD		1
@@ -75,7 +75,7 @@
 /* This option switches volume label functions, f_getlabel() and f_setlabel().
 /  (0:Disable or 1:Enable) */
 
-#define _USE_FORWARD         0
+#define _USE_FORWARD         1
 /* This option switches f_forward() function. (0:Disable or 1:Enable) */
 
 /*-----------------------------------------------------------------------------/
@@ -110,7 +110,7 @@
 /   950 - Traditional Chinese (DBCS)
 */
 
-#define _USE_LFN     0    /* 0 to 3 */
+#define _USE_LFN     3    /* 0 to 3 */
 #define _MAX_LFN     255  /* Maximum LFN length to handle (12 to 255) */
 /* The _USE_LFN switches the support of long file name (LFN).
 /
@@ -217,8 +217,8 @@
 
 #define _FS_NORTC	0
 #define _NORTC_MON	6
-#define _NORTC_MDAY	4
-#define _NORTC_YEAR	2015
+#define _NORTC_MDAY	29
+#define _NORTC_YEAR	2020
 /* The option _FS_NORTC switches timestamp functiton. If the system does not have
 /  any RTC function or valid timestamp is not needed, set _FS_NORTC = 1 to disable
 /  the timestamp function. All objects modified by FatFs will have a fixed timestamp

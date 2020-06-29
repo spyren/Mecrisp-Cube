@@ -342,3 +342,79 @@ flush:
 	pop		{r0-r3, pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "include"
+include:
+		@ filename ( -- ) Interprets the content of the file.
+// void FS_include(uint8_t *str, int count)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		token		@ ( -- c-addr len )
+	movs	r1, tos		// len -> count
+	drop
+	movs	r0, tos		// c-addr -> str
+	drop
+	bl		FS_include
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "cat"
+cat:
+		@ filename ( -- ) Types the content of the file.
+// void FS_cat(uint8_t *str, int count)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		token		@ ( -- c-addr len )
+	movs	r1, tos		// len -> count
+	drop
+	movs	r0, tos		// c-addr -> str
+	drop
+	bl		FS_cat
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ls"
+ls:
+		@ filename ( -- ) Types the content of the file.
+// void FS_ls(uint8_t *str, int count)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		token		@ ( -- c-addr len )
+	movs	r1, tos		// len -> count
+	drop
+	movs	r0, tos		// c-addr -> str
+	drop
+	bl		FS_ls
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "cd"
+cd:
+		@ filename ( -- ) Change the working directory.
+// void FS_cd(uint8_t *str, int count)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		token		@ ( -- c-addr len )
+	movs	r1, tos		// len -> count
+	drop
+	movs	r0, tos		// c-addr -> str
+	drop
+	bl		FS_cd
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pwd"
+pwd:
+		@ ( -- ) Types the content of the file.
+// void FS_pwd()
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		FS_pwd
+	pop		{r0-r3, pc}
+
+
+
