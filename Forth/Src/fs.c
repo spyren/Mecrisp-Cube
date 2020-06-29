@@ -128,7 +128,8 @@ void FS_include(uint8_t *str, int count) {
 
 	/* Read every line and interprets it */
 	while (f_gets(line, sizeof line, &fil)) {
-		FORTH_evaluate((uint8_t*)line, strlen(line));
+		// line without \n
+		FORTH_evaluate((uint8_t*)line, strlen(line)-1);
 	}
 
 	/* Close the file */
@@ -193,6 +194,7 @@ void FS_ls(uint8_t *str, int count) {
 
 	fr = f_findfirst(&dj, &fno, line, "*");
 
+	FORTH_cr();
 	while (fr == FR_OK && fno.fname[0]) {
 		/* Repeat while an item is found */
 		FORTH_type((uint8_t*)fno.fname, strlen(fno.fname));
@@ -239,6 +241,7 @@ void FS_pwd(void) {
 	TCHAR line[200];
 	FRESULT fr;     /* FatFs return code */
 
+	FORTH_cr();
 	fr = f_getcwd(line, 200);  /* Get current directory path */
 	if (fr == FR_OK) {
 		FORTH_type((uint8_t*)line, strlen(line));
