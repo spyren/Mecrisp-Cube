@@ -380,12 +380,16 @@ ls:
 		@ filename ( -- ) Types the content of the file.
 // void FS_ls(uint8_t *str, int count)
 @ -----------------------------------------------------------------------------
+//	push	{r0-r3, lr}
+//	bl		token		@ ( -- c-addr len )
+//	movs	r1, tos		// len -> count
+//	drop
+//	movs	r0, tos		// c-addr -> str
+//	drop
+//	bl		FS_ls
+//	pop		{r0-r3, pc}
+
 	push	{r0-r3, lr}
-	bl		token		@ ( -- c-addr len )
-	movs	r1, tos		// len -> count
-	drop
-	movs	r0, tos		// c-addr -> str
-	drop
 	bl		FS_ls
 	pop		{r0-r3, pc}
 
