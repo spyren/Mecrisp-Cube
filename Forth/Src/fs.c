@@ -140,7 +140,7 @@ void FS_include(uint8_t *str, int count) {
 	while (f_gets(line, sizeof line, &fil)) {
 		FORTH_type((uint8_t*)line, strlen(line));
 		// line without \n
-		FORTH_evaluate((uint8_t*)line, strlen(line)-1);
+//		FORTH_evaluate((uint8_t*)line, strlen(line)-1);
 	}
 
 	/* Close the file */
