@@ -90,11 +90,19 @@ compare:                             @ ( c-addr1 len-1 c-addr2 len-2 -- f )
    mvns tos, tos
    pop {r0, r1, r2, r3, pc}
 
+
+// void FORTH_cr(void);
+.global		FORTH_cr
+FORTH_cr:
+	push 	{r4-r7, lr}	// save registers used by Forth
+	movs	psp, r8
+	bl		cr
+	pop		{r4-r7, pc}
+
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "cr" @ Zeilenumbruch
 @ -----------------------------------------------------------------------------
-.global		FORTH_cr
-FORTH_cr:
+cr:
   push {lr}
   writeln ""
   pop {pc}
@@ -286,13 +294,17 @@ type: @ ( str -- ) Gibt einen String aus  Print a counted string
   bl stype
   pop {pc}
 
+// void FORTH_type(uint8_t* str, int count);
 .global		FORTH_type
 FORTH_type:
-		pushdatos
-		movs		tos, r0
-		pushdatos
-		movs		tos, r1
-		b.n			stype
+	push	{r4-r7, lr}	// save registers used by Forth
+	movs	psp, r8		// psp
+	pushdatos
+	movs	tos, r0
+	pushdatos
+	movs	tos, r1
+	bl		stype
+	pop		{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "type"

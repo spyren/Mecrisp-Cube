@@ -19,10 +19,12 @@
 @ Token und Parse zum Zerlegen des Eingabepuffers
 @ Token and parse to cut contents of input buffer apart
 
-// void int FORTH_token(uint8_t **str)
+// int  FORTH_token(uint8_t **str);
 .global	FORTH_token
 FORTH_token:
-	push 	{r0, lr}	// push argument (pointer to string)
+	push 	{r4-r7, lr}	// save registers used by Forth
+	push 	{r0}		// push argument (pointer to string)
+	movs	psp, r8		// psp
 	bl		token
 	pop		{r0}
 	movs	r2, r0
@@ -31,7 +33,7 @@ FORTH_token:
 	movs	r1, tos		// c-addr -> str
 	drop
 	str		r1, [r2]
-	pop		{pc}
+	pop		{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "token" @ ( -- c-addr length )

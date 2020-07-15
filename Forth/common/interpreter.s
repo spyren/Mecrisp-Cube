@@ -19,18 +19,22 @@
 @ Interpreter und Optimierungen
 @ Interpreter and optimisations
 
+// void FORTH_evaluate(uint8_t* str, int count);
 .global		FORTH_evaluate
 FORTH_evaluate:
-		pushdatos
-		movs		tos, r0
-		pushdatos
-		movs		tos, r1
-		b.n			1f
+	push 	{r4-r7, lr}	// save registers used by Forth
+	movs	psp, r8	// psp
+	pushdatos
+	movs	tos, r0		// str
+	pushdatos
+	movs	tos, r1		// count
+	bl		evaluate
+	pop		{r4-r7, pc}
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "evaluate" @ ( -- )
 @ -----------------------------------------------------------------------------
-1:
+evaluate:
   push {lr}
   bl source             @ Save current source
 

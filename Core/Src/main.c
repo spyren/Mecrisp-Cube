@@ -5,6 +5,18 @@
  *
  *      Forth is a CMSIS-RTOS Thread (FreeRTOS Task) MainThread.
  *      Console I/O (UART, USB-CDC, BLE) is buffered and RTOS aware.
+ *
+ *      STM32WB55C: 256 KiB RAM
+ *
+ *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
+ *      64 KiB Forth
+ *
+ *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 192K
+ *       4 KiB Stack         (probably too large)
+ *       4 KiB Heap          (maybe not needed)
+ *      64 KiB RTOS Heap
+ *       4 KiB Forth Thread Stack size
+ *
  *  @file
  *      main.c
  *  @author
@@ -83,9 +95,9 @@ UART_HandleTypeDef huart1;
 /* Definitions for Main */
 osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
-  .name = "Main",
+  .name = "MainThread",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512 * 4
+  .stack_size = 1024 * 4
 };
 /* USER CODE BEGIN PV */
 

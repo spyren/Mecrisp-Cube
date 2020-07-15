@@ -119,8 +119,12 @@ void FS_init(void) {
  */
 void FS_include(uint8_t *str, int count) {
 	FIL fil;        /* File object */
-	char line[200]; /* Line buffer */
 	FRESULT fr;     /* FatFs return code */
+
+	register uint32_t psp asm ("r8");
+	psp = psp;
+	register uint32_t tos asm ("r6");
+	tos = tos;
 
 	memcpy(line, str, count);
 	line[count] = 0;
@@ -134,6 +138,7 @@ void FS_include(uint8_t *str, int count) {
 
 	/* Read every line and interprets it */
 	while (f_gets(line, sizeof line, &fil)) {
+		FORTH_type((uint8_t*)line, strlen(line));
 		// line without \n
 		FORTH_evaluate((uint8_t*)line, strlen(line)-1);
 	}
@@ -146,96 +151,81 @@ void FS_include(uint8_t *str, int count) {
 /**
  *  @brief
  *      Concatenate files and print on the standard output
- *  @param[in]
- *      str   filename (w/ or w/o null termination)
- *  @param[in]
- *      count string length
+ *
+ *      The parameters are taken from the command line (Forth tokens)
  *  @return
  *      None
  */
-void FS_cat(uint8_t *str, int count) {
+void FS_cat(void) {
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t n_flag = FALSE;
+	int line_num = 0;
 	FIL fil;        /* File object */
-	char line[200]; /* Line buffer */
 	FRESULT fr;     /* FatFs return code */
 
-	memcpy(line, str, count);
-	line[count] = 0;
-
-	/* Open a text file */
-	fr = f_open(&fil, line, FA_READ);
-	if (fr) {
-		// open failed
-		Error_Handler();
-	}
+	register uint32_t psp asm ("r8");
+	psp = psp;
 
 	FORTH_cr();
-	/* Read every line and type it */
-	while (f_gets(line, sizeof line, &fil)) {
-		FORTH_type((uint8_t*)line, strlen(line));
+
+	while (TRUE) {
+		// get tokens till end of line
+		count = FORTH_token(&str);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+		if (! strcmp(line, "-n")) {
+			n_flag = TRUE;
+		} else {
+			/* Open a text file */
+			fr = f_open(&fil, line, FA_READ);
+			if (fr) {
+				// open failed
+				Error_Handler();
+			}
+			/* Read every line and type it */
+			while (f_gets(line, sizeof(line), &fil)) {
+				if (n_flag) {
+					snprintf(pattern, sizeof(pattern), "%6i: ", line_num++);
+					FORTH_type((uint8_t*)pattern, strlen(pattern));
+				}
+				FORTH_type((uint8_t*)line, strlen(line));
+			}
+
+			/* Close the file */
+			f_close(&fil);
+
+		}
 	}
 
-	/* Close the file */
-	f_close(&fil);
 }
 
 
-///**
-// *  @brief
-// *      List directory contents.
-// *  @param[in]
-// *      str   directory (w/ or w/o null termination)
-// *  @param[in]
-// *      count string length
-// *  @return
-// *      None
-// */
-//void FS_ls(uint8_t *str, int count) {
-//	char line[200]; /* Line buffer */
-//	char pattern[20];
-//	FILINFO fno;    /* File information */
-//	FRESULT fr;     /* FatFs return code */
-//	DIR dj;         /* Directory object */
-//
-//	memcpy(line, str, count);
-//	line[count] = 0;
-//
-//	if (strchr(line, '*') != NULL || strchr(line, '?') != NULL) {
-//		// there is a matching pattern string
-//		if (strrchr(line, '/') == NULL) {
-//			// no path, only pattern
-//			strncpy(pattern, line, sizeof(pattern));
-//			strcpy(line, "");
-//		} else {
-//			// path and pattern
-//			strncpy(pattern, strrchr(line, '/')+1, sizeof(pattern));
-//			line[strlen(line) - strlen(pattern)] = 0;
-//		}
-//	} else {
-//		strcpy(pattern, "*");
-//	}
-//
-//	fr = f_findfirst(&dj, &fno, line, pattern);
-//
-//	FORTH_cr();
-//	while (fr == FR_OK && fno.fname[0]) {
-//		/* Repeat while an item is found */
-//		FORTH_type((uint8_t*)fno.fname, strlen(fno.fname));
-//		FORTH_cr();
-//		/* Search for next item */
-//		fr = f_findnext(&dj, &fno);
-//	}
-//
-//	f_closedir(&dj);
-//}
-
+/**
+ *  @brief
+ *      List directory contents.
+ *
+ *      The parameters are taken from the command line (Forth tokens)
+ *  @return
+ *      None
+ */
 void FS_ls(void) {
 	char attrib[6];
 	uint8_t *str = NULL;
 	int count = 1;
 	uint8_t a_flag = FALSE;
 	uint8_t l_flag = FALSE;
+	uint8_t one_flag = FALSE;
 	uint8_t param = FALSE;
+	uint8_t column = 0;
 	FRESULT fr;     /* FatFs return code */
+
+	register uint32_t psp asm ("r8");
+	psp = psp;
 
 	while (TRUE) {
 		// get tokens till end of line
@@ -252,6 +242,8 @@ void FS_ls(void) {
 			a_flag = TRUE;
 		} else if (! strcmp (line, "-l")) {
 			l_flag = TRUE;
+		} else if (! strcmp (line, "-1")) {
+			one_flag = TRUE;
 		} else {
 			param = TRUE;
 		}
@@ -288,23 +280,44 @@ void FS_ls(void) {
 			if ( (fno.fattrib & AM_SYS) != AM_SYS) {
 				attrib[1] = 'r';
 			}
-			if ( (fno.fattrib & AM_RDO) != AM_RDO) {
+			if ( (fno.fattrib & AM_RDO) != AM_RDO &&
+				 (fno.fattrib & AM_SYS) != AM_SYS ) {
 				attrib[2] = 'w';
 			}
 			if ( (fno.fattrib & AM_ARC) == AM_ARC) {
 				attrib[3] = 'a';
 			}
 
-			snprintf(line, sizeof(line), "%s %9u %s\n",
-					attrib, (unsigned int)fno.fsize, fno.fname);
+			snprintf(line, sizeof(line), "%s %9u %4u-%02u-%02uT%2u:%02u:%02u %s\n",
+					attrib,
+					(unsigned int)fno.fsize,
+					(fno.fdate >> 9) + 1980,  (fno.fdate >> 5) & 0xF,  fno.fdate & 0x1F,
+					(fno.ftime >> 11) & 0x1F, (fno.ftime >> 5) & 0x2F, fno.ftime & 0x1F,
+					fno.fname);
 		} else {
-			snprintf(line, sizeof(line), "%s\n", fno.fname);
+			// not long format
+			if (one_flag) {
+				// one column
+				snprintf(line, sizeof(line), "%s\n", fno.fname);
+			} else {
+				// 4 columns
+				snprintf(line, sizeof(line), "%-23s ", fno.fname);
+				if ( ( (fno.fattrib & AM_HID) != AM_HID) || a_flag) {
+					if ( (++column) >= 4) {
+						strncat(line, "\n", sizeof(line));
+						column = 0;
+					}
+				}
+			}
 		}
 		if ( ( (fno.fattrib & AM_HID) != AM_HID) || a_flag) {
 			FORTH_type((uint8_t*)line, strlen(line));
 		}
 		/* Search for next item */
 		fr = f_findnext(&dj, &fno);
+	}
+	if (!l_flag && column != 0) {
+		FORTH_cr();
 	}
 
 	f_closedir(&dj);
@@ -313,26 +326,36 @@ void FS_ls(void) {
 /**
  *  @brief
  *      Change the working directory.
- *  @param[in]
- *      str   directory (w/ or w/o null termination)
- *  @param[in]
- *      count string length
+ *
+ *      The parameters are taken from the command line (Forth tokens)
  *  @return
  *      None
  */
-void FS_cd(uint8_t *str, int count) {
-	char line[200]; /* Line buffer */
+void FS_cd(void) {
 	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
 
-	memcpy(line, str, count);
-	line[count] = 0;
+	register uint32_t psp asm ("r8");
+	psp = psp;
 
-	fr = f_chdir(line);
-	if (fr != FR_OK) {
-		strcpy(line, "Err: directory not found");
-		FORTH_type((uint8_t*)line, strlen(line));
+	FORTH_cr();
+
+	while (TRUE) {
+		// get tokens till end of line
+		count = FORTH_token(&str);
+		if (count == 0) {
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		fr = f_chdir(line);
+		if (fr != FR_OK) {
+			strcpy(line, "Err: directory not found");
+			FORTH_type((uint8_t*)line, strlen(line));
+		}
 	}
-
 }
 /**
  *  @brief
@@ -341,11 +364,14 @@ void FS_cd(uint8_t *str, int count) {
  *      None
  */
 void FS_pwd(void) {
-	TCHAR line[200];
 	FRESULT fr;     /* FatFs return code */
 
+	register uint32_t psp asm ("r8");
+	psp = psp;
+
+
 	FORTH_cr();
-	fr = f_getcwd(line, 200);  /* Get current directory path */
+	fr = f_getcwd(line, sizeof(line));  /* Get current directory path */
 	if (fr == FR_OK) {
 		FORTH_type((uint8_t*)line, strlen(line));
 	} else {
