@@ -235,6 +235,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .ltorg
 .include "rtos.s"
 .include "bsp.s"
+.include "fs.s"
 
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !

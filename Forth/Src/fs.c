@@ -51,10 +51,6 @@
 
 // Private function prototypes
 // ***************************
-void FORTH_evaluate(uint8_t* str, int count);
-void FORTH_type(uint8_t* str, int count);
-void FORTH_cr(void);
-int  FORTH_token(uint8_t **str);
 
 // Global Variables
 // ****************
@@ -117,14 +113,9 @@ void FS_init(void) {
  *  @return
  *      None
  */
-void FS_include(uint8_t *str, int count) {
+void FS_include(uint32_t psp, uint32_t tos, uint8_t *str, int count) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
-
-	register uint32_t psp asm ("r8");
-	psp = psp;
-	register uint32_t tos asm ("r6");
-	tos = tos;
 
 	memcpy(line, str, count);
 	line[count] = 0;
@@ -133,14 +124,15 @@ void FS_include(uint8_t *str, int count) {
 	fr = f_open(&fil, line, FA_READ);
 	if (fr) {
 		// open failed
-		Error_Handler();
+		strcpy(line, "Err: file not found");
+		FS_type(psp, tos, (uint8_t*)line, strlen(line));
+		return;
 	}
 
 	/* Read every line and interprets it */
 	while (f_gets(line, sizeof line, &fil)) {
-		FORTH_type((uint8_t*)line, strlen(line));
 		// line without \n
-//		FORTH_evaluate((uint8_t*)line, strlen(line)-1);
+		FS_evaluate(psp, tos, (uint8_t*)line, strlen(line)-1);
 	}
 
 	/* Close the file */
@@ -156,7 +148,7 @@ void FS_include(uint8_t *str, int count) {
  *  @return
  *      None
  */
-void FS_cat(void) {
+void FS_cat(uint32_t psp, uint32_t tos) {
 	uint8_t *str = NULL;
 	int count = 1;
 	uint8_t n_flag = FALSE;
@@ -164,14 +156,11 @@ void FS_cat(void) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
 
-	register uint32_t psp asm ("r8");
-	psp = psp;
-
-	FORTH_cr();
+	FS_cr(psp, tos);
 
 	while (TRUE) {
 		// get tokens till end of line
-		count = FORTH_token(&str);
+		count = FS_token(psp, tos, &str);
 		if (count == 0) {
 			// no more tokens
 			break;
@@ -185,15 +174,17 @@ void FS_cat(void) {
 			fr = f_open(&fil, line, FA_READ);
 			if (fr) {
 				// open failed
-				Error_Handler();
+				strcpy(line, "Err: file not found");
+				FS_type(psp, tos, (uint8_t*)line, strlen(line));
+				return;
 			}
 			/* Read every line and type it */
 			while (f_gets(line, sizeof(line), &fil)) {
 				if (n_flag) {
 					snprintf(pattern, sizeof(pattern), "%6i: ", line_num++);
-					FORTH_type((uint8_t*)pattern, strlen(pattern));
+					FS_type(psp, tos, (uint8_t*)pattern, strlen(pattern));
 				}
-				FORTH_type((uint8_t*)line, strlen(line));
+				FS_type(psp, tos, (uint8_t*)line, strlen(line));
 			}
 
 			/* Close the file */
@@ -213,7 +204,7 @@ void FS_cat(void) {
  *  @return
  *      None
  */
-void FS_ls(void) {
+void FS_ls(uint32_t psp, uint32_t tos) {
 	char attrib[6];
 	uint8_t *str = NULL;
 	int count = 1;
@@ -224,12 +215,9 @@ void FS_ls(void) {
 	uint8_t column = 0;
 	FRESULT fr;     /* FatFs return code */
 
-	register uint32_t psp asm ("r8");
-	psp = psp;
-
 	while (TRUE) {
 		// get tokens till end of line
-		count = FORTH_token(&str);
+		count = FS_token(psp, tos, &str);
 		if (count == 0) {
 			if (!param) {
 				line[0] = 0;
@@ -269,7 +257,7 @@ void FS_ls(void) {
 
 	fr = f_findfirst(&dj, &fno, path, pattern);
 
-	FORTH_cr();
+	FS_cr(psp, tos);
 	while (fr == FR_OK && fno.fname[0]) {
 		/* Repeat while an item is found */
 		if (l_flag) {
@@ -311,13 +299,13 @@ void FS_ls(void) {
 			}
 		}
 		if ( ( (fno.fattrib & AM_HID) != AM_HID) || a_flag) {
-			FORTH_type((uint8_t*)line, strlen(line));
+			FS_type(psp, tos, (uint8_t*)line, strlen(line));
 		}
 		/* Search for next item */
 		fr = f_findnext(&dj, &fno);
 	}
 	if (!l_flag && column != 0) {
-		FORTH_cr();
+		FS_cr(psp, tos);
 	}
 
 	f_closedir(&dj);
@@ -331,19 +319,16 @@ void FS_ls(void) {
  *  @return
  *      None
  */
-void FS_cd(void) {
+void FS_cd(uint32_t psp, uint32_t tos) {
 	FRESULT fr;     /* FatFs return code */
 	uint8_t *str = NULL;
 	int count = 1;
 
-	register uint32_t psp asm ("r8");
-	psp = psp;
-
-	FORTH_cr();
+	FS_cr(psp, tos);
 
 	while (TRUE) {
 		// get tokens till end of line
-		count = FORTH_token(&str);
+		count = FS_token(psp, tos, &str);
 		if (count == 0) {
 			break;
 		}
@@ -353,7 +338,8 @@ void FS_cd(void) {
 		fr = f_chdir(line);
 		if (fr != FR_OK) {
 			strcpy(line, "Err: directory not found");
-			FORTH_type((uint8_t*)line, strlen(line));
+			FS_type(psp, tos, (uint8_t*)line, strlen(line));
+			break;
 		}
 	}
 }
@@ -363,20 +349,16 @@ void FS_cd(void) {
  *  @return
  *      None
  */
-void FS_pwd(void) {
+void FS_pwd(uint32_t psp, uint32_t tos) {
 	FRESULT fr;     /* FatFs return code */
 
-	register uint32_t psp asm ("r8");
-	psp = psp;
-
-
-	FORTH_cr();
+	FS_cr(psp, tos);
 	fr = f_getcwd(line, sizeof(line));  /* Get current directory path */
 	if (fr == FR_OK) {
-		FORTH_type((uint8_t*)line, strlen(line));
+		FS_type(psp, tos, (uint8_t*)line, strlen(line));
 	} else {
 		strcpy(line, "Err: no working directory");
-		FORTH_type((uint8_t*)line, strlen(line));
+		FS_type(psp, tos, (uint8_t*)line, strlen(line));
 	}
 }
 
