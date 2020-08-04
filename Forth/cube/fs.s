@@ -143,6 +143,23 @@ include:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "included"
+included:
+		@  ( c-addr len -- ) Interprets the content of the file.
+// void FS_include(uint32_t psp, uint32_t tos, uint8_t *str, int count)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r3, tos		// len -> count
+	drop
+	movs	r2, tos		// c-addr -> str
+	drop
+	movs	r0, psp		// psp
+	movs	r1, tos		// tos
+	bl		FS_include
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "cat"
 cat:
 		@ cat ( "line<EOF>" -- ) Types the content of the file.

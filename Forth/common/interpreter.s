@@ -20,12 +20,12 @@
 @ Interpreter and optimisations
 
 @ -----------------------------------------------------------------------------
-  Wortbirne Flag_visible, "evaluate" @ ( -- )
+  Wortbirne Flag_visible, "evaluate" @ ( any c-addr len -- any )
 @ -----------------------------------------------------------------------------
 evaluate:
   push {lr}
-  bl source             @ Save current source
 
+  bl source             @ Save current source
   @ 2>r
   ldm psp!, {r0}
   push {r0}

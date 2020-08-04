@@ -117,11 +117,11 @@ void FS_include(uint32_t psp, uint32_t tos, uint8_t *str, int count) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
 
-	memcpy(line, str, count);
+	memcpy(path, str, count);
 	line[count] = 0;
 
 	/* Open a text file */
-	fr = f_open(&fil, line, FA_READ);
+	fr = f_open(&fil, path, FA_READ);
 	if (fr) {
 		// open failed
 		strcpy(line, "Err: file not found");
@@ -131,6 +131,9 @@ void FS_include(uint32_t psp, uint32_t tos, uint8_t *str, int count) {
 
 	/* Read every line and interprets it */
 	while (f_gets(line, sizeof line, &fil)) {
+		// type the line
+		FS_type(psp, tos, (uint8_t*)line, strlen(line));
+		osDelay(100);
 		// line without \n
 		FS_evaluate(psp, tos, (uint8_t*)line, strlen(line)-1);
 	}

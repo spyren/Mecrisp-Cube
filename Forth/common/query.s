@@ -186,7 +186,7 @@ setsource:
   bx lr
 
 @ -----------------------------------------------------------------------------
-  Wortbirne Flag_visible, "source" @ ( c-addr len -- )
+  Wortbirne Flag_visible, "source" @ ( -- c-addr len )
 source:
 @ -----------------------------------------------------------------------------
   pushdatos
