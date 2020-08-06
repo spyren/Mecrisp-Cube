@@ -32,10 +32,10 @@
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "sdinit"
-sdinit:
 		@ ( -- ) Initializes the sd, sets the block count
 // void SD_getSize(void)
 @ -----------------------------------------------------------------------------
+sdinit:
 	push	{r0-r3, lr}
 	bl		SD_getSize
 	pop		{r0-r3, pc}
@@ -43,10 +43,10 @@ sdinit:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "sdblocks"
-sdblocks:
 		@ ( -- u ) Gets the block count
 // int SD_getBlocks(void)
 @ -----------------------------------------------------------------------------
+sdblocks:
 	push	{r0-r3, lr}
 	pushdatos
 	bl		SD_getBlocks
@@ -56,10 +56,10 @@ sdblocks:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "empty-buffers"
-empty_buffers:
 		@ ( -- ) Marks all block buffers as empty
 // void BLOCK_emptyBuffers(void)
 @ -----------------------------------------------------------------------------
+empty_buffers:
 	push	{r0-r3, lr}
 	bl		BLOCK_emptyBuffers
 	pop		{r0-r3, pc}
@@ -67,10 +67,10 @@ empty_buffers:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "update"
-update:
 		@ ( -- ) Mark most recent block as updated
 // void BLOCK_update(void)
 @ -----------------------------------------------------------------------------
+update:
 	push	{r0-r3, lr}
 	bl		BLOCK_update
 	pop		{r0-r3, pc}
@@ -78,10 +78,10 @@ update:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "block"
-block:
 		@ ( n -- addr ) Return address of buffer for block n
 // uint8_t *BLOCK_get(int block_number)
 @ -----------------------------------------------------------------------------
+block:
 	push	{r0-r3, lr}
 	movs	r0, tos		// n
 	bl		BLOCK_get
@@ -91,10 +91,10 @@ block:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "buffer"
-buffer:
 		@ ( n -- addr ) Return address of buffer for block n
 // uint8_t *BLOCK_assign(int block_number)
 @ -----------------------------------------------------------------------------
+buffer:
 	push	{r0-r3, lr}
 	movs	r0, tos		// n
 	bl		BLOCK_assign
@@ -104,10 +104,10 @@ buffer:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "save-buffers"
-save_buffers:
 		@ ( -- ) Transfer the contents of each updated block buffer
 // void BLOCK_saveBuffers(void)
 @ -----------------------------------------------------------------------------
+save_buffers:
 	push	{r0-r3, lr}
 	bl		BLOCK_saveBuffers
 	pop		{r0-r3, pc}
@@ -115,10 +115,10 @@ save_buffers:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "flush"
-flush:
 		@ ( -- ) save-buffers empty-buffers
 // void BLOCK_flushBuffers(void)
 @ -----------------------------------------------------------------------------
+flush:
 	push	{r0-r3, lr}
 	bl		BLOCK_flushBuffers
 	pop		{r0-r3, pc}
@@ -126,144 +126,156 @@ flush:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "include"
-include:
-		@  ( "filename" -- ) Interprets the content of the file.
-// void FS_include(uint32_t psp, uint32_t tos, uint8_t *str, int count)
+		@  ( "filename" any -- any ) Interprets the content of the file.
+// void FS_include(uint8_t *str, int count)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+include:
+	push	{lr}
 	bl		token		@ ( -- c-addr len )
-	movs	r3, tos		// len -> count
+incl:
+	movs	r1, tos		// len -> count
 	drop
-	movs	r2, tos		// c-addr -> str
+	movs	r0, tos		// c-addr -> str
 	drop
-	movs	r0, psp		// psp
-	movs	r1, tos		// tos
+	movs	r9, psp		// get psp
+	movs	r8, tos		// get tos
 	bl		FS_include
-	pop		{r0-r3, pc}
+	movs	psp, r9		// update psp
+	movs	tos, r8		// update tos
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "included"
-included:
 		@  ( c-addr len -- ) Interprets the content of the file.
-// void FS_include(uint32_t psp, uint32_t tos, uint8_t *str, int count)
+// void FS_include(uint8_t *str, int count)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	movs	r3, tos		// len -> count
-	drop
-	movs	r2, tos		// c-addr -> str
-	drop
-	movs	r0, psp		// psp
-	movs	r1, tos		// tos
-	bl		FS_include
-	pop		{r0-r3, pc}
+included:
+	push	{lr}
+	b		incl
 
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "cat"
-cat:
 		@ cat ( "line<EOF>" -- ) Types the content of the file.
 // void FS_cat(void)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	movs	r0, psp		// psp
-	movs	r1, tos		// tos
+cat:
+	push	{lr}
+	movs	r9, psp		// get psp
+	movs	r8, tos		// get tos
 	bl		FS_cat
-	pop		{r0-r3, pc}
+	movs	psp, r9		// update psp
+	movs	tos, r8		// update tos
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ls"
-ls:
 		@ ( "line<EOF>" -- ) Types the content of the file.
 // void FS_ls(void)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	movs	r0, psp		// psp
-	movs	r1, tos		// tos
+ls:
+	push	{lr}
+	movs	r9, psp		// get psp
+	movs	r8, tos		// get tos
 	bl		FS_ls
-	pop		{r0-r3, pc}
+	movs	psp, r9		// update psp
+	movs	tos, r8		// update tos
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "cd"
-cd:
 		@  ( "line<EOF>" -- ) Change the working directory.
 // void FS_cd(void)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	movs	r0, psp		// psp
-	movs	r1, tos		// tos
+cd:
+	push	{lr}
+	movs	r9, psp		// get psp
+	movs	r8, tos		// get tos
 	bl		FS_cd
-	pop		{r0-r3, pc}
+	movs	psp, r9		// update psp
+	movs	tos, r8		// update tos
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "pwd"
-pwd:
 		@ ( -- ) Types the content of the file.
 // void FS_pwd(void)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	movs	r0, psp		// psp
-	movs	r1, tos		// tos
+pwd:
+	push	{lr}
+	movs	r9, psp		// get psp
+	movs	r8, tos		// get tos
 	bl		FS_pwd
-	pop		{r0-r3, pc}
+	movs	psp, r9		// update psp
+	movs	tos, r8		// update tos
+	pop		{pc}
 
 
 // C Interface to some Forth Words
 //********************************
 
-// void FS_evaluate(uint32_t psp, uint32_t tos, uint8_t* str, int count);
+// void FS_evaluate(uint8_t* str, int count);
 .global		FS_evaluate
 FS_evaluate:
-	push 	{r4-r7, lr}	// save registers used by Forth
-	movs	psp, r0		// psp
-	movs	tos, r1		// tos
+	push 	{r4-r7, lr}
+	movs	psp, r9		// get psp
+	movs	tos, r8		// get tos
 	pushdatos
-	movs	tos, r2		// str
+	movs	tos, r0		// str
 	pushdatos
-	movs	tos, r3		// count
+	movs	tos, r1		// count
 	bl		evaluate
+	movs	r9, psp		// update psp
+	movs	r8, tos		// update tos
 	pop		{r4-r7, pc}
 
 
-// void FS_cr(uint32_t psp, uint32_t tos);
+// void FS_cr(void);
 .global		FS_cr
 FS_cr:
-	push 	{r4-r7, lr}	// save registers used by Forth
-	movs	psp, r0		// psp
-	movs	tos, r1		// tos
+	push 	{r4-r7, lr}
+	movs	psp, r9		// get psp
+	movs	tos, r8		// get tos
 	bl		cr
+	movs	r9, psp		// update psp
+	movs	r8, tos		// update tos
 	pop		{r4-r7, pc}
 
 
-// void FS_type(uint32_t psp, uint32_t tos, uint8_t* str, int count);
+// void FS_type(uint8_t* str, int count);
 .global		FS_type
 FS_type:
-	push	{r4-r7, lr}	// save registers used by Forth
-	movs	psp, r0		// psp
-	movs	tos, r1		// tos
+	push 	{r4-r7, lr}
+	movs	psp, r9		// get psp
+	movs	tos, r8		// get tos
 	pushdatos
-	movs	tos, r2		// str
+	movs	tos, r0		// str
 	pushdatos
-	movs	tos, r3		// count
+	movs	tos, r1		// count
 	bl		stype
+	movs	r9, psp		// update psp
+	movs	r8, tos		// update tos
 	pop		{r4-r7, pc}
 
 
-// int  FS_token(uint32_t psp, uint32_t tos, uint8_t **str);
+// void  FS_token(uint8_t **str);
 .global	FS_token
 FS_token:
-	push 	{r4-r7, lr}	// save registers used by Forth
-	movs	psp, r0		// psp
-	movs	tos, r1		// tos
-	push 	{r2}		// push str argument (pointer to string)
+	push 	{r4-r7, lr}
+	movs	psp, r9		// get psp
+	movs	tos, r8		// get tos
+	push 	{r0}		// push str argument (pointer to string)
 	bl		token
-	pop		{r2}
+	pop		{r1}
 	movs	r0, tos		// len -> count (RETURN)
 	drop
-	movs	r1, tos		// c-addr -> str
+	movs	r2, tos		// c-addr -> str
 	drop
-	str		r1, [r2]
+	str		r2, [r1]
+	movs	r9, psp		// update psp
+	movs	r8, tos		// update tos
 	pop		{r4-r7, pc}
