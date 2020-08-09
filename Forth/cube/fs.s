@@ -301,11 +301,11 @@ FS_token:
 // *********************
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#FIL"
+		Wortbirne Flag_visible, "/FIL"
 		@ ( -- u ) Gets the FIL structure size
 // int FS_FIL_size(void)
 @ -----------------------------------------------------------------------------
-zifferFIL:
+slashFIL:
 	push	{lr}
 	pushdatos
 	bl		FS_FIL_size
@@ -314,11 +314,11 @@ zifferFIL:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#FATFS"
+		Wortbirne Flag_visible, "/FATFS"
 		@ ( -- u ) Gets the FATFS structure size
 // int FS_FATFS_size(void)
 @ -----------------------------------------------------------------------------
-zifferFATFS:
+slashFATFS:
 	push	{lr}
 	pushdatos
 	bl		FS_FATFS_size
@@ -327,11 +327,11 @@ zifferFATFS:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#DIR"
+		Wortbirne Flag_visible, "/DIR"
 		@ ( -- u ) Gets the DIR structure size
 // int FS_FIL_size(void)
 @ -----------------------------------------------------------------------------
-zifferDIR:
+slashDIR:
 	push	{lr}
 	pushdatos
 	bl		FS_DIR_size
@@ -340,11 +340,11 @@ zifferDIR:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#FILINFO"
+		Wortbirne Flag_visible, "/FILINFO"
 		@ ( -- u ) Gets the FIL structure size
 // int FS_FILINFO_size(void)
 @ -----------------------------------------------------------------------------
-zifferFILINFO:
+slashFILINFO:
 	push	{lr}
 	pushdatos
 	bl		FS_FILINFO_size
@@ -431,6 +431,78 @@ altnameplus:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_READ"
+		@ ( -- u ) Gets the Mode Flag FA_READ
+@ -----------------------------------------------------------------------------
+FA_READ:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x01
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_WRITE"
+		@ ( -- u ) Gets the Mode Flag FA_WRITE
+@ -----------------------------------------------------------------------------
+FA_WRITE:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x02
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_OPEN_EXISTING"
+		@ ( -- u ) Gets the Mode Flag FA_OPEN_EXISTING
+@ -----------------------------------------------------------------------------
+FA_OPEN_EXISTING:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x00
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_CREATE_NEW"
+		@ ( -- u ) Gets the Mode Flag FA_CREATE_NEW
+@ -----------------------------------------------------------------------------
+FA_CREATE_NEW:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x04
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_CREATE_ALWAYS"
+		@ ( -- u ) Gets the Mode Flag FA_CREATE_ALWAYS
+@ -----------------------------------------------------------------------------
+FA_CREATE_ALWAYS:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x08
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_OPEN_ALWAYS"
+		@ ( -- u ) Gets the Mode Flag FA_OPEN_ALWAYS
+@ -----------------------------------------------------------------------------
+FA_OPEN_ALWAYS:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x10
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "FA_OPEN_APPEND"
+		@ ( -- u ) Gets the Mode Flag FA_OPEN_APPEND
+@ -----------------------------------------------------------------------------
+FA_OPEN_APPEND:
+	push	{lr}
+	pushdatos
+	movs	tos, #0x30
+	pop		{pc}
+
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_open"
 		@  ( adr cadr u -- u )  opens a file.
 // FRESULT f_open (
@@ -486,5 +558,18 @@ fs_f_gets:
 	movs	tos, r0
 	pop		{pc}
 
+
+// @ -----------------------------------------------------------------------------
+// 		Wortbirne Flag_visible, ".("
+// 		@  ( "text) --  )
+// : .( 41 parse type ;
+// @ -----------------------------------------------------------------------------
+// dotklammer:
+// 	push	{lr}
+// 	pushdatos
+// 	movs	tos, #41	// ')'
+// 	bl		parse
+// 	bl		type
+// 	pop		{pc}
 
 

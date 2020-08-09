@@ -45,11 +45,11 @@ rtos_osNewDataStack:
 // *******************
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#osThreadAttr"
+		Wortbirne Flag_visible, "/osThreadAttr"
 		@ ( -- u ) Gets the osThreadAttr_t structure size
 // int RTOS_osThreadAttr_size(void)
 @ -----------------------------------------------------------------------------
-zifferosThreadAttr:
+slashosThreadAttr:
 	push	{lr}
 	pushdatos
 	bl		RTOS_osThreadAttr_size
@@ -154,11 +154,11 @@ thTzModuleplus:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#osEventFlagsAttr"
+		Wortbirne Flag_visible, "/osEventFlagsAttr"
 		@ ( -- u ) Gets the osEventFlagsAttr_t structure size
 // int RTOS_EventFlagsAttr_size(void)
 @ -----------------------------------------------------------------------------
-zifferosEventFlagsAttr:
+slashosEventFlagsAttr:
 	push	{lr}
 	pushdatos
 	bl		RTOS_osEventFlagsAttr_size
@@ -167,11 +167,11 @@ zifferosEventFlagsAttr:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#osMessageQueueAttr"
+		Wortbirne Flag_visible, "/osMessageQueueAttr"
 		@ ( -- u ) Gets the osMessageQueueAttr_t structure size
 // int RTOS_osMessageQueueAttr_size(void)
 @ -----------------------------------------------------------------------------
-zifferosMessageQueueAttr:
+slashosMessageQueueAttr:
 	push	{lr}
 	pushdatos
 	bl		RTOS_osMessageQueueAttr_size
@@ -180,11 +180,11 @@ zifferosMessageQueueAttr:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#osMutexAttr"
+		Wortbirne Flag_visible, "/osMutexAttr"
 		@ ( -- u ) Gets the osMutexAttr_t structure size
 // int RTOS_osMutexAttr_size(void)
 @ -----------------------------------------------------------------------------
-zifferosMutexAttr:
+slashosMutexAttr:
 	push	{lr}
 	pushdatos
 	bl		RTOS_osMutexAttr_size
@@ -193,11 +193,11 @@ zifferosMutexAttr:
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "#osSemaphoreAttr"
+		Wortbirne Flag_visible, "/osSemaphoreAttr"
 		@ ( -- u ) Gets the osSemaphoreAttr_t structure size
 // int RTOS_osSemaphoreAttr_size(void)
 @ -----------------------------------------------------------------------------
-zifferosSemaphoreAttr:
+slashosSemaphoreAttr:
 	push	{lr}
 	pushdatos
 	bl		RTOS_osSemaphoreAttr_size
