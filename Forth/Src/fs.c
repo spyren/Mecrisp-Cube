@@ -2,6 +2,12 @@
  *  @brief
  *      FAT filesystem for Secure Digital Memory Card.
  *
+ *		Some file tools like GNU tools e.g. ls, pwd, cat.
+ *		Do not expect real UNIX commands not even comparable to the Busybox
+ *		commands. The UNIX like shell commands are parsing words. The parameters
+ *		are parsed from the input stream till the end of line.
+ *		These commands are not intended to use in other words, they are used
+ *		in the interpreter mode.
  *  @file
  *      fs.c
  *  @author
@@ -107,15 +113,20 @@ void FS_init(void) {
  *  @brief
  *      Interprets the content of the file.
  *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @param[in]
  *      str   filename (w/ or w/o null termination)
  *  @param[in]
  *      count string length
  *  @return
- *      None
+ *      TOS (lower word) and SPS (higher word)
  */
-void FS_include(uint8_t *str, int count) {
+uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
+
+	uint64_t stack;
+	stack = forth_stack;
 
 	memcpy(path, str, count);
 	line[count] = 0;
@@ -125,7 +136,7 @@ void FS_include(uint8_t *str, int count) {
 	if (fr) {
 		// open failed
 		strcpy(line, "Err: file not found");
-		FS_type((uint8_t*)line, strlen(line));
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
 
 	/* Read every line and interprets it */
@@ -134,11 +145,13 @@ void FS_include(uint8_t *str, int count) {
 //		FS_type((uint8_t*)line, strlen(line));
 //		osDelay(100);
 		// line without \n
-		FS_evaluate((uint8_t*)line, strlen(line)-1);
+		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
 	}
 
 	/* Close the file */
 	f_close(&fil);
+
+	return stack;
 }
 
 
@@ -147,10 +160,12 @@ void FS_include(uint8_t *str, int count) {
  *      Concatenate files and print on the standard output
  *
  *      The parameters are taken from the command line (Forth tokens)
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @return
- *      None
+ *      TOS (lower word) and SPS (higher word)
  */
-void FS_cat(void) {
+uint64_t FS_cat(uint64_t forth_stack) {
 	uint8_t *str = NULL;
 	int count = 1;
 	uint8_t n_flag = FALSE;
@@ -158,11 +173,14 @@ void FS_cat(void) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
 
-	FS_cr();
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
 
 	while (TRUE) {
 		// get tokens till end of line
-		count = FS_token(&str);
+		stack = FS_token(stack, &str, &count);
 		if (count == 0) {
 			// no more tokens
 			break;
@@ -177,15 +195,15 @@ void FS_cat(void) {
 			if (fr) {
 				// open failed
 				strcpy(line, "Err: file not found");
-				FS_type((uint8_t*)line, strlen(line));
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
 			/* Read every line and type it */
 			while (f_gets(line, sizeof(line), &fil)) {
 				if (n_flag) {
 					snprintf(pattern, sizeof(pattern), "%6i: ", line_num++);
-					FS_type((uint8_t*)pattern, strlen(pattern));
+					stack = FS_type(stack, (uint8_t*)pattern, strlen(pattern));
 				}
-				FS_type((uint8_t*)line, strlen(line));
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
 
 			/* Close the file */
@@ -193,6 +211,8 @@ void FS_cat(void) {
 
 		}
 	}
+
+	return stack;
 }
 
 
@@ -201,10 +221,12 @@ void FS_cat(void) {
  *      List directory contents.
  *
  *      The parameters are taken from the command line (Forth tokens)
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @return
- *      None
+ *      TOS (lower word) and SPS (higher word)
  */
-void FS_ls(void) {
+uint64_t FS_ls(uint64_t forth_stack) {
 	char attrib[6];
 	uint8_t *str = NULL;
 	int count = 1;
@@ -215,9 +237,12 @@ void FS_ls(void) {
 	uint8_t column = 0;
 	FRESULT fr;     /* FatFs return code */
 
+	uint64_t stack;
+	stack = forth_stack;
+
 	while (TRUE) {
 		// get tokens till end of line
-		count = FS_token(&str);
+		stack = FS_token(stack, &str, &count);
 		if (count == 0) {
 			if (!param) {
 				line[0] = 0;
@@ -257,7 +282,7 @@ void FS_ls(void) {
 
 	fr = f_findfirst(&dj, &fno, path, pattern);
 
-	FS_cr();
+	stack = FS_cr(stack);
 	while (fr == FR_OK && fno.fname[0]) {
 		/* Repeat while an item is found */
 		if (l_flag) {
@@ -299,16 +324,18 @@ void FS_ls(void) {
 			}
 		}
 		if ( ( (fno.fattrib & AM_HID) != AM_HID) || a_flag) {
-			FS_type((uint8_t*)line, strlen(line));
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 		}
 		/* Search for next item */
 		fr = f_findnext(&dj, &fno);
 	}
 	if (!l_flag && column != 0) {
-		FS_cr();
+		stack = FS_cr(stack);
 	}
 
 	f_closedir(&dj);
+
+	return stack;
 }
 
 /**
@@ -316,19 +343,24 @@ void FS_ls(void) {
  *      Change the working directory.
  *
  *      The parameters are taken from the command line (Forth tokens)
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @return
- *      None
+ *      TOS (lower word) and SPS (higher word)
  */
-void FS_cd(void) {
+uint64_t FS_cd(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
 	uint8_t *str = NULL;
 	int count = 1;
 
-	FS_cr();
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
 
 	while (TRUE) {
 		// get tokens till end of line
-		count = FS_token(&str);
+		stack = FS_token(stack, &str, &count);
 		if (count == 0) {
 			break;
 		}
@@ -338,29 +370,86 @@ void FS_cd(void) {
 		fr = f_chdir(line);
 		if (fr != FR_OK) {
 			strcpy(line, "Err: directory not found");
-			FS_type((uint8_t*)line, strlen(line));
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			break;
 		}
 	}
+
+	return stack;
 }
+
+
 /**
  *  @brief
  *      Print working directory
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @return
- *      None
+ *      TOS (lower word) and SPS (higher word)
  */
-void FS_pwd(void) {
+uint64_t FS_pwd(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
 
-	FS_cr();
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
 	fr = f_getcwd(line, sizeof(line));  /* Get current directory path */
 	if (fr == FR_OK) {
-		FS_type((uint8_t*)line, strlen(line));
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	} else {
 		strcpy(line, "Err: no working directory");
-		FS_type((uint8_t*)line, strlen(line));
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
+
+	return stack;
 }
+
+
+int FS_FIL_size(void) {
+	return(sizeof(FIL));
+}
+
+int FS_FATFS_size(void) {
+	return(sizeof(FATFS));
+}
+
+int FS_DIR_size(void) {
+	return(sizeof(DIR));
+}
+
+int FS_FILINFO_size(void) {
+	return(sizeof(FILINFO));
+}
+
+int FS_FILINFO_fsize(void) {
+	return(0);
+}
+
+int FS_FILINFO_fdate(void) {
+	return(sizeof(FSIZE_t));
+}
+
+int FS_FILINFO_ftime(void) {
+	return(sizeof(FSIZE_t)+sizeof(WORD));
+}
+
+int FS_FILINFO_fattrib(void) {
+	return(sizeof(FSIZE_t)+sizeof(WORD)+sizeof(WORD));
+}
+
+int FS_FILINFO_fname(void) {
+#if _USE_LFN != 0
+	return(sizeof(FSIZE_t)+sizeof(WORD)+sizeof(WORD)+sizeof(BYTE)+13*sizeof(BYTE));
+#else
+	return(sizeof(FSIZE_t)+sizeof(WORD)+sizeof(WORD)+sizeof(BYTE));
+#endif
+}
+
+int FS_FILINFO_altname(void) {
+	return(sizeof(FSIZE_t)+sizeof(WORD)+sizeof(WORD)+sizeof(BYTE));
+}
+
 
 
 // Private Functions

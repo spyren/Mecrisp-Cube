@@ -57,7 +57,7 @@ evaluate:
   pop {pc}
 
 @ -----------------------------------------------------------------------------
-  Wortbirne Flag_visible, "interpret" @ ( -- )
+  Wortbirne Flag_visible, "interpret" @ ( any -- any )
 interpret:
 @ -----------------------------------------------------------------------------
   push {r4, r5, lr}

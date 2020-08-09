@@ -10,15 +10,27 @@
 
 
 void FS_init(void);
-void FS_include  (uint8_t *str, int count);
-void FS_cat      (void);
-void FS_ls       (void);
-void FS_cd       (void);
-void FS_pwd      (void);
 
-void FS_evaluate (uint8_t* str, int count);
-void FS_type     (uint8_t* str, int count);
-void FS_cr       (void);
-int  FS_token    (uint8_t **str);
+int FS_FIL_size(void);
+int FS_FATFS_size(void);
+int FS_DIR_size(void);
+int FS_FILINFO_size(void);
+int FS_FILINFO_fsize(void);
+int FS_FILINFO_fdate(void);
+int FS_FILINFO_ftime(void);
+int FS_FILINFO_fattrib(void);
+int FS_FILINFO_fname(void);
+int FS_FILINFO_altname(void);
+
+uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
+uint64_t FS_cat      (uint64_t forth_stack);
+uint64_t FS_ls       (uint64_t forth_stack);
+uint64_t FS_cd       (uint64_t forth_stack);
+uint64_t FS_pwd      (uint64_t forth_stack);
+
+uint64_t FS_evaluate (uint64_t forth_stack, uint8_t* str, int count);
+uint64_t FS_type     (uint64_t forth_stack, uint8_t* str, int count);
+uint64_t FS_cr       (uint64_t forth_stack);
+uint64_t FS_token    (uint64_t forth_stack, uint8_t **str, int *count);
 
 #endif /* INC_FS_H_ */
