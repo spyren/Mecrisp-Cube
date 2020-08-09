@@ -41,6 +41,172 @@ rtos_osNewDataStack:
 	pop		{r0-r3, pc}
 
 
+// RTOS datastructures
+// *******************
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "#osThreadAttr"
+		@ ( -- u ) Gets the osThreadAttr_t structure size
+// int RTOS_osThreadAttr_size(void)
+@ -----------------------------------------------------------------------------
+zifferosThreadAttr:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_size
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thName+"
+		@ ( -- u ) Gets the osThreadAttr_t structure name attribut offset
+// int RTOS_osThreadAttr_name(void)
+@ -----------------------------------------------------------------------------
+thNameplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_name
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thAttrBits+"
+		@ ( -- u ) Gets the osThreadAttr_t structure attr_bits attribut offset
+// int RTOS_osThreadAttr_attr_bits(void)
+@ -----------------------------------------------------------------------------
+thAttrBitsplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_attr_bits
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thCbMem+"
+		@ ( -- u ) Gets the osThreadAttr_t structure size attribut offset
+// int RTOS_osThreadAttr_cb_mem(void)
+@ -----------------------------------------------------------------------------
+thCbMemplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_cb_mem
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thCbSize+"
+		@ ( -- u ) Gets the osThreadAttr_t structure cb_size attribut offset
+// int RTOS_osThreadAttr_cb_size(void)
+@ -----------------------------------------------------------------------------
+thCbSizeplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_cb_size
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thStackMem+"
+		@ ( -- u ) Gets the osThreadAttr_t structure stack_mem attribut offset
+// int RTOS_osThreadAttr_stack_mem(void)
+@ -----------------------------------------------------------------------------
+thStackMemplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_stack_mem
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thStackSize+"
+		@ ( -- u ) Gets the osThreadAttr_t structure stack_size attribut offset
+// int RTOS_osThreadAttr_stack_size(void)
+@ -----------------------------------------------------------------------------
+thStackSizeplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_stack_size
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thPriority+"
+		@ ( -- u ) Gets the osThreadAttr_t structure priority attribut offset
+// int RTOS_osThreadAttr_priority(void)
+@ -----------------------------------------------------------------------------
+thPriorityplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_priority
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "thTzModule+"
+		@ ( -- u ) Gets the osThreadAttr_t structure tz_module attribut offset
+// int RTOS_osThreadAttr_tz_module(void)
+@ -----------------------------------------------------------------------------
+thTzModuleplus:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osThreadAttr_tz_module
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "#osEventFlagsAttr"
+		@ ( -- u ) Gets the osEventFlagsAttr_t structure size
+// int RTOS_EventFlagsAttr_size(void)
+@ -----------------------------------------------------------------------------
+zifferosEventFlagsAttr:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osEventFlagsAttr_size
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "#osMessageQueueAttr"
+		@ ( -- u ) Gets the osMessageQueueAttr_t structure size
+// int RTOS_osMessageQueueAttr_size(void)
+@ -----------------------------------------------------------------------------
+zifferosMessageQueueAttr:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osMessageQueueAttr_size
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "#osMutexAttr"
+		@ ( -- u ) Gets the osMutexAttr_t structure size
+// int RTOS_osMutexAttr_size(void)
+@ -----------------------------------------------------------------------------
+zifferosMutexAttr:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osMutexAttr_size
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "#osSemaphoreAttr"
+		@ ( -- u ) Gets the osSemaphoreAttr_t structure size
+// int RTOS_osSemaphoreAttr_size(void)
+@ -----------------------------------------------------------------------------
+zifferosSemaphoreAttr:
+	push	{lr}
+	pushdatos
+	bl		RTOS_osSemaphoreAttr_size
+	movs	tos, r0
+	pop		{pc}
+
+
+
+
 //  ==== Kernel Management Functions ====
 
 /// Initialize the RTOS Kernel.

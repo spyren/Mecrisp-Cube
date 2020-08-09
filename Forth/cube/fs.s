@@ -430,9 +430,6 @@ altnameplus:
 	pop		{pc}
 
 
-// Forth API to the FAT FS functions
-// *********************************
-
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_open"
 		@  ( adr cadr u -- u )  opens a file.
