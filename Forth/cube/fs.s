@@ -533,7 +533,7 @@ fs_f_open:
 fs_f_close:
 	push	{lr}
 	movs	r0, tos		// fp
-	bl		f_open
+	bl		f_close
 	movs	tos, r0
 	pop		{pc}
 
@@ -554,9 +554,58 @@ fs_f_gets:
 	movs	r1, tos		// len
 	drop
 	movs	r0, tos		// buff
-	bl		f_open
+	bl		f_gets
 	movs	tos, r0
 	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_getcwd"
+		@  ( adr len -- u )  Get current directory .
+// FRESULT f_getcwd (
+// 	TCHAR* buff,	/* Pointer to the directory path */
+// 	UINT len		/* Size of path */
+// )
+@ -----------------------------------------------------------------------------
+fs_f_getcwd:
+	push	{lr}
+	movs	r1, tos		// len
+	drop
+	movs	r0, tos		// buff
+	pushdatos
+	bl		f_getcwd
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_chdir"
+		@  ( adr -- u )  Change current directory .
+// FRESULT f_chdir (
+// 	const TCHAR* path	/* Pointer to the directory path */
+// )
+@ -----------------------------------------------------------------------------
+fs_f_chdir:
+	push	{lr}
+	movs	r0, tos		// buff
+	bl		f_chdir
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "strlen"
+		@  ( adr -- adr len )  size_t	calculate the length of a C string
+// size_t	 strlen (const char *);
+@ -----------------------------------------------------------------------------
+fs_strlen:
+	push	{lr}
+	movs	r0, tos		// adr
+	pushdatos
+	bl		strlen
+	movs	tos, r0
+	pop		{pc}
+
 
 
 // @ -----------------------------------------------------------------------------
