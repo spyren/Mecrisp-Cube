@@ -227,6 +227,96 @@ pwd:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "mkdir"
+		@ ( -- ) Make directories.
+// uint64_t FS_mkdir (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+mkdir:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_mkdir
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "rm"
+		@ ( -- ) Remove files or directories.
+// uint64_t FS_rm (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+rm:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_rm
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "chmod"
+		@ ( -- ) Change file mode bits.
+// uint64_t FS_chmod (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+chmod:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_chmod
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "touch"
+		@ ( -- ) hange file timestamps or create files.
+// uint64_t FS_touch    (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+touch:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_touch
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "mv"
+		@ ( -- ) Change file mode bits.
+// uint64_t FS_mv (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+mv:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_mv
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "df"
+		@ ( -- ) report file system disk space usage (1 KiB blocks)
+// uint64_t FS_df (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+df:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_df
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
 // C Interface to some Forth Words
 //********************************
 
@@ -607,18 +697,37 @@ fs_strlen:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "str0term"
+		@  ( cadr len -- cadr len )  null-terminated string
+// : str0term  2dup + 0 swap c! ;
+@ -----------------------------------------------------------------------------
+str0term:
+	push	{lr}
+	ddup
+	ldm 	psp!, {r0}
+	adds 	tos, r0
+	pushdatos
+	movs	tos, #0
+	swap
+	ldm		psp!, {r0, r1}	@ X is the new TOS after the store completes.
+	strb	r0, [tos]		@ Popping both saves a cycle.
+	movs 	tos, r1
+	pop		{pc}
 
-// @ -----------------------------------------------------------------------------
-// 		Wortbirne Flag_visible, ".("
-// 		@  ( "text) --  )
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, ".("
+		@  ( "text) --  )
 // : .( 41 parse type ;
-// @ -----------------------------------------------------------------------------
-// dotklammer:
-// 	push	{lr}
-// 	pushdatos
-// 	movs	tos, #41	// ')'
-// 	bl		parse
-// 	bl		type
-// 	pop		{pc}
+@ -----------------------------------------------------------------------------
+dotklammer:
+	push	{lr}
+	pushdatos
+	movs	tos, #41	// ')'
+	bl		parse
+	bl		stype
+	pop		{pc}
 
 

@@ -406,6 +406,270 @@ uint64_t FS_pwd(uint64_t forth_stack) {
 }
 
 
+/**
+ *  @brief
+ *      Make directories
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_mkdir(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		fr = f_mkdir(line);  /* create directory */
+		if (fr != FR_OK) {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": can't create directory ");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Remove files or directories
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_rm(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		fr = f_unlink(line);  /* remove file or directory */
+		if (fr != FR_OK) {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": can't remove file or directory  ");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Change file mode bits
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_chmod(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t param = FALSE;
+
+	uint64_t stack;
+	stack = forth_stack;
+	BYTE attr = 0;
+	BYTE mask = 0;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			if (!param) {
+				line[0] = 0;
+			}
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+		if (! strcmp (line, "=r")) {
+			attr = AM_RDO;
+			mask = AM_RDO | AM_SYS | AM_HID | AM_RDO;
+		} else if (! strcmp (line, "=w")) {
+			attr = AM_SYS | AM_HID;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else if (! strcmp (line, "=a")) {
+			attr = AM_ARC | AM_SYS | AM_HID | AM_RDO;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else if (! strcmp (line, "=rw")) {
+			attr = 0;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else if (! strcmp (line, "=ra")) {
+			attr = AM_RDO | AM_ARC;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else if (! strcmp (line, "=wa")) {
+			attr = AM_SYS | AM_ARC;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else if (! strcmp (line, "=rwa")) {
+			attr = AM_ARC;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else if (! strcmp (line, "=")) {
+			attr = AM_SYS | AM_HID | AM_RDO;
+			mask = AM_ARC | AM_RDO | AM_HID | AM_SYS ;
+		} else {
+			param = TRUE;
+		}
+	}
+
+	fr = f_chmod(line, attr, mask);  /* remove file or directory */
+	if (fr != FR_OK) {
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		strcpy(line, ": can't change mode");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Change file timestamps or create files
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_touch(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		fno.fdate = (WORD)(((2020 - 1980) * 512U) | 8 * 32U | 11);;
+		fno.ftime = (WORD)(22 * 2048U | 10 * 32U | 55 / 2U);
+		fr = f_utime(line, &fno);  /* create directory */
+		if (fr != FR_OK) {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": can't update timestamps ");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Move (rename) files
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_mv(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		fr = f_unlink(line);  /* remove file or directory */
+		if (fr != FR_OK) {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": can't remove file or directory  ");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Report file system disk space usage (1 KiB blocks)
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_df(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	FATFS *fatfs;
+	DWORD nclst;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+	fr = f_getfree("", &nclst, &fatfs);  /* Get current directory path */
+	if (fr == FR_OK) {
+		snprintf(line, sizeof(line), "%lu KiB (%lu SD-Blocks)", nclst/2, nclst);
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	} else {
+		strcpy(line, "Err: no volume");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	return stack;
+}
+
+
 int FS_FIL_size(void) {
 	return(sizeof(FIL));
 }
