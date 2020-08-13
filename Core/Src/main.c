@@ -411,6 +411,38 @@ static void MX_RTC_Init(void)
   }
   /* USER CODE BEGIN RTC_Init 2 */
 
+//  /** Enable the Alarm A
+//  */
+//  sAlarm.AlarmTime.Hours = 0x0;
+//  sAlarm.AlarmTime.Minutes = 0x0;
+//  sAlarm.AlarmTime.Seconds = 0x0;
+//  sAlarm.AlarmTime.SubSeconds = 0x0;
+//  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+//  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+//  sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
+//  // alarm ist set when the seconds unit is incremented -> interrupt every second
+//  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+//  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+//  sAlarm.AlarmDateWeekDay = 0x1;
+//  sAlarm.Alarm = RTC_ALARM_A;
+//  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+//
+//  /** Enable the Alarm B
+//  */
+//  sAlarm.AlarmDateWeekDay = 0x1;
+//  sAlarm.Alarm = RTC_ALARM_B;
+
+//  /** Enable the WakeUp
+//  */
+//  // wake up every second
+//  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 2048, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+
   /* USER CODE END RTC_Init 2 */
 
 }

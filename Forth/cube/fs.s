@@ -731,3 +731,30 @@ dotklammer:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "time@"
+		@  (  -- u )
+// int RTC_getTime(void);
+@ -----------------------------------------------------------------------------
+timeget:
+	push	{lr}
+	pushdatos
+	bl		RTC_getTime
+	movs	tos, r0;
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "time!"
+		@  ( u --  )
+// void RTC_setTime(int timestamp);
+@ -----------------------------------------------------------------------------
+timeset:
+	push	{lr}
+	movs	r0, tos	// timestamp
+	drop
+	bl		RTC_setTime
+	pop		{pc}
+
+
+

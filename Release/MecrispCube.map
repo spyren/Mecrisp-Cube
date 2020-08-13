@@ -1511,6 +1511,16 @@ Discarded input sections
  .text          0x0000000000000000        0x0 Forth/Src/fs.o
  .data          0x0000000000000000        0x0 Forth/Src/fs.o
  .bss           0x0000000000000000        0x0 Forth/Src/fs.o
+ .text          0x0000000000000000        0x0 Forth/Src/rtc.o
+ .data          0x0000000000000000        0x0 Forth/Src/rtc.o
+ .bss           0x0000000000000000        0x0 Forth/Src/rtc.o
+ .text.RTC_init
+                0x0000000000000000       0x28 Forth/Src/rtc.o
+ .rodata.RTC_MutexAttr
+                0x0000000000000000       0x10 Forth/Src/rtc.o
+ .comment       0x0000000000000000       0x7c Forth/Src/rtc.o
+ .ARM.attributes
+                0x0000000000000000       0x39 Forth/Src/rtc.o
  .text          0x0000000000000000        0x0 Forth/Src/rtos.o
  .data          0x0000000000000000        0x0 Forth/Src/rtos.o
  .bss           0x0000000000000000        0x0 Forth/Src/rtos.o
@@ -2639,6 +2649,7 @@ LOAD Forth/Src/block.o
 LOAD Forth/Src/bsp.o
 LOAD Forth/Src/flash.o
 LOAD Forth/Src/fs.o
+LOAD Forth/Src/rtc.o
 LOAD Forth/Src/rtos.o
 LOAD Forth/Src/sd.o
 LOAD Forth/Src/spi.o
