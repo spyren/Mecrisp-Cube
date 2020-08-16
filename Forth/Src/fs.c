@@ -36,6 +36,7 @@
 // System include files
 // ********************
 #include "cmsis_os.h"
+#include "time.h"
 #include <string.h>
 
 // Application include files
@@ -45,6 +46,7 @@
 #include "fs.h"
 #include "sd.h"
 #include "ff.h"
+#include "rtc.h"
 
 
 // Defines
@@ -83,6 +85,7 @@ static const osMutexAttr_t FS_MutexAttr = {
 
 // Hardware resources
 // ******************
+extern RTC_HandleTypeDef hrtc;
 
 
 // Private Variables
@@ -301,11 +304,11 @@ uint64_t FS_ls(uint64_t forth_stack) {
 				attrib[3] = 'a';
 			}
 
-			snprintf(line, sizeof(line), "%s %9u %4u-%02u-%02uT%2u:%02u:%02u %s\n",
+			snprintf(line, sizeof(line), "%s %9u %4u-%02u-%02uT%02u:%02u:%02u %s\n",
 					attrib,
 					(unsigned int)fno.fsize,
 					(fno.fdate >> 9) + 1980,  (fno.fdate >> 5) & 0xF,  fno.fdate & 0x1F,
-					(fno.ftime >> 11) & 0x1F, (fno.ftime >> 5) & 0x2F, fno.ftime & 0x1F,
+					(fno.ftime >> 11) & 0x1F, (fno.ftime >> 5) & 0x2F, (fno.ftime & 0x1F)*2,
 					fno.fname);
 		} else {
 			// not long format
@@ -570,6 +573,8 @@ uint64_t FS_touch(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
 	uint8_t *str = NULL;
 	int count = 1;
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
 
 	uint64_t stack;
 	stack = forth_stack;
@@ -586,8 +591,18 @@ uint64_t FS_touch(uint64_t forth_stack) {
 		memcpy(line, str, count);
 		line[count] = 0;
 
-		fno.fdate = (WORD)(((2020 - 1980) * 512U) | 8 * 32U | 11);;
-		fno.ftime = (WORD)(22 * 2048U | 10 * 32U | 55 / 2U);
+		HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+		HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+		fno.fdate = (WORD)(
+				((sDate.Year + 20) << 9) |
+				sDate.Month << 5 |
+				sDate.Date);;
+		fno.ftime = (WORD)(
+				sTime.Hours << 11 |
+				sTime.Minutes << 5 |
+				sTime.Seconds / 2U);
+
 		fr = f_utime(line, &fno);  /* create directory */
 		if (fr != FR_OK) {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
@@ -665,6 +680,70 @@ uint64_t FS_df(uint64_t forth_stack) {
 		strcpy(line, "Err: no volume");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Print or set time and time
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_date(uint64_t forth_stack) {
+	uint8_t *str = NULL;
+	int count = 1;
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
+	struct tm tm_s;
+	uint8_t param = FALSE;
+	uint8_t s_flag = FALSE;
+	uint8_t i_flag = FALSE;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			if (!param) {
+				line[0] = 0;
+			}
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+		if (! strcmp (line, "-s")) {
+			s_flag = TRUE;
+		} else if (! strcmp (line, "-i")) {
+			i_flag = TRUE;
+		} else {
+			param = TRUE;
+		}
+
+	}
+
+	stack = FS_cr(stack);
+
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+	tm_s.tm_year = sDate.Year + 100;
+	tm_s.tm_mon = sDate.Month - 1;
+	tm_s.tm_mday = sDate.Date;
+
+	tm_s.tm_hour = sTime.Hours;
+	tm_s.tm_min = sTime.Minutes;
+	tm_s.tm_sec = sTime.Seconds;
+
+	strftime(line, sizeof(line), "%c", &tm_s);
+
+	stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	stack = FS_cr(stack);
 
 	return stack;
 }

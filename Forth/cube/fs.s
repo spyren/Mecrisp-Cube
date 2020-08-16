@@ -317,6 +317,21 @@ df:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "date"
+		@ ( -- ) Print or set time and time
+// uint64_t FS_df (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+date:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_date
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
 // C Interface to some Forth Words
 //********************************
 
@@ -754,6 +769,21 @@ timeset:
 	movs	r0, tos	// timestamp
 	drop
 	bl		RTC_setTime
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, ".time"
+		@  (  --  )
+// uint64_t RTC_typeTime(uint64_t forth_stack)
+@ -----------------------------------------------------------------------------
+typetime:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		RTC_typeTime
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
 	pop		{pc}
 
 

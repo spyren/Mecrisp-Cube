@@ -341,7 +341,7 @@
  *
  *  The following settings are computed with LSI as input to the RTC
  */
-#define CFG_RTCCLK_DIVIDER_CONF 0
+#define CFG_RTCCLK_DIVIDER_CONF 1
 
 #if (CFG_RTCCLK_DIVIDER_CONF == 0)
 /**
