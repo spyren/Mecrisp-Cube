@@ -778,13 +778,13 @@ timeset:
 // uint64_t RTC_typeTime(uint64_t forth_stack)
 @ -----------------------------------------------------------------------------
 typetime:
-	push	{lr}
+	push	{r4-r7, lr}
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
 	bl		RTC_typeTime
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
-	pop		{pc}
+	pop		{r4-r7, pc}
 
 
 

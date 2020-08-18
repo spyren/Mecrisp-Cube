@@ -95,7 +95,7 @@ void RTC_init(void) {
  *  @brief
  *      Returns the unix time stamp.
  *
- *      Epoch is 1.1.1970. But valid dates are fron 1.1.2000 to 31.12.2099
+ *      Epoch is 1.1.1970. But valid dates are from 1.1.2000 to 31.12.2099
  *      because of the STM32WB RTC peripheral.
  *  @return
  *      Unix time stamp (unsigned).
@@ -147,10 +147,14 @@ int RTC_setTime(uint32_t timestamp){
 	sDate.Year = tm_s.tm_year - 100;
 	sDate.Month = tm_s.tm_mon + 1;
 	sDate.Date = tm_s.tm_mday;
+	sDate.WeekDay = tm_s.tm_wday;
 
 	sTime.Hours = tm_s.tm_hour;
 	sTime.Minutes = tm_s.tm_min;
 	sTime.Seconds = tm_s.tm_sec;
+	sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	sTime.SubSeconds = 0;
 
 	HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 	HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
@@ -186,7 +190,6 @@ uint64_t RTC_typeTime(uint64_t forth_stack) {
 	stack = FS_type(stack, (uint8_t*)line, strlen(line));
 
 	return stack;
-	;
 }
 
 

@@ -173,6 +173,18 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+	BSP_init();
+	UART_init();
+	CDC_init();
+	FLASH_init();
+	SPI_init();
+	SD_init();
+	BLOCK_init();
+	if (MX_FATFS_Init() != APP_OK) {
+		Error_Handler();
+	}
+	FS_init();
+
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
@@ -417,27 +429,30 @@ static void MX_RTC_Init(void)
 
   /* USER CODE END Check_RTC_BKUP */
 
-  /** Initialize RTC and set the Time and Date
-  */
-  sTime.Hours = 0;
-  sTime.Minutes = 0;
-  sTime.Seconds = 0;
-  sTime.SubSeconds = 0x0;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 1;
-  sDate.Year = 0;
+  if (HAL_RTCEx_BKUPRead(&hrtc, 0) == 0) {
+    // RTC not initialized
+    // Initialize RTC and set the Time and Date to 2000-01-01T00:00:00 UTC
+    sTime.Hours = 0;
+    sTime.Minutes = 0;
+    sTime.Seconds = 0;
+    sTime.SubSeconds = 0x0;
+    sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+    sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+    if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK) {
+      Error_Handler();
+    }
+    sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+    sDate.Month = RTC_MONTH_JANUARY;
+    sDate.Date = 1;
+    sDate.Year = 0;
 
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
+    if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK) {
+      Error_Handler();
+    }
+
+    HAL_RTCEx_BKUPWrite(&hrtc, 0, 0xA5);
   }
+
 
   /* USER CODE BEGIN RTC_Init 2 */
 
@@ -806,17 +821,7 @@ void vApplicationMallocFailedHook(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN 5 */
-	BSP_init();
-	UART_init();
-	CDC_init();
-	FLASH_init();
-	SPI_init();
-	SD_init();
-	BLOCK_init();
-	if (MX_FATFS_Init() != APP_OK) {
-		Error_Handler();
-	}
-	FS_init();
+	SD_getSize();
 
 	Forth();
 

@@ -732,6 +732,7 @@ uint64_t FS_date(uint64_t forth_stack) {
 	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
 	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
 
+
 	tm_s.tm_year = sDate.Year + 100;
 	tm_s.tm_mon = sDate.Month - 1;
 	tm_s.tm_mday = sDate.Date;
@@ -739,6 +740,10 @@ uint64_t FS_date(uint64_t forth_stack) {
 	tm_s.tm_hour = sTime.Hours;
 	tm_s.tm_min = sTime.Minutes;
 	tm_s.tm_sec = sTime.Seconds;
+
+	tm_s.tm_isdst = 0;
+	tm_s.tm_wday = sDate.WeekDay;
+	tm_s.tm_yday = 0;
 
 	strftime(line, sizeof(line), "%c", &tm_s);
 

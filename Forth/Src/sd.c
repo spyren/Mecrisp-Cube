@@ -229,8 +229,6 @@ void SD_init(void) {
 	if (SD_SemaphoreID == NULL) {
 		Error_Handler();
 	}
-
-	SD_getSize();
 }
 
 
