@@ -394,6 +394,22 @@ rtos_osThreadGetState:
 
 
 // -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osThreadGetName"
+		@ ( u -- addr ) Returns the pointer to the name string of the thread.
+/// \param[in]     thread_id     thread ID obtained by \ref osThreadNew or \ref osThreadGetId.
+/// \return pointer to the name string of the thread.
+// const char * osThreadGetName(osThreadId_t thread_id)
+// -----------------------------------------------------------------------------
+.global		rtos_osThreadGetName
+rtos_osThreadGetName:
+	push	{r0-r3, lr}
+	movs	r0, tos		// set Thread ID
+	bl		osThreadGetName
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+// -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osThreadSetPriority"
 		@ ( u u -- u ) Change priority of a thread.
 /// \param[in]     thread_id     thread ID obtained by \ref osThreadNew or \ref osThreadGetId.
