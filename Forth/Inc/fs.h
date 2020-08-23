@@ -8,6 +8,9 @@
 #ifndef INC_FS_H_
 #define INC_FS_H_
 
+#include "ff.h"
+
+extern const char FS_Version[];
 
 void FS_init(void);
 
@@ -21,6 +24,10 @@ int FS_FILINFO_ftime(void);
 int FS_FILINFO_fattrib(void);
 int FS_FILINFO_fname(void);
 int FS_FILINFO_altname(void);
+
+int FS_f_eof(FIL* fp);
+FSIZE_t FS_f_size(FIL* fp);
+int FS_f_error(FIL* fp);
 
 uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
 uint64_t FS_cat      (uint64_t forth_stack);

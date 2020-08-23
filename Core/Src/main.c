@@ -100,6 +100,7 @@ const osThreadAttr_t Main_attributes = {
   .stack_size = 1024 * 4
 };
 /* USER CODE BEGIN PV */
+const char MecrispCubeVersion[] = "Mecrisp-Cube 1.2.2 for STM32WB55 (C) peter@spyr.ch\n";
 
 /* USER CODE END PV */
 

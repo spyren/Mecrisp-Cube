@@ -271,6 +271,24 @@ Forth:
 2:
 	welcome " by Matthias Koch. "
 
+	bl		cr
+	pushdatos
+	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =BSP_Version	// print Cube and BLE version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =RTOS_Version	// print RTOS version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =FS_Version	// print file system version
+	bl		fs_strlen
+	bl		stype
+
 	@ Ready to fly !
 .include "boot.s"
 

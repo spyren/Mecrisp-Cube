@@ -30,6 +30,8 @@
 #ifndef INC_RTOS_H_
 #define INC_RTOS_H_
 
+extern const char RTOS_Version[];
+
 int RTOS_osThreadAttr_size(void);
 int RTOS_osThreadAttr_name(void);
 int RTOS_osThreadAttr_attr_bits(void);

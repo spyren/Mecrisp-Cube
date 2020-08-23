@@ -62,6 +62,9 @@
 
 // Global Variables
 // ****************
+
+const char FS_Version[] = "  * FatFs - Generic FAT file system module  R0.12c (C) 2017 ChaN\n";
+
 FATFS FatFs;	/* Work area (filesystem object) for logical drive */
 FILINFO fno;	/* File information */
 DIR dj;			/* Directory object */
@@ -242,6 +245,10 @@ uint64_t FS_ls(uint64_t forth_stack) {
 
 	uint64_t stack;
 	stack = forth_stack;
+
+	memset(&dj, 0, sizeof(dj));
+	memset(&fno, 0, sizeof(fno));
+
 
 	while (TRUE) {
 		// get tokens till end of line
@@ -579,6 +586,8 @@ uint64_t FS_touch(uint64_t forth_stack) {
 	uint64_t stack;
 	stack = forth_stack;
 
+	memset(&fno, 0, sizeof(fno));
+
 	stack = FS_cr(stack);
 
 	while (TRUE) {
@@ -798,6 +807,17 @@ int FS_FILINFO_altname(void) {
 	return(sizeof(FSIZE_t)+sizeof(WORD)+sizeof(WORD)+sizeof(BYTE));
 }
 
+int FS_f_eof(FIL* fp) {
+	return f_eof(fp);
+}
+
+FSIZE_t FS_f_size(FIL* fp) {
+	return f_size(fp);
+}
+
+int FS_f_error(FIL* fp) {
+	return f_error(fp);
+}
 
 
 // Private Functions

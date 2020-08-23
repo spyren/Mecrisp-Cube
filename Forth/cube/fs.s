@@ -606,6 +606,8 @@ FA_OPEN_APPEND:
 	pop		{pc}
 
 
+// File Access
+// ***********
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_open"
@@ -644,6 +646,148 @@ fs_f_close:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_read"
+		@  ( adr len adr -- u )  Read data from the file.
+// FRESULT f_read (
+//   FIL* fp,     /* [IN] File object */
+//   void* buff,  /* [OUT] Buffer to store read data */
+//   UINT btr,    /* [IN] Number of bytes to read */
+//   UINT* br     /* [OUT] Number of bytes read */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_read:
+	push	{lr}
+	movs	r3, tos		// br
+	drop
+	movs	r2, tos		// btr
+	drop
+	movs	r1, tos		// buff
+	drop
+	movs	r0, tos		// fp
+	bl		f_read
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_write"
+		@  ( adr len adr -- u )  writes data to a file
+// FRESULT f_write (
+//   FIL* fp,          /* [IN] Pointer to the file object structure */
+//   const void* buff, /* [IN] Pointer to the data to be written */
+//   UINT btw,         /* [IN] Number of bytes to write */
+//   UINT* bw          /* [OUT] Pointer to the variable to return number of bytes written */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_write:
+	push	{lr}
+	movs	r3, tos		// bw
+	drop
+	movs	r2, tos		// btw
+	drop
+	movs	r1, tos		// buff
+	drop
+	movs	r0, tos		// fp
+	bl		f_write
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_lseek"
+		@  ( adr len adr -- u )  Move read/write pointer, Expand size
+// FRESULT f_lseek (
+//   FIL*    fp,  /* [IN] File object */
+//   FSIZE_t ofs  /* [IN] File read/write pointer */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_lseek:
+	push	{lr}
+	movs	r1, tos		// ofs
+	drop
+	movs	r0, tos		// fp
+	bl		f_lseek
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_truncate"
+		@  ( adr len adr -- u )  Truncate file size
+// FRESULT f_truncate (
+//   FIL* fp     /* [IN] File object */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_truncate:
+	push	{lr}
+	movs	r0, tos		// fp
+	bl		f_truncate
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_sync"
+		@  ( adr len adr -- u )  Read data from the file.
+// FRESULT f_sync (
+//   FIL* fp     /* [IN] File object */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_sync:
+	push	{lr}
+	movs	r0, tos		// fp
+	bl		f_sync
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_forward"
+		@  ( adr len adr -- u )  reads the file data and forward it to the data streaming device.
+// FRESULT f_forward (
+//   FIL* fp,                        /* [IN] File object */
+//   UINT (*func)(const BYTE*,UINT), /* [IN] Data streaming function */
+//   UINT btf,                       /* [IN] Number of bytes to forward */
+//   UINT* bf                        /* [OUT] Number of bytes forwarded */
+// );
+
+@ -----------------------------------------------------------------------------
+fs_f_forward:
+	push	{lr}
+	movs	r3, tos		// bf
+	drop
+	movs	r2, tos		// btf
+	drop
+	movs	r1, tos		// func
+	drop
+	movs	r0, tos		// fp
+	bl		f_forward
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_expand"
+		@  ( adr len adr -- u )  Allocate a contiguous block to the file
+// FRESULT f_expand (
+//   FIL*    fp,  /* [IN] File object */
+//   FSIZE_t fsz, /* [IN] File size expanded to */
+//   BYTE    opt  /* [IN] Allocation mode */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_expand:
+	push	{lr}
+	movs	r2, tos		// opt
+	drop
+	movs	r1, tos		// fsz
+	drop
+	movs	r0, tos		// fp
+	bl		f_expand
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_gets"
 		@  ( adr len adr -- u )  reads a string from the file.
 // TCHAR* f_gets (
@@ -660,6 +804,326 @@ fs_f_gets:
 	drop
 	movs	r0, tos		// buff
 	bl		f_gets
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_putc"
+		@  ( adr len adr -- u )  Write a character
+// int f_putc (
+//   TCHAR chr,  /* [IN] A character to write */
+//   FIL* fp     /* [IN] File object */
+// );
+
+@ -----------------------------------------------------------------------------
+fs_f_putc:
+	push	{lr}
+	movs	r1, tos		// fp
+	drop
+	movs	r0, tos		// chr
+	bl		f_putc
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_puts"
+		@  ( adr len adr -- u )  Read data from the file.
+// int f_puts (
+//   const TCHAR* str, /* [IN] String */
+//   FIL* fp           /* [IN] File object */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_puts:
+	push	{lr}
+	movs	r1, tos		// fp
+	drop
+	movs	r0, tos		// str
+	bl		f_puts
+	movs	tos, r0
+	pop		{pc}
+
+
+//@ -----------------------------------------------------------------------------
+//		Wortbirne Flag_visible, "f_tell"
+//		@  ( adr len adr -- u )  Get current read/write pointer
+// FSIZE_t f_tell (
+//   FIL* fp   /* [IN] File object */
+// );
+//#define f_tell(fp) ((fp)->fptr)
+@ -----------------------------------------------------------------------------
+//fs_f_tell:
+//	push	{lr}
+//	movs	r0, tos		// fp
+//	bl		f_tell
+//	movs	tos, r0
+//	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_eof"
+		@  ( adr len adr -- u )  Test for end-of-file
+// int f_eof (
+//   FIL* fp   /* [IN] File object */
+// );
+// #define f_eof(fp) ((int)((fp)->fptr == (fp)->obj.objsize))
+@ -----------------------------------------------------------------------------
+fs_f_eof:
+	push	{lr}
+	movs	r0, tos		// fp
+	bl		FS_f_eof
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_size"
+		@  ( adr len adr -- u )  Get size
+// FSIZE_t f_size (
+//   FIL* fp   /* [IN] File object */
+// );
+// #define f_size(fp) ((fp)->obj.objsize)
+@ -----------------------------------------------------------------------------
+fs_f_size:
+	push	{lr}
+	movs	r0, tos		// fp
+	bl		FS_f_size
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_error"
+		@  ( adr len adr -- u )  Read data from the file.
+// int f_error (
+//   FIL* fp   /* [IN] File object */
+// );
+// #define f_error(fp) ((fp)->err)
+@ -----------------------------------------------------------------------------
+fs_f_error:
+	push	{lr}
+	movs	r0, tos		// fp
+	bl		FS_f_error
+	movs	tos, r0
+	pop		{pc}
+
+
+// Directory Access
+// ****************
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_opendir"
+		@  ( adr len adr -- u )  Open a directory
+// FRESULT f_opendir (
+//   DIR* dp,           /* [OUT] Pointer to the directory object structure */
+//   const TCHAR* path  /* [IN] Directory name */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_opendir:
+	push	{lr}
+	movs	r1, tos		// path
+	drop
+	movs	r0, tos		// dp
+	bl		f_opendir
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_closedir"
+		@  ( adr len adr -- u )  Close an open directory
+// FRESULT f_closedir (
+//   DIR* dp     /* [IN] Pointer to the directory object */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_closedir:
+	push	{lr}
+	movs	r0, tos		// dp
+	bl		f_closedir
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_readdir"
+		@  ( adr len adr -- u )  Read a directory item
+// FRESULT f_readdir (
+//   DIR* dp,      /* [IN] Directory object */
+//   FILINFO* fno  /* [OUT] File information structure */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_readdir:
+	push	{lr}
+	movs	r1, tos		// fno
+	drop
+	movs	r0, tos		// dp
+	bl		f_readdir
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_findfirst"
+		@  ( adr len adr -- u )  Open a directory and read the first item matched
+// FRESULT f_findfirst (
+//   DIR* dp,              /* [OUT] Poninter to the directory object */
+//   FILINFO* fno,         /* [OUT] Pointer to the file information structure */
+//   const TCHAR* path,    /* [IN] Pointer to the directory name to be opened */
+//   const TCHAR* pattern  /* [IN] Pointer to the matching pattern string */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_findfirst:
+	push	{lr}
+	movs	r3, tos		// pattern
+	drop
+	movs	r2, tos		// path
+	drop
+	movs	r1, tos		// fno
+	drop
+	movs	r0, tos		// dp
+	bl		f_findfirst
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_findnext"
+		@  ( adr len adr -- u )  Read a next item matched
+// FRESULT f_findnext (
+//   DIR* dp,              /* [IN] Poninter to the directory object */
+//   FILINFO* fno          /* [OUT] Pointer to the file information structure */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_findnext:
+	push	{lr}
+	movs	r1, tos		// fno
+	drop
+	movs	r0, tos		// dp
+	bl		f_findnext
+	movs	tos, r0
+	pop		{pc}
+
+
+// File and Directory Management
+// *****************************
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_stat"
+		@  ( adr len adr -- u )  Check existance of a file or sub-directory
+// FRESULT f_stat (
+//   const TCHAR* path,  /* [IN] Object name */
+//   FILINFO* fno        /* [OUT] FILINFO structure */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_stat:
+	push	{lr}
+	movs	r1, tos		// fno
+	drop
+	movs	r0, tos		// path
+	bl		f_stat
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_unlink"
+		@  ( adr len adr -- u )  Remove a file or sub-directory
+// FRESULT f_unlink (
+//   const TCHAR* path  /* [IN] Object name */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_unlink:
+	push	{lr}
+	movs	r0, tos		// path
+	bl		f_unlink
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_rename"
+		@  ( adr len adr -- u )  Rename/Move a file or sub-directory
+// FRESULT f_rename (
+//   const TCHAR* old_name, /* [IN] Old object name */
+//   const TCHAR* new_name  /* [IN] New object name */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_rename:
+	push	{lr}
+	movs	r1, tos		// new_name
+	drop
+	movs	r0, tos		// old_name
+	bl		f_rename
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_chmod"
+		@  ( adr len adr -- u )  Change attribute of a file or sub-directory
+// FRESULT f_chmod (
+//   const TCHAR* path, /* [IN] Object name */
+//   BYTE attr,         /* [IN] Attribute flags */
+//   BYTE mask          /* [IN] Attribute masks */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_chmod:
+	push	{lr}
+	movs	r2, tos		// mask
+	drop
+	movs	r1, tos		// attr
+	drop
+	movs	r0, tos		// path
+	bl		f_chmod
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_utime"
+		@  ( adr len adr -- u )  Change timestamp of a file or sub-directory
+// FRESULT f_utime (
+//   const TCHAR* path,  /* [IN] Object name */
+//   const FILINFO* fno  /* [IN] Time and data to be set */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_utime:
+	push	{lr}
+	movs	r1, tos		// fno
+	drop
+	movs	r0, tos		// path
+	bl		f_utime
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_mkdir"
+		@  ( adr len adr -- u )  Create a sub-directory
+// FRESULT f_mkdir (
+//   const TCHAR* path /* [IN] Directory name */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_mkdir:
+	push	{lr}
+	movs	r0, tos		// path
+	bl		f_mkdir
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_chdir"
+		@  ( adr -- u )  Change current directory .
+// FRESULT f_chdir (
+// 	const TCHAR* path	/* Pointer to the directory path */
+// )
+@ -----------------------------------------------------------------------------
+fs_f_chdir:
+	push	{lr}
+	movs	r0, tos		// buff
+	bl		f_chdir
 	movs	tos, r0
 	pop		{pc}
 
@@ -683,20 +1147,138 @@ fs_f_getcwd:
 	pop		{pc}
 
 
+// Volume Management and System Configuration
+// ******************************************
+
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "f_chdir"
-		@  ( adr -- u )  Change current directory .
-// FRESULT f_chdir (
-// 	const TCHAR* path	/* Pointer to the directory path */
-// )
+		Wortbirne Flag_visible, "f_mount"
+		@  ( adr len adr -- u )  Register/Unregister the work area of the volume
+// FRESULT f_mount (
+//   FATFS*       fs,    /* [IN] Filesystem object */
+//   const TCHAR* path,  /* [IN] Logical drive number */
+//   BYTE         opt    /* [IN] Initialization option */
+// );
 @ -----------------------------------------------------------------------------
-fs_f_chdir:
+fs_f_mount:
 	push	{lr}
-	movs	r0, tos		// buff
-	bl		f_chdir
+	movs	r2, tos		// opt
+	drop
+	movs	r1, tos		// path
+	drop
+	movs	r0, tos		// fs
+	bl		f_mount
 	movs	tos, r0
 	pop		{pc}
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_mkfs"
+		@  ( adr len adr -- u )  Create an FAT volume on the logical drive
+// FRESULT f_mkfs (
+//   const TCHAR*  path,  /* [IN] Logical drive number */
+//   const MKFS_PARM* opt,/* [IN] Format options */
+//   void*  work,         /* [-]  Working buffer */
+//   UINT  len            /* [IN] Size of working buffer */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_mkfs:
+	push	{lr}
+	movs	r3, tos		// len
+	drop
+	movs	r2, tos		// work
+	drop
+	movs	r1, tos		// opt
+	drop
+	movs	r0, tos		// path
+	bl		f_mkfs
+	movs	tos, r0
+	pop		{pc}
+
+
+//@ -----------------------------------------------------------------------------
+//		Wortbirne Flag_visible, "f_fdisk"
+//		@  ( adr len adr -- u )  Create partitions on the physical drive
+// FRESULT f_fdisk (
+//   BYTE  pdrv,         /* [IN] Physical drive number */
+//   const LBA_t ptbl[], /* [IN] Partition map table */
+//   void* work          /* [IN] Work area */
+// );
+@ -----------------------------------------------------------------------------
+//fs_f_fdisk:
+//	push	{lr}
+//	movs	r2, tos		// work
+//	drop
+//	movs	r1, tos		// ptbl
+//	drop
+//	movs	r0, tos		// pdrv
+//	bl		f_fdisk
+//	movs	tos, r0
+//	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_getfree"
+		@  ( adr len adr -- u )  gets number of the free clusters on the volume.
+// FRESULT f_read (
+//   FIL* fp,     /* [IN] File object */
+//   void* buff,  /* [OUT] Buffer to store read data */
+//   UINT btr,    /* [IN] Number of bytes to read */
+//   UINT* br     /* [OUT] Number of bytes read */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_getfree:
+	push	{lr}
+	movs	r3, tos		// br
+	drop
+	movs	r2, tos		// btr
+	drop
+	movs	r1, tos		// buff
+	drop
+	movs	r0, tos		// fp
+	bl		f_getfree
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_getlabel"
+		@  ( adr len adr -- u )  returns volume label and volume serial number of a volume.
+// FRESULT f_getlabel (
+//   const TCHAR* path,  /* [IN] Drive number */
+//   TCHAR* label,       /* [OUT] Volume label */
+//   DWORD* vsn          /* [OUT] Volume serial number */
+// );
+
+@ -----------------------------------------------------------------------------
+fs_f_getlabel:
+	push	{lr}
+	movs	r2, tos		// vsn
+	drop
+	movs	r1, tos		// label
+	drop
+	movs	r0, tos		// path
+	bl		f_getlabel
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_setlabel"
+		@  ( adr len adr -- u )  Set volume label
+// FRESULT f_setlabel (
+//   const TCHAR* label  /* [IN] Volume label to be set */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_setlabel:
+	push	{lr}
+	movs	r0, tos		// label
+	bl		f_setlabel
+	movs	tos, r0
+	pop		{pc}
+
+
+// C String Functions
+// ******************
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "strlen"
