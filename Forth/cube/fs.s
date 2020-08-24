@@ -1277,6 +1277,19 @@ fs_f_setlabel:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "get_fattime"
+		@  (  -- u )  Gets Time from RTC
+// DWORD get_fattime (void)
+@ -----------------------------------------------------------------------------
+fs_get_fattime:
+	push	{lr}
+	pushdatos
+	bl		get_fattime
+	movs	tos, r0
+	pop		{pc}
+
+
 // C String Functions
 // ******************
 

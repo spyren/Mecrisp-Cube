@@ -24,6 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_common.h"
+#include "time.h"
 
 /* USER CODE END Includes */
 
@@ -53,6 +55,12 @@ FIL USERFile;       /* File  object for USER */
 char USERPath[4];   /* USER logical drive path */
 /* USER CODE BEGIN PV */
 FS_FileOperationsTypeDef Appli_state = APPLICATION_IDLE;
+
+// Hardware resources
+// ******************
+
+extern RTC_HandleTypeDef hrtc;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -103,7 +111,23 @@ int32_t MX_FATFS_Process(void)
 DWORD get_fattime(void)
 {
   /* USER CODE BEGIN get_fattime */
-  return 0;
+	RTC_TimeTypeDef sTime;
+	RTC_DateTypeDef sDate;
+
+	DWORD value = 0;
+
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+
+	value = (sDate.Year + 20) << 25;
+	value |= sDate.Month << 21;
+	value |= sDate.Date << 16;
+
+	value |= sTime.Hours << 11;
+	value |= sTime.Minutes << 5 ;
+	value |= sTime.Seconds;
+
+	return value;
   /* USER CODE END get_fattime */  
 }
 

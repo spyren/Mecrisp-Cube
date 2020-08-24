@@ -1019,10 +1019,20 @@ static void SD_IO_Init(void) {
   *     None
   */
 static void SD_IO_CSState(uint8_t val) {
-	if(val != 0) {
-		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle
+		if(val != 0) {
+			HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_RESET);
+		}
 	} else {
-		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
+		// Nucleo Board
+		if(val != 0) {
+			HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
+		}
 	}
 }
 
