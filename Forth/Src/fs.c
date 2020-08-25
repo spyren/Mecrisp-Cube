@@ -175,9 +175,12 @@ uint64_t FS_cat(uint64_t forth_stack) {
 	uint8_t *str = NULL;
 	int count = 1;
 	uint8_t n_flag = FALSE;
+	uint8_t outfile_flag = FALSE;
 	int line_num = 0;
-	FIL fil;        /* File object */
-	FRESULT fr;     /* FatFs return code */
+	FIL fil_in;		/* File object */
+	FIL fil_out;	/* File object */
+	FRESULT fr;		/* FatFs return code */
+	BYTE mode;
 
 	uint64_t stack;
 	stack = forth_stack;
@@ -195,27 +198,60 @@ uint64_t FS_cat(uint64_t forth_stack) {
 		line[count] = 0;
 		if (! strcmp(line, "-n")) {
 			n_flag = TRUE;
+		} else if ( (! strcmp(line, ">")) || (! strcmp(line, ">>")) ) {
+			if (! strcmp(line, ">")) {
+				// new file
+				mode = FA_CREATE_ALWAYS | FA_WRITE;
+			} else {
+				// append
+				mode = FA_OPEN_APPEND | FA_WRITE;
+			}
+			stack = FS_token(stack, &str, &count);
+			memcpy(line, str, count);
+			if (count == 0) {
+				// no more tokens
+				break;
+			}
+			outfile_flag = TRUE;
+			fr = f_open(&fil_out, line, mode);
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": can't create file");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				break;
+			}
 		} else {
 			/* Open a text file */
-			fr = f_open(&fil, line, FA_READ);
+			fr = f_open(&fil_in, line, FA_READ);
 			if (fr) {
 				// open failed
-				strcpy(line, "Err: file not found");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": file not found");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
 			/* Read every line and type it */
-			while (f_gets(line, sizeof(line), &fil)) {
+			while (f_gets(line, sizeof(line), &fil_in)) {
 				if (n_flag) {
 					snprintf(pattern, sizeof(pattern), "%6i: ", line_num++);
-					stack = FS_type(stack, (uint8_t*)pattern, strlen(pattern));
+					if (outfile_flag) {
+						f_puts(pattern, &fil_out);
+					} else {
+						stack = FS_type(stack, (uint8_t*)pattern, strlen(pattern));
+					}
 				}
-				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				if (outfile_flag) {
+					f_puts(line, &fil_out);
+				} else {
+					stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				}
 			}
-
 			/* Close the file */
-			f_close(&fil);
-
+			f_close(&fil_in);
 		}
+	}
+
+	if (outfile_flag) {
+		f_close(&fil_out);
 	}
 
 	return stack;
@@ -578,6 +614,7 @@ uint64_t FS_chmod(uint64_t forth_stack) {
  */
 uint64_t FS_touch(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
+	FIL fil;        /* File object */
 	uint8_t *str = NULL;
 	int count = 1;
 	RTC_TimeTypeDef sTime;
@@ -612,11 +649,25 @@ uint64_t FS_touch(uint64_t forth_stack) {
 				sTime.Minutes << 5 |
 				sTime.Seconds / 2U);
 
-		fr = f_utime(line, &fno);  /* create directory */
-		if (fr != FR_OK) {
-			stack = FS_type(stack, (uint8_t*)line, strlen(line));
-			strcpy(line, ": can't update timestamps ");
-			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		// check for file existence
+		if (f_stat(line, NULL) == FR_NO_FILE) {
+			// file does not exist -> create
+			fr = f_open(&fil, line, FA_CREATE_NEW | FA_WRITE);
+			if (fr == FR_OK) {
+				fr = f_close(&fil);
+			} else {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": can't create file");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else {
+			// file exists
+			fr = f_utime(line, &fno);  /* create directory */
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": can't update timestamps ");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
 		}
 	}
 
