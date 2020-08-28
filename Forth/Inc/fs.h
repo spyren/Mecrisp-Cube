@@ -40,9 +40,11 @@ uint64_t FS_chmod    (uint64_t forth_stack);
 uint64_t FS_touch    (uint64_t forth_stack);
 
 
-uint64_t FS_evaluate (uint64_t forth_stack, uint8_t* str, int count);
-uint64_t FS_type     (uint64_t forth_stack, uint8_t* str, int count);
+uint64_t FS_evaluate (uint64_t forth_stack, uint8_t *str, int count);
+uint64_t FS_type     (uint64_t forth_stack, uint8_t *str, int count);
 uint64_t FS_cr       (uint64_t forth_stack);
 uint64_t FS_token    (uint64_t forth_stack, uint8_t **str, int *count);
+uint64_t FS_accept   (uint64_t forth_stack, uint8_t *str, int *count);
+
 
 #endif /* INC_FS_H_ */

@@ -176,6 +176,8 @@ uint64_t FS_cat(uint64_t forth_stack) {
 	int count = 1;
 	uint8_t n_flag = FALSE;
 	uint8_t outfile_flag = FALSE;
+	uint8_t input_flag = FALSE;
+	uint8_t EOF_flag = FALSE;
 	int line_num = 0;
 	FIL fil_in;		/* File object */
 	FIL fil_out;	/* File object */
@@ -208,6 +210,7 @@ uint64_t FS_cat(uint64_t forth_stack) {
 			}
 			stack = FS_token(stack, &str, &count);
 			memcpy(line, str, count);
+			line[count] = 0;
 			if (count == 0) {
 				// no more tokens
 				break;
@@ -220,33 +223,65 @@ uint64_t FS_cat(uint64_t forth_stack) {
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 				break;
 			}
+		} else if (! strcmp(line, "<<") ) {
+			stack = FS_token(stack, &str, &count);
+			memcpy(pattern, str, count);
+			line[count] = 0;
+			if (count == 0) {
+				// no more tokens
+				break;
+			}
+			input_flag = TRUE;
 		} else {
 			/* Open a text file */
 			fr = f_open(&fil_in, line, FA_READ);
-			if (fr) {
+			if (fr != FR_OK) {
 				// open failed
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 				strcpy(line, ": file not found");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
-			}
-			/* Read every line and type it */
-			while (f_gets(line, sizeof(line), &fil_in)) {
-				if (n_flag) {
-					snprintf(pattern, sizeof(pattern), "%6i: ", line_num++);
+			} else {
+				/* Read every line and type it */
+				while (f_gets(line, sizeof(line), &fil_in)) {
+					if (n_flag) {
+						snprintf(pattern, sizeof(pattern), "%6i: ", line_num++);
+						if (outfile_flag) {
+							f_puts(pattern, &fil_out);
+						} else {
+							stack = FS_type(stack, (uint8_t*)pattern, strlen(pattern));
+						}
+					}
 					if (outfile_flag) {
-						f_puts(pattern, &fil_out);
+						f_puts(line, &fil_out);
 					} else {
-						stack = FS_type(stack, (uint8_t*)pattern, strlen(pattern));
+						stack = FS_type(stack, (uint8_t*)line, strlen(line));
 					}
 				}
+				/* Close the file */
+				f_close(&fil_in);
+			}
+		}
+	}
+
+	if (input_flag) {
+		// input from console
+		while (! EOF_flag) {
+			// read till end of line
+			count = 255;
+			stack = FS_accept(stack, (uint8_t*)line, &count);
+			line[count] = 0;
+			if (! strcmp(line, pattern)) {
+				// EOF
+				EOF_flag = TRUE;
+			} else {
 				if (outfile_flag) {
 					f_puts(line, &fil_out);
+					f_putc('\n', &fil_out);
 				} else {
 					stack = FS_type(stack, (uint8_t*)line, strlen(line));
 				}
 			}
-			/* Close the file */
-			f_close(&fil_in);
+			stack = FS_cr(stack);
 		}
 	}
 
@@ -760,8 +795,6 @@ uint64_t FS_date(uint64_t forth_stack) {
 	RTC_DateTypeDef sDate;
 	struct tm tm_s;
 	uint8_t param = FALSE;
-	uint8_t s_flag = FALSE;
-	uint8_t i_flag = FALSE;
 
 	uint64_t stack;
 	stack = forth_stack;
@@ -777,14 +810,6 @@ uint64_t FS_date(uint64_t forth_stack) {
 		}
 		memcpy(line, str, count);
 		line[count] = 0;
-		if (! strcmp (line, "-s")) {
-			s_flag = TRUE;
-		} else if (! strcmp (line, "-i")) {
-			i_flag = TRUE;
-		} else {
-			param = TRUE;
-		}
-
 	}
 
 	stack = FS_cr(stack);

@@ -159,6 +159,9 @@ static void HrsThread(void *argument) {
 	int measurement;
 
 	for (;;) {
+		// update every 500 ms
+		osDelay(500);
+
 		measurement = 30 + BSP_getAnalogPin(0) / 20;
 
 		HRSAPP_Context.MeasurementvalueChar.MeasurementValue = measurement;
@@ -170,9 +173,9 @@ static void HrsThread(void *argument) {
 			HRSAPP_Context.ResetEnergyExpended = 0;
 #endif
 
+		// danger
 		HRS_UpdateChar(HEART_RATE_MEASURMENT_UUID, (uint8_t *)&HRSAPP_Context.MeasurementvalueChar);
 
-		osDelay(500);
 	}
 
 }

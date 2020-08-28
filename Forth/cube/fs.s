@@ -381,7 +381,7 @@ FS_type:
 	movs	r1, psp		// update psp
 	pop		{r4-r7, pc}
 
-
+// token ( -- c-addr len )
 // uint64_t  FS_token(uint64_t forth_stack, uint8_t **str, int *count);
 .global	FS_token
 FS_token:
@@ -397,6 +397,27 @@ FS_token:
 	drop
 	str		r0, [r2]
 	str		r1, [r3]
+	movs	r0, tos		// update tos
+	movs	r1, psp		// update psp
+	pop		{r4-r7, pc}
+
+// accept ( c-addr maxlength - - length )
+// uint64_t  FS_accept(uint64_t forth_stack, uint8_t *str, int *count);
+.global	FS_accept
+FS_accept:
+	push 	{r4-r7, lr}
+	movs	tos, r0		// get tos
+	movs	psp, r1		// get psp
+	pushdatos
+	movs	tos, r2		// *str
+	pushdatos
+	ldr		tos, [r3]	// count
+	push 	{r3}		// push count argument
+	bl		accept
+	pop		{r3}
+	movs	r1, tos		// len -> count (RETURN)
+	drop
+	str		r1, [r3]	// return count
 	movs	r0, tos		// update tos
 	movs	r1, psp		// update psp
 	pop		{r4-r7, pc}
