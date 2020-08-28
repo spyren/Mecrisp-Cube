@@ -839,6 +839,56 @@ uint64_t FS_date(uint64_t forth_stack) {
 }
 
 
+/**
+ *  @brief
+ *      Mount the default drive
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_mount(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+	fr = f_mount(&FatFs, "", 0);
+	if (fr != FR_OK) {
+		strcpy(line, "Can't mount default drive");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Umount the default drive
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_umount(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+	fr = f_mount(0, "", 0);
+	if (fr != FR_OK) {
+		strcpy(line, "Can't unmount default drive");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	return stack;
+}
+
+
 int FS_FIL_size(void) {
 	return(sizeof(FIL));
 }

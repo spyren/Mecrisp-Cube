@@ -332,6 +332,36 @@ date:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "mount"
+		@ ( -- ) Mount the default drive
+// uint64_t FS_mount (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+mount:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_mount
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "umount"
+		@ ( -- ) Unmount the default drive
+// uint64_t FS_umount (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+umount:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_umount
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
 // C Interface to some Forth Words
 //********************************
 

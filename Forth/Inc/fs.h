@@ -38,7 +38,8 @@ uint64_t FS_mkdir    (uint64_t forth_stack);
 uint64_t FS_rm       (uint64_t forth_stack);
 uint64_t FS_chmod    (uint64_t forth_stack);
 uint64_t FS_touch    (uint64_t forth_stack);
-
+uint64_t FS_mount    (uint64_t forth_stack);
+uint64_t FS_umount   (uint64_t forth_stack);
 
 uint64_t FS_evaluate (uint64_t forth_stack, uint8_t *str, int count);
 uint64_t FS_type     (uint64_t forth_stack, uint8_t *str, int count);
