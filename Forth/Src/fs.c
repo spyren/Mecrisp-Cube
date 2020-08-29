@@ -135,7 +135,7 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	stack = forth_stack;
 
 	memcpy(path, str, count);
-	line[count] = 0;
+	path[count] = 0;
 
 	/* Open a text file */
 	fr = f_open(&fil, path, FA_READ);
@@ -853,6 +853,7 @@ uint64_t FS_mount(uint64_t forth_stack) {
 	uint64_t stack;
 	stack = forth_stack;
 
+	SD_getSize();
 	stack = FS_cr(stack);
 	fr = f_mount(&FatFs, "", 0);
 	if (fr != FR_OK) {
