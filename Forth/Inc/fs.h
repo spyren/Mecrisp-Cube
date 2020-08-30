@@ -11,6 +11,7 @@
 #include "ff.h"
 
 extern const char FS_Version[];
+extern	uint32_t **ZweitDictionaryPointer;
 
 void FS_init(void);
 

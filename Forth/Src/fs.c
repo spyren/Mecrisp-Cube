@@ -163,6 +163,54 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 
 /**
  *  @brief
+ *      Dumps the flash memory (core) into a file.
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @param[in]
+ *      str   filename (w/ or w/o null termination)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_coredump(uint64_t forth_stack, uint8_t *str, int count) {
+	FIL fil;        /* File object */
+	FRESULT fr;     /* FatFs return code */
+	UINT bytes_written;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	memcpy(path, str, count);
+	path[count] = 0;
+
+	/* Open a file */
+	fr = f_open(&fil, path, FA_CREATE_NEW | FA_WRITE);
+	if (fr != FR_OK) {
+		// open failed
+		strcpy(line, "Err: can't open for write");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	// get the end of the flash dictionary
+	fr = f_write(&fil,
+			(uint8_t *) 0x08000000,
+			((uint32_t) ZweitDictionaryPointer ) - 0x08000000,
+			&bytes_written);
+	if ( (fr != FR_OK) ||
+			(bytes_written < ((uint32_t) ZweitDictionaryPointer) - 0x08000000) ) {
+		// open failed
+		strcpy(line, "Err: write failed");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	/* Close the file */
+	f_close(&fil);
+
+	return stack;
+}
+
+
+/**
+ *  @brief
  *      Concatenate files and print on the standard output
  *
  *      The parameters are taken from the command line (Forth tokens)

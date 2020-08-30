@@ -168,6 +168,26 @@ included:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "coredump"
+		@  ( "filename" --  ) Dumps the flash memory (core) into a file
+// uint64_t FS_coredump  (uint64_t forth_stack, uint8_t *str, int count);
+@ -----------------------------------------------------------------------------
+coredump:
+	push	{lr}
+	bl		token		@ ( -- c-addr len )
+	movs	r3, tos		// len -> count
+	drop
+	movs	r2, tos		// c-addr -> str
+	drop
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_coredump
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "cat"
 		@ cat ( "line<EOF>" -- ) Types the content of the file.
 // uint64_t FS_cat (uint64_t forth_stack);
@@ -1360,12 +1380,11 @@ fs_strlen:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "str0term"
-		@  ( cadr len -- cadr len )  null-terminated string
-// : str0term  2dup + 0 swap c! ;
+		@  ( cadr len --  )  null-terminated string
+// : str0term   + 0 swap c! ;
 @ -----------------------------------------------------------------------------
 str0term:
 	push	{lr}
-	ddup
 	ldm 	psp!, {r0}
 	adds 	tos, r0
 	pushdatos
@@ -1391,6 +1410,34 @@ dotklammer:
 	bl		stype
 	pop		{pc}
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, ".str\""
+		@  ( c-addr "text" -- len ) copy string into buffer
+// : .str" 34 parse -rot swap rot 2dup + 0 swap ! move ;
+@ -----------------------------------------------------------------------------
+dotstrquote:
+	push	{lr}
+	pushdatos
+	movs	tos, #34	// '"'
+	bl		parse		// dest source len
+	bl		minusrot	// len dest source
+	swap				// len source dest
+	bl		rot			// source dest len
+	ddup				// source dest len dest len
+	ldm 	psp!, {r0}
+	adds	tos, r0		// +
+	pushdaconst	0		// 0
+	swap				// swap
+	ldm		psp!, {r0, r1}
+	str		r0, [tos]
+	movs tos, r1		// !
+	bl		move
+	pop		{pc}
+
+
+// RTC Words
+//**********
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "time@"

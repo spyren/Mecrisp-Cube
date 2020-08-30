@@ -133,6 +133,11 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	FlashFlags, 4
 	ramallot	VariablenPointer, 4
 
+.global		Dictionarypointer
+.global		Fadenende
+.global		ZweitDictionaryPointer
+.global		ZweitFadenende
+
 @ Jetzt kommen Puffer und Stacks:  Buffers and Stacks
 
 .equ	Zahlenpufferlaenge,		63 			@ Number buffer (Length+1 mod 4 = 0)
