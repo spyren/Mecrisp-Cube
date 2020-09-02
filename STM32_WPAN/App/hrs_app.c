@@ -68,13 +68,13 @@ PLACE_IN_SECTION("BLE_APP_CONTEXT") static HRSAPP_Context_t HRSAPP_Context;
 osThreadId_t HrsThreadId;
 
 const osThreadAttr_t HrsThread_attr = {
-		.name = CFG_HRS_THREAD_NAME,
-		.attr_bits = CFG_HRS_THREAD_ATTR_BITS,
-		.cb_mem = CFG_HRS_THREAD_CB_MEM,
-		.cb_size = CFG_HRS_THREAD_CB_SIZE,
-		.stack_mem = CFG_HRS_THREAD_STACK_MEM,
-		.priority = CFG_HRS_THREAD_PRIORITY,
-		.stack_size = CFG_HRS_THREAD_STACK_SIZE
+		.name = CFG_HRS_PROCESS_NAME,
+		.attr_bits = CFG_HRS_PROCESS_ATTR_BITS,
+		.cb_mem = CFG_HRS_PROCESS_CB_MEM,
+		.cb_size = CFG_HRS_PROCESS_CB_SIZE,
+		.stack_mem = CFG_HRS_PROCESS_STACK_MEM,
+		.priority = CFG_HRS_PROCESS_PRIORITY,
+		.stack_size = CFG_HRS_PROCESS_STACK_SIZE
 };
 
 /* USER CODE BEGIN PV */

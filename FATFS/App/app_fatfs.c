@@ -63,6 +63,13 @@ extern RTC_HandleTypeDef hrtc;
 
 /* USER CODE END PV */
 
+/* USER CODE BEGIN VolToPart */
+/* Volume - Partition resolution table should be user defined in case of Multiple partition */
+/* When multi-partition feature is enabled (1), each logical drive number is bound to arbitrary physical drive and partition
+listed in the VolToPart[] */
+PARTITION VolToPart[];
+/* USER CODE END VolToPart */
+
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 
@@ -71,9 +78,9 @@ extern RTC_HandleTypeDef hrtc;
 /**
   * @brief  FatFs initialization
   * @param  None
-  * @retval Initialization result 
+  * @retval Initialization result
   */
-int32_t MX_FATFS_Init(void) 
+int32_t MX_FATFS_Init(void)
 {
   /*## FatFS: Link the disk I/O driver(s)  ###########################*/
   if (FATFS_LinkDriver(&USER_Driver, USERPath) != 0)
@@ -92,7 +99,7 @@ int32_t MX_FATFS_Init(void)
 /**
   * @brief  FatFs application main process
   * @param  None
-  * @retval Process result 
+  * @retval Process result
   */
 int32_t MX_FATFS_Process(void)
 {
@@ -101,7 +108,7 @@ int32_t MX_FATFS_Process(void)
     
   return process_res;
   /* USER CODE END FATFS_Process */
-}  
+}
 
 /**
   * @brief  Gets Time from RTC (generated when FS_NORTC==0; see ff.c)
@@ -128,7 +135,7 @@ DWORD get_fattime(void)
 	value |= sTime.Seconds;
 
 	return value;
-  /* USER CODE END get_fattime */  
+  /* USER CODE END get_fattime */
 }
 
 /* Private user code ---------------------------------------------------------*/

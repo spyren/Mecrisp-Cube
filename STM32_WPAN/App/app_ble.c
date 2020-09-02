@@ -258,23 +258,23 @@ osThreadId_t AdvUpdateThreadId;
 osThreadId_t HciUserEvtThreadId;
 
 const osThreadAttr_t AdvUpdateThread_attr = {
-    .name = CFG_ADV_UPDATE_THREAD_NAME,
-    .attr_bits = CFG_ADV_UPDATE_THREAD_ATTR_BITS,
-    .cb_mem = CFG_ADV_UPDATE_THREAD_CB_MEM,
-    .cb_size = CFG_ADV_UPDATE_THREAD_CB_SIZE,
-    .stack_mem = CFG_ADV_UPDATE_THREAD_STACK_MEM,
-    .priority = CFG_ADV_UPDATE_THREAD_PRIORITY,
-    .stack_size = CFG_ADV_UPDATE_THREAD_STACK_SIZE
+    .name = CFG_ADV_UPDATE_PROCESS_NAME,
+    .attr_bits = CFG_ADV_UPDATE_PROCESS_ATTR_BITS,
+    .cb_mem = CFG_ADV_UPDATE_PROCESS_CB_MEM,
+    .cb_size = CFG_ADV_UPDATE_PROCESS_CB_SIZE,
+    .stack_mem = CFG_ADV_UPDATE_PROCESS_STACK_MEM,
+    .priority = CFG_ADV_UPDATE_PROCESS_PRIORITY,
+    .stack_size = CFG_ADV_UPDATE_PROCESS_STACK_SIZE
 };
 
 const osThreadAttr_t HciUserEvtThread_attr = {
-    .name = CFG_HCI_USER_EVT_THREAD_NAME,
-    .attr_bits = CFG_HCI_USER_EVT_THREAD_ATTR_BITS,
-    .cb_mem = CFG_HCI_USER_EVT_THREAD_CB_MEM,
-    .cb_size = CFG_HCI_USER_EVT_THREAD_CB_SIZE,
-    .stack_mem = CFG_HCI_USER_EVT_THREAD_STACK_MEM,
-    .priority = CFG_HCI_USER_EVT_THREAD_PRIORITY,
-    .stack_size = CFG_HCI_USER_EVT_THREAD_STACK_SIZE
+    .name = CFG_HCI_USER_EVT_PROCESS_NAME,
+    .attr_bits = CFG_HCI_USER_EVT_PROCESS_ATTR_BITS,
+    .cb_mem = CFG_HCI_USER_EVT_PROCESS_CB_MEM,
+    .cb_size = CFG_HCI_USER_EVT_PROCESS_CB_SIZE,
+    .stack_mem = CFG_HCI_USER_EVT_PROCESS_STACK_MEM,
+    .priority = CFG_HCI_USER_EVT_PROCESS_PRIORITY,
+    .stack_size = CFG_HCI_USER_EVT_PROCESS_STACK_SIZE
 };
 
 /* Private function prototypes -----------------------------------------------*/

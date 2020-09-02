@@ -22,9 +22,21 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */     
+/* USER CODE BEGIN Includes */
+#include "app_common.h"
+#include "app_entry.h"
+#include "uart.h"
+#include "flash.h"
+#include "usb_cdc.h"
+#include "bsp.h"
+#include "spi.h"
+#include "sd.h"
+#include "block.h"
+#include "app_fatfs.h"
+#include "fs.h"
 
 /* USER CODE END Includes */
 
@@ -47,11 +59,94 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
+/* Definitions for Main */
+osThreadId_t MainHandle;
+const osThreadAttr_t Main_attributes = {
+  .name = "Main",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 512 * 4
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+void Forth(void);
    
 /* USER CODE END FunctionPrototypes */
+
+void MainThread(void *argument);
+
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/**
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+	BSP_init();
+	UART_init();
+	CDC_init();
+	FLASH_init();
+	SPI_init();
+	SD_init();
+	BLOCK_init();
+	if (MX_FATFS_Init() != APP_OK) {
+		Error_Handler();
+	}
+	FS_init();
+
+	APPE_Init();
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* creation of Main */
+  MainHandle = osThreadNew(MainThread, NULL, &Main_attributes);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+}
+
+/* USER CODE BEGIN Header_MainThread */
+/**
+  * @brief  Function implementing the Main thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_MainThread */
+void MainThread(void *argument)
+{
+  /* USER CODE BEGIN MainThread */
+	SD_getSize();
+
+	Forth();
+
+	/* Infinite loop */
+  for(;;)
+  {
+	Error_Handler();
+    osDelay(1);
+  }
+  /* USER CODE END MainThread */
+}
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */

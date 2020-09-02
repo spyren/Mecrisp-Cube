@@ -24,7 +24,7 @@
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -61,6 +61,7 @@ void USB_LP_IRQHandler(void);
 void TIM1_TRG_COM_TIM17_IRQHandler(void);
 void SPI1_IRQHandler(void);
 void USART1_IRQHandler(void);
+void HSEM_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 void RTC_WKUP_IRQHandler(void);
 void IPCC_C1_TX_IRQHandler(void);

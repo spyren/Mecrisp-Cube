@@ -1,9 +1,8 @@
-/* USER CODE BEGIN Header */
 /**
- ******************************************************************************
-  * @file    user_diskio.h
-  * @brief   This file contains the common defines and functions prototypes for  
-  *          the user_diskio driver.
+  ******************************************************************************
+  * File Name          : gpio.h
+  * Description        : This file contains all the functions prototypes for
+  *                      the gpio
   ******************************************************************************
   * @attention
   *
@@ -17,30 +16,42 @@
   *
   ******************************************************************************
   */
- /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USER_DISKIO_H
-#define __USER_DISKIO_H
-
+#ifndef __gpio_H
+#define __gpio_H
 #ifdef __cplusplus
  extern "C" {
 #endif
 
-/* USER CODE BEGIN 0 */
-
 /* Includes ------------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-extern Diskio_drvTypeDef  USER_Driver;
+#include "main.h"
 
-/* USER CODE END 0 */
+/* USER CODE BEGIN Includes */
+
+/* USER CODE END Includes */
+
+/* USER CODE BEGIN Private defines */
+
+/* USER CODE END Private defines */
+
+void MX_GPIO_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+
+/* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
 #endif
+#endif /*__ pinoutConfig_H */
 
-#endif /* __USER_DISKIO_H */
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
