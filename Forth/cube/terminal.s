@@ -216,6 +216,74 @@ set_stopbits:
 	pop		{r0-r3, pc}
 
 
+// C Interface to some Forth Words
+//********************************
+
+// These functions call Forth words. They need a data stack SPS and
+// top of stack (TOS).
+
+// uint64_t TERMINAL_emit(uint64_t forth_stack, uint8_t c);
+.global		TERMINAL_emit
+TERMINAL_emit:
+	push 	{r4-r7, lr}
+	movs	tos, r0		// get tos
+	movs	psp, r1		// get psp
+	pushdatos
+	movs	tos, r2		// c
+	bl		emit
+	movs	r0, tos		// update tos
+	movs	r1, psp		// update psp
+	pop		{r4-r7, pc}
+
+
+// uint64_t TERMINAL_key(uint64_t forth_stack, uint8_t *c);
+.global		TERMINAL_key
+TERMINAL_key:
+	push 	{r4-r7, lr}
+	movs	tos, r0		// get tos
+	movs	psp, r1		// get psp
+	push	{r2}
+	bl		key
+	pop		{r2}
+	str		tos, [r2]
+	drop
+	movs	r0, tos		// update tos
+	movs	r1, psp		// update psp
+	pop		{r4-r7, pc}
+
+
+// uint64_t TERMINAL_qemit(uint64_t forth_stack, uint8_t *c);
+.global		TERMINAL_qemit
+TERMINAL_qemit:
+	push 	{r4-r7, lr}
+	movs	tos, r0		// get tos
+	movs	psp, r1		// get psp
+	push	{r2}
+	bl		qemit
+	pop		{r2}
+	str		tos, [r2]
+	drop
+	movs	r0, tos		// update tos
+	movs	r1, psp		// update psp
+	pop		{r4-r7, pc}
+
+
+// uint64_t TERMINAL_qkey(uint64_t forth_stack, uint8_t *c);
+.global		TERMINAL_qkey
+TERMINAL_qkey:
+	push 	{r4-r7, lr}
+	movs	tos, r0		// get tos
+	movs	psp, r1		// get psp
+	push	{r2}
+	bl		qkey
+	pop		{r2}
+	str		tos, [r2]
+	drop
+	movs	r0, tos		// update tos
+	movs	r1, psp		// update psp
+	pop		{r4-r7, pc}
+
+
 
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !

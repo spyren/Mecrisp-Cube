@@ -382,6 +382,20 @@ umount:
 	pop		{pc}
 
 
+//@ -----------------------------------------------------------------------------
+//		Wortbirne Flag_visible, "vi"
+//		@ ( -- ) vi editor
+//// uint64_t FS_vi (uint64_t forth_stack);
+//@ -----------------------------------------------------------------------------
+//	push	{lr}
+//	movs	r0, tos		// get tos
+//	movs	r1, psp		// get psp
+//	bl		vi
+//	movs	tos, r0		// update tos
+//	movs	psp, r1		// update psp
+//	pop		{pc}
+
+
 // C Interface to some Forth Words
 //********************************
 

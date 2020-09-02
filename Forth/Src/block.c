@@ -42,20 +42,6 @@
 // Defines
 // *******
 
-#define BLOCK_BUFFER_COUNT			4
-#define BLOCK_BUFFER_SIZE			1024
-
-
-// Private typedefs
-// ****************
-
-typedef struct {
-	uint8_t Data[BLOCK_BUFFER_SIZE];
-	int BlockNumber;  // -1 = Buffer unassigned
-	uint8_t Current;
-	uint8_t Updated;
-} block_buffer_t;
-
 
 
 // Private function prototypes
@@ -89,7 +75,7 @@ static const osMutexAttr_t BLOCK_MutexAttr = {
 // Private Variables
 // *****************
 
-block_buffer_t BlockBuffers[BLOCK_BUFFER_COUNT];
+block_buffer_t BLOCK_Buffers[BLOCK_BUFFER_COUNT];
 
 
 
@@ -127,9 +113,9 @@ void BLOCK_emptyBuffers(void) {
 	osMutexAcquire(BLOCK_MutexID, osWaitForever);
 
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		BlockBuffers[i].BlockNumber = -1;
-		BlockBuffers[i].Current = FALSE;
-		BlockBuffers[i].Updated = FALSE;
+		BLOCK_Buffers[i].BlockNumber = -1;
+		BLOCK_Buffers[i].Current = FALSE;
+		BLOCK_Buffers[i].Updated = FALSE;
 	}
 
 	osMutexRelease(BLOCK_MutexID);
@@ -151,8 +137,8 @@ void BLOCK_update(void) {
 	osMutexAcquire(BLOCK_MutexID, osWaitForever);
 
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].Current) {
-			BlockBuffers[i].Updated = TRUE;
+		if (BLOCK_Buffers[i].Current) {
+			BLOCK_Buffers[i].Updated = TRUE;
 			break;
 		}
 	}
@@ -185,13 +171,13 @@ uint8_t *BLOCK_get(int block_number) {
 
 	// already assigned?
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].BlockNumber == block_number) {
+		if (BLOCK_Buffers[i].BlockNumber == block_number) {
 			// the block is already in the buffer -> make current
 			for (j=0; j<BLOCK_BUFFER_COUNT; j++) {
-				BlockBuffers[i].Current = FALSE;
+				BLOCK_Buffers[i].Current = FALSE;
 			}
-			BlockBuffers[i].Current = TRUE;
-			buffer_p = &BlockBuffers[i].Data[0];
+			BLOCK_Buffers[i].Current = TRUE;
+			buffer_p = &BLOCK_Buffers[i].Data[0];
 			break;
 		}
 	}
@@ -199,10 +185,10 @@ uint8_t *BLOCK_get(int block_number) {
 	if (buffer_p == NULL) {
 		// is there an unassigned (empty) buffer?
 		for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-			if (BlockBuffers[i].BlockNumber < 0) {
+			if (BLOCK_Buffers[i].BlockNumber < 0) {
 				// buffer is unassigned (empty)
 				get_block(block_number, i);
-				buffer_p = &BlockBuffers[i].Data[0];
+				buffer_p = &BLOCK_Buffers[i].Data[0];
 				break;
 			}
 		}
@@ -211,14 +197,14 @@ uint8_t *BLOCK_get(int block_number) {
 	if (buffer_p == NULL) {
 		// take the first not current buffer
 		for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-			if (! BlockBuffers[i].Current) {
+			if (! BLOCK_Buffers[i].Current) {
 				// buffer is not current
-				if (BlockBuffers[i].Updated) {
+				if (BLOCK_Buffers[i].Updated) {
 					// Buffer is updated -> save buffer to SD
 					save_buffer(i);
 				}
 				get_block(block_number, i);
-				buffer_p = &BlockBuffers[i].Data[0];
+				buffer_p = &BLOCK_Buffers[i].Data[0];
 				break;
 			}
 		}
@@ -250,13 +236,13 @@ uint8_t *BLOCK_assign(int block_number) {
 
 	// already assigned?
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].BlockNumber == block_number) {
+		if (BLOCK_Buffers[i].BlockNumber == block_number) {
 			// the block is already in the buffer -> make current
 			for (j=0; j<BLOCK_BUFFER_COUNT; j++) {
-				BlockBuffers[i].Current = FALSE;
+				BLOCK_Buffers[i].Current = FALSE;
 			}
-			BlockBuffers[i].Current = TRUE;
-			buffer_p = &BlockBuffers[i].Data[0];
+			BLOCK_Buffers[i].Current = TRUE;
+			buffer_p = &BLOCK_Buffers[i].Data[0];
 			break;
 		}
 	}
@@ -264,10 +250,10 @@ uint8_t *BLOCK_assign(int block_number) {
 	if (buffer_p == NULL) {
 		// is there an unassigned (empty) buffer?
 		for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-			if (BlockBuffers[i].BlockNumber < 0) {
+			if (BLOCK_Buffers[i].BlockNumber < 0) {
 				// buffer is unassigned (empty)
 				init_block(block_number, i);
-				buffer_p = &BlockBuffers[i].Data[0];
+				buffer_p = &BLOCK_Buffers[i].Data[0];
 				break;
 			}
 		}
@@ -276,15 +262,15 @@ uint8_t *BLOCK_assign(int block_number) {
 	if (buffer_p == NULL) {
 		// take the first not current buffer
 		for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-			if (! BlockBuffers[i].Current) {
+			if (! BLOCK_Buffers[i].Current) {
 				// buffer is not current
-				if (BlockBuffers[i].Updated) {
+				if (BLOCK_Buffers[i].Updated) {
 					// Buffer is updated -> save buffer to SD
 					save_buffer(i);
 				}
 				// fill the block with spaces
 				init_block(block_number, i);
-				buffer_p = &BlockBuffers[i].Data[0];
+				buffer_p = &BLOCK_Buffers[i].Data[0];
 				break;
 			}
 		}
@@ -312,9 +298,9 @@ void BLOCK_saveBuffers(void) {
 	osMutexAcquire(BLOCK_MutexID, osWaitForever);
 
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
-		if (BlockBuffers[i].Updated) {
+		if (BLOCK_Buffers[i].Updated) {
 			save_buffer(i);
-			BlockBuffers[i].Updated = FALSE;
+			BLOCK_Buffers[i].Updated = FALSE;
 		}
 	}
 
@@ -352,10 +338,10 @@ void BLOCK_flushBuffers(void) {
  *      none
  */
 static void get_block(int block_number, int buffer_index) {
-	SD_ReadBlocks(&BlockBuffers[buffer_index].Data[0], block_number*2, 2);
-	BlockBuffers[buffer_index].BlockNumber = block_number;
-	BlockBuffers[buffer_index].Current = TRUE;
-	BlockBuffers[buffer_index].Updated = FALSE;
+	SD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+	BLOCK_Buffers[buffer_index].BlockNumber = block_number;
+	BLOCK_Buffers[buffer_index].Current = TRUE;
+	BLOCK_Buffers[buffer_index].Updated = FALSE;
 }
 
 
@@ -371,10 +357,10 @@ static void get_block(int block_number, int buffer_index) {
  *      none
  */
 static void init_block(int block_number, int buffer_index) {
-	memset(&BlockBuffers[buffer_index].Data[0], ' ', BLOCK_BUFFER_SIZE);
-	BlockBuffers[buffer_index].BlockNumber = block_number;
-	BlockBuffers[buffer_index].Current = TRUE;
-	BlockBuffers[buffer_index].Updated = FALSE;
+	memset(&BLOCK_Buffers[buffer_index].Data[0], ' ', BLOCK_BUFFER_SIZE);
+	BLOCK_Buffers[buffer_index].BlockNumber = block_number;
+	BLOCK_Buffers[buffer_index].Current = TRUE;
+	BLOCK_Buffers[buffer_index].Updated = FALSE;
 }
 
 
@@ -389,8 +375,8 @@ static void init_block(int block_number, int buffer_index) {
  *      none
  */
 static void save_buffer(int buffer_index) {
-	SD_WriteBlocks(&BlockBuffers[buffer_index].Data[0], BlockBuffers[buffer_index].BlockNumber*2, 2);
-	BlockBuffers[buffer_index].Updated = FALSE;
+	SD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0], BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+	BLOCK_Buffers[buffer_index].Updated = FALSE;
 }
 
 
