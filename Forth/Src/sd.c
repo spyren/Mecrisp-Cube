@@ -37,7 +37,7 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
-#include "spi.h"
+#include "sd_spi.h"
 #include "sd.h"
 
 
@@ -1051,7 +1051,7 @@ static void SD_IO_CSState(uint8_t val) {
   */
 static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	/* Send the byte */
-	SPI_WriteReadData(DataIn, DataOut, DataLength);
+	SDSPI_WriteReadData(DataIn, DataOut, DataLength);
 }
 
 
@@ -1067,7 +1067,7 @@ static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	uint8_t tmp;
 
 	/* Send the byte */
-	SPI_WriteReadData(&Data,&tmp,1);
+	SDSPI_WriteReadData(&Data,&tmp,1);
 	return tmp;
 }
 

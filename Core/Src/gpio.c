@@ -44,18 +44,23 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, D1_Pin|D0_Pin|D6_Pin|D3_Pin
 		  |D5_Pin, GPIO_PIN_RESET);
 
-  // Output level for SPI CS is high
-  HAL_GPIO_WritePin(GPIOA, D10_Pin, GPIO_PIN_SET);
 
   if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
     // QFN48 Package -> Dongle
+	// LEDs off
     HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin, GPIO_PIN_RESET);
+
+    // Output level for SPI CS is high
     HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_RESET);
   } else {
     // Nucleo Board
     /*Configure GPIO pin Output Level */
+	// LEDs off
     HAL_GPIO_WritePin(GPIOB, LD2_Pin|LD3_Pin|LD1_Pin, GPIO_PIN_RESET);
+
+    // Output level for SPI CS is high
+    HAL_GPIO_WritePin(GPIOA, D10_Pin, GPIO_PIN_SET);
   }
 
   /*Configure GPIO pins : D7_Pin D2_Pin D4_Pin */
@@ -85,7 +90,7 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : D1_Pin D0_Pin D6_Pin D3_Pin
 	                           D5_Pin */
-  // D10 is SPI CS
+  // D10 is SPI CS for Nucleo
   GPIO_InitStruct.Pin = D1_Pin|D0_Pin|D6_Pin|D3_Pin
 		  |D5_Pin|D10_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;

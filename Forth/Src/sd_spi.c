@@ -1,9 +1,9 @@
 /**
  *  @brief
- *      Serial Peripheral Interface (SPI).
+ *      Serial Peripheral Interface (SPI) for SD.
  *
  *  @file
- *      spi.c
+ *      sd_spi.c
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
@@ -35,7 +35,7 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
-#include "spi.h"
+#include "sd_spi.h"
 
 
 
@@ -48,15 +48,15 @@
 // RTOS resources
 // **************
 
-static osMutexId_t SPI_MutexID;
-static const osMutexAttr_t SPI_MutexAttr = {
+static osMutexId_t SDSPI_MutexID;
+static const osMutexAttr_t SDSPI_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
 		NULL,				// memory for control block
 		0U					// size for control block
 };
 
-static osSemaphoreId_t SPI_SemaphoreID;
+static osSemaphoreId_t SDSPI_SemaphoreID;
 
 
 // Hardware resources
@@ -77,18 +77,18 @@ static volatile uint8_t SpiError = FALSE;
 
 /**
  *  @brief
- *      Initializes the SPI.
+ *      Initializes the SDSPI.
  *  @return
  *      None
  */
-void SPI_init(void) {
-	SPI_MutexID = osMutexNew(&SPI_MutexAttr);
-	if (SPI_MutexID == NULL) {
+void SDSPI_init(void) {
+	SDSPI_MutexID = osMutexNew(&SDSPI_MutexAttr);
+	if (SDSPI_MutexID == NULL) {
 		Error_Handler();
 	}
 
-	SPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (SPI_SemaphoreID == NULL) {
+	SDSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (SDSPI_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 }
@@ -107,18 +107,18 @@ void SPI_init(void) {
   * @retval
   *     None
   */
-void SPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
+void SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SPI_MutexID, osWaitForever);
+	osMutexAcquire(SDSPI_MutexID, osWaitForever);
 
 	SpiError = FALSE;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(SPI_SemaphoreID, 1000);
+		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
 		if (SpiError || (os_status != osOK)) {
 			Error_Handler();
 		}
@@ -126,7 +126,7 @@ void SPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLen
 		Error_Handler();
 	}
 
-	osMutexRelease(SPI_MutexID);
+	osMutexRelease(SDSPI_MutexID);
 }
 
 
@@ -140,19 +140,19 @@ void SPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLen
   * @retval
   *     None
   */
-void SPI_Write(uint8_t Value) {
+void SDSPI_Write(uint8_t Value) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 	uint8_t data;
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SPI_MutexID, osWaitForever);
+	osMutexAcquire(SDSPI_MutexID, osWaitForever);
 
 	SpiError = FALSE;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) &Value, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(SPI_SemaphoreID, 1000);
+		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
 		if (SpiError || (os_status != osOK)) {
 			Error_Handler();
 		}
@@ -160,7 +160,7 @@ void SPI_Write(uint8_t Value) {
 		Error_Handler();
 	}
 
-	osMutexRelease(SPI_MutexID);
+	osMutexRelease(SDSPI_MutexID);
 }
 
 
@@ -178,7 +178,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hspi);
 
-	osSemaphoreRelease(SPI_SemaphoreID);
+	osSemaphoreRelease(SDSPI_SemaphoreID);
 }
 
 
@@ -193,6 +193,6 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
 	UNUSED(hspi);
 
 	SpiError = TRUE;
-	osSemaphoreRelease(SPI_SemaphoreID);
+	osSemaphoreRelease(SDSPI_SemaphoreID);
 }
 

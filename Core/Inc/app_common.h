@@ -66,9 +66,10 @@ extern "C"{
    *  Some useful macro definitions   *
    * -------------------------------- */
 
+#ifndef MAX
 #define MAX( x, y )          (((x)>(y))?(x):(y))
-
 #define MIN( x, y )          (((x)<(y))?(x):(y))
+#endif
 
 #define MODINC( a, m )       M_BEGIN  (a)++;  if ((a)>=(m)) (a)=0;  M_END
 
