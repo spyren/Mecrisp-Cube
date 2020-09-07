@@ -174,7 +174,7 @@ static void HrsThread(void *argument) {
 #endif
 
 		// danger
-		HRS_UpdateChar(HEART_RATE_MEASURMENT_UUID, (uint8_t *)&HRSAPP_Context.MeasurementvalueChar);
+//		HRS_UpdateChar(HEART_RATE_MEASURMENT_UUID, (uint8_t *)&HRSAPP_Context.MeasurementvalueChar);
 
 	}
 

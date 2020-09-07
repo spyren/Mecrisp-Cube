@@ -90,7 +90,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-const char MecrispCubeVersion[] = "Mecrisp-Cube 1.2.3 for STM32WB55 (C) 2020 peter@spyr.ch\n";
+const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
 
 /* USER CODE END PV */
 

@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "app_conf.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -65,10 +65,10 @@ extern "C" {
 #undef DISAPP_FIRMWARE_REVISION_NUMBER
 #undef DISAPP_SOFTWARE_REVISION_NUMBER
 #define DISAPP_MANUFACTURER_NAME              "spyr.ch"
-#define DISAPP_MODEL_NUMBER                   "Mecrisp-Cube WB55"
+#define DISAPP_MODEL_NUMBER                   "Mecrisp-Cube"
 #define DISAPP_SERIAL_NUMBER                  "1"
-#define DISAPP_FIRMWARE_REVISION_NUMBER       "1.6.0"
-#define DISAPP_SOFTWARE_REVISION_NUMBER       "1.0.2"
+#define DISAPP_FIRMWARE_REVISION_NUMBER       "1.8.0"
+#define DISAPP_SOFTWARE_REVISION_NUMBER       "1.2.3"
 
 /* USER CODE END EM */
 

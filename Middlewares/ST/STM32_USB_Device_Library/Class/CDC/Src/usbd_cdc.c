@@ -9,6 +9,7 @@
   *           - OUT/IN data transfer
   *           - Command IN transfer (class requests management)
   *           - Error management
+  *           - RTOS events added, peter@spyr.ch
   *
   *  @verbatim
   *
@@ -59,6 +60,10 @@ EndBSPDependencies */
 #include "usbd_cdc.h"
 #include "usbd_ctlreq.h"
 
+// for RTOS additions
+#include "cmsis_os.h"
+#include "main.h"
+#include "usb_cdc.h"
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
@@ -512,6 +517,8 @@ static uint8_t USBD_CDC_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 
   /* Init Xfer states */
   hcdc->TxState = 0U;
+  // RTOS CDC Tx ready
+  osEventFlagsSet(CDC_EvtFlagsID, CDC_TX_READY);
   hcdc->RxState = 0U;
 
   if (pdev->dev_speed == USBD_SPEED_HIGH)
@@ -694,6 +701,9 @@ static uint8_t USBD_CDC_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
   else
   {
     hcdc->TxState = 0U;
+    // RTOS CDC Tx ready
+    osEventFlagsSet(CDC_EvtFlagsID, CDC_TX_READY);
+
     ((USBD_CDC_ItfTypeDef *)pdev->pUserData)->TransmitCplt(hcdc->TxBuffer, &hcdc->TxLength, epnum);
   }
 
@@ -876,6 +886,8 @@ uint8_t USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev)
   {
     /* Tx Transfer in progress */
     hcdc->TxState = 1U;
+    // RTOS CDC Tx busy
+    osEventFlagsClear(CDC_EvtFlagsID, CDC_TX_READY);
 
     /* Update the packet total length */
     pdev->ep_in[CDC_IN_EP & 0xFU].total_length = hcdc->TxLength;

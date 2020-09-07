@@ -91,9 +91,6 @@ void MX_FREERTOS_Init(void) {
 	SPI_init();
 	SD_init();
 	BLOCK_init();
-	if (MX_FATFS_Init() != APP_OK) {
-		Error_Handler();
-	}
 	FS_init();
 
 	APPE_Init();
