@@ -144,7 +144,14 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN TIM1_MspPostInit 1 */
-
+    if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+    	// QFN48 Package -> Dongle
+    	// Configure GPIO pin : B1_Pin (Button)
+    	GPIO_InitStruct.Pin = B1_DONGLE_Pin;
+    	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    	GPIO_InitStruct.Pull = GPIO_PULLUP;
+    	HAL_GPIO_Init(B1_DONGLE_GPIO_Port, &GPIO_InitStruct);
+    }
   /* USER CODE END TIM1_MspPostInit 1 */
   }
 
