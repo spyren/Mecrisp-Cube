@@ -10978,7 +10978,7 @@ Disassembly of section .text:
  8005bbc:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
  8005bc0:	f002 f986 	bl	8007ed0 <HAL_GPIO_WritePin>
  8005bc4:	4848      	ldr	r0, [pc, #288]	; (8005ce8 <MX_GPIO_Init+0x188>)
- 8005bc6:	2200      	movs	r2, #0
+ 8005bc6:	2201      	movs	r2, #1
  8005bc8:	2104      	movs	r1, #4
  8005bca:	f002 f981 	bl	8007ed0 <HAL_GPIO_WritePin>
  8005bce:	2400      	movs	r4, #0

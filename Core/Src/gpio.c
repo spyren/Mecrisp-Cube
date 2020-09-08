@@ -52,7 +52,7 @@ void MX_GPIO_Init(void)
     HAL_GPIO_WritePin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin, GPIO_PIN_RESET);
 
     // Output level for SPI CS is high
-    HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_SET);
   } else {
     // Nucleo Board
     /*Configure GPIO pin Output Level */
