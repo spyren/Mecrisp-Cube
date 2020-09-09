@@ -49,6 +49,8 @@
 #define CRS_TX_BUFFER_LENGTH	1024
 #define CRS_RX_BUFFER_LENGTH	1024
 
+// max. Tx tries
+#define MAX_TRIES				50
 
 // Private function prototypes
 // ***************************
@@ -251,6 +253,7 @@ static void CRS_Thread(void *argument) {
 	uint32_t count;
 	uint8_t i;
 	tBleStatus status;
+	uint8_t tries;
 
 	// blocked till connected
 	osThreadFlagsWait(CRSAPP_CONNECTED, osFlagsWaitAny, osWaitForever);
@@ -269,10 +272,16 @@ static void CRS_Thread(void *argument) {
 			}
 			buffer[count+1] = '\0';
 			// send the characters
-			status = CRSAPP_Update_Char(CRS_RX_CHAR_UUID, (uint8_t *)&buffer[0]);
-			if (status != BLE_STATUS_SUCCESS) {
-				// can't send char
-				Error_Handler();
+			status = BLE_STATUS_TIMEOUT;
+			tries = 0;
+			while (status != BLE_STATUS_SUCCESS) {
+				// not elegant but it works
+				status = CRSAPP_Update_Char(CRS_RX_CHAR_UUID, (uint8_t *)&buffer[0]);
+				if (status != BLE_STATUS_SUCCESS && tries++ > MAX_TRIES) {
+					Error_Handler();
+					break;
+				}
+				osDelay(10);
 			}
 		} else {
 			// can't write to the queue
