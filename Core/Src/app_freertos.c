@@ -37,6 +37,7 @@
 #include "block.h"
 #include "app_fatfs.h"
 #include "fs.h"
+#include "vi.h"
 
 /* USER CODE END Includes */
 
@@ -92,6 +93,7 @@ void MX_FREERTOS_Init(void) {
 	SD_init();
 	BLOCK_init();
 	FS_init();
+	VI_init();
 
 	APPE_Init();
   /* USER CODE END Init */

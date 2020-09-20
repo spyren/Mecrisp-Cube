@@ -8,7 +8,7 @@
 #ifndef INC_BLOCK_H_
 #define INC_BLOCK_H_
 
-#define BLOCK_BUFFER_COUNT			10
+#define BLOCK_BUFFER_COUNT			4
 #define BLOCK_BUFFER_SIZE			1024
 
 typedef struct {

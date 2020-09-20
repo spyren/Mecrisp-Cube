@@ -293,6 +293,10 @@ Forth:
 	ldr		tos, =FS_Version	// print file system version
 	bl		fs_strlen
 	bl		stype
+	pushdatos
+	ldr		tos, =VI_Version	// print vi system version
+	bl		fs_strlen
+	bl		stype
 
 	@ Ready to fly !
 .include "boot.s"

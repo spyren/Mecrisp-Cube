@@ -627,6 +627,34 @@ rtos_xPortGetFreeHeapSize:
 	pop		{r0-r3, pc}
 
 
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pvPortMalloc"
+		@ ( u -- addr ) allocate dynamic memory (thread save)
+		@			void* pvPortMalloc (size_t xWantedSize)
+// -----------------------------------------------------------------------------
+.global		rtos_pvPortMalloc
+rtos_pvPortMalloc:
+	push	{r0-r3, lr}
+	movs	r0, tos
+	bl		pvPortMalloc
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "vPortFree"
+		@ (addr --  ) free dynamic memory (thread save)
+		@			void vPortFree (* void)
+// -----------------------------------------------------------------------------
+.global		rtos_vPortFree
+rtos_vPortFree:
+	push	{r0-r3, lr}
+	movs	r0, tos
+	drop
+	bl		vPortFree
+	pop		{r0-r3, pc}
+
+
 //  ==== Timer Management Functions ====
 
 // -----------------------------------------------------------------------------
