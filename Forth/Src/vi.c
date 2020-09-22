@@ -135,7 +135,6 @@ static const char vi_Version[] =
 #define VI_K_FUN11		147	// Function Key F11
 #define VI_K_FUN12		148	// Function Key F12
 
-
 // Global Variables
 // ****************
 
@@ -149,6 +148,7 @@ static char *line; /* Line buffer */
 static char *cmd_buf;
 static char *args_buf;
 
+static uint8_t DOS_file = FALSE;
 static uint8_t raw_mode = FALSE;
 
 static uint64_t stack;
@@ -169,7 +169,17 @@ static const int S_END_ALNUM = 5;	// used in skip_thing() for moving "dot"
 //typedef unsigned char Byte;
 typedef char Byte;
 
+static const char SOs[] = "\033[7m";	// Terminal standout mode on
+static const char SOn[] = "\033[0m";	// Terminal standout mode off
+static const char bell[]= "\007";		// Terminal bell sequence
 
+static const char Ceol[] = "\033[0K";	// Clear from cursor to end of line
+static const char Ceos[] = "\033[0J";	// Clear from cursor to end of screen
+static const char CMrc[] = "\033[%d;%dH";	// Terminal Crusor motion ESC sequence
+#ifdef BB_FEATURE_VI_OPTIMIZE_CURSOR
+static const char CMup[] = "\033[A";	// move cursor up one line, same col
+static const char CMdown[] = "\n";		// move cursor down one line, same col
+#endif
 static int editing;		// >0 while we are editing a file
 static int cmd_mode;		// 0=command  1=insert
 static int file_modified;	// buffer contents changed
@@ -182,11 +192,11 @@ static struct timeval tv;	// use select() for small sleeps
 static char erase_char = 0x08;		// the users erase character
 static int rows, columns;	// the terminal screen is this size
 static int crow, ccol, offset;	// cursor is on Crow x Ccol with Horz Ofset
-static char *SOs, *SOn;		// terminal standout start/normal ESC sequence
-static char *bell;		// terminal bell sequence
-static char *Ceol, *Ceos;	// Clear-end-of-line and Clear-end-of-screen ESC sequence
-static char *CMrc;		// Cursor motion arbitrary destination ESC sequence
-static char *CMup, *CMdown;	// Cursor motion up and down ESC sequence
+//static char *SOs, *SOn;		// terminal standout start/normal ESC sequence
+//static char *bell;		// terminal bell sequence
+//static char *Ceol, *Ceos;	// Clear-end-of-line and Clear-end-of-screen ESC sequence
+//static char *CMrc;		// Cursor motion arbitrary destination ESC sequence
+//static char *CMup, *CMdown;	// Cursor motion up and down ESC sequence
 static Byte *status_buffer;	// mesages to the user
 static Byte last_input_char;	// last char read from user
 static Byte last_forward_char;	// last char searched for with 'f'
@@ -360,6 +370,8 @@ void VI_init(void) {
 	cmd_buf = (char *) pvPortMalloc(MAX_INPUT_LEN);
 	args_buf = (char *) pvPortMalloc(MAX_INPUT_LEN);
 
+	cfn = (char *) pvPortMalloc(MAX_INPUT_LEN);
+
 //	last_modifying_cmd = (Byte *) pvPortMalloc(MAX_INPUT_LEN);
 
 }
@@ -383,10 +395,10 @@ uint64_t VI_edit(uint64_t forth_stack) {
 		memcpy(line, str, count);
 		line[count] = 0;
 		if (! strcmp(line, "-R")) {
-			readonly = TRUE;
+			vi_readonly = TRUE;
 		} else if (! strcmp(line, "-h")) {
 			show_help();
-			return 1;
+			return stack;
 		} else {
 			// file parameter
 			strcpy(path, line);
@@ -397,17 +409,7 @@ uint64_t VI_edit(uint64_t forth_stack) {
 	int i;
 #endif							/* BB_FEATURE_VI_YANKMARK */
 
-	CMrc= "\033[%d;%dH";	// Terminal Crusor motion ESC sequence
-	CMup= "\033[A";		// move cursor up one line, same col
-	CMdown="\n";		// move cursor down one line, same col
-	Ceol= "\033[0K";	// Clear from cursor to end of line
-	Ceos= "\033[0J";	// Clear from cursor to end of screen
-	SOs = "\033[7m";	// Terminal standout mode on
-	SOn = "\033[0m";	// Terminal standout mode off
-	bell= "\007";		// Terminal bell sequence
-	status_buffer = (Byte *) pvPortMalloc(200);	// hold messages to user
-
-	#ifdef BB_FEATURE_VI_SETOPTS
+#ifdef BB_FEATURE_VI_SETOPTS
 	autoindent = 1;
 	ignorecase = 1;
 	showmatch = 1;
@@ -421,54 +423,8 @@ uint64_t VI_edit(uint64_t forth_stack) {
 	modifying_cmds = (Byte *) "aAcCdDiIJoOpPrRsxX<>~";	// cmds modifying text[]
 #endif							/* BB_FEATURE_VI_DOT_CMD */
 
-#ifdef ARGV
-	//  1-  process $HOME/.exrc file
-	//  2-  process EXINIT variable from environment
-	//  3-  process command line args
-	while ((c = getopt(argc, argv, "hCR")) != -1) {
-		switch (c) {
-#ifdef BB_FEATURE_VI_CRASHME
-		case 'C':
-			crashme = 1;
-			break;
-#endif							/* BB_FEATURE_VI_CRASHME */
-#ifdef BB_FEATURE_VI_READONLY
-		case 'R':		// Read-only flag
-			readonly = TRUE;
-			break;
-#endif							/* BB_FEATURE_VI_READONLY */
-			//case 'r':	// recover flag-  ignore- we don't use tmp file
-			//case 'x':	// encryption flag- ignore
-			//case 'c':	// execute command first
-			//case 'h':	// help -- just use default
-		default:
-			show_help();
-			return 1;
-		}
-	}
-
-	// The argv array can be used by the ":next"  and ":rewind" commands
-	// save optind.
-	fn_start = optind;	// remember first file name for :next and :rew
-	save_argc = argc;
-
-	//----- This is the main file handling loop --------------
-	if (optind >= argc) {
-		editing = 1;	// 0= exit,  1= one file,  2= multiple files
-		edit_file(0);
-	} else {
-		for (; optind < argc; optind++) {
-			editing = 1;	// 0=exit, 1=one file, 2+ =many files
-			if (cfn != 0)
-				vPortFree(cfn);
-			cfn = (Byte *) strdup(argv[optind]);
-			edit_file(cfn);
-		}
-	}
-	//-----------------------------------------------------------
-#else
-	edit_file(path);
-#endif // ARGV
+	strcpy(cfn, path);
+	edit_file(cfn);
 
 	return stack;
 }
@@ -874,7 +830,8 @@ static void do_cmd(Byte c)
 			// don't Replace past E-o-l
 			cmd_mode = 1;	// convert to insert
 		} else {
-			if (1 <= c && c <= 127) {	// only ASCII chars
+//			if (1 <= c && c <= 127) {	// only ASCII chars
+			if (1 <= c ) {	// 8bit chars allowed
 				if (c != 27)
 					dot = yank_delete(dot, dot, 0, YANKDEL);	// delete char
 				dot = char_insert(dot, c);	// insert new char
@@ -886,8 +843,9 @@ static void do_cmd(Byte c)
 		//  hitting "Insert" twice means "R" replace mode
 		if (c == VI_K_INSERT) goto dc5;
 		// insert the char c at "dot"
-		if (1 <= c && c <= 127) {
-			dot = char_insert(dot, c);	// only ASCII chars
+//		if (1 <= c && c <= 127) {
+		if (1 <= c) {
+			dot = char_insert(dot, c);	// 8bit chars allowed
 		}
 		goto dc1;
 	}
@@ -1397,7 +1355,7 @@ static void do_cmd(Byte c)
 	case 'i':			// i- insert before current char
 	case VI_K_INSERT:	// Cursor Key Insert
 	  dc_i:
-		cmd_mode = 1;	// start insrting
+		cmd_mode = 1;	// start inserting
 		psb("-- Insert --");
 		break;
 	case 'J':			// J- join current and next lines together
@@ -2746,7 +2704,7 @@ static Byte *char_insert(Byte * p, Byte c) // insert the char c at 'p'
 			p--;
 			p = text_hole_delete(p, p);	// shrink buffer 1 char
 #ifdef BB_FEATURE_VI_DOT_CMD
-			// also rmove char from last_modifying_cmd
+			// also remove char from last_modifying_cmd
 			if (strlen((char *) last_modifying_cmd) > 0) {
 				Byte *q;
 
@@ -3059,7 +3017,7 @@ static Byte *yank_delete(Byte * start, Byte * stop, int dist, int yf)
 
 static void show_help(void)
 {
-	puts_term("These features are available:"
+	puts_term("\nThese features are available:"
 #ifdef BB_FEATURE_VI_SEARCH
 	"\n\tPattern searches with / and ?"
 #endif							/* BB_FEATURE_VI_SEARCH */
@@ -3071,7 +3029,6 @@ static void show_help(void)
 	"\n\tNamed buffers with  \"x"
 #endif							/* BB_FEATURE_VI_YANKMARK */
 #ifdef BB_FEATURE_VI_READONLY
-	"\n\tReadonly if vi is called as \"view\""
 	"\n\tReadonly with -R command line arg"
 #endif							/* BB_FEATURE_VI_READONLY */
 #ifdef BB_FEATURE_VI_SET
@@ -3087,6 +3044,7 @@ static void show_help(void)
 #ifdef BB_FEATURE_VI_WIN_RESIZE
 	"\n\tAdapt to window re-sizes"
 #endif							/* BB_FEATURE_VI_WIN_RESIZE */
+	"\n"
 	);
 }
 
@@ -3608,9 +3566,10 @@ static int file_insert(Byte * fn, Byte * p, int size)
 {
 	FRESULT fr;     /* FatFs return code */
 	FIL fil;        /* File object */
-	UINT cnt;
+	UINT cnt= 0;
+	UINT line_cnt= 0;
+	TCHAR* buffer;
 
-	cnt = 0;
 #ifdef BB_FEATURE_VI_READONLY
 	readonly = FALSE;
 #endif							/* BB_FEATURE_VI_READONLY */
@@ -3654,19 +3613,40 @@ static int file_insert(Byte * fn, Byte * p, int size)
 #endif							/* BB_FEATURE_VI_READONLY */
 	}
 	p = text_hole_make(p, size);
-	fr = f_read(&fil, p, size, &cnt);
-	f_close(&fil);
-	if (fr != FR_OK) {
+	cnt = 0;
+
+	//	fr = f_read(&fil, p, size, &cnt);
+	buffer = p;
+	while (buffer != NULL) {
+		buffer = f_gets(line, MAX_INPUT_LEN, &fil); // removes carriage returns
+		if (buffer != NULL) {
+			memcpy(p+cnt, line, strlen(line));
+			cnt += strlen(line);
+			line_cnt++;
+		}
+	}
+
+	if (f_error(&fil)) {
 		cnt = 0;
 		p = text_hole_delete(p, p + size - 1);	// un-do buffer insert
 		psbs("could not read file \"%s\"", fn);
 	} else if (cnt < size) {
 		// There was a partial read, shrink unused space text[]
-		p = text_hole_delete(p + cnt, p + (size - cnt) - 1);	// un-do buffer insert
-		psbs("could not read all of file \"%s\"", fn);
+		// or a DOS file with removed carriage returns \r
+		DOS_file = FALSE;
+		if (size - cnt == line_cnt) {
+			DOS_file = TRUE;
+			psbs("DOS file", fn);
+		} else {
+			p = text_hole_delete(p + cnt, p + (size - cnt) - 1);	// un-do buffer insert
+			psbs("could not read all of file \"%s\"", fn);
+		}
 	}
 	if (cnt >= size)
 		file_modified = TRUE;
+
+	f_close(&fil);
+
 
 fi0:
 	return (cnt);
@@ -3944,7 +3924,9 @@ static void format_line(Byte *dest, Byte *src, int li)
 		}
 		if (c == '\n')
 			break;
-		if (c < ' ' || c > '~') {
+//		if (c < ' ' || c > '~') {
+		if (c < ' ') {
+			// 8 bit chars are allowed
 			if (c == '\t') {
 				c = ' ';
 				//       co %    8     !=     7
