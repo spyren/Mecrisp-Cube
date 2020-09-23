@@ -1,3 +1,40 @@
+/**
+ *  @brief
+ *      A small vi clone for Mecrisp-Cube.
+ *
+ *      This vi has its origin in !BusyBox tiny vi. But there are some differences:
+ *        * The program is resident. The text buffer and other buffers too.
+ *          You can leave the program without saving, do some work on the
+ *          command line and go back to vi and continue the edit task.
+ *        * The text buffer is restricted to 40 !KiB. Large files have to be split up.
+ *        * 8-bit characters are allowed e.g. UTF8
+ *        * Mecrisp Forth uses DOS/Windows style line endings carriage return
+ *          and line feed ("\r\n"). Unix (and vi) uses just line feed ("\n").
+ *        * The command <b>v</b> evaluates a line.
+ *  @file
+ *      vi.c
+ *  @author
+ *      Peter Schmid, peter@spyr.ch
+ *  @date
+ *      2020-09-23
+ *  @remark
+ *      Language: C, STM32CubeIDE GCC
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This project Mecrsip-Cube is free software: you can redistribute it
+ *      and/or modify it under the terms of the GNU General Public License
+ *      as published by the Free Software Foundation, either version 3 of
+ *      the License, or (at your option) any later version.
+ *
+ *      Mecrsip-Cube is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *      General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
+ */
 /* vi: set sw=8 ts=8: */
 /*
  * tiny vi.c: A small 'vi' clone
@@ -893,7 +930,6 @@ static void do_cmd(Byte c)
 		//case '`':	// `- 
 		//case 'g':	// g- 
 		//case 'u':	// u- FIXME- there is no undo
-		//case 'v':	// v- 
 	default:			// unrecognised command
 		buf[0] = c;
 		buf[1] = '\0';
@@ -1565,6 +1601,20 @@ static void do_cmd(Byte c)
 		if (*dot == last_forward_char)
 			dot_left();
 		last_forward_char= 0;
+		break;
+	case 'v':			// evaluate line
+		p = begin_line(dot);
+		q = end_line(dot);
+		memcpy(line, p, q-p);
+		line[q-p] = 0;
+		dot = q;
+//		psb("evaluate");
+		place_cursor(rows, 0, FALSE);	// go below Status line, bottom of screen
+		clear_to_eol();	// clear the line
+		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line));
+
+		dot = next_line(dot);
+
 		break;
 	case 'w':			// w- forward a word
 		if (cmdcnt-- > 1) {
