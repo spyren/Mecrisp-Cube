@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      A small vi clone for Mecrisp-Cube.
+ *      A tiny vi clone for Mecrisp-Cube.
  *
  *      This vi has its origin in !BusyBox tiny vi. But there are some differences:
  *        * The program is resident. The text buffer and other buffers too.
@@ -56,7 +56,7 @@
  */
 
 static const char vi_Version[] =
-	"$Id: vi.c,v 1.15 2001/08/02 05:26:41 andersen Exp $";
+	"Mecrisp-Cube vi, 2020/09/24 peter@spyr.ch";
 
 /*
  * To compile for standalone use:
@@ -146,8 +146,8 @@ static const char vi_Version[] =
 #define MAX_SCR_COLS		100
 #define MAX_SCR_ROWS		30
 
-#define TEXT_SIZE		(10 * 1024)
-#define MAX_INPUT_LEN	128
+#define TEXT_SIZE		(40 * 1024)
+#define MAX_INPUT_LEN	256
 
 // Misc. non-Ascii keys that report an escape sequence
 #define VI_K_UP			128	// cursor key Up
@@ -351,6 +351,7 @@ static ssize_t read_term(void *buf, size_t count);
 static ssize_t write_term(const void *buf, size_t nbyte);
 static char* last_char_is(const char *s, int c);
 static int puts_term(const char *s);
+static char *pvPortStrdup(const char *s);
 
 #ifdef BB_FEATURE_VI_SEARCH
 static Byte *char_search(Byte *, Byte *, int, int);	// search for pattern starting at p
@@ -408,7 +409,6 @@ void VI_init(void) {
 	args_buf = (char *) pvPortMalloc(MAX_INPUT_LEN);
 
 	cfn = (char *) pvPortMalloc(MAX_INPUT_LEN);
-
 //	last_modifying_cmd = (Byte *) pvPortMalloc(MAX_INPUT_LEN);
 
 }
@@ -1158,7 +1158,7 @@ static void do_cmd(Byte c)
 		// Stuff the last_modifying_cmd back into stdin
 		// and let it be re-executed.
 		if (last_modifying_cmd != 0) {
-			ioq = ioq_start = (Byte *) strdup((char *) last_modifying_cmd);
+			ioq = ioq_start = (Byte *) pvPortStrdup((char *) last_modifying_cmd);
 		}
 		break;
 #endif							/* BB_FEATURE_VI_DOT_CMD */
@@ -1175,7 +1175,7 @@ static void do_cmd(Byte c)
 			if (last_search_pattern != 0) {
 				vPortFree(last_search_pattern);
 			}
-			last_search_pattern = (Byte *) strdup((char *) q);
+			last_search_pattern = (Byte *) pvPortStrdup((char *) q);
 			goto dc3;	// now find the pattern
 		}
 		// user changed mind and erased the "/"-  do nothing
@@ -1742,7 +1742,7 @@ static Byte *get_one_address(Byte * p, int *addr)	// get colon addr, if present
 			*q++ = *p;
 			*q = '\0';
 		}
-		pat = (Byte *) strdup((char *) buf);	// save copy of pattern
+		pat = (Byte *) pvPortStrdup((char *) buf);	// save copy of pattern
 		if (*p == '/')
 			p++;
 		q = char_search(dot, pat, FORWARD, FULL);
@@ -1944,7 +1944,7 @@ static void colon(Byte * buf)
 
 		// There is a read-able regular file
 		// make this the current file
-		q = (Byte *) strdup((char *) fn);	// save the cfn
+		q = (Byte *) pvPortStrdup((char *) fn);	// save the cfn
 		if (cfn != 0)
 			vPortFree(cfn);		// free the old name
 		cfn = q;			// remember new cfn
@@ -1997,7 +1997,7 @@ static void colon(Byte * buf)
 			// user wants a new filename
 			if (cfn != NULL)
 				vPortFree(cfn);
-			cfn = (Byte *) strdup((char *) args);
+			cfn = (Byte *) pvPortStrdup((char *) args);
 		} else {
 			// user wants file status info
 			edit_status();
@@ -2605,21 +2605,13 @@ static Byte *new_screen(int ro, int co)
 
 static Byte *new_text(int size)
 {
-	if (size < TEXT_SIZE)
-		size = TEXT_SIZE;	// have a minimum size for new files
-#ifdef MALLOC
-	if (text != 0) {
-		//text -= 4;
-		vPortFree(text);
-	}
-	text = (Byte *) pvPortMalloc(size + 8);
-#else
-//	text = textBuffer;
-#endif // MALLOC
-	memset(text, '\0', size);	// clear new text[]
-	//text += 4;		// leave some room for "oops"
+	if (size < TEXT_SIZE/2)
+		size = TEXT_SIZE/2;	// have a minimum size for new files
+	else if (size > TEXT_SIZE)
+		size = TEXT_SIZE;
+	memset(text, '\0', TEXT_SIZE);	// clear new text[]
 	textend = text + size - 1;
-	//textend -= 4;		// leave some root for "oops"
+	end = text + size - 1;
 	return (text);
 }
 
@@ -3410,37 +3402,37 @@ static Byte readit(void)	// read (maybe cursor) key from stdin
 	};
 
 	static struct esc_cmds esccmds[] = {
-		{(Byte *) "OA", (Byte) VI_K_UP},	// cursor key Up
-		{(Byte *) "OB", (Byte) VI_K_DOWN},	// cursor key Down
-		{(Byte *) "OC", (Byte) VI_K_RIGHT},	// Cursor Key Right
-		{(Byte *) "OD", (Byte) VI_K_LEFT},	// cursor key Left
-		{(Byte *) "OH", (Byte) VI_K_HOME},	// Cursor Key Home
-		{(Byte *) "OF", (Byte) VI_K_END},	// Cursor Key End
-		{(Byte *) "[A", (Byte) VI_K_UP},	// cursor key Up
-		{(Byte *) "[B", (Byte) VI_K_DOWN},	// cursor key Down
-		{(Byte *) "[C", (Byte) VI_K_RIGHT},	// Cursor Key Right
-		{(Byte *) "[D", (Byte) VI_K_LEFT},	// cursor key Left
-		{(Byte *) "[H", (Byte) VI_K_HOME},	// Cursor Key Home
-		{(Byte *) "[F", (Byte) VI_K_END},	// Cursor Key End
-		{(Byte *) "[2~", (Byte) VI_K_INSERT},	// Cursor Key Insert
-		{(Byte *) "[5~", (Byte) VI_K_PAGEUP},	// Cursor Key Page Up
-		{(Byte *) "[6~", (Byte) VI_K_PAGEDOWN},	// Cursor Key Page Down
-		{(Byte *) "OP", (Byte) VI_K_FUN1},	// Function Key F1
-		{(Byte *) "OQ", (Byte) VI_K_FUN2},	// Function Key F2
-		{(Byte *) "OR", (Byte) VI_K_FUN3},	// Function Key F3
-		{(Byte *) "OS", (Byte) VI_K_FUN4},	// Function Key F4
-		{(Byte *) "[15~", (Byte) VI_K_FUN5},	// Function Key F5
-		{(Byte *) "[17~", (Byte) VI_K_FUN6},	// Function Key F6
-		{(Byte *) "[18~", (Byte) VI_K_FUN7},	// Function Key F7
-		{(Byte *) "[19~", (Byte) VI_K_FUN8},	// Function Key F8
-		{(Byte *) "[20~", (Byte) VI_K_FUN9},	// Function Key F9
-		{(Byte *) "[21~", (Byte) VI_K_FUN10},	// Function Key F10
-		{(Byte *) "[23~", (Byte) VI_K_FUN11},	// Function Key F11
-		{(Byte *) "[24~", (Byte) VI_K_FUN12},	// Function Key F12
-		{(Byte *) "[11~", (Byte) VI_K_FUN1},	// Function Key F1
-		{(Byte *) "[12~", (Byte) VI_K_FUN2},	// Function Key F2
-		{(Byte *) "[13~", (Byte) VI_K_FUN3},	// Function Key F3
-		{(Byte *) "[14~", (Byte) VI_K_FUN4},	// Function Key F4
+		{(Byte *) "\033OA", (Byte) VI_K_UP},	// cursor key Up
+		{(Byte *) "\033OB", (Byte) VI_K_DOWN},	// cursor key Down
+		{(Byte *) "\033OC", (Byte) VI_K_RIGHT},	// Cursor Key Right
+		{(Byte *) "\033OD", (Byte) VI_K_LEFT},	// cursor key Left
+		{(Byte *) "\033OH", (Byte) VI_K_HOME},	// Cursor Key Home
+		{(Byte *) "\033OF", (Byte) VI_K_END},	// Cursor Key End
+		{(Byte *) "\033[A", (Byte) VI_K_UP},	// cursor key Up
+		{(Byte *) "\033[B", (Byte) VI_K_DOWN},	// cursor key Down
+		{(Byte *) "\033[C", (Byte) VI_K_RIGHT},	// Cursor Key Right
+		{(Byte *) "\033[D", (Byte) VI_K_LEFT},	// cursor key Left
+		{(Byte *) "\033[H", (Byte) VI_K_HOME},	// Cursor Key Home
+		{(Byte *) "\033[F", (Byte) VI_K_END},	// Cursor Key End
+		{(Byte *) "\033[2~", (Byte) VI_K_INSERT},	// Cursor Key Insert
+		{(Byte *) "\033[5~", (Byte) VI_K_PAGEUP},	// Cursor Key Page Up
+		{(Byte *) "\033[6~", (Byte) VI_K_PAGEDOWN},	// Cursor Key Page Down
+		{(Byte *) "\033OP", (Byte) VI_K_FUN1},	// Function Key F1
+		{(Byte *) "\033OQ", (Byte) VI_K_FUN2},	// Function Key F2
+		{(Byte *) "\033OR", (Byte) VI_K_FUN3},	// Function Key F3
+		{(Byte *) "\033OS", (Byte) VI_K_FUN4},	// Function Key F4
+		{(Byte *) "\033[15~", (Byte) VI_K_FUN5},	// Function Key F5
+		{(Byte *) "\033[17~", (Byte) VI_K_FUN6},	// Function Key F6
+		{(Byte *) "\033[18~", (Byte) VI_K_FUN7},	// Function Key F7
+		{(Byte *) "\033[19~", (Byte) VI_K_FUN8},	// Function Key F8
+		{(Byte *) "\033[20~", (Byte) VI_K_FUN9},	// Function Key F9
+		{(Byte *) "\033[21~", (Byte) VI_K_FUN10},	// Function Key F10
+		{(Byte *) "\033[23~", (Byte) VI_K_FUN11},	// Function Key F11
+		{(Byte *) "\033[24~", (Byte) VI_K_FUN12},	// Function Key F12
+		{(Byte *) "\033[11~", (Byte) VI_K_FUN1},	// Function Key F1
+		{(Byte *) "\033[12~", (Byte) VI_K_FUN2},	// Function Key F2
+		{(Byte *) "\033[13~", (Byte) VI_K_FUN3},	// Function Key F3
+		{(Byte *) "\033[14~", (Byte) VI_K_FUN4},	// Function Key F4
 	};
 
 #define ESCCMDS_COUNT (sizeof(esccmds)/sizeof(struct esc_cmds))
@@ -3638,6 +3630,10 @@ static int file_insert(Byte * fn, Byte * p, int size)
 	}
 	if (p < text || p > end) {
 		psbs("Trying to insert file outside of memory");
+		goto fi0;
+	}
+	if (p+size >= text+TEXT_SIZE-100) {
+		psbs("Trying to insert a to large file");
 		goto fi0;
 	}
 
@@ -4190,3 +4186,15 @@ static char* last_char_is(const char *s, int c)
 	}
 	return NULL;
 }
+
+
+// returns a pointer to a new string which is a duplicate of the string s
+static char *pvPortStrdup(const char *s) {
+	char *retval;
+
+	retval = pvPortMalloc(strlen(s)+1);
+	strcpy(retval, s);
+
+	return retval;
+}
+
