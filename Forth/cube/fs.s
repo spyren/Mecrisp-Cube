@@ -387,6 +387,7 @@ umount:
 		@ ( -- ) vi editor
 // uint64_t VI_edit(uint64_t forth_stack);
 @ -----------------------------------------------------------------------------
+vi:
 	push	{lr}
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
@@ -401,6 +402,46 @@ umount:
 
 // These functions call Forth words. They need a data stack SPS and
 // top of stack (TOS).
+
+// catch_evaluate
+//***************
+
+// If there is an error in evaluate the interpreter throws an exceptions and
+// aborts the calling words. Mecrisp provides a quit hook which is used to
+// catch this abort.
+// uint64_t FS_catch_evaluate(uint64_t forth_stack, uint8_t* str, int count);
+.global		FS_catch_evaluate
+FS_catch_evaluate:
+	push 	{r4-r7, lr}
+	movs	tos, r0			// get tos
+	movs	psp, r1			// get psp
+	pushdatos
+	movs	tos, r2			// str
+	pushdatos
+	movs	tos, r3			// count
+	ldr		r1, =quit_evaluate	// change quit hook
+	ldr 	r0, =hook_quit
+	str		r1, [r0]
+	ldr		r0, =EvaluateSP	// save stackpointer
+	str		sp, [r0]
+	bl		evaluate
+	ldr		r1, =quit_innenschleife	// restore quit hook
+	ldr 	r0, =hook_quit
+	str		r1, [r0]
+	movs	r0, tos			// update tos
+	movs	r1, psp			// update psp
+	pop		{r4-r7, pc}
+
+quit_evaluate:
+	ldr		r1, =quit_innenschleife	// restore quit hook
+	ldr 	r0, =hook_quit
+	str		r1, [r0]
+	ldr		r0, =EvaluateSP	// restore stackpointer
+	ldr		sp, [r0]
+	movs	r0, tos			// update tos
+	movs	r1, psp			// update psp
+	pop		{r4-r7, pc}
+
 
 // uint64_t FS_evaluate(uint64_t forth_stack, uint8_t* str, int count);
 .global		FS_evaluate

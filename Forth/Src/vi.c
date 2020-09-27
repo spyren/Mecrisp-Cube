@@ -1608,13 +1608,10 @@ static void do_cmd(Byte c)
 		memcpy(line, p, q-p);
 		line[q-p] = 0;
 		dot = q;
-//		psb("evaluate");
 		place_cursor(rows, 0, FALSE);	// go below Status line, bottom of screen
 		clear_to_eol();	// clear the line
-		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line));
-
+		stack = FS_catch_evaluate(stack, (uint8_t*)line, strlen(line));
 		dot = next_line(dot);
-
 		break;
 	case 'w':			// w- forward a word
 		if (cmdcnt-- > 1) {

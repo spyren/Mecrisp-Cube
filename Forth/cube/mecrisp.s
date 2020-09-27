@@ -133,6 +133,9 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	FlashFlags, 4
 	ramallot	VariablenPointer, 4
 
+	ramallot	EvaluateSP,	4
+
+
 .global		Dictionarypointer
 .global		Fadenende
 .global		ZweitDictionaryPointer
@@ -151,9 +154,8 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	datenstackende, 256		@ Data stack
 	ramallot	datenstackanfang, 0
 
-@ not needed anymore, stack is set by RTOS
-	ramallot	returnstackende, 0		@ Return stack
-	ramallot	returnstackanfang, 0
+	ramallot	returnstackende, 4		@ Return stack address end
+	ramallot	returnstackanfang, 4	@ Return stack address start
 
 
 .ifdef emulated16bitflashwrites
@@ -261,6 +263,9 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 @ -----------------------------------------------------------------------------
 Forth:
 @ -----------------------------------------------------------------------------
+
+	ldr		r0, =returnstackanfang
+	str		sp, [r0]
 
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"

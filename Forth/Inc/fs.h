@@ -43,6 +43,7 @@ uint64_t FS_mount    (uint64_t forth_stack);
 uint64_t FS_umount   (uint64_t forth_stack);
 
 uint64_t FS_evaluate (uint64_t forth_stack, uint8_t *str, int count);
+uint64_t FS_catch_evaluate (uint64_t forth_stack, uint8_t *str, int count);
 uint64_t FS_type     (uint64_t forth_stack, uint8_t *str, int count);
 uint64_t FS_cr       (uint64_t forth_stack);
 uint64_t FS_token    (uint64_t forth_stack, uint8_t **str, int *count);

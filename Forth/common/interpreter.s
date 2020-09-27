@@ -567,12 +567,12 @@ quit:
   @ Stacks zurücksetzen
   @ Clear stacks and tidy up.
   .ifdef m0core
-@ not nedded anymore, stack is set by RTOS
 @  ldr r0, =returnstackanfang
 @  mov sp, r0
   .else
-@ not nedded anymore, stack is set by RTOS
-@  ldr sp, =returnstackanfang
+	// stack is set by RTOS
+	ldr		r0, =returnstackanfang
+	ldr		sp, [r0]
   .endif
 
   ldr psp, =datenstackanfang
