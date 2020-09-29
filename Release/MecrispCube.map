@@ -6042,7 +6042,7 @@ LOAD /opt/st/stm32cubeide_1.4.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
  .rodata.edit_status.str1.1
                 0x000000000801fa61       0x41 Forth/Src/vi.o
  *fill*         0x000000000801faa2        0x2 
- .rodata.esccmds.18229
+ .rodata.esccmds.18218
                 0x000000000801faa4       0xf8 Forth/Src/vi.o
  .rodata.file_insert.str1.1
                 0x000000000801fb9c       0xef Forth/Src/vi.o
@@ -6439,7 +6439,7 @@ BLE_APP_CONTEXT
  .bss.args_buf  0x0000000020010664        0x4 Forth/Src/vi.o
  .bss.autoindent
                 0x0000000020010668        0x4 Forth/Src/vi.o
- .bss.c.18248   0x000000002001066c        0x1 Forth/Src/vi.o
+ .bss.c.18237   0x000000002001066c        0x1 Forth/Src/vi.o
  *fill*         0x000000002001066d        0x3 
  .bss.ccol      0x0000000020010670        0x4 Forth/Src/vi.o
  .bss.cfn       0x0000000020010674        0x4 Forth/Src/vi.o
@@ -6452,7 +6452,7 @@ BLE_APP_CONTEXT
  .bss.context_start
                 0x000000002001068c        0x4 Forth/Src/vi.o
  .bss.crow      0x0000000020010690        0x4 Forth/Src/vi.o
- .bss.cur_line.17658
+ .bss.cur_line.17653
                 0x0000000020010694        0x4 Forth/Src/vi.o
  .bss.dot       0x0000000020010698        0x4 Forth/Src/vi.o
  .bss.editing   0x000000002001069c        0x4 Forth/Src/vi.o
@@ -6466,7 +6466,7 @@ BLE_APP_CONTEXT
  .bss.ioq       0x00000000200106b0        0x4 Forth/Src/vi.o
  .bss.ioq_start
                 0x00000000200106b4        0x4 Forth/Src/vi.o
- .bss.last_cksum.18317
+ .bss.last_cksum.18306
                 0x00000000200106b8        0x4 Forth/Src/vi.o
  .bss.last_forward_char
                 0x00000000200106bc        0x1 Forth/Src/vi.o
@@ -6480,7 +6480,7 @@ BLE_APP_CONTEXT
  .bss.modifying_cmds
                 0x000000002001073c        0x4 Forth/Src/vi.o
  .bss.offset    0x0000000020010740        0x4 Forth/Src/vi.o
- .bss.old_offset.18361
+ .bss.old_offset.18350
                 0x0000000020010744        0x4 Forth/Src/vi.o
  .bss.path      0x0000000020010748       0xff Forth/Src/vi.o
  .bss.readbuffer

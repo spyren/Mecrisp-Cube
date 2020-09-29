@@ -58,13 +58,6 @@
 static const char vi_Version[] =
 	"Mecrisp-Cube vi, 2020/09/24 peter@spyr.ch";
 
-/*
- * To compile for standalone use:
- *	gcc -Wall -Os -s -DSTANDALONE -o vi vi.c
- *	  or
- *	gcc -Wall -Os -s -DSTANDALONE -DBB_FEATURE_VI_CRASHME -o vi vi.c		# include testing features
- *	strip vi
- */
 
 /*
  * Things To Do:
@@ -96,20 +89,12 @@ static const char vi_Version[] =
 #define BB_FEATURE_VI_SETOPTS	//  576
 #define BB_FEATURE_VI_SET	//  224
 //#define BB_FEATURE_VI_WIN_RESIZE	//  256  WIN_RESIZE
-// To test editor using CRASHME:
-//    vi -C filename
-// To stop testing, wait until all to text[] is deleted, or
-//    Ctrl-Z and kill -9 %1
-// while in the editor Ctrl-T will toggle the crashme function on and off.
-//#define BB_FEATURE_VI_CRASHME		// randomly pick commands to execute
 #endif							/* STANDALONE */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <termios.h>
 #include <unistd.h>
-//#include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -186,7 +171,6 @@ static char *cmd_buf;
 static char *args_buf;
 
 static uint8_t DOS_file = FALSE;
-static uint8_t raw_mode = FALSE;
 
 static uint64_t stack;
 
@@ -224,8 +208,8 @@ static int err_method;		// indicate error with beep or flash
 static int fn_start;		// index of first cmd line file name
 static int save_argc;		// how many file names on cmd line
 static int cmdcnt;		// repetition count
-static fd_set rfds;		// use select() for small sleeps
-static struct timeval tv;	// use select() for small sleeps
+//static fd_set rfds;		// use select() for small sleeps
+//static struct timeval tv;	// use select() for small sleeps
 static char erase_char = 0x08;		// the users erase character
 static int rows, columns;	// the terminal screen is this size
 static int crow, ccol, offset;	// cursor is on Crow x Ccol with Horz Ofset
@@ -244,19 +228,10 @@ static int screensize;		//            and its size
 static Byte *screenbegin;	// index into text[], of top line on the screen
 static Byte *dot;		// where all the action takes place
 static int tabstop;
-#ifdef TERMIO
-static struct termios term_orig, term_vi;	// remember what the cooked mode was
-#endif
 
 #ifdef BB_FEATURE_VI_OPTIMIZE_CURSOR
 static int last_row;		// where the cursor was last moved to
 #endif							/* BB_FEATURE_VI_OPTIMIZE_CURSOR */
-#ifdef BB_FEATURE_VI_USE_SIGNALS
-static jmp_buf restart;		// catch_sig()
-#endif							/* BB_FEATURE_VI_USE_SIGNALS */
-#ifdef BB_FEATURE_VI_WIN_RESIZE
-static struct winsize winsize;	// remember the window size
-#endif							/* BB_FEATURE_VI_WIN_RESIZE */
 #ifdef BB_FEATURE_VI_DOT_CMD
 static int adding2q;		// are we currently adding user input to q
 static Byte *last_modifying_cmd;	// last modifying cmd for "."
@@ -320,8 +295,6 @@ static Byte *text_hole_make(Byte *, int);	// at "p", make a 'size' byte hole
 static Byte *yank_delete(Byte *, Byte *, int, int);	// yank text[] into register then delete
 static void show_help(void);	// display some help info
 static void print_literal(Byte *, Byte *);	// copy s to buf, convert unprintable
-static void rawmode(void);	// set "raw" mode on tty
-static void cookmode(void);	// return to "cooked" mode on tty
 static int mysleep(int);	// sleep for 'h' 1/100 seconds
 static Byte readit(void);	// read (maybe cursor) key from stdin
 static Byte get_one_char(void);	// read 1 char from stdin
@@ -392,11 +365,6 @@ static Byte what_reg(void);		// what is letter of current YDreg
 static void check_context(Byte);	// remember context for '' command
 static Byte *swap_context(Byte *);	// goto new context for '' command
 #endif							/* BB_FEATURE_VI_YANKMARK */
-#ifdef BB_FEATURE_VI_CRASHME
-static void crash_dummy();
-static void crash_test();
-static int crashme = 0;
-#endif							/* BB_FEATURE_VI_CRASHME */
 
 
 void VI_init(void) {
@@ -410,7 +378,6 @@ void VI_init(void) {
 
 	cfn = (char *) pvPortMalloc(MAX_INPUT_LEN);
 //	last_modifying_cmd = (Byte *) pvPortMalloc(MAX_INPUT_LEN);
-
 }
 
 
@@ -466,20 +433,16 @@ uint64_t VI_edit(uint64_t forth_stack) {
 	return stack;
 }
 
+
 static void edit_file(Byte * fn)
 {
 	char c;
 	int cnt, size, ch;
 
-#ifdef BB_FEATURE_VI_USE_SIGNALS
-	char *msg;
-	int sig;
-#endif							/* BB_FEATURE_VI_USE_SIGNALS */
 #ifdef BB_FEATURE_VI_YANKMARK
 	static Byte *cur_line;
 #endif							/* BB_FEATURE_VI_YANKMARK */
 
-	rawmode();
 	rows = 24;
 	columns = 80;
 	ch= -1;
@@ -514,47 +477,6 @@ static void edit_file(Byte * fn)
 	ccol = 0;
 	edit_status();
 
-#ifdef BB_FEATURE_VI_USE_SIGNALS
-	signal(SIGHUP, catch_sig);
-	signal(SIGINT, catch_sig);
-	signal(SIGALRM, alarm_sig);
-	signal(SIGTERM, catch_sig);
-	signal(SIGQUIT, core_sig);
-	signal(SIGILL, core_sig);
-	signal(SIGTRAP, core_sig);
-	signal(SIGIOT, core_sig);
-	signal(SIGABRT, core_sig);
-	signal(SIGFPE, core_sig);
-	signal(SIGBUS, core_sig);
-	signal(SIGSEGV, core_sig);
-#ifdef SIGSYS
-	signal(SIGSYS, core_sig);
-#endif	
-	signal(SIGWINCH, winch_sig);
-	signal(SIGTSTP, suspend_sig);
-	sig = setjmp(restart);
-	if (sig != 0) {
-		msg = "";
-		if (sig == SIGWINCH)
-			msg = "(window resize)";
-		if (sig == SIGHUP)
-			msg = "(hangup)";
-		if (sig == SIGINT)
-			msg = "(interrupt)";
-		if (sig == SIGTERM)
-			msg = "(terminate)";
-		if (sig == SIGBUS)
-			msg = "(bus error)";
-		if (sig == SIGSEGV)
-			msg = "(I tried to touch invalid memory)";
-		if (sig == SIGALRM)
-			msg = "(alarm)";
-
-		psbs("-- caught signal %d %s--", sig, msg);
-		screenbegin = dot = text;
-	}
-#endif							/* BB_FEATURE_VI_USE_SIGNALS */
-
 	editing = 1;
 	cmd_mode = 0;		// 0=command  1=insert  2='R'eplace
 	cmdcnt = 0;
@@ -574,18 +496,6 @@ static void edit_file(Byte * fn)
 
 	//------This is the main Vi cmd handling loop -----------------------
 	while (editing > 0) {
-#ifdef BB_FEATURE_VI_CRASHME
-		if (crashme > 0) {
-			if ((end - text) > 1) {
-				crash_dummy();	// generate a random command
-			} else {
-				crashme = 0;
-				dot =
-					string_insert(text, (Byte *) "\n\n#####  Ran out of text to work on.  #####\n\n");	// insert the string
-				refresh(FALSE);
-			}
-		}
-#endif							/* BB_FEATURE_VI_CRASHME */
 		last_input_char = c = get_one_char();	// get a cmd from user
 #ifdef BB_FEATURE_VI_YANKMARK
 		// save a copy of the current line- for the 'U" command
@@ -612,223 +522,16 @@ static void edit_file(Byte * fn)
 			refresh(FALSE);
 			show_status_line();
 		}
-#ifdef BB_FEATURE_VI_CRASHME
-		if (crashme > 0)
-			crash_test();	// test editor variables
-#endif							/* BB_FEATURE_VI_CRASHME */
 	}
 	//-------------------------------------------------------------------
 
 	place_cursor(rows, 0, FALSE);	// go to bottom of screen
 	clear_to_eol();		// Erase to end of line
-	cookmode();
 }
+
 
 static Byte readbuffer[MAX_INPUT_LEN];
 
-#ifdef BB_FEATURE_VI_CRASHME
-static int totalcmds = 0;
-static int Mp = 85;		// Movement command Probability
-static int Np = 90;		// Non-movement command Probability
-static int Dp = 96;		// Delete command Probability
-static int Ip = 97;		// Insert command Probability
-static int Yp = 98;		// Yank command Probability
-static int Pp = 99;		// Put command Probability
-static int M = 0, N = 0, I = 0, D = 0, Y = 0, P = 0, U = 0;
-char chars[20] = "\t012345 abcdABCD-=.$";
-char *words[20] = { "this", "is", "a", "test",
-	"broadcast", "the", "emergency", "of",
-	"system", "quick", "brown", "fox",
-	"jumped", "over", "lazy", "dogs",
-	"back", "January", "Febuary", "March"
-};
-char *lines[20] = {
-	"You should have received a copy of the GNU General Public License\n",
-	"char c, cm, *cmd, *cmd1;\n",
-	"generate a command by percentages\n",
-	"Numbers may be typed as a prefix to some commands.\n",
-	"Quit, discarding changes!\n",
-	"Forced write, if permission originally not valid.\n",
-	"In general, any ex or ed command (such as substitute or delete).\n",
-	"I have tickets available for the Blazers vs LA Clippers for Monday, Janurary 1 at 1:00pm.\n",
-	"Please get w/ me and I will go over it with you.\n",
-	"The following is a list of scheduled, committed changes.\n",
-	"1.   Launch Norton Antivirus (Start, Programs, Norton Antivirus)\n",
-	"Reminder....Town Meeting in Central Perk cafe today at 3:00pm.\n",
-	"Any question about transactions please contact Sterling Huxley.\n",
-	"I will try to get back to you by Friday, December 31.\n",
-	"This Change will be implemented on Friday.\n",
-	"Let me know if you have problems accessing this;\n",
-	"Sterling Huxley recently added you to the access list.\n",
-	"Would you like to go to lunch?\n",
-	"The last command will be automatically run.\n",
-	"This is too much english for a computer geek.\n",
-};
-char *multilines[20] = {
-	"You should have received a copy of the GNU General Public License\n",
-	"char c, cm, *cmd, *cmd1;\n",
-	"generate a command by percentages\n",
-	"Numbers may be typed as a prefix to some commands.\n",
-	"Quit, discarding changes!\n",
-	"Forced write, if permission originally not valid.\n",
-	"In general, any ex or ed command (such as substitute or delete).\n",
-	"I have tickets available for the Blazers vs LA Clippers for Monday, Janurary 1 at 1:00pm.\n",
-	"Please get w/ me and I will go over it with you.\n",
-	"The following is a list of scheduled, committed changes.\n",
-	"1.   Launch Norton Antivirus (Start, Programs, Norton Antivirus)\n",
-	"Reminder....Town Meeting in Central Perk cafe today at 3:00pm.\n",
-	"Any question about transactions please contact Sterling Huxley.\n",
-	"I will try to get back to you by Friday, December 31.\n",
-	"This Change will be implemented on Friday.\n",
-	"Let me know if you have problems accessing this;\n",
-	"Sterling Huxley recently added you to the access list.\n",
-	"Would you like to go to lunch?\n",
-	"The last command will be automatically run.\n",
-	"This is too much english for a computer geek.\n",
-};
-
-// create a random command to execute
-static void crash_dummy()
-{
-	static int sleeptime;	// how long to pause between commands
-	char c, cm, *cmd, *cmd1;
-	int i, cnt, thing, rbi, startrbi, percent;
-
-	// "dot" movement commands
-	cmd1 = " \n\r\002\004\005\006\025\0310^$-+wWeEbBhjklHL";
-
-	// is there already a command running?
-	if (strlen((char *) readbuffer) > 0)
-		goto cd1;
-  cd0:
-	startrbi = rbi = 0;
-	sleeptime = 0;		// how long to pause between commands
-	memset(readbuffer, '\0', MAX_INPUT_LEN - 1);	// clear the read buffer
-	// generate a command by percentages
-	percent = (int) lrand48() % 100;	// get a number from 0-99
-	if (percent < Mp) {	//  Movement commands
-		// available commands
-		cmd = cmd1;
-		M++;
-	} else if (percent < Np) {	//  non-movement commands
-		cmd = "mz<>\'\"";	// available commands
-		N++;
-	} else if (percent < Dp) {	//  Delete commands
-		cmd = "dx";		// available commands
-		D++;
-	} else if (percent < Ip) {	//  Inset commands
-		cmd = "iIaAsrJ";	// available commands
-		I++;
-	} else if (percent < Yp) {	//  Yank commands
-		cmd = "yY";		// available commands
-		Y++;
-	} else if (percent < Pp) {	//  Put commands
-		cmd = "pP";		// available commands
-		P++;
-	} else {
-		// We do not know how to handle this command, try again
-		U++;
-		goto cd0;
-	}
-	// randomly pick one of the available cmds from "cmd[]"
-	i = (int) lrand48() % strlen(cmd);
-	cm = cmd[i];
-	if (strchr(":\024", cm))
-		goto cd0;		// dont allow colon or ctrl-T commands
-	readbuffer[rbi++] = cm;	// put cmd into input buffer
-
-	// now we have the command-
-	// there are 1, 2, and multi char commands
-	// find out which and generate the rest of command as necessary
-	if (strchr("dmryz<>\'\"", cm)) {	// 2-char commands
-		cmd1 = " \n\r0$^-+wWeEbBhjklHL";
-		if (cm == 'm' || cm == '\'' || cm == '\"') {	// pick a reg[]
-			cmd1 = "abcdefghijklmnopqrstuvwxyz";
-		}
-		thing = (int) lrand48() % strlen(cmd1);	// pick a movement command
-		c = cmd1[thing];
-		readbuffer[rbi++] = c;	// add movement to input buffer
-	}
-	if (strchr("iIaAsc", cm)) {	// multi-char commands
-		if (cm == 'c') {
-			// change some thing
-			thing = (int) lrand48() % strlen(cmd1);	// pick a movement command
-			c = cmd1[thing];
-			readbuffer[rbi++] = c;	// add movement to input buffer
-		}
-		thing = (int) lrand48() % 4;	// what thing to insert
-		cnt = (int) lrand48() % 10;	// how many to insert
-		for (i = 0; i < cnt; i++) {
-			if (thing == 0) {	// insert chars
-				readbuffer[rbi++] = chars[((int) lrand48() % strlen(chars))];
-			} else if (thing == 1) {	// insert words
-				strcat((char *) readbuffer, words[(int) lrand48() % 20]);
-				strcat((char *) readbuffer, " ");
-				sleeptime = 0;	// how fast to type
-			} else if (thing == 2) {	// insert lines
-				strcat((char *) readbuffer, lines[(int) lrand48() % 20]);
-				sleeptime = 0;	// how fast to type
-			} else {	// insert multi-lines
-				strcat((char *) readbuffer, multilines[(int) lrand48() % 20]);
-				sleeptime = 0;	// how fast to type
-			}
-		}
-		strcat((char *) readbuffer, "\033");
-	}
-  cd1:
-	totalcmds++;
-	if (sleeptime > 0)
-		(void) mysleep(sleeptime);	// sleep 1/100 sec
-}
-
-// test to see if there are any errors
-static void crash_test()
-{
-	static time_t oldtim;
-	time_t tim;
-	char d[2], buf[MAX_INPUT_LEN], msg[MAX_INPUT_LEN];
-
-	msg[0] = '\0';
-	if (end < text) {
-		strcat((char *) msg, "end<text ");
-	}
-	if (end > textend) {
-		strcat((char *) msg, "end>textend ");
-	}
-	if (dot < text) {
-		strcat((char *) msg, "dot<text ");
-	}
-	if (dot > end) {
-		strcat((char *) msg, "dot>end ");
-	}
-	if (screenbegin < text) {
-		strcat((char *) msg, "screenbegin<text ");
-	}
-	if (screenbegin > end - 1) {
-		strcat((char *) msg, "screenbegin>end-1 ");
-	}
-
-	if (strlen(msg) > 0) {
-		alarm(0);
-		sprintf(buf, "\n\n%d: \'%c\' %s\n\n\n%s[Hit return to continue]%s",
-			totalcmds, last_input_char, msg, SOs, SOn);
-		write_term(buf, strlen(buf));
-		while (read(0, d, 1) > 0) {
-			if (d[0] == '\n' || d[0] == '\r')
-				break;
-		}
-		alarm(3);
-	}
-	tim = (time_t) time((time_t *) 0);
-	if (tim >= (oldtim + 3)) {
-		sprintf((char *) status_buffer,
-				"Tot=%d: M=%d N=%d I=%d D=%d Y=%d P=%d U=%d size=%d",
-				totalcmds, M, N, I, D, Y, P, U, end - text + 1);
-		oldtim = tim;
-	}
-	return;
-}
-#endif							/* BB_FEATURE_VI_CRASHME */
 
 //---------------------------------------------------------------------
 //----- the Ascii Chart -----------------------------------------------
@@ -896,11 +599,6 @@ static void do_cmd(Byte c)
 		//case 0x10:	// dle
 		//case 0x11:	// dc1
 		//case 0x13:	// dc3
-#ifdef BB_FEATURE_VI_CRASHME
-	case 0x14:			// dc4  ctrl-T
-		crashme = (crashme == 0) ? 1 : 0;
-		break;
-#endif							/* BB_FEATURE_VI_CRASHME */
 		//case 0x16:	// syn
 		//case 0x17:	// etb
 		//case 0x18:	// can
@@ -946,14 +644,6 @@ static void do_cmd(Byte c)
 	case VI_K_PAGEUP:	// Cursor Key Page Up
 		dot_scroll(rows - 2, -1);
 		break;
-#ifdef BB_FEATURE_VI_USE_SIGNALS
-	case 0x03:			// ctrl-C   interrupt
-		longjmp(restart, 1);
-		break;
-	case 26:			// ctrl-Z suspend
-		suspend_sig(SIGTSTP);
-		break;
-#endif							/* BB_FEATURE_VI_USE_SIGNALS */
 	case 4:			// ctrl-D  scroll down half screen
 		dot_scroll((rows - 2) / 2, 1);
 		break;
@@ -1879,14 +1569,10 @@ static void colon(Byte * buf)
 		}
 	} else if (strncmp((char *) cmd, "!", 1) == 0) {	// run a cmd
 		// :!ls   run the <cmd>
-//		(void) alarm(0);		// wait for input- no alarms
 		place_cursor(rows - 1, 0, FALSE);	// go to Status line
 		clear_to_eol();			// clear the line
-		cookmode();
 		system(orig_buf+1);		// run the cmd
-		rawmode();
 		Hit_Return();			// let user see results
-//		(void) alarm(3);		// done waiting for input
 	} else if (strncmp((char *) cmd, "=", i) == 0) {	// where is the address
 		if (b < 0) {	// no addr given- use defaults
 			b = e = count_lines(text, dot);
@@ -2003,9 +1689,7 @@ static void colon(Byte * buf)
 		// print out values of all features
 		place_cursor(rows - 1, 0, FALSE);	// go to Status line, bottom of screen
 		clear_to_eol();	// clear the line
-		cookmode();
 		show_help();
-		rawmode();
 		Hit_Return();
 	} else if (strncasecmp((char *) cmd, "list", i) == 0) {	// literal print line
 		if (b < 0) {	// no addr given- use defaults
@@ -3243,149 +2927,12 @@ static int isblnk(Byte c) // is the char a blank or tab
 	return (c == ' ' || c == '\t');
 }
 
-//----- Set terminal attributes --------------------------------
-static void rawmode(void)
-{
-	raw_mode = TRUE;
-#ifdef TERMIO
-	tcgetattr(0, &term_orig);
-	term_vi = term_orig;
-	term_vi.c_lflag &= (~ICANON & ~ECHO);	// leave ISIG ON- allow intr's
-	term_vi.c_iflag &= (~IXON & ~ICRNL);
-	term_vi.c_oflag &= (~ONLCR);
-#ifndef linux
-	term_vi.c_cc[VMIN] = 1;
-	term_vi.c_cc[VTIME] = 0;
-#endif
-	erase_char = term_vi.c_cc[VERASE];
-	tcsetattr(0, TCSANOW, &term_vi);
-#endif // TERMIO
-}
-
-static void cookmode(void)
-{
-	raw_mode = FALSE;
-#ifdef TERMIO
-	tcsetattr(0, TCSANOW, &term_orig);
-#endif // TERMIO
-}
-
-#ifdef BB_FEATURE_VI_WIN_RESIZE
-//----- See what the window size currently is --------------------
-static void window_size_get(int sig)
-{
-#ifdef TERMIO
-	int i;
-
-	i = ioctl(0, TIOCGWINSZ, &winsize);
-	if (i != 0) {
-		// force 24x80
-		winsize.ws_row = 24;
-		winsize.ws_col = 80;
-	}
-	if (winsize.ws_row <= 1) {
-		winsize.ws_row = 24;
-	}
-	if (winsize.ws_col <= 1) {
-		winsize.ws_col = 80;
-	}
-	rows = (int) winsize.ws_row;
-	columns = (int) winsize.ws_col;
-#else
-	winsize.ws_row = 24;
-	winsize.ws_col = 80;
-#endif // TERMIO
-}
-#endif							/* BB_FEATURE_VI_WIN_RESIZE */
-
-//----- Come here when we get a window resize signal ---------
-#ifdef BB_FEATURE_VI_USE_SIGNALS
-static void winch_sig(int sig)
-{
-	signal(SIGWINCH, winch_sig);
-#ifdef BB_FEATURE_VI_WIN_RESIZE
-	window_size_get(0);
-#endif							/* BB_FEATURE_VI_WIN_RESIZE */
-	new_screen(rows, columns);	// get memory for virtual screen
-	redraw(TRUE);		// re-draw the screen
-}
-
-//----- Come here when we get a continue signal -------------------
-static void cont_sig(int sig)
-{
-	rawmode();			// terminal to "raw"
-	*status_buffer = '\0';	// clear the status buffer
-	redraw(TRUE);		// re-draw the screen
-
-	signal(SIGTSTP, suspend_sig);
-	signal(SIGCONT, SIG_DFL);
-	kill(getpid(), SIGCONT);
-}
-
-//----- Come here when we get a Suspend signal -------------------
-static void suspend_sig(int sig)
-{
-	place_cursor(rows - 1, 0, FALSE);	// go to bottom of screen
-	clear_to_eol();		// Erase to end of line
-	cookmode();			// terminal to "cooked"
-
-	signal(SIGCONT, cont_sig);
-	signal(SIGTSTP, SIG_DFL);
-	kill(getpid(), SIGTSTP);
-}
-
-//----- Come here when we get a signal ---------------------------
-static void catch_sig(int sig)
-{
-	signal(SIGHUP, catch_sig);
-	signal(SIGINT, catch_sig);
-	signal(SIGTERM, catch_sig);
-	longjmp(restart, sig);
-}
-
-static void alarm_sig(int sig)
-{
-	signal(SIGALRM, catch_sig);
-	longjmp(restart, sig);
-}
-
-//----- Come here when we get a core dump signal -----------------
-static void core_sig(int sig)
-{
-	signal(SIGQUIT, core_sig);
-	signal(SIGILL, core_sig);
-	signal(SIGTRAP, core_sig);
-	signal(SIGIOT, core_sig);
-	signal(SIGABRT, core_sig);
-	signal(SIGFPE, core_sig);
-	signal(SIGBUS, core_sig);
-	signal(SIGSEGV, core_sig);
-#ifdef SIGSYS
-	signal(SIGSYS, core_sig);
-#endif
-
-	dot = bound_dot(dot);	// make sure "dot" is valid
-
-	longjmp(restart, sig);
-}
-#endif							/* BB_FEATURE_VI_USE_SIGNALS */
 
 static int mysleep(int hund)	// sleep for 'h' 1/100 seconds
 {
-//	char c;
 	// Don't hang- Wait 5/100 seconds-  1 Sec= 1000000
-#ifdef SELECT
-	FD_ZERO(&rfds);
-	FD_SET(0, &rfds);
-	tv.tv_sec = 0;
-	tv.tv_usec = hund * 10000;
-	select(1, &rfds, NULL, NULL, &tv);
-	return (FD_ISSET(0, &rfds));
-#else
 	osDelay(10 * hund);
 	return keypressed();
-
-#endif // SELECT
 }
 
 //----- IO Routines --------------------------------------------
@@ -3430,6 +2977,8 @@ static Byte readit(void)	// read (maybe cursor) key from stdin
 		{(Byte *) "\033[12~", (Byte) VI_K_FUN2},	// Function Key F2
 		{(Byte *) "\033[13~", (Byte) VI_K_FUN3},	// Function Key F3
 		{(Byte *) "\033[14~", (Byte) VI_K_FUN4},	// Function Key F4
+		{(Byte *) "\033[3~",  (Byte) 0x08},	// delete
+//		{(Byte *) "\033[3~",  (Byte) },	// backspace
 	};
 
 #define ESCCMDS_COUNT (sizeof(esccmds)/sizeof(struct esc_cmds))
@@ -3465,10 +3014,10 @@ static Byte readit(void)	// read (maybe cursor) key from stdin
 	// Could be bare Esc key. See if there are any
 	// more chars to read after the ESC. This would
 	// be a Function or Cursor Key sequence.
-	FD_ZERO(&rfds);
-	FD_SET(0, &rfds);
-	tv.tv_sec = 0;
-	tv.tv_usec = 50000;	// Wait 5/100 seconds- 1 Sec=1000000
+//	FD_ZERO(&rfds);
+//	FD_SET(0, &rfds);
+//	tv.tv_sec = 0;
+//	tv.tv_usec = 50000;	// Wait 5/100 seconds- 1 Sec=1000000
 
 	// keep reading while there are input chars and room in buffer
 //	while (select(1, &rfds, NULL, NULL, &tv) > 0 && bufsiz <= (MAX_INPUT_LEN - 5)) {
@@ -3500,7 +3049,6 @@ static Byte readit(void)	// read (maybe cursor) key from stdin
 	// remove one char from Q
 	memmove(readbuffer, readbuffer + 1, MAX_INPUT_LEN - 1);
 	readbuffer[MAX_INPUT_LEN - 1] = '\0';
-//	(void) alarm(3);	// we are done waiting for input, turn alarm ON
 	return (c);
 }
 
@@ -3842,10 +3390,6 @@ static void beep()
 
 static void indicate_error(char c)
 {
-#ifdef BB_FEATURE_VI_CRASHME
-	if (crashme > 0)
-		return;			// generate a random command
-#endif							/* BB_FEATURE_VI_CRASHME */
 	if (err_method == 0) {
 		beep();
 	} else {
