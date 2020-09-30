@@ -571,8 +571,8 @@ quit:
 @  mov sp, r0
   .else
 	// stack is set by RTOS
-	ldr		r0, =returnstackanfang
-	ldr		sp, [r0]
+//	ldr		r0, =returnstackanfang
+//	ldr		sp, [r0]
   .endif
 
   ldr psp, =datenstackanfang
