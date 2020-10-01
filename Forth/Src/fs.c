@@ -47,6 +47,7 @@
 #include "sd.h"
 #include "ff.h"
 #include "rtc.h"
+#include "block.h"
 
 
 // Defines
@@ -770,6 +771,7 @@ uint64_t FS_mv(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
 	uint8_t *str = NULL;
 	int count = 1;
+	int param = 0;
 
 	uint64_t stack;
 	stack = forth_stack;
@@ -783,15 +785,119 @@ uint64_t FS_mv(uint64_t forth_stack) {
 			// no more tokens
 			break;
 		}
-		memcpy(line, str, count);
-		line[count] = 0;
 
-		fr = f_unlink(line);  /* remove file or directory */
-		if (fr != FR_OK) {
-			stack = FS_type(stack, (uint8_t*)line, strlen(line));
-			strcpy(line, ": can't remove file or directory  ");
-			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		param++;
+		if (param == 1) {
+			memcpy(path, str, count);
+			path[count] = 0;
+			continue;
+		} else if (param == 2) {
+			memcpy(line, str, count);
+			line[count] = 0;
+		} else {
+			;
 		}
+
+	}
+
+	if (param == 2) {
+		fr = f_rename (path, line);  /* move file or directory */
+		if (fr != FR_OK) {
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+			strcpy(path, ": can't move/rename file or directory  ");
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+		}
+	} else {
+		strcpy(path, "Wrong number of parameters");
+		stack = FS_type(stack, (uint8_t*)path, strlen(path));
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Copy files
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_cp(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+	UINT rd_count, wr_count;
+	int param = 0;
+	FIL fil_src;	/* File object */
+	FIL fil_dest;	/* File object */
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+
+		param++;
+		if (param == 1) {
+			memcpy(path, str, count);
+			path[count] = 0;
+			continue;
+		} else if (param == 2) {
+			memcpy(line, str, count);
+			line[count] = 0;
+		} else {
+			;
+		}
+
+	}
+
+	if (param == 2) {
+		fr = f_open(&fil_src, path, FA_READ);
+		if (fr == FR_OK) {
+			fr = f_open(&fil_dest, line, FA_CREATE_ALWAYS | FA_WRITE);
+			if (fr == FR_OK) {
+				// copy the file
+				while (!f_eof(&fil_src)) {
+					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &rd_count);
+					if (fr != FR_OK) {
+						strcpy(path, "Read error");
+						stack = FS_type(stack, (uint8_t*)path, strlen(path));
+						break;
+					}
+					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data, rd_count, &wr_count);
+					if (fr != FR_OK || rd_count != wr_count) {
+						strcpy(path, "Write error");
+						stack = FS_type(stack, (uint8_t*)path, strlen(path));
+						break;
+					}
+				}
+				f_close(&fil_src);
+				f_close(&fil_dest);
+			} else {
+				// open destination failed
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": can't create file");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				f_close(&fil_src);
+			}
+		} else {
+			// open source failed
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+			strcpy(path, ": file not found");
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+		}
+	} else {
+		strcpy(path, "Wrong number of parameters");
+		stack = FS_type(stack, (uint8_t*)path, strlen(path));
 	}
 
 	return stack;

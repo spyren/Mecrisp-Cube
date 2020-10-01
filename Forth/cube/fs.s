@@ -323,6 +323,21 @@ mv:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "cp"
+		@ ( -- ) Change file mode bits.
+// uint64_t FS_mv (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+cp:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_cp
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "df"
 		@ ( -- ) report file system disk space usage (1 KiB blocks)
 // uint64_t FS_df (uint64_t forth_stack);
