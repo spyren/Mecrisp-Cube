@@ -38,6 +38,8 @@
 #include "cmsis_os.h"
 #include "time.h"
 #include <string.h>
+#include <ctype.h>
+
 
 // Application include files
 // *************************
@@ -898,6 +900,192 @@ uint64_t FS_cp(uint64_t forth_stack) {
 	} else {
 		strcpy(path, "Wrong number of parameters");
 		stack = FS_type(stack, (uint8_t*)path, strlen(path));
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Split a file into pieces
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_split(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	TCHAR* buf;
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t param = 0;
+	FIL fil_src;	/* File object */
+	FIL fil_dest;	/* File object */
+	int lines = 1000;
+	char letter='a';
+	int line_count;
+	int wr_count;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+		if (! strcmp (line, "-l")) {
+			// set lines
+			stack = FS_token(stack, &str, &count);
+			memcpy(line, str, count);
+			line[count] = 0;
+			if (count == 0) {
+				// no more tokens
+				break;
+			}
+			lines = atoi(line);
+		} else {
+			param++;
+		}
+	}
+
+	if (param == 1) {
+		strcpy(path, "xa");
+		fr = f_open(&fil_src, line, FA_READ);
+		if (fr == FR_OK) {
+			// split the file
+			while (!f_eof(&fil_src)) {
+				path[1] = letter;
+				fr = f_open(&fil_dest, path, FA_CREATE_ALWAYS | FA_WRITE);
+				if (fr == FR_OK) {
+					for (line_count = 0; line_count < lines; line_count++) {
+						buf = f_gets(line, sizeof(line), &fil_src);
+						if (*buf == NULL) {
+							// no lines left
+							break;
+						}
+						wr_count = f_puts(line, &fil_dest);
+						if (wr_count < 0) {
+							strcpy(line, "Write error");
+							stack = FS_type(stack, (uint8_t*)line, strlen(line));
+							break;
+						}
+					}
+					f_close(&fil_dest);
+				} else {
+					// open destination file failed
+					stack = FS_type(stack, (uint8_t*)path, strlen(path));
+					strcpy(path, ": can't create file");
+					stack = FS_type(stack, (uint8_t*)path, strlen(path));
+					f_close(&fil_src);
+					break;
+				}
+				if (letter < 'z') {
+					letter++;
+				} else {
+					strcpy(path, "Too many files");
+					stack = FS_type(stack, (uint8_t*)line, strlen(line));
+					break;
+				}
+			}
+			f_close(&fil_src);
+			f_close(&fil_dest);
+		} else {
+			// open source file failed
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": file not found");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+	} else {
+		strcpy(path, "Wrong number of parameters");
+		stack = FS_type(stack, (uint8_t*)path, strlen(path));
+	}
+
+	return stack;
+}
+
+
+int count_words(const char *s) {
+	int i, w;
+
+	for (i = 0, w = 0; i < strlen(s); i++) {
+		if (!isspace(*(s+i))) {
+			w++;
+			while (!isspace(*(s+i)) && *(s+i) != '\0') {
+				i++;
+			}
+		}
+	}
+
+	return w;
+}
+
+
+/**
+ *  @brief
+ *      Word count, print newline, word, and byte counts for each file
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_wc(uint64_t forth_stack) {
+	FIL fil;        /* File object */
+	FRESULT fr;     /* FatFs return code */
+	TCHAR* buf;
+	uint8_t *str = NULL;
+	int count = 1;
+	unsigned int line_count = 0;
+	unsigned int word_count = 0;
+	unsigned int char_count = 0;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			break;
+		}
+		memcpy(path, str, count);
+		path[count] = 0;
+
+		fr = f_open(&fil, path, FA_READ);
+		if (fr == FR_OK) {
+			while (!f_eof(&fil)) {
+				buf = f_gets(line, sizeof(line), &fil);
+				if (*buf == NULL) {
+					// no lines left
+					break;
+				}
+				line_count++;
+				word_count += count_words(line);
+				char_count += strlen(line);
+			}
+			f_close(&fil);
+			snprintf(line, sizeof(line), "%3u %3u %3u %s",
+					line_count, word_count, char_count, path);
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			stack = FS_cr(stack);
+			line_count = 0;
+			word_count = 0;
+			char_count = 0;
+		} else {
+			// open file failed
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+			strcpy(path, ": file not found");
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+			break;
+		}
 	}
 
 	return stack;
