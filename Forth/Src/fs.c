@@ -1072,7 +1072,7 @@ uint64_t FS_wc(uint64_t forth_stack) {
 				char_count += strlen(line);
 			}
 			f_close(&fil);
-			snprintf(line, sizeof(line), "%3u %3u %3u %s",
+			snprintf(line, sizeof(line), "%5u %5u %5u %s",
 					line_count, word_count, char_count, path);
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			stack = FS_cr(stack);
