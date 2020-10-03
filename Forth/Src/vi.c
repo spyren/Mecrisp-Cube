@@ -128,8 +128,11 @@ static const char vi_Version[] =
 #define FALSE			((int)0)
 #endif							/* TRUE */
 //#define MAX_SCR_COLS		MAX_INPUT_LEN
-#define MAX_SCR_COLS		100
+#define MAX_SCR_COLS		128
+#define MIN_SCR_COLS		40
 #define MAX_SCR_ROWS		30
+#define MIN_SCR_ROWS		16
+#define MAX_ARGS			10
 
 #define TEXT_SIZE		(40 * 1024)
 #define MAX_INPUT_LEN	256
@@ -165,7 +168,9 @@ const char VI_Version[] = "  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling
  // Local Variables
  // ***************
 
-static char path[255];
+//static char path[MAX_INPUT_LEN];
+static char argbuf[MAX_INPUT_LEN];
+// static int optind; // declared elsewhere
 static char *line; /* Line buffer */
 static char *cmd_buf;
 static char *args_buf;
@@ -376,18 +381,30 @@ void VI_init(void) {
 	cmd_buf = (char *) pvPortMalloc(MAX_INPUT_LEN);
 	args_buf = (char *) pvPortMalloc(MAX_INPUT_LEN);
 
-	cfn = (char *) pvPortMalloc(MAX_INPUT_LEN);
+	rows = 24;
+	columns = 80;
+
 //	last_modifying_cmd = (Byte *) pvPortMalloc(MAX_INPUT_LEN);
 }
 
 
 uint64_t VI_edit(uint64_t forth_stack) {
 	stack = forth_stack;
+	int argc;
+	char *argv[MAX_ARGS];
+	char *argbuf_end;
 
 	uint8_t *str = NULL;
 	int count = 1;
 
 	vi_readonly = readonly = FALSE;
+
+	// mimic command line args
+	strcpy(argbuf, "vi");  // first argument is always the command itself
+	argc = 1;
+	argv[0] = &argbuf[0];
+	argbuf_end = argv[0] + strlen(argv[0]) + 1;
+	optind = 1;
 
 	while (TRUE) {
 		// get tokens till end of line
@@ -403,9 +420,46 @@ uint64_t VI_edit(uint64_t forth_stack) {
 		} else if (! strcmp(line, "-h")) {
 			show_help();
 			return stack;
+		} else if (! strcmp(line, "-c")) {
+			// set columns
+			stack = FS_token(stack, &str, &count);
+			memcpy(line, str, count);
+			line[count] = 0;
+			if (count == 0) {
+				show_help();
+				return stack;
+			}
+			columns = atoi(line);
+			if (columns > MAX_SCR_COLS || columns < MIN_SCR_COLS) {
+				show_help();
+				return stack;
+			}
+		} else if (! strcmp(line, "-r")) {
+			// set rows
+			stack = FS_token(stack, &str, &count);
+			memcpy(line, str, count);
+			line[count] = 0;
+			if (count == 0) {
+				show_help();
+				return stack;
+			}
+			rows = atoi(line);
+			if (rows > MAX_SCR_ROWS || rows < MIN_SCR_ROWS) {
+				show_help();
+				return stack;
+			}
 		} else {
-			// file parameter
-			strcpy(path, line);
+			// file parameters
+			argv[argc] = argbuf_end;
+			argc++;
+			if (argc < MAX_ARGS) {
+				strcpy(argbuf_end, line);
+				argbuf_end += strlen(line) + 1;
+			} else {
+				// too many file params
+				show_help();
+				return stack;
+			}
 		}
 	}
 
@@ -427,8 +481,25 @@ uint64_t VI_edit(uint64_t forth_stack) {
 	modifying_cmds = (Byte *) "aAcCdDiIJoOpPrRsxX<>~";	// cmds modifying text[]
 #endif							/* BB_FEATURE_VI_DOT_CMD */
 
-	strcpy(cfn, path);
-	edit_file(cfn);
+	// The argv array can be used by the ":next"  and ":rewind" commands
+	// save optind.
+	fn_start = optind;	// remember first file name for :next and :rew
+	save_argc = argc;
+
+	//----- This is the main file handling loop --------------
+	if (optind >= argc) {
+		editing = 1;	// 0= exit,  1= one file,  2= multiple files
+		edit_file(0);
+	} else {
+		for (; optind < argc; optind++) {
+			editing = 1;	// 0=exit, 1=one file, 2+ =many files
+			if (cfn != 0)
+				vPortFree(cfn);
+			cfn = (Byte *) pvPortStrdup(argv[optind]);
+			edit_file(cfn);
+		}
+	}
+	//-----------------------------------------------------------
 
 	return stack;
 }
@@ -443,8 +514,6 @@ static void edit_file(Byte * fn)
 	static Byte *cur_line;
 #endif							/* BB_FEATURE_VI_YANKMARK */
 
-	rows = 24;
-	columns = 80;
 	ch= -1;
 #ifdef BB_FEATURE_VI_WIN_RESIZE
 	window_size_get(0);
@@ -2740,6 +2809,13 @@ static Byte *yank_delete(Byte * start, Byte * stop, int dist, int yf)
 
 static void show_help(void)
 {
+	puts_term("\nvi [-R] [-h] [-e] [-c COLUMNS] [-r ROWS] [FILE..]\n"
+"  -h show features\n"
+"  -R Read-only mode. You can still edit the buffer, but will be prevented from overwriting a file.\n"
+"  -e erase the text buffer\n"
+"  -c COLUMNS screen columns, range 40..128 default 80\n"
+"  -r ROWS screen rows, range 16..30 default 24\n");
+
 	puts_term("\nThese features are available:"
 #ifdef BB_FEATURE_VI_SEARCH
 	"\n\tPattern searches with / and ?"
@@ -3093,11 +3169,10 @@ static Byte get_one_char()
 
 static Byte *get_input_line(Byte * prompt) // get input line- use "status line"
 {
-	Byte *buf;
+	Byte buf[BUFSIZ];
 	Byte c;
 	int i;
-
-	buf = line;
+	static Byte *obufp = NULL;
 
 	strcpy((char *) buf, (char *) prompt);
 	*status_buffer = '\0';	// clear the status buffer
@@ -3127,7 +3202,10 @@ static Byte *get_input_line(Byte * prompt) // get input line- use "status line"
 		}
 	}
 	refresh(FALSE);
-	return buf;
+	if (obufp != NULL)
+		vPortFree(obufp);
+	obufp = (Byte *) pvPortStrdup((char *) buf);
+	return (obufp);
 }
 
 static int file_size(Byte * fn) // what is the byte size of "fn"
