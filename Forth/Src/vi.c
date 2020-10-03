@@ -383,8 +383,10 @@ void VI_init(void) {
 
 	rows = 24;
 	columns = 80;
-
-//	last_modifying_cmd = (Byte *) pvPortMalloc(MAX_INPUT_LEN);
+	new_text(TEXT_SIZE);
+	screenbegin = dot = end = text;
+	(void) char_insert(text, '\n');	// start empty buf with dummy line
+	file_modified = FALSE;
 }
 
 
@@ -420,6 +422,12 @@ uint64_t VI_edit(uint64_t forth_stack) {
 		} else if (! strcmp(line, "-h")) {
 			show_help();
 			return stack;
+		} else if (! strcmp(line, "-e")) {
+			// erase buffer
+			new_text(TEXT_SIZE);
+			screenbegin = dot = end = text;
+			(void) char_insert(text, '\n');	// start empty buf with dummy line
+			file_modified = FALSE;
 		} else if (! strcmp(line, "-c")) {
 			// set columns
 			stack = FS_token(stack, &str, &count);
@@ -520,17 +528,19 @@ static void edit_file(Byte * fn)
 #endif							/* BB_FEATURE_VI_WIN_RESIZE */
 	new_screen(rows, columns);	// get memory for virtual screen
 
-	cnt = file_size(fn);	// file size
-	size = 2 * cnt;		// 200% of file size
-	new_text(size);		// get a text[] buffer
-	screenbegin = dot = end = text;
 	if (fn != 0) {
+		cnt = file_size(fn);	// file size
+		size = 2 * cnt;		// 200% of file size
+		new_text(size);		// get a text[] buffer
+		screenbegin = dot = end = text;
 		ch= file_insert(fn, text, cnt);
+		if (ch < 1) {
+			(void) char_insert(text, '\n');	// start empty buf with dummy line
+		}
+		file_modified = FALSE;
+	} else {
+		// do not initialize buffer
 	}
-	if (ch < 1) {
-		(void) char_insert(text, '\n');	// start empty buf with dummy line
-	}
-	file_modified = FALSE;
 #ifdef BB_FEATURE_VI_YANKMARK
 	YDreg = 26;			// default Yank/Delete reg
 	Ureg = 27;			// hold orig line for "U" cmd
