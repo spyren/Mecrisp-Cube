@@ -387,6 +387,13 @@ void VI_init(void) {
 	screenbegin = dot = end = text;
 	(void) char_insert(text, '\n');	// start empty buf with dummy line
 	file_modified = FALSE;
+
+#ifdef BB_FEATURE_VI_SETOPTS
+	autoindent = 1;
+	ignorecase = 1;
+	showmatch = 1;
+#endif							/* BB_FEATURE_VI_SETOPTS */
+	tabstop = 8;
 }
 
 
@@ -475,11 +482,6 @@ uint64_t VI_edit(uint64_t forth_stack) {
 	int i;
 #endif							/* BB_FEATURE_VI_YANKMARK */
 
-#ifdef BB_FEATURE_VI_SETOPTS
-	autoindent = 1;
-	ignorecase = 1;
-	showmatch = 1;
-#endif							/* BB_FEATURE_VI_SETOPTS */
 #ifdef BB_FEATURE_VI_YANKMARK
 	for (i = 0; i < 28; i++) {
 		reg[i] = 0;
@@ -559,7 +561,6 @@ static void edit_file(Byte * fn)
 	editing = 1;
 	cmd_mode = 0;		// 0=command  1=insert  2='R'eplace
 	cmdcnt = 0;
-	tabstop = 8;
 	offset = 0;			// no horizontal offset
 	c = '\0';
 #ifdef BB_FEATURE_VI_DOT_CMD
