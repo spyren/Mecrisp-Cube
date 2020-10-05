@@ -1380,8 +1380,34 @@ static void do_cmd(Byte c)
 		dot = q;
 		place_cursor(rows, 0, FALSE);	// go below Status line, bottom of screen
 		clear_to_eol();	// clear the line
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		stack = TERMINAL_emit(stack, ' ');
 		stack = FS_catch_evaluate(stack, (uint8_t*)line, strlen(line));
+		if (EvaluateState == 0) {
+			// successful
+			strcpy(line, "ok.");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
 		dot = next_line(dot);
+		break;
+	case 'V':			// evaluate line and insert the result into the text buffer
+		p = begin_line(dot);
+		q = end_line(dot);
+		memcpy(line, p, q-p);
+		line[q-p] = 0;
+		dot = q;
+		place_cursor(rows, 0, FALSE);	// go below Status line, bottom of screen
+		clear_to_eol();	// clear the line
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+
+//		dot = next_line(dot);
+		// redirect terminal out to terminal in
+		// ??
+		// put Append command 'A'
+		// stack = TERMINAL_emit(stack, 'A');
+		stack = FS_catch_evaluate(stack, (uint8_t*)line, strlen(line));
+		// end rederection
+		// ??
 		break;
 	case 'w':			// w- forward a word
 		if (cmdcnt-- > 1) {

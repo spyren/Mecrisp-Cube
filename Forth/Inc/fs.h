@@ -13,6 +13,9 @@
 extern const char FS_Version[];
 extern	uint32_t **ZweitDictionaryPointer;
 
+extern int EvaluateState;
+
+
 void FS_init(void);
 
 int FS_FIL_size(void);

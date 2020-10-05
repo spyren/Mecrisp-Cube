@@ -134,12 +134,14 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	VariablenPointer, 4
 
 	ramallot	EvaluateSP,	4
+	ramallot	EvaluateState, 4
 
 
 .global		Dictionarypointer
 .global		Fadenende
 .global		ZweitDictionaryPointer
 .global		ZweitFadenende
+.global		EvaluateState
 
 @ Jetzt kommen Puffer und Stacks:  Buffers and Stacks
 

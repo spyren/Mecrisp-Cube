@@ -469,6 +469,9 @@ FS_catch_evaluate:
 	str		r1, [r0]
 	ldr		r0, =EvaluateSP	// save stackpointer
 	str		sp, [r0]
+	ldr		r1, =0			// successful state
+	ldr 	r0, =EvaluateState
+	str		r1, [r0]
 	bl		evaluate
 	ldr		r1, =quit_innenschleife	// restore quit hook
 	ldr 	r0, =hook_quit
@@ -478,6 +481,9 @@ FS_catch_evaluate:
 	pop		{r4-r7, pc}
 
 quit_evaluate:
+	ldr		r1, =1			// error state
+	ldr 	r0, =EvaluateState
+	str		r1, [r0]
 	ldr		r1, =quit_innenschleife	// restore quit hook
 	ldr 	r0, =hook_quit
 	str		r1, [r0]
