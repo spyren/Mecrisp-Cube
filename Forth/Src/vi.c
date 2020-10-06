@@ -1401,7 +1401,7 @@ static void do_cmd(Byte c)
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 
 //		dot = next_line(dot);
-		// redirect terminal out to terminal in
+		// redirect terminal out to terminal in (echo?)
 		// ??
 		// put Append command 'A'
 		// stack = TERMINAL_emit(stack, 'A');
@@ -1673,12 +1673,12 @@ static void colon(Byte * buf)
 			dot = find_line(b);	// what line is #b
 			dot_skip_over_ws();
 		}
-	} else if (strncmp((char *) cmd, "!", 1) == 0) {	// run a cmd
-		// :!ls   run the <cmd>
-		place_cursor(rows - 1, 0, FALSE);	// go to Status line
-		clear_to_eol();			// clear the line
-		system(orig_buf+1);		// run the cmd
-		Hit_Return();			// let user see results
+//	} else if (strncmp((char *) cmd, "!", 1) == 0) {	// run a cmd
+//		// :!ls   run the <cmd>
+//		place_cursor(rows - 1, 0, FALSE);	// go to Status line
+//		clear_to_eol();			// clear the line
+//		system(orig_buf+1);		// run the cmd
+//		Hit_Return();			// let user see results
 	} else if (strncmp((char *) cmd, "=", i) == 0) {	// where is the address
 		if (b < 0) {	// no addr given- use defaults
 			b = e = count_lines(text, dot);
@@ -3206,25 +3206,25 @@ static Byte get_one_char()
 
 static Byte *get_input_line(Byte * prompt) // get input line- use "status line"
 {
-	Byte buf[BUFSIZ];
+//	Byte buf[BUFSIZ];
 	Byte c;
 	int i;
 	static Byte *obufp = NULL;
 
-	strcpy((char *) buf, (char *) prompt);
+	strcpy((char *) line, (char *) prompt);
 	*status_buffer = '\0';	// clear the status buffer
 	place_cursor(rows - 1, 0, FALSE);	// go to Status line, bottom of screen
 	clear_to_eol();		// clear the line
 	write_term(prompt, strlen((char *) prompt));	// write out the :, /, or ? prompt
 
-	for (i = strlen((char *) buf); i < MAX_INPUT_LEN;) {
+	for (i = strlen((char *) line); i < MAX_INPUT_LEN;) {
 		c = get_one_char();	// read user input
 		if (c == '\n' || c == '\r' || c == 27)
 			break;		// is this end of input
 		if (c == erase_char) {	// user wants to erase prev char
 			i--;		// backup to prev char
-			buf[i] = '\0';	// erase the char
-			buf[i + 1] = '\0';	// null terminate buffer
+			line[i] = '\0';	// erase the char
+			line[i + 1] = '\0';	// null terminate buffer
 			write_term("\b \b", 3);	// erase char on screen
 			if (i <= 0) {	// user backs up before b-o-l, exit
 				break;
@@ -3232,16 +3232,16 @@ static Byte *get_input_line(Byte * prompt) // get input line- use "status line"
 		} else if (c == 0) {
 			; // no char received
 		} else {
-			buf[i] = c;	// save char in buffer
-			buf[i + 1] = '\0';	// make sure buffer is null terminated
-			write_term(buf + i, 1);	// echo the char back to user
+			line[i] = c;	// save char in buffer
+			line[i + 1] = '\0';	// make sure buffer is null terminated
+			write_term(line + i, 1);	// echo the char back to user
 			i++;
 		}
 	}
 	refresh(FALSE);
 	if (obufp != NULL)
 		vPortFree(obufp);
-	obufp = (Byte *) pvPortStrdup((char *) buf);
+	obufp = (Byte *) pvPortStrdup((char *) line);
 	return (obufp);
 }
 
