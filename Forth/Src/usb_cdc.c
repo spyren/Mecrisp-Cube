@@ -188,6 +188,31 @@ int CDC_TxReady(void) {
 }
 
 
+/**
+ *  @brief
+ *      Writes a char direct into the key queue.
+ *  @param[in]
+ *      c  char to write
+ *  @return
+ *      Return EOF on error, 0 on success.
+ */
+int CDC_putkey(const char c) {
+	osStatus_t status;
+
+	if (c == '\r') {
+		// eat CR
+		return 0;
+	}
+	status = osMessageQueuePut(CDC_RxQueueId, &c, 0, osWaitForever);
+	if (status == osOK) {
+		return 0;
+	} else {
+		Error_Handler();
+		return EOF;
+	}
+}
+
+
 // Private Functions
 // *****************
 

@@ -19,6 +19,6 @@ int CDC_getc(void);
 int CDC_RxReady(void);
 int CDC_putc(int c);
 int CDC_TxReady(void);
-
+int CDC_putkey(const char c);
 
 #endif /* INC_USB_CDC_H_ */

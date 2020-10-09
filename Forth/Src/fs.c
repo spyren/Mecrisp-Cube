@@ -54,7 +54,7 @@
 
 // Defines
 // *******
-
+#define LINE_LENGTH	256
 
 // Private typedefs
 // ****************
@@ -133,9 +133,14 @@ void FS_init(void) {
 uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
+	char *line;
+	char *path;
 
 	uint64_t stack;
 	stack = forth_stack;
+
+	line = (char *) pvPortMalloc(LINE_LENGTH);
+	path = (char *) pvPortMalloc(LINE_LENGTH);
 
 	memcpy(path, str, count);
 	path[count] = 0;
@@ -149,10 +154,7 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	}
 
 	/* Read every line and interprets it */
-	while (f_gets(line, sizeof line, &fil)) {
-//		// type the line
-//		FS_type((uint8_t*)line, strlen(line));
-//		osDelay(100);
+	while (f_gets(line, LINE_LENGTH-1, &fil)) {
 		// line without \n
 		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
 	}
@@ -160,6 +162,8 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	/* Close the file */
 	f_close(&fil);
 
+	vPortFree(line);
+	vPortFree(path);
 	return stack;
 }
 

@@ -1396,18 +1396,17 @@ static void do_cmd(Byte c)
 		memcpy(line, p, q-p);
 		line[q-p] = 0;
 		dot = q;
-		place_cursor(rows, 0, FALSE);	// go below Status line, bottom of screen
-		clear_to_eol();	// clear the line
-		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 
-//		dot = next_line(dot);
-		// redirect terminal out to terminal in (echo?)
-		// ??
+		// redirect terminal out to terminal in
+		TERMINAL_redirect();
 		// put Append command 'A'
-		// stack = TERMINAL_emit(stack, 'A');
+		stack = TERMINAL_emit(stack, 'A');
+		stack = TERMINAL_emit(stack, ' ');
 		stack = FS_catch_evaluate(stack, (uint8_t*)line, strlen(line));
-		// end rederection
-		// ??
+		// return to command mode
+		stack = TERMINAL_emit(stack, '\033');
+		// end redirection
+		TERMINAL_unredirect();
 		break;
 	case 'w':			// w- forward a word
 		if (cmdcnt-- > 1) {
@@ -1673,12 +1672,15 @@ static void colon(Byte * buf)
 			dot = find_line(b);	// what line is #b
 			dot_skip_over_ws();
 		}
-//	} else if (strncmp((char *) cmd, "!", 1) == 0) {	// run a cmd
-//		// :!ls   run the <cmd>
-//		place_cursor(rows - 1, 0, FALSE);	// go to Status line
-//		clear_to_eol();			// clear the line
+	} else if (strncmp((char *) cmd, "!", 1) == 0) {	// run a cmd
+		// :!ls   run the <cmd>
+		place_cursor(rows - 1, 0, FALSE);	// go to Status line
+		clear_to_eol();			// clear the line
 //		system(orig_buf+1);		// run the cmd
-//		Hit_Return();			// let user see results
+		stack = TERMINAL_emit(stack, ' ');
+		stack = FS_catch_evaluate(stack, (uint8_t*)orig_buf+1, strlen(orig_buf+1));
+
+		Hit_Return();			// let user see results
 	} else if (strncmp((char *) cmd, "=", i) == 0) {	// where is the address
 		if (b < 0) {	// no addr given- use defaults
 			b = e = count_lines(text, dot);

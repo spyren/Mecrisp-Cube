@@ -300,6 +300,31 @@ int UART_TxReady(void) {
 
 /**
  *  @brief
+ *      Writes a char direct into the key queue.
+ *  @param[in]
+ *      c  char to write
+ *  @return
+ *      Return EOF on error, 0 on success.
+ */
+int UART_putkey(const char c) {
+	osStatus_t status;
+
+	if (c == '\r') {
+		// eat CR
+		return 0;
+	}
+	status = osMessageQueuePut(UART_RxQueueId, &c, 0, osWaitForever);
+	if (status == osOK) {
+		return 0;
+	} else {
+		Error_Handler();
+		return EOF;
+	}
+}
+
+
+/**
+ *  @brief
  *      Sets the serial port's baud rate.
  *
  *      No checks whatsoever

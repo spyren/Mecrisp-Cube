@@ -13,4 +13,8 @@ uint64_t TERMINAL_key(uint64_t forth_stack, char *c);
 uint64_t TERMINAL_qemit(uint64_t forth_stack, char *c);
 uint64_t TERMINAL_qkey(uint64_t forth_stack, char *c);
 
+void TERMINAL_redirect(void);
+void TERMINAL_unredirect(void);
+
+
 #endif /* INC_TERMINAL_H_ */

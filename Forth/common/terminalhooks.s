@@ -215,6 +215,73 @@ crs_terminal:
 	bx		lr
 
 
+// Redirect emit to key
+//*********************
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "redirect" @ ( -- )
+@------------------------------------------------------------------------------
+.global 	TERMINAL_redirect
+TERMINAL_redirect:
+	ldr		r0, =hook_emit
+	ldr		r0, [r0]
+	ldr		r1, =RedirectStore
+	str		r0, [r1]			// store old hook
+	ldr		r1, =cdc_emit
+	cmp		r0, r1
+	bne		1f
+	ldr		r1, =cdc_emit2key
+	b		3f
+1:
+	ldr		r1, =serial_emit
+	cmp		r0, r1
+	bne		2f
+	ldr		r1, =serial_emit2key
+	b		3f
+2:
+//	ldr		r1, =crs_emit
+	ldr		r1, =crs_emit2key
+3:
+	ldr		r0, =hook_emit
+	str		r1, [r0]
+	bx		lr
+
+// status = osMessageQueuePut(UART_RxQueueId, &UART_RxBuffer, 0, 100);
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "unredirect" @ ( -- )
+@------------------------------------------------------------------------------
+.global		TERMINAL_unredirect
+TERMINAL_unredirect:
+	ldr		r1, =RedirectStore
+	ldr		r0, [r1]
+	ldr		r1, =hook_emit		// restore old hook
+	str		r0, [r1]
+	bx		lr
+
+
+cdc_emit2key:
+	push	{lr}
+	movs	r0, tos		// c
+	drop
+	bl		CDC_putkey
+	pop		{pc}
+
+serial_emit2key:
+	push	{lr}
+	movs	r0, tos		// c
+	drop
+	bl		UART_putkey
+	pop		{pc}
+
+crs_emit2key:
+	push	{lr}
+	movs	r0, tos		// c
+	drop
+	bl		CRSAPP_putkey
+	pop		{pc}
+
+
 @------------------------------------------------------------------------------
 hook_intern:
  	ldr		r0, [r0]

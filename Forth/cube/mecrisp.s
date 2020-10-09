@@ -135,6 +135,7 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 
 	ramallot	EvaluateSP,	4
 	ramallot	EvaluateState, 4
+	ramallot	RedirectStore, 4
 
 
 .global		Dictionarypointer

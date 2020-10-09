@@ -44,6 +44,7 @@ int UART_RxReady(void);
 int UART_putc(int c);
 int UART_puts(const char *s);
 int UART_TxReady(void);
+int UART_putkey(const char c);
 void UART_setBaudrate(const int baudrate);
 void UART_setWordLength(const int wordlength);
 void UART_setParityBit(const int paritybit);
