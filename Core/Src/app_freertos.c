@@ -65,7 +65,7 @@ osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
   .name = "Main",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512 * 4
+  .stack_size = 512 * 8
 };
 
 /* Private function prototypes -----------------------------------------------*/
