@@ -1,7 +1,7 @@
 # Mecrisp-Cube
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
-The STM32WB Nucleo Board is working out of the box yet. See also [Mecrisp Cube](http://spyr.ch/twiki/bin/view/Cosmac/MecrispCube)
+The STM32WB Nucleo Board is working out of the box yet. See also [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube).
 
 ## Getting Started
 
@@ -144,7 +144,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ## Authors
 
 * **Matthias Koch** - *Forth on ARM Cortex M0/M4* - [Mecrisp Stellaris](http://mecrisp.sourceforge.net/)
-* **Peter Schmid** - *Initial work* - [Mecrisp Cube](http://spyr.ch/twiki/bin/view/Cosmac/MecrispCube)
+* **Peter Schmid** - *Initial work* - [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
