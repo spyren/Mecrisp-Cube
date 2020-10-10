@@ -1,7 +1,7 @@
 # Mecrisp-Cube
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
-The STM32WB Nucleo Board is working out of the box yet. 
+The STM32WB Nucleo Board is working out of the box yet. See also [Mecrisp Cube](http://spyr.ch/twiki/bin/view/Cosmac/MecrispCube)
 
 ## Getting Started
 
@@ -125,7 +125,7 @@ Append ?ts=4 to the URL to change the tab-size.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/spyren/Mecrisp-Cube/tags). 
 
 ### v1.0.0 Initial Release
 * USART0 default terminal console, 115200 Baud, 20 KiB Rx buffer
