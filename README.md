@@ -40,10 +40,11 @@ I set the putty terminal configuration to
 ```forth
 Mecrisp-Stellaris 2.5.2 by Matthias Koch. 
 
-Mecrisp-Cube 1.2.2 for STM32WB55 (C) peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.5.0, BLE Stack 5.0 (C) 2020 STMicroelectronics 
+Mecrisp-Cube 1.3.1 for STM32WB55 (C) 2020 peter@spyr.ch
+  * Firmware Package STM32Cube FW_WB V1.8.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics 
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com
   * FatFs - Generic FAT file system module  R0.12c (C) 2017 ChaN
+  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
 23 5 / .<CR> 4  ok.
 : hello ." World" ;<CR>  ok.
 hello<CR> World ok.
@@ -86,10 +87,18 @@ Generate code from the STM32CubeMX `MecrispCube.ioc` file:
 Project -> Generate Code 
 ```
 
+Restore changed source files
+
+```
+$ git status
+{list of changed files}
+$ git restore {files to restore} 
+```
+
 Select the Build Configuration (Debug if you want to debug the project) and Build the project:
 
 ```
-Project -> Build Configurations -> Set Active -> Debug/Reelease 
+Project -> Build Configurations -> Set Active -> Debug/Release 
 Project -> Build Project
 ```
 
@@ -126,6 +135,11 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * CMSIS-RTOS, FreeRTOS Kernel V10.2.1
 * FatFs R0.12c, some Unix like command line tools
 * BLE Cable Replacement Service.
+### v1.3.3 FatFs/BLE/RTOS/vi Release
+* CMSIS-RTOS, FreeRTOS Kernel V10.2.1
+* FatFs R0.12c, some Unix like command line tools
+* BLE Cable Replacement Service.
+* tiny vi - part of BusyBox 
 
 ## Authors
 

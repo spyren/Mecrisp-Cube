@@ -126,7 +126,7 @@
 #define CFG_BLE_ERK     {0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21,0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21}
 
 /* USER CODE BEGIN Generic_Parameters */
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.3.2 for STM32WB55 (C) 2020 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.3.3 for STM32WB55 (C) 2020 peter@spyr.ch\n"
 
 #undef CFG_GAP_DEVICE_NAME
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
