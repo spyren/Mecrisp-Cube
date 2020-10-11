@@ -46,7 +46,7 @@
 // Rx/Tx Buffer Length
 // *******************
 #define UART_TX_BUFFER_LENGTH	1024
-#define UART_RX_BUFFER_LENGTH	(20 * 1024)
+#define UART_RX_BUFFER_LENGTH	(5 * 1024)
 
 #define UART_CHAR_SENT		0x01
 #define UART_CHAR_RECEIVED	0x01
