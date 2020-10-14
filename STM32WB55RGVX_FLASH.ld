@@ -49,18 +49,19 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = 0x20030000;    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x1000 ;    /* required amount of heap  */
-_Min_Stack_Size = 0x1000 ;   /* required amount of stack */
+_Min_Heap_Size = 0x0400 ;    /* required amount of heap  */
+_Min_Stack_Size = 0x0400 ;   /* required amount of stack */
 
 /* Specify the memory areas */
 /* RAM1 (xrw)                 : ORIGIN = 0x20000004, LENGTH = 0x2FFFC */
 MEMORY
 {
 FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
-FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 512K
+FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 192K
+RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
 RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 

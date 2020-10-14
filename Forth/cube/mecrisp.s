@@ -85,12 +85,14 @@
 // see stm32wb55xx_flash_cm4.ld
 /*
 MEMORY
+MEMORY
 {
 FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
-FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 512K
+FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 192K
+RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
 RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 */
@@ -102,7 +104,7 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 
 .equ	Kernschutzadresse,		0x08040000	@ Mecrisp core never writes flash below this address.
 .equ	FlashDictionaryAnfang,	0x08040000	@ 256 KiB Flash reserved for core and C.
-.equ	FlashDictionaryEnde,	0x080C0000	@ 512 KiB Flash available C0000 - 40000, 256 KiB for BLE Stack
+.equ	FlashDictionaryEnde,	0x08060000	@ 128 KiB Flash available, 386 KiB for drive, 256 KiB for BLE Stack
 .equ	Backlinkgrenze,			RamAnfang	@ Ab dem Ram-Start.
 
 
@@ -267,8 +269,9 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 Forth:
 @ -----------------------------------------------------------------------------
 
-	ldr		r0, =returnstackanfang
-	str		sp, [r0]
+// Stack already set in the main thread
+//	ldr		r0, =returnstackanfang
+//	str		sp, [r0]
 
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"

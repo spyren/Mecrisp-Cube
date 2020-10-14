@@ -6,16 +6,59 @@
  *      Forth is a CMSIS-RTOS Thread (FreeRTOS Task) MainThread.
  *      Console I/O (UART, USB-CDC, BLE) is buffered and RTOS aware.
  *
+ *      STM32WB55C: 1 MiB FLASH
+
+ *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+ *       20 KiB Forth Core
+ *      110 KiB Middleware (debug 210 KiB)
+ *
+ *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+ *      128 KiB Flash Dictionary
+ *
+ *      FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+ *      384 KiB future use for built in flash drive
+
+ *      FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
+
  *      STM32WB55C: 256 KiB RAM
  *
  *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
- *      64 KiB Forth
+ *       1 KiB Core
+ *      63 KiB RAM Dictionary
  *
- *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 192K
- *       4 KiB Stack         (probably too large)
- *       4 KiB Heap          (maybe not needed)
- *      64 KiB RTOS Heap
- *       4 KiB Forth Thread Stack size
+ *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
+ *       1 KiB Stack         (only for startup)
+ *       1 KiB Heap          (maybe not needed)
+ *       1 KiB UART Tx Buffer
+ *       5 KiB UART Rx Buffer
+ *       4 KiB CDC Rx/Tx Buffer
+ *       2 KiB CDC RxQueue
+ *      10 KiB global variables
+ *      80 KiB RTOS Heap (about 9 KiB free)
+ *         Thread Stack size
+ *              4 KiB Forth (main)
+ *              1 KiB UART_Tx
+ *              1 KiB UART_Rx
+ *              1 KiB CDC
+ *              1 KiB CRS
+ *              1 KiB HRS
+ *              1 KiB HCI_USER_EVT
+ *              1 KiB ADV_UPDATE
+ *              1 KiB SHCI_USER_EVT
+ *
+ *             40 KiB vi text buffer
+ *
+ *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
+ *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
+ *
+ *     (RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
+ *       10 KiB shared between CPU1 and CPU2
+ *       22 KiB secure RAM for CPU2
+ *
+ *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
+ *       16 KiB shared between CPU1 and CPU2
+ *       16 KiB secure RAM for CPU2
+ *
  *
  *  @file
  *      main.c

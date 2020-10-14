@@ -3133,6 +3133,8 @@ static Byte readit(void)	// read (maybe cursor) key from stdin
 //	FD_SET(0, &rfds);
 //	tv.tv_sec = 0;
 //	tv.tv_usec = 50000;	// Wait 5/100 seconds- 1 Sec=1000000
+	// wait 50 ms for remaining ESC sequence (@ 9600 baud about 50 chars)
+	osDelay(50);
 
 	// keep reading while there are input chars and room in buffer
 //	while (select(1, &rfds, NULL, NULL, &tv) > 0 && bufsiz <= (MAX_INPUT_LEN - 5)) {

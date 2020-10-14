@@ -204,7 +204,7 @@ uint64_t FS_coredump(uint64_t forth_stack, uint8_t *str, int count) {
 			&bytes_written);
 	if ( (fr != FR_OK) ||
 			(bytes_written < ((uint32_t) ZweitDictionaryPointer) - 0x08000000) ) {
-		// open failed
+		// write failed
 		strcpy(line, "Err: write failed");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
