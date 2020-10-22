@@ -59,11 +59,14 @@ typedef struct
  * START of Section BLE_APP_CONTEXT
  */
 
-PLACE_IN_SECTION("BLE_APP_CONTEXT") static HRSAPP_Context_t HRSAPP_Context;
+//PLACE_IN_SECTION("BLE_APP_CONTEXT") static HRSAPP_Context_t HRSAPP_Context;
 
 /**
  * END of Section BLE_APP_CONTEXT
  */
+
+static HRSAPP_Context_t HRSAPP_Context;
+
 
 osThreadId_t HrsThreadId;
 
@@ -174,7 +177,7 @@ static void HrsThread(void *argument) {
 #endif
 
 		// danger
-//		HRS_UpdateChar(HEART_RATE_MEASURMENT_UUID, (uint8_t *)&HRSAPP_Context.MeasurementvalueChar);
+		HRS_UpdateChar(HEART_RATE_MEASURMENT_UUID, (uint8_t *)&HRSAPP_Context.MeasurementvalueChar);
 
 	}
 

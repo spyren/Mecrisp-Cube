@@ -65,7 +65,7 @@ osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
   .name = "Main",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512 * 8
+  .stack_size = 512 * 12
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,6 +86,8 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 	BSP_init();
+	APPE_Init();
+	osDelay(10);
 	UART_init();
 	CDC_init();
 	FLASH_init();
@@ -95,7 +97,7 @@ void MX_FREERTOS_Init(void) {
 	FS_init();
 	VI_init();
 
-	APPE_Init();
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
