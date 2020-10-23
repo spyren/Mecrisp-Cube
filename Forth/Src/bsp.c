@@ -125,27 +125,6 @@ void BSP_init(void) {
 }
 
 
-// only for testing purposes
-void BSP_blinkThread(void *argument) {
-/*
-	: blink-thread  ( -- )
-	  begin
-	    led1@ 0= led1!   \ toggle blue LED
-	    200 osDelay drop
-	    switch1?
-	  until
-	  0 led1!
-	;
-*/
-	while (! BSP_getSwitch1()) {
-		BSP_setLED1(!BSP_getLED1());
-		osDelay(200);
-	}
-	BSP_setLED1(FALSE);
-	osThreadExit();
-}
-
-
 /**
  *  @brief
  *	    Sets the LED1 (blue).

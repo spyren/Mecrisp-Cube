@@ -87,7 +87,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 	BSP_init();
 	APPE_Init();
-	osDelay(10);
 	UART_init();
 	CDC_init();
 	FLASH_init();
@@ -96,7 +95,6 @@ void MX_FREERTOS_Init(void) {
 	BLOCK_init();
 	FS_init();
 	VI_init();
-
 
   /* USER CODE END Init */
 

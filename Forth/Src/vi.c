@@ -80,7 +80,7 @@ static const char vi_Version[] =
 #define BB_FEATURE_VI_COLON			// 4288
 #define BB_FEATURE_VI_YANKMARK		// 1408
 #define BB_FEATURE_VI_SEARCH		// 1088
-//#define BB_FEATURE_VI_DOT_CMD		//  576
+#define BB_FEATURE_VI_DOT_CMD		//  576
 #define BB_FEATURE_VI_READONLY		//  128
 #define BB_FEATURE_VI_SETOPTS		//  576
 #define BB_FEATURE_VI_SET			//  224
