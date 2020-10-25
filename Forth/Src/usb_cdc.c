@@ -116,6 +116,10 @@ void CDC_init(void) {
 		// no thread created
 		Error_Handler();
 	}
+
+	MX_USB_Device_Init();
+
+
 }
 
 

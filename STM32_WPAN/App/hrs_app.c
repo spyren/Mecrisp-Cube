@@ -165,7 +165,12 @@ static void HrsThread(void *argument) {
 		// update every 500 ms
 		osDelay(500);
 
-		measurement = 30 + BSP_getAnalogPin(0) / 20;
+		if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+			// dongle doesn't have analog pin 0
+			measurement = 30 + BSP_getAnalogPin(2) / 20;
+		} else {
+			measurement = 30 + BSP_getAnalogPin(0) / 20;
+		}
 
 		HRSAPP_Context.MeasurementvalueChar.MeasurementValue = measurement;
 #if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
