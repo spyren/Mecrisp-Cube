@@ -7,7 +7,7 @@
  *      Console I/O (UART, USB-CDC, BLE) is buffered and RTOS aware.
  *
  *      STM32WB55C: 1 MiB FLASH
-
+ *
  *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
  *       20 KiB Forth Core
  *      110 KiB Middleware (debug 210 KiB)

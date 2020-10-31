@@ -3106,8 +3106,8 @@ static char readit(void)	// read (maybe cursor) key from stdin
 	// more chars to read after the ESC. This would
 	// be a Function or Cursor Key sequence.
 
-	// wait 50 ms for remaining ESC sequence (@ 9600 baud about 50 chars)
-	osDelay(50);
+	// wait 5 ms for remaining ESC sequence (@ 9600 baud about 5 chars)
+	osDelay(5);
 
 	// keep reading while there are input chars and room in buffer
 	while (keypressed() && bufsiz <= (MAX_INPUT_LEN - 5)) {

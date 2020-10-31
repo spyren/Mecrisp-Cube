@@ -35,13 +35,23 @@
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "sdinit"
-		@ ( -- ) Initializes the sd, sets the block count
+		Wortbirne Flag_visible, "drive"
+		@ ( u -- ) Initializes the drive (0 flash drive, 1 SD drive), sets the block count.
 // void SD_getSize(void)
 @ -----------------------------------------------------------------------------
-sdinit:
+drive:
 	push	{r0-r3, lr}
+	movs	r0, tos		// n
+	drop
+	ldr		r1, =DriveNumber
+	str		r0, [r1]
+	cmp		r0, #0
+	beq		1f
 	bl		SD_getSize
+	b		2f
+1:
+	bl		FD_getSize
+2:
 	pop		{r0-r3, pc}
 
 
@@ -49,14 +59,22 @@ sdinit:
 // ***********
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "sdblocks"
+		Wortbirne Flag_visible, "#blocks"
 		@ ( -- u ) Gets the block count
 // int SD_getBlocks(void)
 @ -----------------------------------------------------------------------------
-sdblocks:
+number_blocks:
 	push	{r0-r3, lr}
 	pushdatos
+	ldr		r1, =DriveNumber
+	ldr		r0, [r1]
+	cmp		r0, #0
+	beq		1f
 	bl		SD_getBlocks
+	b		2f
+1:
+	bl		FD_getBlocks
+2:
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
@@ -399,7 +417,7 @@ date:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "mount"
-		@ ( -- ) Mount the default drive
+		@ ( -- ) Mount the drive
 // uint64_t FS_mount (uint64_t forth_stack);
 @ -----------------------------------------------------------------------------
 mount:
@@ -414,7 +432,7 @@ mount:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "umount"
-		@ ( -- ) Unmount the default drive
+		@ ( -- ) Unmount the drive
 // uint64_t FS_umount (uint64_t forth_stack);
 @ -----------------------------------------------------------------------------
 umount:
@@ -422,6 +440,21 @@ umount:
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
 	bl		FS_umount
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "chdrv"
+		@ ( -- ) change the default drive
+// uint64_t FS_chdrive (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+chdrive:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_chdrv
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
 	pop		{pc}

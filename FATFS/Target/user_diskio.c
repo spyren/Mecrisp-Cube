@@ -38,6 +38,7 @@
 #include "ff_gen_drv.h"
 
 #include "sd.h"
+#include "fd.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -83,17 +84,29 @@ DSTATUS USER_initialize (
 	BYTE pdrv           /* Physical drive nmuber to identify the drive */
 )
 {
-  /* USER CODE BEGIN INIT */
-    Stat = STA_NOINIT;
-    SD_init();
-    if (SD_getBlocks() == 0) {
-    	// no SD card
-    	Stat = STA_NODISK;
-    } else {
-    	Stat = 0;
-    }
-    return Stat;
-  /* USER CODE END INIT */
+	/* USER CODE BEGIN INIT */
+	Stat = STA_NOINIT;
+	if (pdrv == 0) {
+		// flash drive
+		FD_init();
+		if (FD_getBlocks() == 0) {
+			// no flash
+			Stat = STA_NODISK;
+		} else {
+			Stat = 0;
+		}
+	} else {
+		// SD drive
+		SD_init();
+		if (SD_getBlocks() == 0) {
+			// no SD card
+			Stat = STA_NODISK;
+		} else {
+			Stat = 0;
+		}
+	}
+	return Stat;
+	/* USER CODE END INIT */
 }
 
 /**
@@ -107,11 +120,22 @@ DSTATUS USER_status (
 {
   /* USER CODE BEGIN STATUS */
 	Stat = STA_NOINIT;
-	if (SD_getBlocks() == 0) {
-		// no SD card
-		Stat = STA_NODISK;
+	if (pdrv == 0) {
+		// flash drive
+		if (FD_getBlocks() == 0) {
+			// no flash
+			Stat = STA_NODISK;
+		} else {
+			Stat = 0;
+		}
 	} else {
-		Stat = 0;
+		// SD drive
+		if (SD_getBlocks() == 0) {
+			// no SD card
+			Stat = STA_NODISK;
+		} else {
+			Stat = 0;
+		}
 	}
 	return Stat;
   /* USER CODE END STATUS */
@@ -134,8 +158,16 @@ DRESULT USER_read (
 {
   /* USER CODE BEGIN READ */
 	DRESULT res = RES_ERROR;
-	if( SD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
-		res = RES_OK;
+	if (pdrv == 0) {
+		// flash drive
+		if( FD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
+			res = RES_OK;
+		}
+	} else {
+		// SD drive
+		if( SD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
+			res = RES_OK;
+		}
 	}
 	return res;
   /* USER CODE END READ */
@@ -160,8 +192,16 @@ DRESULT USER_write (
   /* USER CODE BEGIN WRITE */
 	/* USER CODE HERE */
 	DRESULT res = RES_ERROR;
-	if (SD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
-		res = RES_OK;
+	if (pdrv == 0) {
+		// flash drive
+		if (FD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
+			res = RES_OK;
+		}
+	} else {
+		// SD drive
+		if (SD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
+			res = RES_OK;
+		}
 	}
 	return res;
   /* USER CODE END WRITE */
@@ -185,39 +225,73 @@ DRESULT USER_ioctl (
   /* USER CODE BEGIN IOCTL */
 	DRESULT res = RES_ERROR;
 	SD_CardInfo CardInfo;
+	if (pdrv == 0) {
+		// flash drive
+		if (Stat & STA_NOINIT) return RES_NOTRDY;
 
-	if (Stat & STA_NOINIT) return RES_NOTRDY;
+		switch (cmd) {
+		/* Make sure that no pending write process */
+		case CTRL_SYNC :
+			res = RES_OK;
+			break;
 
-	switch (cmd) {
-	/* Make sure that no pending write process */
-	case CTRL_SYNC :
-		res = RES_OK;
-		break;
+			/* Get number of sectors on the disk (DWORD) */
+		case GET_SECTOR_COUNT :
+			*(DWORD*)buff = FD_getBlocks()*2;
+			res = RES_OK;
+			break;
 
-		/* Get number of sectors on the disk (DWORD) */
-	case GET_SECTOR_COUNT :
-		SD_GetCardInfo(&CardInfo);
-		*(DWORD*)buff = CardInfo.LogBlockNbr;
-		res = RES_OK;
-		break;
+			/* Get R/W sector size (WORD) */
+		case GET_SECTOR_SIZE :
+			*(WORD*)buff = FD_BLOCK_SIZE;
+			res = RES_OK;
+			break;
 
-		/* Get R/W sector size (WORD) */
-	case GET_SECTOR_SIZE :
-		SD_GetCardInfo(&CardInfo);
-		*(WORD*)buff = CardInfo.LogBlockSize;
-		res = RES_OK;
-		break;
+			/* Get erase block size in unit of sector (DWORD) */
+		case GET_BLOCK_SIZE :
+			*(DWORD*)buff = 8;
+			res = RES_OK;
+			break;
 
-		/* Get erase block size in unit of sector (DWORD) */
-	case GET_BLOCK_SIZE :
-		SD_GetCardInfo(&CardInfo);
-		*(DWORD*)buff = CardInfo.LogBlockSize / SD_BLOCK_SIZE;
-		res = RES_OK;
-		break;
+		default:
+			res = RES_PARERR;
+		}
+	} else {
+		// SD drive
+		if (Stat & STA_NOINIT) return RES_NOTRDY;
 
-	default:
-		res = RES_PARERR;
+		switch (cmd) {
+		/* Make sure that no pending write process */
+		case CTRL_SYNC :
+			res = RES_OK;
+			break;
+
+			/* Get number of sectors on the disk (DWORD) */
+		case GET_SECTOR_COUNT :
+			SD_GetCardInfo(&CardInfo);
+			*(DWORD*)buff = CardInfo.LogBlockNbr;
+			res = RES_OK;
+			break;
+
+			/* Get R/W sector size (WORD) */
+		case GET_SECTOR_SIZE :
+			SD_GetCardInfo(&CardInfo);
+			*(WORD*)buff = CardInfo.LogBlockSize;
+			res = RES_OK;
+			break;
+
+			/* Get erase block size in unit of sector (DWORD) */
+		case GET_BLOCK_SIZE :
+			SD_GetCardInfo(&CardInfo);
+			*(DWORD*)buff = CardInfo.LogBlockSize / SD_BLOCK_SIZE;
+			res = RES_OK;
+			break;
+
+		default:
+			res = RES_PARERR;
+		}
 	}
+
 
 	return res;
   /* USER CODE END IOCTL */

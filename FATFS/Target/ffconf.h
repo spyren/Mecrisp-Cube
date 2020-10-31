@@ -155,12 +155,13 @@
 / Drive/Volume Configurations
 /----------------------------------------------------------------------------*/
 
-#define _VOLUMES    1
+#define _VOLUMES    2
 /* Number of volumes (logical drives) to be used. */
 
 /* USER CODE BEGIN Volumes */
 #define _STR_VOLUME_ID          0	/* 0:Use only 0-9 for drive ID, 1:Use strings for drive ID */
-#define _VOLUME_STRS            "RAM","NAND","CF","SD1","SD2","USB1","USB2","USB3"
+//#define _VOLUME_STRS            "RAM","NAND","CF","SD1","SD2","USB1","USB2","USB3"
+#define _VOLUME_STRS            "FLASH","SD"
 /* _STR_VOLUME_ID switches string support of volume ID.
 /  When _STR_VOLUME_ID is set to 1, also pre-defined strings can be used as drive
 /  number in the path name. _VOLUME_STRS defines the drive ID strings for each
@@ -168,7 +169,7 @@
 /  the drive ID strings are: A-Z and 0-9. */
 /* USER CODE END Volumes */
 
-#define _MULTI_PARTITION     1 /* 0:Single partition, 1:Multiple partition */
+#define _MULTI_PARTITION     0 /* 0:Single partition, 1:Multiple partition */
 /* This option switches support of multi-partition on a physical drive.
 /  By default (0), each logical drive number is bound to the same physical drive
 /  number and only an FAT volume found on the physical drive will be mounted.

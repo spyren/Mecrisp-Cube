@@ -39,6 +39,7 @@
 #include "time.h"
 #include <string.h>
 #include <ctype.h>
+#include <fd.h>
 
 
 // Application include files
@@ -68,7 +69,8 @@
 
 const char FS_Version[] = "  * FatFs - Generic FAT file system module  R0.12c (C) 2017 ChaN\n";
 
-FATFS FatFs;	/* Work area (filesystem object) for logical drive */
+FATFS FatFs_FD;	/* Work area (filesystem object) for logical flash drive (0) */
+FATFS FatFs_SD;	/* Work area (filesystem object) for logical SD drive (1) */
 FILINFO fno;	/* File information */
 DIR dj;			/* Directory object */
 
@@ -113,8 +115,10 @@ void FS_init(void) {
 		Error_Handler();
 	}
 
-	/* Gives a work area to the default drive */
-	f_mount(&FatFs, "", 0);
+	/* Gives a work area to the flash drive */
+	f_mount(&FatFs_FD, "0:", 0);
+	/* Gives a work area to the SD drive */
+	f_mount(&FatFs_SD, "1:", 0);
 }
 
 
@@ -1187,7 +1191,7 @@ uint64_t FS_date(uint64_t forth_stack) {
 
 /**
  *  @brief
- *      Mount the default drive
+ *      Mount drive
  *  @param[in]
  *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @return
@@ -1195,16 +1199,49 @@ uint64_t FS_date(uint64_t forth_stack) {
  */
 uint64_t FS_mount(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
-
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t param = FALSE;
 	uint64_t stack;
 	stack = forth_stack;
 
-	SD_getSize();
 	stack = FS_cr(stack);
-	fr = f_mount(&FatFs, "", 0);
-	if (fr != FR_OK) {
-		strcpy(line, "Can't mount default drive");
-		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			if (!param) {
+				strcpy(line, "Specify drive 0:|1:|FLASH:|SD:");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		param = TRUE;
+		if (! strcmp (line, "0:") || ! strcmp (line, "FLASH:")) {
+			FD_getSize();
+			fr = f_mount(&FatFs_FD, "0:", 0);
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": Can't mount drive");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
+			SD_getSize();
+			fr = f_mount(&FatFs_SD, "1:", 0);
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": Can't mount drive");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": unknown drive");
+		}
+
 	}
 
 	return stack;
@@ -1221,15 +1258,106 @@ uint64_t FS_mount(uint64_t forth_stack) {
  */
 uint64_t FS_umount(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
-
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t param = FALSE;
 	uint64_t stack;
 	stack = forth_stack;
 
 	stack = FS_cr(stack);
-	fr = f_mount(0, "", 0);
-	if (fr != FR_OK) {
-		strcpy(line, "Can't unmount default drive");
-		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			if (!param) {
+				strcpy(line, "Specify drive 0:|1:|FLASH:|SD:");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		param = TRUE;
+		if (! strcmp (line, "0:") || ! strcmp (line, "FLASH:")) {
+			FD_getSize();
+			fr = f_mount(0, "0:", 0);
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": Can't unmount drive");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
+			SD_getSize();
+			fr = f_mount(0, "1:", 0);
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": Can't unmount drive");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": unknown drive");
+		}
+
+	}
+
+	return stack;
+}
+
+
+/**
+ *  @brief
+ *      Changes the current drive.
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_chdrv(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t param = FALSE;
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			if (!param) {
+				strcpy(line, "Specify drive 0:|1:|FLASH:|SD:");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		param = TRUE;
+		if (! strcmp (line, "0:") || ! strcmp (line, "FLASH:")) {
+			fr = f_chdrive("0:");
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": invalid drive");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
+			fr = f_chdrive("1:");
+			if (fr != FR_OK) {
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": invalid drive");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+		} else {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": invalid drive");
+		}
+
 	}
 
 	return stack;

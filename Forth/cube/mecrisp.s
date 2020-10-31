@@ -139,6 +139,7 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	EvaluateState, 4
 	ramallot	RedirectStore, 4
 
+	ramallot	DriveNumber, 4
 
 .global		Dictionarypointer
 .global		Fadenende
