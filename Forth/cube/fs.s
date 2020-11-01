@@ -32,7 +32,8 @@
  */
 
 
-
+// block words
+// ***********
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "drive"
@@ -46,17 +47,17 @@ drive:
 	ldr		r1, =DriveNumber
 	str		r0, [r1]
 	cmp		r0, #0
-	beq		1f
-	bl		SD_getSize
+	bne		1f
+	bl		FD_getSize	// drive 0
 	b		2f
 1:
-	bl		FD_getSize
+	cmp		r0, #1
+	bne		2f
+	bl		SD_getSize	// drive 1
+
 2:
 	pop		{r0-r3, pc}
 
-
-// block words
-// ***********
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "#blocks"
@@ -69,12 +70,17 @@ number_blocks:
 	ldr		r1, =DriveNumber
 	ldr		r0, [r1]
 	cmp		r0, #0
-	beq		1f
-	bl		SD_getBlocks
-	b		2f
-1:
+	bne		1f
 	bl		FD_getBlocks
+	b		3f
+1:
+	cmp		r0, #1
+	bne		2f
+	bl		SD_getBlocks
+	b		3f
 2:
+	ldr		r0, =0		// invalid drive -> no blocks
+3:
 	movs	tos, r0
 	pop		{r0-r3, pc}
 

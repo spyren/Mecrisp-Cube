@@ -146,6 +146,7 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 .global		ZweitDictionaryPointer
 .global		ZweitFadenende
 .global		EvaluateState
+.global		DriveNumber
 
 @ Jetzt kommen Puffer und Stacks:  Buffers and Stacks
 
@@ -276,6 +277,10 @@ Forth:
 
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"
+
+	ldr		r1, =DriveNumber	// set invalid drive number
+	ldr		r0, =2
+	str		r0, [r1]
 
 	bl		BSP_getSwitch1
 	cmp		r0, #0

@@ -37,6 +37,7 @@
 #include "main.h"
 #include "block.h"
 #include "sd.h"
+#include "fd.h"
 
 
 // Defines
@@ -76,6 +77,8 @@ static const osMutexAttr_t BLOCK_MutexAttr = {
 // *****************
 
 block_buffer_t BLOCK_Buffers[BLOCK_BUFFER_COUNT];
+
+extern uint32_t DriveNumber;
 
 
 
@@ -338,7 +341,13 @@ void BLOCK_flushBuffers(void) {
  *      none
  */
 static void get_block(int block_number, int buffer_index) {
-	SD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+	if (DriveNumber == 0) {
+		FD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+	} else if (DriveNumber == 1) {
+		SD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+	} else {
+		return;
+	}
 	BLOCK_Buffers[buffer_index].BlockNumber = block_number;
 	BLOCK_Buffers[buffer_index].Current = TRUE;
 	BLOCK_Buffers[buffer_index].Updated = FALSE;
@@ -375,7 +384,13 @@ static void init_block(int block_number, int buffer_index) {
  *      none
  */
 static void save_buffer(int buffer_index) {
-	SD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0], BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+	if (DriveNumber == 0) {
+		FD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0], BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+	} else if (DriveNumber == 1) {
+		SD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0], BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+	} else {
+		return;
+	}
 	BLOCK_Buffers[buffer_index].Updated = FALSE;
 }
 
