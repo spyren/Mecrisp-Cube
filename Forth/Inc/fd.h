@@ -13,6 +13,7 @@
   * @brief  Block Size
   */
 #define FD_BLOCK_SIZE		0x200
+#define FD_ERASE_BLOCK_SIZE	0x1000	// 4 KiB block
 
 #define FD_START_ADDRESS	0x08060000
 #define FD_END_ADDRESS		0x080BFFFF

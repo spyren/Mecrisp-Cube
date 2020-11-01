@@ -77,7 +77,7 @@ static const osMutexAttr_t FD_MutexAttr = {
 
 int FD_size = 0; // number of blocks
 
-uint8_t scratch_block[FD_BLOCK_SIZE];
+uint8_t scratch_block[FD_ERASE_BLOCK_SIZE]; // protected by FD_MutexID
 
 
 // Public Functions
@@ -164,6 +164,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	uint32_t addr;
 	int i;
 
+	osMutexAcquire(FD_MutexID, osWaitForever);
+
 	if (FD_START_ADDRESS + (WriteAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
 		addr = FD_START_ADDRESS + WriteAddr*FD_BLOCK_SIZE;
@@ -179,6 +181,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 		retr = SD_OK;
 	}
+
+	osMutexRelease(FD_MutexID);
 	/* Return the response */
 	return retr;
 }
