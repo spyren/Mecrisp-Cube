@@ -52,7 +52,8 @@ typedef enum {
 /* Private variables ---------------------------------------------------------*/
 FATFS USERFatFs;    /* File system object for USER logical drive */
 FIL USERFile;       /* File  object for USER */
-char USERPath[4];   /* USER logical drive path */
+char USERPathSD[4];   /* USER logical drive path */
+char USERPathFD[4];   /* USER logical drive path */
 /* USER CODE BEGIN PV */
 FS_FileOperationsTypeDef Appli_state = APPLICATION_IDLE;
 
@@ -62,13 +63,6 @@ FS_FileOperationsTypeDef Appli_state = APPLICATION_IDLE;
 extern RTC_HandleTypeDef hrtc;
 
 /* USER CODE END PV */
-
-/* USER CODE BEGIN VolToPart */
-/* Volume - Partition resolution table should be user defined in case of Multiple partition */
-/* When multi-partition feature is enabled (1), each logical drive number is bound to arbitrary physical drive and partition
-listed in the VolToPart[] */
-//PARTITION VolToPart[];
-/* USER CODE END VolToPart */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
@@ -80,20 +74,22 @@ listed in the VolToPart[] */
   * @param  None
   * @retval Initialization result
   */
-int32_t MX_FATFS_Init(void)
-{
-  /*## FatFS: Link the disk I/O driver(s)  ###########################*/
-  if (FATFS_LinkDriver(&USER_Driver, USERPath) != 0)
-  /* USER CODE BEGIN FATFS_Init */
-  {
-    return APP_ERROR;
-  }
-  else
-  {
-    Appli_state = APPLICATION_INIT;
-    return APP_OK;
-  }
-  /* USER CODE END FATFS_Init */
+int32_t MX_FATFS_Init(void) {
+	/*## FatFS: Link the disk I/O driver(s)  ###########################*/
+
+	// init flash drive (0:)
+	if (FATFS_LinkDriver(&USER_FD_Driver, USERPathFD) != 0) {
+		return APP_ERROR;
+	}
+
+	// init SD drive (1:)
+	if (FATFS_LinkDriver(&USER_SD_Driver, USERPathSD) != 0) {
+		return APP_ERROR;
+	} else {
+		Appli_state = APPLICATION_INIT;
+		return APP_OK;
+	}
+	/* USER CODE END FATFS_Init */
 }
 
 /**
@@ -101,13 +97,12 @@ int32_t MX_FATFS_Init(void)
   * @param  None
   * @retval Process result
   */
-int32_t MX_FATFS_Process(void)
-{
-  /* USER CODE BEGIN FATFS_Process */
-  int32_t process_res = APP_OK;  
-    
-  return process_res;
-  /* USER CODE END FATFS_Process */
+int32_t MX_FATFS_Process(void) {
+	/* USER CODE BEGIN FATFS_Process */
+	int32_t process_res = APP_OK;
+
+	return process_res;
+	/* USER CODE END FATFS_Process */
 }
 
 /**

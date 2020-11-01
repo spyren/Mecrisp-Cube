@@ -1271,7 +1271,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 		if (count == 0) {
 			// no more tokens
 			if (!param) {
-				strcpy(line, "Specify drive 0:|1:|FLASH:|SD:");
+				strcpy(line, "Specify drive 0:|1:|FD:|SD:");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
 			break;
@@ -1280,7 +1280,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 		line[count] = 0;
 
 		param = TRUE;
-		if (! strcmp (line, "0:") || ! strcmp (line, "FLASH:")) {
+		if (! strcmp (line, "0:") || ! strcmp (line, "FD:")) {
 			FD_getSize();
 			fr = f_mount(0, "0:", 0);
 			if (fr != FR_OK) {
@@ -1330,7 +1330,7 @@ uint64_t FS_chdrv(uint64_t forth_stack) {
 		if (count == 0) {
 			// no more tokens
 			if (!param) {
-				strcpy(line, "Specify drive 0:|1:|FLASH:|SD:");
+				strcpy(line, "Specify drive 0:|1:|FD:|SD:");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
 			break;
@@ -1339,7 +1339,7 @@ uint64_t FS_chdrv(uint64_t forth_stack) {
 		line[count] = 0;
 
 		param = TRUE;
-		if (! strcmp (line, "0:") || ! strcmp (line, "FLASH:")) {
+		if (! strcmp (line, "0:") || ! strcmp (line, "FD:")) {
 			fr = f_chdrive("0:");
 			if (fr != FR_OK) {
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
