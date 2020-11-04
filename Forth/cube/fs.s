@@ -1331,7 +1331,7 @@ fs_f_mkdir:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_chdir"
-		@  ( adr -- u )  Change current directory .
+		@  ( adr -- u )  Change current directory.
 // FRESULT f_chdir (
 // 	const TCHAR* path	/* Pointer to the directory path */
 // )
@@ -1340,6 +1340,21 @@ fs_f_chdir:
 	push	{lr}
 	movs	r0, tos		// buff
 	bl		f_chdir
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "f_chdrive"
+		@  ( adr -- u )  Changes the current drive.
+// FRESULT f_chdrive (
+//  const TCHAR* path  /* [IN] Logical drive number */
+// );
+@ -----------------------------------------------------------------------------
+fs_f_chdrive:
+	push	{lr}
+	movs	r0, tos		// path
+	bl		f_chdrive
 	movs	tos, r0
 	pop		{pc}
 
@@ -1578,6 +1593,22 @@ dotstrquote:
 	str		r0, [tos]
 	movs tos, r1		// !
 	bl		move
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_immediate_compileonly, "s0\""
+		@ (  -- c-addr len ) Insert a 0-terminated string-literal
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, =dotsfuesschen
+	pushda	r0
+	bl		callkomma
+	pushdaconst 34 		//  Das Gänsefüßchen "
+	bl		parse
+	bl		stringkomma
+	pushdaconst	0
+	bl		hkomma		// add 0-termination
+//	drop				// remove count
 	pop		{pc}
 
 

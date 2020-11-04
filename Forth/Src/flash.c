@@ -34,6 +34,7 @@
 // System include files
 // ********************
 #include "cmsis_os.h"
+#include "shci.h"
 
 // Application include files
 // *************************
@@ -41,10 +42,12 @@
 #include "main.h"
 #include "flash.h"
 
-
+#define PROCESS_ID	11
 
 // Private function prototypes
 // ***************************
+int aquire_flash(uint8_t Erase);
+int release_flash(uint8_t Erase);
 
 // Global Variables
 // ****************
@@ -129,10 +132,9 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
+	aquire_flash(FALSE);
 	FlashError = FALSE;
-	if (HAL_FLASH_Unlock() == HAL_ERROR) {
-		Error_Handler();
-	}
+
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
@@ -153,9 +155,8 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	} else {
 		Error_Handler();
 	}
-	if (HAL_FLASH_Lock() == HAL_ERROR) {
-		Error_Handler();
-	}
+
+	release_flash(FALSE);
 
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
@@ -177,6 +178,8 @@ int FLASH_erasePage(uint32_t Address) {
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
+	aquire_flash(TRUE);
+
 	FlashError = FALSE;
 	HAL_FLASH_Unlock();
 	// Clear OPTVERR bit set on virgin samples
@@ -196,7 +199,9 @@ int FLASH_erasePage(uint32_t Address) {
 	} else {
 		Error_Handler();
 	}
-	HAL_FLASH_Lock();
+
+	release_flash(TRUE);
+
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
 }
@@ -204,6 +209,54 @@ int FLASH_erasePage(uint32_t Address) {
 
 // Private Functions
 // *****************
+
+// the STM32WB has only one single flash bank, but 2 CPUs
+// for details see AN5289 chapter 4.7 Flash memory management
+
+int aquire_flash(uint8_t Erase) {
+
+	while (HAL_HSEM_FastTake(2)) {
+		; // busy wait for
+	}
+
+	if (HAL_FLASH_Unlock() == HAL_ERROR) {
+		Error_Handler();
+	}
+
+	if (Erase) {
+		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
+	}
+
+	// enter critical section
+	while (HAL_HSEM_IsSemTaken(6)) {
+		; // busy wait
+	}
+	while (HAL_HSEM_FastTake(7)) {
+		; // busy wait for
+	}
+
+	return HAL_OK;
+}
+
+
+int release_flash(uint8_t Erase) {
+
+	HAL_HSEM_Release(7, 0);
+
+	// exit critical section
+
+	if (Erase) {
+		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
+	}
+
+	if (HAL_FLASH_Lock() == HAL_ERROR) {
+		Error_Handler();
+	}
+
+	HAL_HSEM_Release(2, 0);
+
+	return HAL_OK;
+}
 
 
 // Callbacks

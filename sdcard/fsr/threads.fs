@@ -17,14 +17,17 @@ MAX_THREAD_COUNT buffer: threadList
 ;
 
 : .threads ( -- )
-  cr ." Name                State    Priority   Stack Space" cr
+  cr ." Name                ID         State       Priority  Stack Space" cr
+     ." ----------------------------------------------------------------" cr
   threadList MAX_THREAD_COUNT osThreadEnumerate
   0 do
     threadList I cells + @  \ get thread ID
     dup osThreadGetName          strlen tuck type 20 swap - spaces
+    dup                         hex. 2 spaces
     dup osThreadGetState        .osState 
-    dup osThreadGetPriority     u.2 10 spaces
+    dup osThreadGetPriority     u.2 8 spaces
         osThreadGetStackSpace   u.4  
     cr
   loop
 ;
+                              

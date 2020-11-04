@@ -38,6 +38,8 @@
 #include "app_fatfs.h"
 #include "fs.h"
 #include "vi.h"
+#include "shci.h"
+
 
 /* USER CODE END Includes */
 
@@ -135,6 +137,9 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
 	SD_getSize();
+
+	osDelay(10);
+	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 
 	Forth();
 

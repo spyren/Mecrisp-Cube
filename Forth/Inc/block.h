@@ -12,7 +12,7 @@
 #define BLOCK_BUFFER_SIZE			1024
 
 typedef struct {
-	uint8_t Data[BLOCK_BUFFER_SIZE];
+	uint8_t Data[BLOCK_BUFFER_SIZE] __attribute__((__aligned__(8)));
 	int BlockNumber;  // -1 = Buffer unassigned
 	uint8_t Current;
 	uint8_t Updated;

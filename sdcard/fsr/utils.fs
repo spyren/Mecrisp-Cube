@@ -51,3 +51,18 @@ CR .( utils.fs loading ... )
     2drop cr query   \ Fetch new line.
   repeat
 ;
+
+: 0: (  --  )
+  s0" 0:" drop f_chdrive if
+    ." invalid drive"
+  then
+;
+
+
+: 1: (  --  )
+  s0" 1:" drop f_chdrive if
+    ." invalid drive"
+  then
+;
+
+

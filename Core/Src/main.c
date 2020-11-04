@@ -33,6 +33,7 @@
  *       5 KiB UART Rx Buffer
  *       4 KiB CDC Rx/Tx Buffer
  *       2 KiB CDC RxQueue
+ *       4 KiB Flash erase Buffer
  *      10 KiB global variables
  *      80 KiB RTOS Heap (about 9 KiB free)
  *         Thread Stack size
