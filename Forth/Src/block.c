@@ -49,8 +49,8 @@
 // ***************************
 
 // SD raw block functions
-static void get_block(int block_number, int buffer_index);
-static void save_buffer(int buffer_index);
+static int get_block(int block_number, int buffer_index);
+static int save_buffer(int buffer_index);
 static void init_block(int block_number, int buffer_index);
 
 
@@ -190,8 +190,11 @@ uint8_t *BLOCK_get(int block_number) {
 		for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
 			if (BLOCK_Buffers[i].BlockNumber < 0) {
 				// buffer is unassigned (empty)
-				get_block(block_number, i);
-				buffer_p = &BLOCK_Buffers[i].Data[0];
+				if (get_block(block_number, i) == SD_OK ) {
+					buffer_p = &BLOCK_Buffers[i].Data[0];
+				} else {
+					buffer_p = NULL;
+				}
 				break;
 			}
 		}
@@ -206,8 +209,11 @@ uint8_t *BLOCK_get(int block_number) {
 					// Buffer is updated -> save buffer to SD
 					save_buffer(i);
 				}
-				get_block(block_number, i);
-				buffer_p = &BLOCK_Buffers[i].Data[0];
+				if (get_block(block_number, i) == SD_OK ) {
+					buffer_p = &BLOCK_Buffers[i].Data[0];
+				} else {
+					buffer_p = NULL;
+				}
 				break;
 			}
 		}
@@ -302,8 +308,9 @@ void BLOCK_saveBuffers(void) {
 
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
 		if (BLOCK_Buffers[i].Updated) {
-			save_buffer(i);
-			BLOCK_Buffers[i].Updated = FALSE;
+			if (save_buffer(i) == SD_OK) {
+				BLOCK_Buffers[i].Updated = FALSE;
+			}
 		}
 	}
 
@@ -340,17 +347,21 @@ void BLOCK_flushBuffers(void) {
  *  @return
  *      none
  */
-static void get_block(int block_number, int buffer_index) {
+static int get_block(int block_number, int buffer_index) {
+	int ret_value;
 	if (DriveNumber == 0) {
-		FD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+		ret_value= FD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
 	} else if (DriveNumber == 1) {
-		SD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+		ret_value= SD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
 	} else {
-		return;
+		ret_value = SD_ERROR;
 	}
-	BLOCK_Buffers[buffer_index].BlockNumber = block_number;
-	BLOCK_Buffers[buffer_index].Current = TRUE;
-	BLOCK_Buffers[buffer_index].Updated = FALSE;
+	if (ret_value == SD_OK) {
+		BLOCK_Buffers[buffer_index].BlockNumber = block_number;
+		BLOCK_Buffers[buffer_index].Current = TRUE;
+		BLOCK_Buffers[buffer_index].Updated = FALSE;
+	}
+	return ret_value;
 }
 
 
@@ -383,15 +394,21 @@ static void init_block(int block_number, int buffer_index) {
  *  @return
  *      none
  */
-static void save_buffer(int buffer_index) {
+static int save_buffer(int buffer_index) {
+	int ret_value;
 	if (DriveNumber == 0) {
-		FD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0], BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+		ret_value = FD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0],
+				BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
 	} else if (DriveNumber == 1) {
-		SD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0], BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+		ret_value = SD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0],
+				BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
 	} else {
-		return;
+		ret_value = SD_ERROR;
 	}
-	BLOCK_Buffers[buffer_index].Updated = FALSE;
+	if (ret_value == SD_OK) {
+		BLOCK_Buffers[buffer_index].Updated = FALSE;
+	}
+	return ret_value;
 }
 
 
