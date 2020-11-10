@@ -46,11 +46,12 @@
 // Defines
 // *******
 #define FLASH_DUMMY_BYTE		0xFF
+#define	RAM_SHARED				0x20038000
 
 
 // Private function prototypes
 // ***************************
-static int flash_page(uint8_t *pData, uint32_t addr, uint8_t block_field);
+static int flash_page(uint8_t *pData, uint32_t addr, uint16_t block_field);
 
 
 // Global Variables
@@ -78,8 +79,7 @@ static const osMutexAttr_t FD_MutexAttr = {
 
 int FD_size = 0; // number of blocks
 
-uint8_t scratch_block[FD_PAGE_SIZE]; // protected by FD_MutexID
-
+static uint8_t *scratch_page; 	// protected by FD_MutexID
 
 // Public Functions
 // ****************
@@ -91,6 +91,9 @@ uint8_t scratch_block[FD_PAGE_SIZE]; // protected by FD_MutexID
  *      None
  */
 void FD_init(void) {
+	scratch_page = (uint8_t *) RAM_SHARED;
+//	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
+	*scratch_page = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	if (FD_MutexID == NULL) {
 		Error_Handler();
@@ -169,32 +172,48 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	int i;
 	uint8_t block_field; // bit0 block0, bit1 block1 ..
 
+	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_PAGE -1));
+
 	if (FD_START_ADDRESS + (WriteAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
 
-		int FirstBoundary = WriteAddr % 8;
-		int LastBoundary = (WriteAddr + NumOfBlocks) % 8;
-		int pages = NumOfBlocks / 8;
+		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_PAGE;
+		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_PAGE;
+		int pages = NumOfBlocks / FD_BLOCKS_PER_PAGE;
 		if (FirstBoundary + LastBoundary > 0) {
 			pages++;
 		}
 
-		uint32_t addr = FD_START_ADDRESS + WriteAddr*FD_BLOCK_SIZE;
+		uint32_t base_flash_addr = FD_START_ADDRESS + base_block_adr * FD_BLOCK_SIZE;
 		retr = SD_OK;
 		for (i=0; i < pages; i++) {
 			if (i==0 && i == pages -1) {
-				block_field = (0xFF << FirstBoundary) & (0xFF >> (8 - LastBoundary));
+				// only one page
+				if (LastBoundary == 0) {
+					block_field = 0xFF << FirstBoundary;
+				} else {
+					block_field = (0xFF << FirstBoundary) & (0xFF >> (FD_BLOCKS_PER_PAGE - LastBoundary));
+				}
 			} else if (i==0) {
+				// first page
 				block_field = 0xFF << FirstBoundary;
 			} else if (i == pages -1) {
-				block_field = 0xFF >> LastBoundary;
+				// last page
+				if (LastBoundary == 0) {
+					block_field = 0xFF;
+				} else {
+					block_field = 0xFF >> LastBoundary;
+				}
 			} else {
 				block_field = 0xFF;
 			}
-			if (flash_page(pData+i*FD_PAGE_SIZE,
-					addr + i*FD_PAGE_SIZE, block_field) != SD_OK) {
+			if (flash_page(
+					pData +  i*FD_PAGE_SIZE, 			// dress data source (contiguous)
+					base_flash_addr + i*FD_PAGE_SIZE,	// page base address flash dest
+					block_field)						// valid blocks bitfield
+					!= SD_OK) {
 				break;
 				retr = SD_ERROR;
 			}
@@ -213,16 +232,29 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 // Private Functions
 // *****************
 
-static int flash_page(uint8_t *pData, uint32_t addr, uint8_t block_field) {
+/**
+  * @brief
+  *     Writes blocks to a flash page.
+  *
+  *     The 512 bytes blocks have to be contiguous and marked in a bitfield.
+  * @param
+  *     pData: Pointer to the buffer that will contain the data blocks
+  * @param
+  *     flash_addr: page address (4 KiB pages).
+  * @param
+  *     block_field: bit0 is block 0, bit1 is block 1 and so on. 8 blocks.
+  * @retval
+  *     FD status
+  */static int flash_page(uint8_t *pData, uint32_t flash_addr, uint16_t block_field) {
 	uint8_t retr = SD_OK;
 	int i, j;
 	uint8_t *byte_p;
 	uint8_t erased = TRUE;
 
 	// are the blocks in the page already erased?
-	byte_p = (uint8_t *) addr;
-	for (i=0; i<(FD_PAGE_SIZE/FD_BLOCK_SIZE); i++) {
-		if (block_field >> i) {
+	byte_p = (uint8_t *) flash_addr;
+	for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+		if (block_field & (1 << i)) {
 			// block belongs to page
 			for (j=0; j<FD_BLOCK_SIZE; j++) {
 				if (*(byte_p + j) != 0xFF) {
@@ -230,9 +262,9 @@ static int flash_page(uint8_t *pData, uint32_t addr, uint8_t block_field) {
 					break;
 				}
 			}
-		}
-		if (!erased) {
-			break;
+			if (!erased) {
+				break;
+			}
 		}
 		byte_p += FD_BLOCK_SIZE;
 	}
@@ -240,50 +272,54 @@ static int flash_page(uint8_t *pData, uint32_t addr, uint8_t block_field) {
 	if (erased) {
 		// flash erased
 		// flash the blocks
-		byte_p = (uint8_t *) addr;
-		for (i=0; i<(FD_PAGE_SIZE/FD_BLOCK_SIZE); i++) {
-			if (block_field >> i) {
+		int k = 0;
+		byte_p = (uint8_t *) flash_addr;
+		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+			if (block_field & (1 << i)) {
 				// block belongs to page -> program
-				for (j=0; j < FD_BLOCK_SIZE / 8; j++) {
-					if (FLASH_programDouble( (uint32_t) byte_p,
-							*(uint32_t *) (pData+i*FD_PAGE_SIZE+j*8),
-							*(uint32_t *) (pData+i*FD_PAGE_SIZE+j*8+4) )
+				for (j=0; j < FD_BLOCK_SIZE / FD_FLASH_RECORD; j++) {
+					if (FLASH_programDouble(
+							(uint32_t) byte_p,
+							*(uint32_t *) (pData+k*FD_BLOCK_SIZE+j*FD_FLASH_RECORD),
+							*(uint32_t *) (pData+k*FD_BLOCK_SIZE+j*FD_FLASH_RECORD+4) )
 							!= HAL_OK) {
 						retr = SD_ERROR;
 						break;
 					}
 					byte_p += 8;
 				}
+				k++;
+				if (retr != SD_OK) {
+					break;
+				}
 			} else {
+				// block doesn't belong to the page -> skip
 				byte_p += FD_BLOCK_SIZE;
-			}
-			if (retr != SD_OK) {
-				break;
 			}
 		}
 	} else {
 		// flash not erased
 		// save the affected records (blocks)
-		memcpy(scratch_block, (uint8_t *) addr, FD_PAGE_SIZE);
+		memcpy(scratch_page, (uint8_t *) flash_addr, FD_PAGE_SIZE);
 
 		// copy the blocks to the scratch buffer
-		byte_p = (uint8_t *) addr;
-		for (i=0; i<(FD_PAGE_SIZE/FD_BLOCK_SIZE); i++) {
-			if (block_field >> i) {
+		byte_p = pData;
+		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+			if (block_field & (1 << i)) {
 				// block belongs to page -> copy
-				memcpy(scratch_block+i*FD_BLOCK_SIZE, byte_p, FD_PAGE_SIZE);
+				memcpy(scratch_page+i*FD_BLOCK_SIZE, byte_p, FD_BLOCK_SIZE);
+				byte_p += FD_BLOCK_SIZE;
 			}
-			byte_p += FD_BLOCK_SIZE;
 		}
 
 		// erase page
-		if (FLASH_erasePage(addr) == HAL_OK) {
+		if (FLASH_erasePage(flash_addr) == HAL_OK) {
 			// flash the page
-			byte_p = (uint8_t *) addr;
-			for (i=0; i<(FD_PAGE_SIZE/8); i++) {
+			byte_p = (uint8_t *) flash_addr;
+			for (i=0; i<(FD_PAGE_SIZE/FD_FLASH_RECORD); i++) {
 				if (FLASH_programDouble( (uint32_t) byte_p,
-						*(uint32_t *) (pData+i*8),
-						*(uint32_t *) (pData+i*8+4) )
+						*(uint32_t *) (scratch_page+i*FD_FLASH_RECORD),
+						*(uint32_t *) (scratch_page+i*FD_FLASH_RECORD+4) )
 						!= HAL_OK) {
 					retr = SD_ERROR;
 					break;

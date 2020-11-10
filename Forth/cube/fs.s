@@ -467,6 +467,21 @@ chdrive:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "mkfs"
+		@ ( -- ) Creates an FAT/exFAT volume on the logical drive.
+// uint64_t FS_mkfs (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+mkfs:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+//	bl		FS_mkfs
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "vi"
 		@ ( -- ) vi editor
 // uint64_t VI_edit(uint64_t forth_stack);

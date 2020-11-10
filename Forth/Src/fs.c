@@ -55,7 +55,9 @@
 
 // Defines
 // *******
-#define LINE_LENGTH	256
+#define LINE_LENGTH				256
+#define	RAM_SHARED				(0x20038000 + 0x1000)
+#define	SCRATCH_SIZE			0x0400					// 1 KiB scratch
 
 // Private typedefs
 // ****************
@@ -67,7 +69,7 @@
 // Global Variables
 // ****************
 
-const char FS_Version[] = "  * FatFs - Generic FAT file system module  R0.12c (C) 2017 ChaN\n";
+const char FS_Version[] = "  * FatFs for internal flash drive 384 KiB and microSD - Generic FAT file system module  R0.12c (C) 2017 ChaN\n";
 
 FATFS FatFs_FD;	/* Work area (filesystem object) for logical flash drive (0) */
 FATFS FatFs_SD;	/* Work area (filesystem object) for logical SD drive (1) */
@@ -98,7 +100,7 @@ extern RTC_HandleTypeDef hrtc;
 
 // Private Variables
 // *****************
-
+uint8_t 	*mkfs_scratch;
 
 // Public Functions
 // ****************
@@ -110,6 +112,8 @@ extern RTC_HandleTypeDef hrtc;
  *      None
  */
 void FS_init(void) {
+	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
+//	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	if (FS_MutexID == NULL) {
 		Error_Handler();
@@ -1240,6 +1244,7 @@ uint64_t FS_mount(uint64_t forth_stack) {
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": unknown drive");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 		}
 
 	}
@@ -1299,6 +1304,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": unknown drive");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 		}
 
 	}
@@ -1356,12 +1362,68 @@ uint64_t FS_chdrv(uint64_t forth_stack) {
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": invalid drive");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 		}
 
 	}
 
 	return stack;
 }
+
+
+/**
+ *  @brief
+ *      Creates an FAT/exFAT volume on the logical drive.
+ *
+ *      mkfs [-t fat|fat32|extfat] 0:|1:
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_mkfs(uint64_t forth_stack) {
+	FRESULT fr = FR_OK;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+	uint8_t param = FALSE;
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			if (!param) {
+				strcpy(line, "Specify drive 0:|1:|FD:|SD:");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+			break;
+		}
+		memcpy(line, str, count);
+		line[count] = 0;
+
+		param = TRUE;
+		if (! strcmp (line, "0:") || ! strcmp (line, "FD:")) {
+			fr = f_mkfs("0:", 0, 0, mkfs_scratch, SCRATCH_SIZE);
+		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
+			fr = f_mkfs("1:", 0, 0, mkfs_scratch, SCRATCH_SIZE);
+		} else {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, ": invalid drive");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+		if (fr != FR_OK) {
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			strcpy(line, "can't create filesystem.");
+			stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		}
+	}
+
+	return stack;
+}
+
 
 
 int FS_FIL_size(void) {

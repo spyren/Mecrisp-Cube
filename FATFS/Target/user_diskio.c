@@ -364,7 +364,6 @@ DRESULT USER_FD_ioctl (
 {
   /* USER CODE BEGIN IOCTL */
 	DRESULT res = RES_ERROR;
-	SD_CardInfo CardInfo;
 	if (Stat & STA_NOINIT) return RES_NOTRDY;
 
 	switch (cmd) {
@@ -375,22 +374,19 @@ DRESULT USER_FD_ioctl (
 
 		/* Get number of sectors on the disk (DWORD) */
 	case GET_SECTOR_COUNT :
-		SD_GetCardInfo(&CardInfo);
-		*(DWORD*)buff = CardInfo.LogBlockNbr;
+		*(DWORD*)buff = FD_getBlocks();
 		res = RES_OK;
 		break;
 
 		/* Get R/W sector size (WORD) */
 	case GET_SECTOR_SIZE :
-		SD_GetCardInfo(&CardInfo);
-		*(WORD*)buff = CardInfo.LogBlockSize;
+		*(WORD*)buff = FD_BLOCK_SIZE;
 		res = RES_OK;
 		break;
 
 		/* Get erase block size in unit of sector (DWORD) */
 	case GET_BLOCK_SIZE :
-		SD_GetCardInfo(&CardInfo);
-		*(DWORD*)buff = CardInfo.LogBlockSize / SD_BLOCK_SIZE;
+		*(DWORD*)buff = 1;
 		res = RES_OK;
 		break;
 

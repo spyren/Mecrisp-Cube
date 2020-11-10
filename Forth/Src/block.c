@@ -166,19 +166,20 @@ void BLOCK_update(void) {
  */
 uint8_t *BLOCK_get(int block_number) {
 	int i;
-	int j;
 	uint8_t* buffer_p = NULL;
 
 	// only one thread is allowed to use blocks
 	osMutexAcquire(BLOCK_MutexID, osWaitForever);
 
+	// there will be a new current block
+	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
+		BLOCK_Buffers[i].Current = FALSE;
+	}
+
 	// already assigned?
 	for (i=0; i<BLOCK_BUFFER_COUNT; i++) {
 		if (BLOCK_Buffers[i].BlockNumber == block_number) {
 			// the block is already in the buffer -> make current
-			for (j=0; j<BLOCK_BUFFER_COUNT; j++) {
-				BLOCK_Buffers[i].Current = FALSE;
-			}
 			BLOCK_Buffers[i].Current = TRUE;
 			buffer_p = &BLOCK_Buffers[i].Data[0];
 			break;

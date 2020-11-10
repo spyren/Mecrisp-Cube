@@ -63,17 +63,13 @@ static const osMutexAttr_t FLASH_MutexAttr = {
 		0U					// size for control block
 };
 
-static osSemaphoreId_t FLASH_SemaphoreID;
-
 
 // Private Variables
 // *****************
 
 // Variable used for Erase procedure
 static FLASH_EraseInitTypeDef EraseInitStruct;
-static volatile uint32_t PageOrAddress;
-static volatile uint8_t FlashError = FALSE;
-
+static uint32_t os_state;
 
 // Public Functions
 // ****************
@@ -89,14 +85,6 @@ void FLASH_init(void) {
 	if (FLASH_MutexID == NULL) {
 		Error_Handler();
 	}
-
-	FLASH_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (FLASH_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-
-	HAL_NVIC_SetPriority(FLASH_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+1, 0);
-	HAL_NVIC_EnableIRQ(FLASH_IRQn);
 
 	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
 	EraseInitStruct.NbPages     = 1;
@@ -117,7 +105,6 @@ void FLASH_init(void) {
  */
 int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	int return_value;
-	osStatus_t status;
 
 	union number {
 		uint32_t word[2];
@@ -133,7 +120,6 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
 	aquire_flash(FALSE);
-	FlashError = FALSE;
 
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
@@ -143,16 +129,10 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	if (HAL_FLASHEx_IsOperationSuspended()) {
 		Error_Handler();
 	}
-	return_value = HAL_FLASH_Program_IT(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
-			data.doubleword);
-	if (return_value == HAL_OK) {
-		// blocked till programming is finished
-		status = osSemaphoreAcquire(FLASH_SemaphoreID, osWaitForever);
-		if (FlashError || (status != osOK)) {
-			return_value = HAL_ERROR;
-			Error_Handler();
-		}
-	} else {
+	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
+				data.doubleword);
+	if (return_value != HAL_OK) {
+		return_value = HAL_ERROR;
 		Error_Handler();
 	}
 
@@ -173,30 +153,24 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
  */
 int FLASH_erasePage(uint32_t Address) {
 	int return_value;
-	osStatus_t status;
+	uint32_t PageError;
 
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
 	aquire_flash(TRUE);
 
-	FlashError = FALSE;
-	HAL_FLASH_Unlock();
 	// Clear OPTVERR bit set on virgin samples
 	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+
 	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
 	if (HAL_FLASHEx_IsOperationSuspended()) {
 		Error_Handler();
 	}
-	return_value = HAL_FLASHEx_Erase_IT(&EraseInitStruct);
-	if (return_value == HAL_OK) {
-		// blocked till erasing is finished
-		status = osSemaphoreAcquire(FLASH_SemaphoreID, osWaitForever);
-		if (FlashError || (status != osOK)) {
-			return_value = HAL_ERROR;
-			Error_Handler();
-		}
-	} else {
+	return_value = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
+	if (return_value != HAL_OK) {
+		return_value = HAL_ERROR;
 		Error_Handler();
 	}
 
@@ -228,6 +202,7 @@ int aquire_flash(uint8_t Erase) {
 	}
 
 	// enter critical section
+	os_state = osKernelLock();
 	while (HAL_HSEM_IsSemTaken(6)) {
 		; // busy wait
 	}
@@ -244,6 +219,7 @@ int release_flash(uint8_t Erase) {
 	HAL_HSEM_Release(7, 0);
 
 	// exit critical section
+	osKernelRestoreLock(os_state);
 
 	if (Erase) {
 		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
@@ -258,32 +234,4 @@ int release_flash(uint8_t Erase) {
 	return HAL_OK;
 }
 
-
-// Callbacks
-// *********
-
-/**
-  * @brief  FLASH end of operation interrupt callback.
-  * @param  ReturnValue The value saved in this parameter depends on the ongoing procedure
-  *                  Page Erase: Page which has been erased
-  *                  Program: Address which was selected for data program
-  * @retval None
-  */
-void HAL_FLASH_EndOfOperationCallback(uint32_t ReturnValue) {
-	PageOrAddress = ReturnValue;
-	osSemaphoreRelease(FLASH_SemaphoreID);
-}
-
-/**
-  * @brief  FLASH operation error interrupt callback.
-  * @param  ReturnValue The value saved in this parameter depends on the ongoing procedure
-  *                 Page Erase: Page number which returned an error
-  *                 Program: Address which was selected for data program
-  * @retval None
-  */
-void HAL_FLASH_OperationErrorCallback(uint32_t ReturnValue) {
-	FlashError = TRUE;
-	PageOrAddress = ReturnValue;
-	osSemaphoreRelease(FLASH_SemaphoreID);
-}
 

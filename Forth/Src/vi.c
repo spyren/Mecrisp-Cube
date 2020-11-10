@@ -113,7 +113,7 @@ static const char vi_Version[] =
 #define MIN_SCR_ROWS		16
 #define MAX_ARGS			10
 
-#define TEXT_SIZE		(40 * 1024)
+#define TEXT_SIZE		(30 * 1024)
 #define MAX_INPUT_LEN	256
 
 // Misc. non-Ascii keys that report an escape sequence

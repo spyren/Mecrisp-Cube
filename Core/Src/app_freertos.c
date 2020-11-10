@@ -94,6 +94,7 @@ void MX_FREERTOS_Init(void) {
 	FLASH_init();
 	SDSPI_init();
 	SD_init();
+	FD_init();
 	BLOCK_init();
 	FS_init();
 	VI_init();
@@ -144,11 +145,11 @@ void MainThread(void *argument)
 	Forth();
 
 	/* Infinite loop */
-  for(;;)
-  {
-	Error_Handler();
-    osDelay(1);
-  }
+	for(;;)
+	{
+		Error_Handler();
+		osDelay(1);
+	}
   /* USER CODE END MainThread */
 }
 
