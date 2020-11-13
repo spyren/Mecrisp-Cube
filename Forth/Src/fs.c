@@ -1406,17 +1406,17 @@ uint64_t FS_mkfs(uint64_t forth_stack) {
 
 		param = TRUE;
 		if (! strcmp (line, "0:") || ! strcmp (line, "FD:")) {
-			fr = f_mkfs("0:", 0, 0, mkfs_scratch, SCRATCH_SIZE);
+			fr = f_mkfs("0:", FM_ANY, 0, mkfs_scratch, SCRATCH_SIZE);
 		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
-			fr = f_mkfs("1:", 0, 0, mkfs_scratch, SCRATCH_SIZE);
+			fr = f_mkfs("1:", FM_ANY, 0, mkfs_scratch, SCRATCH_SIZE);
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
-			strcpy(line, ": invalid drive");
+			strcpy(line, " invalid drive");
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 		}
 		if (fr != FR_OK) {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
-			strcpy(line, "can't create filesystem.");
+			strcpy(line, " can't create filesystem.");
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 		}
 	}

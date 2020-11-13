@@ -374,7 +374,7 @@ DRESULT USER_FD_ioctl (
 
 		/* Get number of sectors on the disk (DWORD) */
 	case GET_SECTOR_COUNT :
-		*(DWORD*)buff = FD_getBlocks();
+		*(DWORD*)buff = ((FD_END_ADDRESS + 1) - FD_START_ADDRESS) / FD_BLOCK_SIZE;
 		res = RES_OK;
 		break;
 
