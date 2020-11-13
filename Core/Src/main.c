@@ -172,6 +172,10 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  // take HSI48 semaphore for the USB
+	while (HAL_HSEM_FastTake(5)) {
+		; // busy wait for
+	}
 
   /* USER CODE END SysInit */
 

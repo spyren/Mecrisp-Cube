@@ -250,9 +250,11 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "rtos.s"
 .include "bsp.s"
 .include "fs.s"
+.ltorg
 
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
+
 
 @ -----------------------------------------------------------------------------
 @ Schließen der Dictionarystruktur und Zeiger ins Flash-Dictionary

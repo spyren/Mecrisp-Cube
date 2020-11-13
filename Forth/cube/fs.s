@@ -456,7 +456,7 @@ umount:
 		@ ( -- ) change the default drive
 // uint64_t FS_chdrive (uint64_t forth_stack);
 @ -----------------------------------------------------------------------------
-chdrive:
+chdrv:
 	push	{lr}
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
@@ -475,7 +475,7 @@ mkfs:
 	push	{lr}
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
-//	bl		FS_mkfs
+	bl		FS_mkfs
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
 	pop		{pc}
