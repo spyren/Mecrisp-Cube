@@ -4,7 +4,7 @@ Mecrisp-Stellaris Forth Words
 Terminal-IO
 -----------
 
-Exactly ANS, some logical extension
+Exactly ANS, some logical extension. See also [TerminalIO](TerminalIO.md)
 
     Words 	        Stack Comment 	Description
 
