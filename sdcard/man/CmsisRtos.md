@@ -46,14 +46,14 @@ function can get one with `osNewDataStack` (see below for the assembler
 source).
 
     : blink-thread  ( -- )
-      <b>osNewDataStack</b>
+      osNewDataStack
       begin 
         led1@ 0= led1!   \ toggle blue LED
         200 osDelay drop  
         switch1? 
       until 
       0 led1! 
-      <b>osThreadExit</b>
+      osThreadExit
     ;
 
 `osThreadExit` is needed to exit the thread, otherwise the Forth system
@@ -69,7 +69,7 @@ Now you can interactively play with the words `osThreadGetId`,
 tedious edit-compile-download-run-abort.
 
     // -----------------------------------------------------------------------------
-            Wortbirne Flag_visible, "<b>osNewDataStack</b>"
+            Wortbirne Flag_visible, "osNewDataStack"
             @ (  --  ) Creates an new data stack for a Forth thread.
     // -----------------------------------------------------------------------------
     rtos_osNewDataStack:
@@ -102,36 +102,36 @@ is argument, and addr3 is attr.
 Start the knightrider thread with default parameters and print the
 thread ID:
 
-    <b>' knightrider-thread 0 0 osThreadNew .[RET]</b> 536871016 ok.
+    ' knightrider-thread 0 0 osThreadNew .[RET] 536871016 ok.
 
 Stop the thread with pressing button SW1 or
 
-    <b>536871016 osThreadTerminate drop[RET]</b> ok.
+    536871016 osThreadTerminate drop[RET] ok.
 
 Start the Knightrider thread with name=\"Knightrider\" priority=48,
 stack_size=256:
 
     \ buffer for thread attributes
-    <b>/osThreadAttr buffer: threadAttr[RET]</b> ok.      
+    /osThreadAttr buffer: threadAttr[RET] ok.      
     \ clear the buffer
-    <b>threadAttr /osThreadAttr 0 fill[RET]</b> ok.
+    threadAttr /osThreadAttr 0 fill[RET] ok.
     \ set the thread name
-    <b>16 buffer: threadString[RET]</b> ok.
-    <b>threadString .str" Knightrider"[RET]</b> ok.
+    16 buffer: threadString[RET] ok.
+    threadString .str" Knightrider"[RET] ok.
     \ set the thread parameters
-    <b>threadString threadAttr thName+ + ![RET]</b> ok.
-    <b>256 threadAttr thStackSize+ + ![RET]</b> ok.
-    <b> 48 threadAttr thPriority+  + ![RET]</b> ok.
+    threadString threadAttr thName+ + ![RET] ok.
+    256 threadAttr thStackSize+ + ![RET] ok.
+     48 threadAttr thPriority+  + ![RET] ok.
     \ start the thread
-    <b>' knightrider-thread 0 threadAttr osThreadNew .[RET]</b> 0 ok.
+    ' knightrider-thread 0 threadAttr osThreadNew .[RET] 0 ok.
     \ print all threads
-    <b>.threads[RET]</b>
+    .threads[RET]
     Name                State    Priority   Stack Space
     MainThread          Running     24          0754
     CDC_Thread          Blocked     24          0087
     IDLE                Ready       00          0107
     HRS_THREAD          Blocked     24          0380
-    <i>Knightrider         Blocked     48          0023</i>
+    Knightrider         Blocked     48          0023
     UART_TxThread       Blocked     40          0217
     HCI_USER_EVT_TH     Blocked     24          0217
     ADV_UPDATE_THRE     Blocked     24          0217
