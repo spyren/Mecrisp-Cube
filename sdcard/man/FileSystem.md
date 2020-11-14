@@ -87,17 +87,18 @@ this is not needed because the levels on the Nucleo are already 3.3 V.
 Only the CD pin is missing, this could be handy to detect a microSD
 card.
 
-  SD pin   microSD pin   Name   Description                Arduino/Nucleo Pin   Nucleo Dongle
-  -------- ------------- ------ -------------------------- -------------------- ---------------
-  1        2             nCS    Card Select \[CS\]         D10 (1)              PB2 CN1.7
-  2        3             DI     Serial Data In \[MOSI\]    D11 (2)              PA7 CN1.10
-  3        \-            VSS    Ground                     GND (5)              GND CN1.1
-  4        4             VDD    Power 3.3 V                3V3 (6)              3V3 CN1.6
-  5        5             CLK    Serial Clock \[SCLK\]      D13 (4)              PA5 CN1.8
-  6        6             VSS    Ground                     GND (5)              GND CN1.1
-  7        7             DO     Serial Data Out \[MISO\]   D12 (3)              PA6 CN1.9
-  8        8             NC     Unused                                          
-  9        1             NC     Unused                                          
+| SD pin | microSD pin | Name | Description              | Arduino/Nucleo Pin | Nucleo Dongle |
+|--------|-------------|------|--------------------------|--------------------|---------------|
+| 1      | 2           | nCS  | Card Select \[CS\]       | D10 (1)            | PB2 CN1.7     |
+| 2      | 3           | DI   | Serial Data In \[MOSI\]  | D11 (2)            | PA7 CN1.10    |
+| 3      | \-          | VSS  | Ground                   | GND (5)            | GND CN1.1     |
+| 4      | 4           | VDD  | Power 3.3 V              | 3V3 (6)            | 3V3 CN1.6     |
+| 5      | 5           | CLK  | Serial Clock \[SCLK\]    | D13 (4)            | PA5 CN1.8     |
+| 6      | 6           | VSS  | Ground                   | GND (5)            | GND CN1.1     |
+| 7      | 7           | DO   | Serial Data Out \[MISO\] | D12 (3)            | PA6 CN1.9     |
+| 8      | 8           | NC   | Unused                   |                    |               |
+| 9      | 1           | NC   | Unused                   |                    |               |
+
 
 <http://elm-chan.org/docs/mmc/mmc_e.html>
 
@@ -107,22 +108,22 @@ Block size 512 Bytes, SPI mode 0 (CPHA=0, CPOL=0), Pull-up on MISO.
 JTAG/SWD
 --------
 
-  JTAG Pin   JTAG STM 14pin   CN1 Dongle   CN2 Dongle   Description
-  ---------- ---------------- ------------ ------------ ---------------
-             1                                          NC
-             2                                          NC
-  1          3                6                         VDD
-  2          4                3                         SWDIO
-  3          5                1                         GND
-  4          6                4                         SWCLK
-  5          7                1                         GND
-  6          8                5                         SWO
-  7          9                                          NC
-  8          10                                         NC
-  9          11               1                         GND_DETECT
-  10         12               2                         NRST
-             13                            7 (PB7)      VCP_RX Target
-             14                            6 (PB6)      VCP_TX Target
+| JTAG Pin | JTAG STM 14pin | CN1 Dongle | CN2 Dongle | Description   |
+|----------|----------------|------------|------------|---------------|
+|          | 1              |            |            | NC            |
+|          | 2              |            |            | NC            |
+| 1        | 3              | 6          |            | VDD           |
+| 2        | 4              | 3          |            | SWDIO         |
+| 3        | 5              | 1          |            | GND           |
+| 4        | 6              | 4          |            | SWCLK         |
+| 5        | 7              | 1          |            | GND           |
+| 6        | 8              | 5          |            | SWO           |
+| 7        | 9              |            |            | NC            |
+| 8        | 10             |            |            | NC            |
+| 9        | 11             | 1          |            | GND_DETECT    |
+| 10       | 12             | 2          |            | NRST          |
+|          | 13             |            | 7 (PB7)    | VCP_RX Target |
+|          | 14             |            | 6 (PB6)    | VCP_TX Target |
 
 
 Raw Blocks
@@ -376,16 +377,16 @@ For details see [FIL](http://elm-chan.org/fsw/ff/doc/sfile.html).
     A_OPEN_ALWAYS     ( -- u ) Gets the Mode Flag FA_OPEN_ALWAYS
     FA_OPEN_APPEND    ( -- u ) Gets the Mode Flag FA_OPEN_APPEND
 
-  POSIX     FatFs
-  --------- -----------------------------------------
-  \"r\"     FA_READ
-  \"r+\"    FA_READ FA_WRITE or
-  \"w\"     FA_CREATE_ALWAYS FA_WRITE or
-  \"w+\"    FA_CREATE_ALWAYS FA_WRITE or FA_READ or
-  \"a\"     FA_OPEN_APPEND FA_WRITE or
-  \"a+\"    FA_OPEN_APPEND FA_WRITE or FA_READ or
-  \"wx\"    FA_CREATE_NEW FA_WRITE or
-  \"w+x\"   FA_CREATE_NEW or FA_WRITE FA_READ or
+| POSIX   | FatFs                                   |
+|---------|-----------------------------------------|
+| "r"     | FA_READ                                 |
+| "r+"    | FA_READ FA_WRITE or                     |
+| "w"     | FA_CREATE_ALWAYS FA_WRITE or            |
+| "w+"    | FA_CREATE_ALWAYS FA_WRITE or FA_READ or |
+| "a"     | FA_OPEN_APPEND FA_WRITE or              |
+| "a+"    | FA_OPEN_APPEND FA_WRITE or FA_READ or   |
+| "wx"    | FA_CREATE_NEW FA_WRITE or               |
+| "w+x"   | FA_CREATE_NEW or FA_WRITE FA_READ or    |
 
 ### DIR
 
@@ -540,132 +541,86 @@ string.
 Commands
 --------
 
--   \<pre\>
+- **ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
+-a show hidden files  
+-l use a long listing format  
+-1 list one file per line  
+ls ( "line<EOL\>" \-- ) list directory contents 
 
-**ls** \[-a\] \[-l\] \[-1\] \[FILE\] -a show hidden files -l use a long
-listing format -1 list one file per line
+- **pwd**  
+pwd ( \-- ) print name of current/working directory 
 
-ls ( \"line\<EOL\>\" \-- ) list directory contents \</pre\>
+- **cd** \[DIR\]  
+cd ( "line<EOL\>" \-- ) change the working directory 
 
--   \<pre\>
+- **cat** \[-n\] \[\> NEWFILE\] \[\>\> FILE\] \[<\< EOF\] FILES\...  
+-n line numbers  
+\> redirect output to NEWFILE  
+\>\> redirect output and append to FILE  
+<\< redirect input till EOF  
+cat ( "line<EOL\>" \-- ) concatenate files and print on the console
 
-**pwd** pwd ( \-- ) print name of current/working directory \</pre\>
+- **mkdir** \[DIR\]\...  
+mkdir ( "line<EOL\>" \-- ) make directories
 
--   \<pre\>
+- **rm** FILE\...  
+rm ( "line<EOL\>" \-- ) remove files or directories
 
-**cd** \[DIR\]
+- **mv** SOURCE DEST  
+mv ( "line<EOL\>" \-- ) move (rename) files
 
-cd ( \"line\<EOL\>\" \-- ) change the working directory \</pre\>
+- **cp** SOURCE DEST  
+cp ( "line<EOL\>" \-- ) copy files 
 
--   \<pre\>
+- **chmod** \[-a\] \[+l\] \[=1\] FILE\...  
+-rwa selected file mode bits removed  
++rwa selected file mode bits added  
+=rwa selected file mode bits  
+chmod ( "line<EOL\>" \-- ) change file mode bits
 
-**cat** \[-n\] \[\> NEWFILE\] \[\>\> FILE\] \[\<\< EOF\] FILES\... -n
-line numbers \> redirect output to NEWFILE \>\> redirect output and
-append to FILE \<\< redirect input till EOF
+- **touch** [-c] FILE\...  
+-c do not create any files  
+A FILE argument that does not exist is created empty.  
+touch ( "line<EOL\>" \-- ) change file timestamps 
 
-cat ( \"line\<EOL\>\" \-- ) concatenate files and print on the console
-\</pre\>
+- **df** \[VOLUME\]  
+df ( "line<EOL\>" \-- ) report file system disk space usage (1 KiB
+blocks) 
 
--   \<pre\>
+- **du** [-h] \[FILE\]  
+-h print sizes in powers of 1024 (e.g., 1023 MiB)  
+du ( "line<EOL\>" \-- ) estimate file space usage 
 
-**mkdir** \[DIR\]\...
+- **vol** \[-d NUMBER\] \[-n NAME\]  
+-d drive number  
+-n change drive name to NAME  
+vol ( "line<EOL\>" \-- ) get and set volume label 
 
-mkdir ( \"line\<EOL\>\" \-- ) make directories \</pre\>
+- **mount** \[VOLUME\]  
+mount ( \-- ) mount default drive
 
--   \<pre\>
+- **umount** \[VOLUME\]  
+mount ( \-- ) unmount default drive 
 
-**rm** FILE\...
+- **vi** \[-R\] \[-h\] \[-c \<COLUMNS\>\] \[-r \<ROWS\>\] \[FILE\]  
+-h show features   
+-R Read-only mode. You can still edit the buffer, but will be prevented from overwriting a file.  
+-e erase the text buffer  
+-c <COLUMNS\> screen columns, range 40..128 default 80  
+-r <ROWS\> screen rows, range 16..30 default 24  
+vi ( "line<EOL\>" \-- ) a (Forth) programmer's text editor 
 
-rm ( \"line\<EOL\>\" \-- ) remove files or directories \</pre\>
+- **split** \[-l NUMBER\] FILE  
+-l NUMBER put NUMBER lines/records per output fileline numbers (default 1000 lines)  
+suffix length is only 1, generated file names are like this: xa, xb, xc, \...  
+split ( "line\<EOL\>" \-- ) split a file into pieces
 
--   \<pre\>
+- **wc** FILE\...  
+wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for each file
 
-**mv** SOURCE DEST
-
-mv ( \"line\<EOL\>\" \-- ) move (rename) files \</pre\>
-
--   \<pre\>
-
-**cp** SOURCE DEST
-
-cp ( \"line\<EOL\>\" \-- ) copy files \</pre\>
-
--   \<pre\>
-
-**chmod** \[-a\] \[+l\] \[=1\] FILE\... -rwa selected file mode bits
-removed +rwa selected file mode bits added =rwa selected file mode bits
-set
-
-chmod ( \"line\<EOL\>\" \-- ) change file mode bits \</pre\>
-
--   \<pre\>
-
-**touch** FILE\... -c do not create any files
-
-A FILE argument that does not exist is created empty.
-
-touch ( \"line\<EOL\>\" \-- ) change file timestamps \</pre\>
-
--   \<pre\>
-
-**df** \[VOLUME\]
-
-df ( \"line\<EOL\>\" \-- ) report file system disk space usage (1 KiB
-blocks) \</pre\>
-
--   \<pre\>
-
-**du** \[FILE\] -h print sizes in powers of 1024 (e.g., 1023 MiB)
-
-du ( \"line\<EOL\>\" \-- ) estimate file space usage \</pre\>
-
--   \<pre\>
-
-**vol** \[-d NUMBER\] \[-n NAME\] -d drive number -n change drive name
-to NAME
-
-vol ( \"line\<EOL\>\" \-- ) get and set volume label \</pre\> \</pre\>
-
--   \<pre\>
-
-**mount**
-
-mount ( \-- ) mount default drive \</pre\>
-
--   \<pre\>
-
-**umount**
-
-mount ( \-- ) unmount default drive \</pre\>
-
--   \<pre\>
-
-**vi** \[-R\] \[-h\] \[-c \<COLUMNS\>\] \[-r \<ROWS\>\] \[FILE\] -h show
-features -R Read-only mode. You can still edit the buffer, but will be
-prevented from overwriting a file. -e erase the text buffer -c
-\<COLUMNS\> screen columns, range 40..128 default 80 -r \<ROWS\> screen
-rows, range 16..30 default 24
-
-vi ( \"line\<EOL\>\" \-- ) a (Forth) programmer\'s text editor \</pre\>
-
--   \<pre\>
-
-**split** \[-l NUMBER\] FILE -l NUMBER put NUMBER lines/records per
-output fileline numbers (default 1000 lines)
-
-suffix length is only 1, generated file names are like this: xa, xb, xc,
-\... split ( \"line\<EOL\>\" \-- ) split a file into pieces \</pre\>
-\</pre\>
-
--   \<pre\>
-
-**wc** FILE\...
-
-wc ( \"line\<EOL\>\" \-- ) Word count, print newline, word, and byte
-counts for each file \</pre\>
+- **mkfs**  \[VOLUME\]  
 
 -   less
--   mkfs \[-f FAT\|FAT32\|EXTFAT\] \[-d NUMBER\]
 -   fdisk
 -   dd
 -   date

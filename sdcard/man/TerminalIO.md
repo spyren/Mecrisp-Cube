@@ -5,7 +5,7 @@ To work interactively with a Forth system, you need some kind of
 [console](https://en.wikipedia.org/wiki/System_console). A text
 [terminal](https://en.wikipedia.org/wiki/Computer_terminal#Text_terminals)
 with [RS-232](https://en.wikipedia.org/wiki/RS-232) port has been used
-for this purpose in the past. Today\'s PCs have software to emulate a
+for this purpose in the past. Today's PCs have software to emulate a
 terminal, but usually no longer have serial ports (RS-232 interfaces).
 Instead, there are usually USB interfaces.
 
