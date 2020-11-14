@@ -40,7 +40,7 @@ Stack Jugglers
 
 Exactly ANS, some logical extension.
 
-    depth           ( -- +n ) 	            Gives number of single-cell stack items. 	 
+    depth           ( -- +n )               Gives number of single-cell stack items. 	 
     nip             ( x1 x2 -- x2 )         Drop the first item below the top of the stack 	 
     drop            ( x -- ) 	  	 
     rot             ( x1 x2 x3 -- x2 x3 x1 ) 	  	 
@@ -54,7 +54,7 @@ Exactly ANS, some logical extension.
     r> 	            ( -- x ) (R: x -- )     Pull from Return Stack 	 
     r@              ( -- x ) (R: x -- x )   Copy from Return Stack 	 
     rdrop           ( -- ) (R: x -- ) 	  	 
-    rdepth          ( -- +n ) 	            Gives number of return stack items. 
+    rdepth          ( -- +n )               Gives number of return stack items. 
 
     roll            ( xu xu-1 ... x0 u -- xu-1 ... x0 xu ) 	        Remove u. Rotate u+1 items on the top of the stack.
     pick            ( ... xi+1 xi ... x1 x0 i -- ... x1 x0 xi )     Copy a element X levels down the stack to the top of the stack 	 
@@ -143,7 +143,7 @@ exactly ANS, some logical extensions.
     um*             ( u1 u2 -- ud )                 32*32 = 64 Multiplication
     ud*             ( ud1 ud2 -- ud3 )              64*64 = 64 Multiplication
     udm*            ( ud1 ud2 -- ud3-Low ud4-High ) 64*64=128 Multiplication
-    um/mod          ( ud u1 -- u2 u3 ) 	            ud / u1 = u3 remainder u2
+    um/mod          ( ud u1 -- u2 u3 )              ud / u1 = u3 remainder u2
     ud/mod          ( ud1 ud2 -- ud3 ud4 )          64/64 = 64 rem 64 Division ud1 / ud2 = ud4 remainder ud3
     m*              ( n1 n2 -- d ) 	        n1 * n2 = d
     m/mod           ( d n1 -- n2 n3 )       d / n1 = n3 remainder r2
@@ -233,7 +233,7 @@ Subtle differences to ANS, special cpu-specific extensions. Fetch-Modify-Store o
     move            ( c-addr1 c-addr2 u -- )    Moves u Bytes in Memory
     fill            ( c-addr u c ) 	    Fill u Bytes of Memory with value c
     2constant name  ( ud|d -- ) 	    Makes a double constant.
-    constant name   ( u|n -- ) 	        Makes a single constant. i.e. “$1024 constant one-kb”
+    constant name   ( u|n -- )          Makes a single constant. i.e. “$1024 constant one-kb”
     2variable name  ( ud|d -- )         Makes an initialized double variable
     variable name   ( n|n -- )          Makes an initialized single variable. i.e. “0 variable one-kb”
     nvariable name  ( n1*u|n n1 -- )    Makes an initialized variable with specified size of n1 words Maximum is 15 words
@@ -261,11 +261,11 @@ Warning: ” may not render properly on your browser, hence copying and pasting 
 Exactly ANS, some logical extensions.
 
     type 	        ( c-addr length -- )    Prints a string.
-    s” Hello” 	    ( -- c-addr length )    Compiles a string and gives back its address and length when executed
+    s” Hello”       ( -- c-addr length )    Compiles a string and gives back its address and length when executed
     .” Hello”       ( -- ) 	                Compiles a string and prints it when executed.
     ( Comment ) 	                        Ignore Comment 	 
     \ Comment                               Comment to end of line 	 
-    cr 	            ( -- )                  Emits line feed 	 
+    cr              ( -- )                  Emits line feed 	 
     bl              ( -- 32 )               ASCII for Space 	 
     space           ( -- )                  Emits space 	 
     spaces          ( n -- )                Emits n spaces if n is positive
@@ -280,7 +280,7 @@ Exactly ANS, some logical extensions.
 
     ctype           ( cstr-addr -- )                Prints a counted string.
     c” Hello”       ( -- cstr-addr )                Compiles a counted string and gives back its address when executed.
-    cexpect         ( cstr-addr maxlength -- ) 	    Read input into a counted string.
+    cexpect         ( cstr-addr maxlength -- )      Read input into a counted string.
     count           ( cstr-addr -- c-addr length ) 	Convert counted string into addr-length string
     skipstring      ( cstr-addr -- a-addr )         Increases the pointer to the aligned end of the string.
 
@@ -321,18 +321,18 @@ User Input and Interpretation
 
 Exactly ANS, some logical extensions.
 
-    query           ( -- )              Fetches user input to input buffer
-    tib             ( -- cstr-addr )    Input buffer
-    current-source  ( -- addr )         Double-Variable which contains source
-    tsource         ( c-addr len -- )   Change source
-    source          ( -- c-addr len )   Current source
-    >in             ( -- addr )         Variable with current offset into source
-    token           ( -- c-addr len )   Cuts one token out of input buffer
+    query           ( -- )                  Fetches user input to input buffer
+    tib             ( -- cstr-addr )        Input buffer
+    current-source  ( -- addr )             Double-Variable which contains source
+    tsource         ( c-addr len -- )       Change source
+    source          ( -- c-addr len )       Current source
+    >in             ( -- addr )             Variable with current offset into source
+    token           ( -- c-addr len )       Cuts one token out of input buffer
     parse           ( char -- c-addr len )  Cuts anything delimited by char out of input buffer
     evaluate        ( any addr len -- any ) Interpret given string
-    interpret       ( any -- any )      Execute, compile, fold, optimize…
+    interpret       ( any -- any )          Execute, compile, fold, optimize…
     quit            ( many -- ) (R: many -- ) Resets Stacks
-    hook-quit       ( -- a-addr )       Hook for changing the inner quit loop
+    hook-quit       ( -- a-addr )           Hook for changing the inner quit loop
 
 Dictionary Expansion
 --------------------
@@ -352,7 +352,7 @@ Exactly ANS, some logical extension.
     compiletoram? 	( -- ? )    currently compiling into ram ?
     compiletoram 	( -- )      makes ram the target for compiling
     compiletoflash 	( -- )      makes flash memory the target for compiling
-    forgetram 	    ( -- )      Forget definitions in ram without a reset
+    forgetram       ( -- )      Forget definitions in ram without a reset
 
 Speciality!
 -----------
@@ -383,7 +383,7 @@ Special Words Depending on MCU Capabilities
    
     movwmovt,       ( x Register -- )   Generate a movw/movt-Sequence to get x into any given Register. M3/M4 only
     registerliteral,    ( x Register -- ) 	Generate shortest possible sequenceto get x into given low Register. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
-    12bitencoding   ( x -- x false | bitmask true ) 	Can x be encoded as 12-bit immediate ?
+    12bitencoding   ( x -- x false | bitmask true )     Can x be encoded as 12-bit immediate ?
 
 
 Flags and Inventory
@@ -404,14 +404,14 @@ Folding
 -------
 Speciality!
 
-    0-foldable 	    ( -- ) 	Current word becomes foldable with 0 constants 	constants variables [‘] [char]
-    1-foldable 	    ( -- ) 	1 constant      ?dup drop negate
-    2-foldable 	    ( -- ) 	2 constants     + - * swap nip
-    3-foldable 	    ( -- ) 	3 constants     rot 
-    4-foldable 	    ( -- ) 	4 constants     d+ d- 2swap
-    5-foldable 	    ( -- ) 	5 constants 	 
-    6-foldable 	    ( -- ) 	6 constants 	 
-    7-foldable 	    ( -- ) 	7 constants 	 
+    0-foldable      ( -- )          Current word becomes foldable with 0 constants 	constants variables [‘] [char]
+    1-foldable      ( -- )          1 constant      ?dup drop negate
+    2-foldable      ( -- )          2 constants     + - * swap nip
+    3-foldable      ( -- )          3 constants     rot 
+    4-foldable      ( -- )          4 constants     d+ d- 2swap
+    5-foldable      ( -- )          5 constants 	 
+    6-foldable      ( -- )          6 constants 	 
+    7-foldable      ( -- )          7 constants 	 
 
 
 Compiler Essentials
@@ -445,7 +445,7 @@ Internally, they have complicated compile-time stack effects.
     do ... loop                 Finite loop incrementing by 1
     do ... +loop                Finite loop incrementing by X
     begin ... until             Indefinite loop terminating when is ‘true’
-    begin ... while ... repeat 	Indefinite loop terminating when is ‘false’
+    begin ... while ... repeat  Indefinite loop terminating when is ‘false’
     begin ... again             Infinite loop
     if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’ and words following ELSE if it is ‘false’. THEN marks the point at which the paths merge.
     if ... then                 Like the two-branch conditional, but with only a ‘true’ clause.
@@ -454,7 +454,7 @@ Internally, they have complicated compile-time stack effects.
 
 Exactly ANS.
 
-    if 	            ( flag -- )     structure.
+    if              ( flag -- )     structure.
     else            ( -- )          flag if ... [else ...] then
     then            ( -- )          This is the common flag if ... [else ...] then structure.
 
