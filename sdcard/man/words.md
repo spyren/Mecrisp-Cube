@@ -334,6 +334,7 @@ Exactly ANS, some logical extensions.
     quit            ( many -- ) (R: many -- ) Resets Stacks
     hook-quit       ( -- a-addr )           Hook for changing the inner quit loop
 
+
 Dictionary Expansion
 --------------------
 
@@ -353,6 +354,7 @@ Exactly ANS, some logical extension.
     compiletoram 	( -- )      makes ram the target for compiling
     compiletoflash 	( -- )      makes flash memory the target for compiling
     forgetram       ( -- )      Forget definitions in ram without a reset
+
 
 Speciality!
 -----------
@@ -528,4 +530,8 @@ Common Hardware Access
     irq-collection  ( -- a-addr )   Collection of all unhandled interrupts
 
 
-\-- [PeterSchmid - 2020-10-11]
+\-- [PeterSchmid - 2020-11-15]
+
+The original of this document can be found at https://mecrisp-stellaris-folkdoc.sourceforge.io
+Copyright 2016-2020, Terry Porter, released under the GPL V3.
+

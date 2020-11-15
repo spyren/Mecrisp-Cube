@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      FAT filesystem for Secure Digital Memory Card.
+ *      FAT filesystem for Secure Digital Memory Card and Internal Flash.
  *
  *		Some file tools like GNU tools e.g. ls, pwd, cat.
  *		Do not expect real UNIX commands not even comparable to the Busybox
@@ -69,7 +69,7 @@
 // Global Variables
 // ****************
 
-const char FS_Version[] = "  * FatFs for internal flash drive 384 KiB and microSD - Generic FAT file system module  R0.12c (C) 2017 ChaN\n";
+const char FS_Version[] = "  * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN\n";
 
 FATFS FatFs_FD;	/* Work area (filesystem object) for logical flash drive (0) */
 FATFS FatFs_SD;	/* Work area (filesystem object) for logical SD drive (1) */
