@@ -11,6 +11,8 @@
  *        * Mecrisp Forth uses DOS/Windows style line endings carriage return
  *          and line feed ("\r\n"). Unix (and vi) uses just line feed ("\n").
  *        * The command <b>v</b> evaluates a line.
+ *
+ *      The compiler optimization level for this module is None (-O0).
  *  @file
  *      vi.c
  *  @author
@@ -113,7 +115,7 @@ static const char vi_Version[] =
 #define MIN_SCR_ROWS		16
 #define MAX_ARGS			10
 
-#define TEXT_SIZE		(30 * 1024)
+#define TEXT_SIZE		(40 * 1024)
 #define MAX_INPUT_LEN	256
 
 // Misc. non-Ascii keys that report an escape sequence
@@ -343,7 +345,7 @@ static char *swap_context(char *);		// goto new context for '' command
 // ****************
 
 void VI_init(void) {
-	text = pvPortMalloc(TEXT_SIZE);
+	text = pvPortMalloc(TEXT_SIZE+100); // some savety margin
 	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS);
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user
