@@ -190,12 +190,32 @@ uint64_t FS_coredump(uint64_t forth_stack, uint8_t *str, int count) {
 	FIL fil;        /* File object */
 	FRESULT fr;     /* FatFs return code */
 	UINT bytes_written;
+	uint8_t a_flag = FALSE;
+	uint8_t param = FALSE;
+	uint32_t size;
 
 	uint64_t stack;
 	stack = forth_stack;
 
 	memcpy(path, str, count);
 	path[count] = 0;
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			if (!param) {
+				path[0] = 0;
+			}
+			break;
+		}
+		memcpy(path, str, count);
+		path[count] = 0;
+		if (! strcmp (path, "-a")) {
+			a_flag = TRUE;
+		} else {
+			param = TRUE;
+		}
+	}
 
 	/* Open a file */
 	fr = f_open(&fil, path, FA_CREATE_NEW | FA_WRITE);
@@ -203,15 +223,18 @@ uint64_t FS_coredump(uint64_t forth_stack, uint8_t *str, int count) {
 		// open failed
 		strcpy(line, "Err: can't open for write");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+		return stack;
 	}
 
-	// get the end of the flash dictionary
-	fr = f_write(&fil,
-			(uint8_t *) 0x08000000,
-			((uint32_t) ZweitDictionaryPointer ) - 0x08000000,
-			&bytes_written);
-	if ( (fr != FR_OK) ||
-			(bytes_written < ((uint32_t) ZweitDictionaryPointer) - 0x08000000) ) {
+	if (a_flag) {
+		// dump everything
+		size = 768 * 1024; // 768 KiB
+	} else {
+		// get the end of the flash dictionary
+		size = ((uint32_t) ZweitDictionaryPointer ) - 0x08000000;
+	}
+	fr = f_write(&fil, (uint8_t *) 0x08000000, size, &bytes_written);
+	if ( (fr != FR_OK) || (bytes_written < size ) ) {
 		// write failed
 		strcpy(line, "Err: write failed");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));

@@ -198,17 +198,19 @@ included:
 @ -----------------------------------------------------------------------------
 coredump:
 	push	{lr}
-	bl		token		@ ( -- c-addr len )
-	movs	r3, tos		// len -> count
-	drop
-	movs	r2, tos		// c-addr -> str
-	drop
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
 	bl		FS_coredump
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
 	pop		{pc}
+
+
+//	bl		token		@ ( -- c-addr len )
+//	movs	r3, tos		// len -> count
+//	drop
+//	movs	r2, tos		// c-addr -> str
+//	drop
 
 
 @ -----------------------------------------------------------------------------
