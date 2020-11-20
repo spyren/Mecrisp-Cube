@@ -22,7 +22,7 @@ machine (STM32 Nucleo board) for development and testing purposes.
   * minicom, microcom, screen - Linux
   * Use the built in Eclipse console (but no LF)
  
-Flash the Mecrisp-Cube [binary](Release/MecrispCube.bin) to the Nucleo Board.
+Flash the Mecrisp-Cube [binary](Release/MecrispCube.bin) or the [FS binary](https://github.com/spyren/Mecrisp-Cube/blob/master/sdcard/boot/MecrispCubeFS.bin) from GitHub with local filesystem and some tools to the Nucleo Board.
 
 1. Connect the Nucleo Board USB ST-LINK to the PC
 2. Copy [binary](Release/MecrispCube.bin) (`MecrispCube.bin`) to the USB mass 
