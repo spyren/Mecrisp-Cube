@@ -34,6 +34,7 @@
 #include "bsp.h"
 #include "sd_spi.h"
 #include "sd.h"
+#include "fd.h"
 #include "block.h"
 #include "app_fatfs.h"
 #include "fs.h"
