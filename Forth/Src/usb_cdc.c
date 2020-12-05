@@ -118,7 +118,7 @@ void CDC_init(void) {
 	}
 
 // no composite MSC/CDC yet
-//	MX_USB_Device_Init();
+	MX_USB_Device_Init();
 
 
 }
