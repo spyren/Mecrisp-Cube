@@ -84,7 +84,7 @@ void HAL_MspInit(void)
   HAL_NVIC_SetPriority(FLASH_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(FLASH_IRQn);
   /* HSEM_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(HSEM_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(HSEM_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(HSEM_IRQn);
 
   /* USER CODE BEGIN MspInit 1 */

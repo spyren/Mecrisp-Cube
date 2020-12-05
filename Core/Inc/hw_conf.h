@@ -33,6 +33,8 @@
 *  The CPU1 shall not either write or erase in flash when this semaphore is taken by the CPU2
 *  When the CPU1 needs to either write or erase in flash, it shall first get the semaphore and release it just
 *  after writing a raw (64bits data) or erasing one sector.
+*  Once the Semaphore has been released, there shall be at least 1us before it can be taken again. This is required
+*  to give the opportunity to CPU2 to take it.
 *  On v1.4.0 and older CPU2 wireless firmware, this semaphore is unused and CPU2 is using PES bit.
 *  By default, CPU2 is using the PES bit to protect its timing. The CPU1 may request the CPU2 to use the semaphore
 *  instead of the PES bit by sending the system command SHCI_C2_SetFlashActivityControl()
@@ -133,7 +135,6 @@
 /******************************************************************************
  * HW UART
  *****************************************************************************/
-
 #define CFG_HW_LPUART1_ENABLED           0
 #define CFG_HW_LPUART1_DMA_TX_SUPPORTED  0
 
