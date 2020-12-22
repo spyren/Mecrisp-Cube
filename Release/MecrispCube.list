@@ -84,7 +84,7 @@ Disassembly of section .text:
  8000198:	73697261 	.word	0x73697261
  800019c:	20415220 	.word	0x20415220
  80001a0:	2e352e32 	.word	0x2e352e32
- 80001a4:	2d2d2032 	.word	0x2d2d2032
+ 80001a4:	2d2d2034 	.word	0x2d2d2034
  80001a8:	2d          	.byte	0x2d
 	...
 
@@ -2551,7 +2551,7 @@ Disassembly of section .text:
  80015b4:	e01b      	b.n	80015ee <prepare_compare>
 
 080015b6 <Dictionary_336>:
- 80015b6:	1716      	.short	0x1716
+ 80015b6:	1718      	.short	0x1718
  80015b8:	02620800 	.word	0x02620800
  80015bc:	3d01      	.short	0x3d01
 
@@ -2583,211 +2583,211 @@ Disassembly of section .text:
  80015fc:	f7fe ff8a 	bl	8000514 <expect_3os_in_register>
  8001600:	6882      	ldr	r2, [r0, #8]
  8001602:	2a28      	cmp	r2, #40	; 0x28
- 8001604:	d104      	bne.n	8001610 <prepare_compare+0x22>
+ 8001604:	d105      	bne.n	8001612 <prepare_compare+0x24>
  8001606:	f7ff fc7e 	bl	8000f06 <swap_allocator>
  800160a:	6839      	ldr	r1, [r7, #0]
  800160c:	603e      	str	r6, [r7, #0]
  800160e:	460e      	mov	r6, r1
- 8001610:	cf40      	ldmia	r7!, {r6}
- 8001612:	6801      	ldr	r1, [r0, #0]
- 8001614:	2928      	cmp	r1, #40	; 0x28
- 8001616:	d11d      	bne.n	8001654 <prepare_compare+0x66>
- 8001618:	6841      	ldr	r1, [r0, #4]
- 800161a:	29ff      	cmp	r1, #255	; 0xff
- 800161c:	d807      	bhi.n	800162e <prepare_compare+0x40>
- 800161e:	f847 6d04 	str.w	r6, [r7, #-4]!
- 8001622:	f642 0600 	movw	r6, #10240	; 0x2800
- 8001626:	430e      	orrs	r6, r1
- 8001628:	6881      	ldr	r1, [r0, #8]
- 800162a:	0209      	lsls	r1, r1, #8
- 800162c:	e01a      	b.n	8001664 <prepare_compare+0x76>
- 800162e:	f847 6d04 	str.w	r6, [r7, #-4]!
- 8001632:	6846      	ldr	r6, [r0, #4]
- 8001634:	f001 fb60 	bl	8002cf8 <Code_710>
- 8001638:	cf02      	ldmia	r7!, {r1}
- 800163a:	2e00      	cmp	r6, #0
- 800163c:	cf40      	ldmia	r7!, {r6}
- 800163e:	d009      	beq.n	8001654 <prepare_compare+0x66>
- 8001640:	f847 6d04 	str.w	r6, [r7, #-4]!
- 8001644:	4e6a      	ldr	r6, [pc, #424]	; (80017f0 <alloc_minmax+0x60>)
- 8001646:	430e      	orrs	r6, r1
- 8001648:	6881      	ldr	r1, [r0, #8]
- 800164a:	ea56 4601 	orrs.w	r6, r6, r1, lsl #16
- 800164e:	f001 ffad 	bl	80035ac <Code_853>
- 8001652:	e00a      	b.n	800166a <prepare_compare+0x7c>
- 8001654:	f7fe ff4a 	bl	80004ec <expect_tos_in_register>
- 8001658:	f847 6d04 	str.w	r6, [r7, #-4]!
- 800165c:	f244 2680 	movw	r6, #17024	; 0x4280
- 8001660:	00c9      	lsls	r1, r1, #3
- 8001662:	4316      	orrs	r6, r2
- 8001664:	430e      	orrs	r6, r1
- 8001666:	f001 ff70 	bl	800354a <Code_844>
- 800166a:	f7fe fe06 	bl	800027a <eliminiere_tos>
- 800166e:	f7fe fe04 	bl	800027a <eliminiere_tos>
- 8001672:	6286      	str	r6, [r0, #40]	; 0x28
- 8001674:	cf40      	ldmia	r7!, {r6}
- 8001676:	bd00      	pop	{pc}
+ 8001610:	6882      	ldr	r2, [r0, #8]
+ 8001612:	cf40      	ldmia	r7!, {r6}
+ 8001614:	6801      	ldr	r1, [r0, #0]
+ 8001616:	2928      	cmp	r1, #40	; 0x28
+ 8001618:	d11d      	bne.n	8001656 <prepare_compare+0x68>
+ 800161a:	6841      	ldr	r1, [r0, #4]
+ 800161c:	29ff      	cmp	r1, #255	; 0xff
+ 800161e:	d807      	bhi.n	8001630 <prepare_compare+0x42>
+ 8001620:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 8001624:	f642 0600 	movw	r6, #10240	; 0x2800
+ 8001628:	430e      	orrs	r6, r1
+ 800162a:	6881      	ldr	r1, [r0, #8]
+ 800162c:	0209      	lsls	r1, r1, #8
+ 800162e:	e01a      	b.n	8001666 <prepare_compare+0x78>
+ 8001630:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 8001634:	6846      	ldr	r6, [r0, #4]
+ 8001636:	f001 fb5f 	bl	8002cf8 <Code_710>
+ 800163a:	cf02      	ldmia	r7!, {r1}
+ 800163c:	2e00      	cmp	r6, #0
+ 800163e:	cf40      	ldmia	r7!, {r6}
+ 8001640:	d009      	beq.n	8001656 <prepare_compare+0x68>
+ 8001642:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 8001646:	4e6a      	ldr	r6, [pc, #424]	; (80017f0 <alloc_minmax+0x5e>)
+ 8001648:	430e      	orrs	r6, r1
+ 800164a:	6881      	ldr	r1, [r0, #8]
+ 800164c:	ea56 4601 	orrs.w	r6, r6, r1, lsl #16
+ 8001650:	f001 ffac 	bl	80035ac <Code_853>
+ 8001654:	e00a      	b.n	800166c <prepare_compare+0x7e>
+ 8001656:	f7fe ff49 	bl	80004ec <expect_tos_in_register>
+ 800165a:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 800165e:	f244 2680 	movw	r6, #17024	; 0x4280
+ 8001662:	00c9      	lsls	r1, r1, #3
+ 8001664:	4316      	orrs	r6, r2
+ 8001666:	430e      	orrs	r6, r1
+ 8001668:	f001 ff6f 	bl	800354a <Code_844>
+ 800166c:	f7fe fe05 	bl	800027a <eliminiere_tos>
+ 8001670:	f7fe fe03 	bl	800027a <eliminiere_tos>
+ 8001674:	6286      	str	r6, [r0, #40]	; 0x28
+ 8001676:	cf40      	ldmia	r7!, {r6}
+ 8001678:	bd00      	pop	{pc}
 
-08001678 <sprungschreiber_flaggenerator>:
- 8001678:	b50f      	push	{r0, r1, r2, r3, lr}
- 800167a:	485e      	ldr	r0, [pc, #376]	; (80017f4 <alloc_minmax+0x64>)
- 800167c:	6a81      	ldr	r1, [r0, #40]	; 0x28
- 800167e:	2900      	cmp	r1, #0
- 8001680:	d035      	beq.n	80016ee <sprungschreiber_flaggenerator+0x76>
- 8001682:	f847 6d04 	str.w	r6, [r7, #-4]!
- 8001686:	6a86      	ldr	r6, [r0, #40]	; 0x28
- 8001688:	2100      	movs	r1, #0
- 800168a:	6281      	str	r1, [r0, #40]	; 0x28
- 800168c:	0a31      	lsrs	r1, r6, #8
- 800168e:	29d5      	cmp	r1, #213	; 0xd5
- 8001690:	d101      	bne.n	8001696 <sprungschreiber_flaggenerator+0x1e>
- 8001692:	cf40      	ldmia	r7!, {r6}
- 8001694:	bd0f      	pop	{r0, r1, r2, r3, pc}
- 8001696:	f7fe fde6 	bl	8000266 <befreie_tos>
- 800169a:	f7fe feb7 	bl	800040c <get_free_register>
- 800169e:	6003      	str	r3, [r0, #0]
- 80016a0:	29d2      	cmp	r1, #210	; 0xd2
- 80016a2:	d104      	bne.n	80016ae <sprungschreiber_flaggenerator+0x36>
- 80016a4:	f44f 4683 	mov.w	r6, #16768	; 0x4180
- 80016a8:	f000 fd60 	bl	800216c <smalltworegisters>
- 80016ac:	bd0f      	pop	{r0, r1, r2, r3, pc}
- 80016ae:	29d3      	cmp	r1, #211	; 0xd3
- 80016b0:	d106      	bne.n	80016c0 <sprungschreiber_flaggenerator+0x48>
- 80016b2:	f44f 4683 	mov.w	r6, #16768	; 0x4180
- 80016b6:	f000 fd59 	bl	800216c <smalltworegisters>
- 80016ba:	f000 fd6a 	bl	8002192 <allocator_not>
- 80016be:	bd0f      	pop	{r0, r1, r2, r3, pc}
- 80016c0:	3602      	adds	r6, #2
- 80016c2:	f001 ff42 	bl	800354a <Code_844>
- 80016c6:	f847 6d04 	str.w	r6, [r7, #-4]!
- 80016ca:	f242 0600 	movw	r6, #8192	; 0x2000
- 80016ce:	f000 f80f 	bl	80016f0 <smallplusminus>
- 80016d2:	f000 fd5e 	bl	8002192 <allocator_not>
- 80016d6:	f847 6d04 	str.w	r6, [r7, #-4]!
- 80016da:	f24e 0600 	movw	r6, #57344	; 0xe000
- 80016de:	f001 ff34 	bl	800354a <Code_844>
- 80016e2:	f847 6d04 	str.w	r6, [r7, #-4]!
- 80016e6:	f242 0600 	movw	r6, #8192	; 0x2000
- 80016ea:	f000 f801 	bl	80016f0 <smallplusminus>
- 80016ee:	bd0f      	pop	{r0, r1, r2, r3, pc}
+0800167a <sprungschreiber_flaggenerator>:
+ 800167a:	b50f      	push	{r0, r1, r2, r3, lr}
+ 800167c:	485d      	ldr	r0, [pc, #372]	; (80017f4 <alloc_minmax+0x62>)
+ 800167e:	6a81      	ldr	r1, [r0, #40]	; 0x28
+ 8001680:	2900      	cmp	r1, #0
+ 8001682:	d035      	beq.n	80016f0 <sprungschreiber_flaggenerator+0x76>
+ 8001684:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 8001688:	6a86      	ldr	r6, [r0, #40]	; 0x28
+ 800168a:	2100      	movs	r1, #0
+ 800168c:	6281      	str	r1, [r0, #40]	; 0x28
+ 800168e:	0a31      	lsrs	r1, r6, #8
+ 8001690:	29d5      	cmp	r1, #213	; 0xd5
+ 8001692:	d101      	bne.n	8001698 <sprungschreiber_flaggenerator+0x1e>
+ 8001694:	cf40      	ldmia	r7!, {r6}
+ 8001696:	bd0f      	pop	{r0, r1, r2, r3, pc}
+ 8001698:	f7fe fde5 	bl	8000266 <befreie_tos>
+ 800169c:	f7fe feb6 	bl	800040c <get_free_register>
+ 80016a0:	6003      	str	r3, [r0, #0]
+ 80016a2:	29d2      	cmp	r1, #210	; 0xd2
+ 80016a4:	d104      	bne.n	80016b0 <sprungschreiber_flaggenerator+0x36>
+ 80016a6:	f44f 4683 	mov.w	r6, #16768	; 0x4180
+ 80016aa:	f000 fd5f 	bl	800216c <smalltworegisters>
+ 80016ae:	bd0f      	pop	{r0, r1, r2, r3, pc}
+ 80016b0:	29d3      	cmp	r1, #211	; 0xd3
+ 80016b2:	d106      	bne.n	80016c2 <sprungschreiber_flaggenerator+0x48>
+ 80016b4:	f44f 4683 	mov.w	r6, #16768	; 0x4180
+ 80016b8:	f000 fd58 	bl	800216c <smalltworegisters>
+ 80016bc:	f000 fd69 	bl	8002192 <allocator_not>
+ 80016c0:	bd0f      	pop	{r0, r1, r2, r3, pc}
+ 80016c2:	3602      	adds	r6, #2
+ 80016c4:	f001 ff41 	bl	800354a <Code_844>
+ 80016c8:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 80016cc:	f242 0600 	movw	r6, #8192	; 0x2000
+ 80016d0:	f000 f80f 	bl	80016f2 <smallplusminus>
+ 80016d4:	f000 fd5d 	bl	8002192 <allocator_not>
+ 80016d8:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 80016dc:	f24e 0600 	movw	r6, #57344	; 0xe000
+ 80016e0:	f001 ff33 	bl	800354a <Code_844>
+ 80016e4:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 80016e8:	f242 0600 	movw	r6, #8192	; 0x2000
+ 80016ec:	f000 f801 	bl	80016f2 <smallplusminus>
+ 80016f0:	bd0f      	pop	{r0, r1, r2, r3, pc}
 
-080016f0 <smallplusminus>:
- 80016f0:	b500      	push	{lr}
- 80016f2:	f7fe febf 	bl	8000474 <expect_one_element>
- 80016f6:	f7fe ff2e 	bl	8000556 <make_tos_changeable>
- 80016fa:	6801      	ldr	r1, [r0, #0]
- 80016fc:	0209      	lsls	r1, r1, #8
- 80016fe:	430e      	orrs	r6, r1
- 8001700:	f001 ff23 	bl	800354a <Code_844>
- 8001704:	bd00      	pop	{pc}
+080016f2 <smallplusminus>:
+ 80016f2:	b500      	push	{lr}
+ 80016f4:	f7fe febe 	bl	8000474 <expect_one_element>
+ 80016f8:	f7fe ff2d 	bl	8000556 <make_tos_changeable>
+ 80016fc:	6801      	ldr	r1, [r0, #0]
+ 80016fe:	0209      	lsls	r1, r1, #8
+ 8001700:	430e      	orrs	r6, r1
+ 8001702:	f001 ff22 	bl	800354a <Code_844>
+ 8001706:	bd00      	pop	{pc}
 
-08001706 <eliminiere_tos_wenn_bmi>:
- 8001706:	b500      	push	{lr}
- 8001708:	6a81      	ldr	r1, [r0, #40]	; 0x28
- 800170a:	0a09      	lsrs	r1, r1, #8
- 800170c:	29d5      	cmp	r1, #213	; 0xd5
- 800170e:	d101      	bne.n	8001714 <eliminiere_tos_wenn_bmi+0xe>
- 8001710:	f7fe fdb3 	bl	800027a <eliminiere_tos>
- 8001714:	bd00      	pop	{pc}
+08001708 <eliminiere_tos_wenn_bmi>:
+ 8001708:	b500      	push	{lr}
+ 800170a:	6a81      	ldr	r1, [r0, #40]	; 0x28
+ 800170c:	0a09      	lsrs	r1, r1, #8
+ 800170e:	29d5      	cmp	r1, #213	; 0xd5
+ 8001710:	d101      	bne.n	8001716 <eliminiere_tos_wenn_bmi+0xe>
+ 8001712:	f7fe fdb2 	bl	800027a <eliminiere_tos>
+ 8001716:	bd00      	pop	{pc}
 
-08001716 <Dictionary_359>:
- 8001716:	1734      	.short	0x1734
- 8001718:	02620800 	.word	0x02620800
- 800171c:	6e696d03 	.word	0x6e696d03
+08001718 <Dictionary_359>:
+ 8001718:	08001736 	.word	0x08001736
+ 800171c:	6d030262 	.word	0x6d030262
+ 8001720:	6e69      	.short	0x6e69
 
-08001720 <Code_359>:
- 8001720:	cf01      	ldmia	r7!, {r0}
- 8001722:	42b0      	cmp	r0, r6
- 8001724:	dc00      	bgt.n	8001728 <Code_359+0x8>
- 8001726:	0006      	movs	r6, r0
- 8001728:	4770      	bx	lr
- 800172a:	f847 6d04 	str.w	r6, [r7, #-4]!
- 800172e:	f64d 3600 	movw	r6, #56064	; 0xdb00
- 8001732:	e02d      	b.n	8001790 <alloc_minmax>
+08001722 <Code_359>:
+ 8001722:	cf01      	ldmia	r7!, {r0}
+ 8001724:	42b0      	cmp	r0, r6
+ 8001726:	dc00      	bgt.n	800172a <Code_359+0x8>
+ 8001728:	0006      	movs	r6, r0
+ 800172a:	4770      	bx	lr
+ 800172c:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 8001730:	f64d 3600 	movw	r6, #56064	; 0xdb00
+ 8001734:	e02d      	b.n	8001792 <alloc_minmax>
 
-08001734 <Dictionary_362>:
- 8001734:	08001752 	.word	0x08001752
- 8001738:	6d030262 	.word	0x6d030262
- 800173c:	7861      	.short	0x7861
+08001736 <Dictionary_362>:
+ 8001736:	1754      	.short	0x1754
+ 8001738:	02620800 	.word	0x02620800
+ 800173c:	78616d03 	.word	0x78616d03
 
-0800173e <Code_362>:
- 800173e:	cf01      	ldmia	r7!, {r0}
- 8001740:	42b0      	cmp	r0, r6
- 8001742:	db00      	blt.n	8001746 <Code_362+0x8>
- 8001744:	0006      	movs	r6, r0
- 8001746:	4770      	bx	lr
- 8001748:	f847 6d04 	str.w	r6, [r7, #-4]!
- 800174c:	f64d 4600 	movw	r6, #56320	; 0xdc00
- 8001750:	e01e      	b.n	8001790 <alloc_minmax>
+08001740 <Code_362>:
+ 8001740:	cf01      	ldmia	r7!, {r0}
+ 8001742:	42b0      	cmp	r0, r6
+ 8001744:	db00      	blt.n	8001748 <Code_362+0x8>
+ 8001746:	0006      	movs	r6, r0
+ 8001748:	4770      	bx	lr
+ 800174a:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 800174e:	f64d 4600 	movw	r6, #56320	; 0xdc00
+ 8001752:	e01e      	b.n	8001792 <alloc_minmax>
 
-08001752 <Dictionary_365>:
- 8001752:	1772      	.short	0x1772
- 8001754:	02620800 	.word	0x02620800
- 8001758:	616d7504 	.word	0x616d7504
- 800175c:	78          	.byte	0x78
+08001754 <Dictionary_365>:
+ 8001754:	08001774 	.word	0x08001774
+ 8001758:	75040262 	.word	0x75040262
+ 800175c:	616d      	.short	0x616d
+ 800175e:	78          	.byte	0x78
 	...
 
-0800175e <Code_365>:
- 800175e:	cf01      	ldmia	r7!, {r0}
- 8001760:	42b0      	cmp	r0, r6
- 8001762:	d300      	bcc.n	8001766 <Code_365+0x8>
- 8001764:	0006      	movs	r6, r0
- 8001766:	4770      	bx	lr
- 8001768:	f847 6d04 	str.w	r6, [r7, #-4]!
- 800176c:	f64d 0600 	movw	r6, #55296	; 0xd800
- 8001770:	e00e      	b.n	8001790 <alloc_minmax>
+08001760 <Code_365>:
+ 8001760:	cf01      	ldmia	r7!, {r0}
+ 8001762:	42b0      	cmp	r0, r6
+ 8001764:	d300      	bcc.n	8001768 <Code_365+0x8>
+ 8001766:	0006      	movs	r6, r0
+ 8001768:	4770      	bx	lr
+ 800176a:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 800176e:	f64d 0600 	movw	r6, #55296	; 0xd800
+ 8001772:	e00e      	b.n	8001792 <alloc_minmax>
 
-08001772 <Dictionary_368>:
- 8001772:	17f8      	.short	0x17f8
- 8001774:	02620800 	.word	0x02620800
- 8001778:	696d7504 	.word	0x696d7504
- 800177c:	6e          	.byte	0x6e
+08001774 <Dictionary_368>:
+ 8001774:	080017f8 	.word	0x080017f8
+ 8001778:	75040262 	.word	0x75040262
+ 800177c:	696d      	.short	0x696d
+ 800177e:	6e          	.byte	0x6e
 	...
 
-0800177e <Code_368>:
- 800177e:	cf01      	ldmia	r7!, {r0}
- 8001780:	42b0      	cmp	r0, r6
- 8001782:	d800      	bhi.n	8001786 <Code_368+0x8>
- 8001784:	0006      	movs	r6, r0
- 8001786:	4770      	bx	lr
- 8001788:	f847 6d04 	str.w	r6, [r7, #-4]!
- 800178c:	f24d 3600 	movw	r6, #54016	; 0xd300
+08001780 <Code_368>:
+ 8001780:	cf01      	ldmia	r7!, {r0}
+ 8001782:	42b0      	cmp	r0, r6
+ 8001784:	d800      	bhi.n	8001788 <Code_368+0x8>
+ 8001786:	0006      	movs	r6, r0
+ 8001788:	4770      	bx	lr
+ 800178a:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 800178e:	f24d 3600 	movw	r6, #54016	; 0xd300
 
-08001790 <alloc_minmax>:
- 8001790:	b500      	push	{lr}
- 8001792:	f7fe fe79 	bl	8000488 <expect_two_elements>
- 8001796:	6801      	ldr	r1, [r0, #0]
- 8001798:	6882      	ldr	r2, [r0, #8]
- 800179a:	4291      	cmp	r1, r2
- 800179c:	d103      	bne.n	80017a6 <alloc_minmax+0x16>
- 800179e:	cf40      	ldmia	r7!, {r6}
- 80017a0:	f7fe fd71 	bl	8000286 <eliminiere_nos>
- 80017a4:	bd00      	pop	{pc}
- 80017a6:	2a06      	cmp	r2, #6
- 80017a8:	d101      	bne.n	80017ae <alloc_minmax+0x1e>
- 80017aa:	f7ff fbac 	bl	8000f06 <swap_allocator>
- 80017ae:	6801      	ldr	r1, [r0, #0]
- 80017b0:	2928      	cmp	r1, #40	; 0x28
- 80017b2:	d101      	bne.n	80017b8 <alloc_minmax+0x28>
- 80017b4:	f7ff fba7 	bl	8000f06 <swap_allocator>
- 80017b8:	f7fe fecd 	bl	8000556 <make_tos_changeable>
- 80017bc:	f7fe fea0 	bl	8000500 <expect_nos_in_register>
- 80017c0:	00c9      	lsls	r1, r1, #3
- 80017c2:	6802      	ldr	r2, [r0, #0]
- 80017c4:	f847 6d04 	str.w	r6, [r7, #-4]!
- 80017c8:	f244 2680 	movw	r6, #17024	; 0x4280
- 80017cc:	430e      	orrs	r6, r1
- 80017ce:	4316      	orrs	r6, r2
- 80017d0:	f001 febb 	bl	800354a <Code_844>
- 80017d4:	f001 feb9 	bl	800354a <Code_844>
- 80017d8:	f847 6d04 	str.w	r6, [r7, #-4]!
- 80017dc:	f244 6600 	movw	r6, #17920	; 0x4600
- 80017e0:	430e      	orrs	r6, r1
- 80017e2:	4316      	orrs	r6, r2
- 80017e4:	f001 feb1 	bl	800354a <Code_844>
- 80017e8:	f7fe fd4d 	bl	8000286 <eliminiere_nos>
- 80017ec:	bd00      	pop	{pc}
- 80017ee:	0000      	.short	0x0000
+08001792 <alloc_minmax>:
+ 8001792:	b500      	push	{lr}
+ 8001794:	f7fe fe78 	bl	8000488 <expect_two_elements>
+ 8001798:	6801      	ldr	r1, [r0, #0]
+ 800179a:	6882      	ldr	r2, [r0, #8]
+ 800179c:	4291      	cmp	r1, r2
+ 800179e:	d103      	bne.n	80017a8 <alloc_minmax+0x16>
+ 80017a0:	cf40      	ldmia	r7!, {r6}
+ 80017a2:	f7fe fd70 	bl	8000286 <eliminiere_nos>
+ 80017a6:	bd00      	pop	{pc}
+ 80017a8:	2a06      	cmp	r2, #6
+ 80017aa:	d101      	bne.n	80017b0 <alloc_minmax+0x1e>
+ 80017ac:	f7ff fbab 	bl	8000f06 <swap_allocator>
+ 80017b0:	6801      	ldr	r1, [r0, #0]
+ 80017b2:	2928      	cmp	r1, #40	; 0x28
+ 80017b4:	d101      	bne.n	80017ba <alloc_minmax+0x28>
+ 80017b6:	f7ff fba6 	bl	8000f06 <swap_allocator>
+ 80017ba:	f7fe fecc 	bl	8000556 <make_tos_changeable>
+ 80017be:	f7fe fe9f 	bl	8000500 <expect_nos_in_register>
+ 80017c2:	00c9      	lsls	r1, r1, #3
+ 80017c4:	6802      	ldr	r2, [r0, #0]
+ 80017c6:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 80017ca:	f244 2680 	movw	r6, #17024	; 0x4280
+ 80017ce:	430e      	orrs	r6, r1
+ 80017d0:	4316      	orrs	r6, r2
+ 80017d2:	f001 feba 	bl	800354a <Code_844>
+ 80017d6:	f001 feb8 	bl	800354a <Code_844>
+ 80017da:	f847 6d04 	str.w	r6, [r7, #-4]!
+ 80017de:	f244 6600 	movw	r6, #17920	; 0x4600
+ 80017e2:	430e      	orrs	r6, r1
+ 80017e4:	4316      	orrs	r6, r2
+ 80017e6:	f001 feb0 	bl	800354a <Code_844>
+ 80017ea:	f7fe fd4c 	bl	8000286 <eliminiere_nos>
+ 80017ee:	bd00      	pop	{pc}
  80017f0:	f1b00f00 	.word	0xf1b00f00
  80017f4:	20000038 	.word	0x20000038
 
@@ -7233,7 +7233,7 @@ Disassembly of section .text:
 08003e3a <struktur_if_allokator>:
  8003e3a:	b500      	push	{lr}
  8003e3c:	f7fc fbad 	bl	800059a <push_lr_nachholen>
- 8003e40:	f7fd fc61 	bl	8001706 <eliminiere_tos_wenn_bmi>
+ 8003e40:	f7fd fc62 	bl	8001708 <eliminiere_tos_wenn_bmi>
  8003e44:	6a81      	ldr	r1, [r0, #40]	; 0x28
  8003e46:	2900      	cmp	r1, #0
  8003e48:	d007      	beq.n	8003e5a <struktur_if_allokator+0x20>
@@ -7320,7 +7320,7 @@ Disassembly of section .text:
  8003f06:	d1e2      	bne.n	8003ece <strukturen_passen_nicht>
  8003f08:	cf40      	ldmia	r7!, {r6}
  8003f0a:	b500      	push	{lr}
- 8003f0c:	f7fd fbfb 	bl	8001706 <eliminiere_tos_wenn_bmi>
+ 8003f0c:	f7fd fbfc 	bl	8001708 <eliminiere_tos_wenn_bmi>
  8003f10:	6a81      	ldr	r1, [r0, #40]	; 0x28
  8003f12:	2900      	cmp	r1, #0
  8003f14:	d00d      	beq.n	8003f32 <Code_1013+0x38>
@@ -8354,7 +8354,7 @@ Disassembly of section .text:
  8004786:	f44f 6080 	mov.w	r0, #1024	; 0x400
  800478a:	4008      	ands	r0, r1
  800478c:	d101      	bne.n	8004792 <kompilator+0x20>
- 800478e:	f7fc ff73 	bl	8001678 <sprungschreiber_flaggenerator>
+ 800478e:	f7fc ff74 	bl	800167a <sprungschreiber_flaggenerator>
  8004792:	0032      	movs	r2, r6
  8004794:	cf40      	ldmia	r7!, {r6}
  8004796:	f7ff ffd5 	bl	8004744 <konstantenfaltungszeiger_setzen>
@@ -8594,7 +8594,7 @@ Disassembly of section .text:
  80049be:	d11b      	bne.n	80049f8 <.interpret_token_found>
  80049c0:	6838      	ldr	r0, [r7, #0]
  80049c2:	0031      	movs	r1, r6
- 80049c4:	f7fc fe58 	bl	8001678 <sprungschreiber_flaggenerator>
+ 80049c4:	f7fc fe59 	bl	800167a <sprungschreiber_flaggenerator>
  80049c8:	f7ff fd38 	bl	800443c <Code_1126>
  80049cc:	0032      	movs	r2, r6
  80049ce:	cf40      	ldmia	r7!, {r6}
@@ -12047,7 +12047,7 @@ Disassembly of section .text:
  80065e4:	72616c6c 	.word	0x72616c6c
  80065e8:	52207369 	.word	0x52207369
  80065ec:	2e322041 	.word	0x2e322041
- 80065f0:	20322e35 	.word	0x20322e35
+ 80065f0:	20342e35 	.word	0x20342e35
  80065f4:	4d207962 	.word	0x4d207962
  80065f8:	68747461 	.word	0x68747461
  80065fc:	20736169 	.word	0x20736169
