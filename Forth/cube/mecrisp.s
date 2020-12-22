@@ -56,6 +56,7 @@
 @ Swiches for capabilities of this chip
 @ -----------------------------------------------------------------------------
 
+.equ	registerallocator, 1
 @.equ	flash16bytesblockwrite, 1
 .equ	flash8bytesblockwrite, 1
 @.equ	charkommaavailable, 1  Not available.
@@ -148,6 +149,61 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 .global		EvaluateState
 .global		DriveNumber
 
+
+.ifdef registerallocator
+
+@ Variablen für den Registerallokator
+
+	ramallot	state_tos, 4
+	ramallot 	constant_tos, 4
+
+	ramallot 	state_nos, 4
+	ramallot 	constant_nos, 4
+
+	ramallot 	state_3os, 4
+	ramallot 	constant_3os, 4
+
+	ramallot 	state_4os, 4
+	ramallot 	constant_4os, 4
+
+	ramallot 	state_5os, 4
+	ramallot 	constant_5os, 4
+
+	ramallot 	sprungtrampolin, 4
+
+	ramallot 	state_r0, 4
+	ramallot 	constant_r0, 4
+
+	ramallot 	inline_cache_count, 4
+
+
+.equ allocator_base, state_tos
+
+.equ	offset_state_tos,		0 * 4
+.equ	offset_constant_tos,	1 * 4
+.equ	offset_state_nos,		2 * 4
+.equ	offset_constant_nos,	3 * 4
+.equ	offset_state_3os,		4 * 4
+.equ	offset_constant_3os,	5 * 4
+.equ	offset_state_4os,		6 * 4
+.equ	offset_constant_4os,	7 * 4
+.equ	offset_state_5os,		8 * 4
+.equ	offset_constant_5os,	9 * 4
+
+.equ	offset_sprungtrampolin,	10 * 4
+
+.equ	offset_state_r0,		11 * 4
+.equ	offset_constant_r0,		12 * 4
+.equ	offset_inline_cache_count,	13 * 4
+
+
+.equ	rawinlinelength,		10 @ How many opcodes long may definitions be for direct inlining ?
+.equ	inline_cache_length,	6 @ For optimisation across inlined definitions, how many compilation steps should be buffered at most ?
+
+	ramallot	inline_cache, 6 * inline_cache_length
+
+.endif // registerallocator
+
 @ Jetzt kommen Puffer und Stacks:  Buffers and Stacks
 
 .equ	Zahlenpufferlaenge,		63 			@ Number buffer (Length+1 mod 4 = 0)
@@ -204,6 +260,69 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 @ Include the complete Mecrisp-Stellaris core
 @ -----------------------------------------------------------------------------
 
+.ifdef registerallocator
+.include "ra/ra-infrastructure.s"
+.include "ra/ra-tools.s"
+.ltorg
+
+.include "ra/double.s"
+.include "ra/stackjugglers.s"
+.include "ra/logic.s"
+.include "ra/ra-logic.s"
+.include "ra/comparisions.s"
+.ltorg
+.include "ra/memory.s"
+.include "stm-flash.s"
+.ltorg
+
+.ifdef emulated16bitflashwrites
+.include "flash4bytesblockwrite.s"
+.ltorg
+.endif
+
+.ifdef flash8bytesblockwrite
+.include "flash8bytesblockwrite.s"
+.ltorg
+.endif
+
+.ifdef flash16bytesblockwrite
+.include "flash16bytesblockwrite.s"
+.ltorg
+.endif
+
+.include "ra/calculations.s"
+.include "terminal.s"
+.include "query.s"
+.ltorg
+.include "strings.s"
+.include "deepinsight.s"
+.ltorg
+.include "compiler.s"
+.include "compiler-flash.s"
+.ltorg
+.include "ra/controlstructures.s"
+.ltorg
+.include "ra/doloop.s"
+.include "ra/case.s"
+.include "token.s"
+.ltorg
+.include "numberstrings.s"
+.ltorg
+
+.include "ra/ra-kompilator.s"
+.include "ra/ra-inline.s"
+.include "ra/interpreter.s"
+.ltorg
+.include "rtos.s"
+.include "bsp.s"
+.include "fs.s"
+.ltorg
+
+.include "interrupts-common.s"
+.include "interrupts.s" @ You have to change interrupt handlers for Porting !
+
+.else  // registerallocator
+
 .include "double.s"
 .include "stackjugglers.s"
 .include "logic.s"
@@ -255,6 +374,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
 
+.endif // registerallocator
 
 @ -----------------------------------------------------------------------------
 @ Schließen der Dictionarystruktur und Zeiger ins Flash-Dictionary

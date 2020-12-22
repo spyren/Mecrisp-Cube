@@ -1077,14 +1077,14 @@ find: @ ( address length -- Code-Adresse Flags )
 core_find: @ ( address length -- Code-Adresse Flags )
 @ -----------------------------------------------------------------------------
 
-.else
+.else // registerallocator
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "find"
 find: @ ( address length -- Code-Adresse Flags )
 @ -----------------------------------------------------------------------------
 
-.endif
+.endif // registerallocator
 
   push {r4, r5, lr}
 
