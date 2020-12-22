@@ -37,7 +37,7 @@ I set the putty terminal configuration to
   * Local echo: Auto
   * Local line editing: Auto
   
-```forth
+<pre>
 Mecrisp-Stellaris 2.5.2 by Matthias Koch. 
 
 Mecrisp-Cube 1.4.0 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2020 peter@spyr.ch
@@ -45,10 +45,10 @@ Mecrisp-Cube 1.4.0 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2020 peter
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
   * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
-23 5 / .[CR] 4  ok.
-: hello ." World" ;[CR]  ok.
-hello[CR] World ok.
-```
+<b>23 5 / .[CR]</b> 4  ok.
+<b>: hello ." World" ;[CR]</b>  ok.
+<b>hello[CR]</b> World ok.
+</pre>
 
 ### Installing
 
