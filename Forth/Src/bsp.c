@@ -1,10 +1,16 @@
 /**
  *  @brief
- *      Board Support Package.
+ *      Board Support Package for STM32WB Nucleo Board and Dongle.
  *
- *		Forth TRUE is -1, C TRUE is 1.
- *      LEDs and switches.
- *      D0 to D15 digital port pins.
+ *        - LEDs (LED1, LED2, LED3)
+ *        - Switches (SW1, SW2, SW3; dongle: SW1)
+ *        - Digital port pins D0 to D15 (Dongle: D0, D1, D6, D10, D11, D12, D13, D14, D15)
+ *        - Analog port pins A0 to A5 (Dongle: A2, A3)
+ *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2 (Dongle: D6)
+ *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
+ *        - Timer Capture/Compare
+ *
+ *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
  *        could be problematic in real world applications.
  *  @file

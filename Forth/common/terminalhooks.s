@@ -102,8 +102,8 @@
 	pushdatos
 	ldr		tos, =hook_pause
 	bx		lr
-  .word nop_vektor  @ No Pause defined for default
-//	.word	odelay		// CMSIS-RTOS
+//  .word nop_vektor  @ No Pause defined for default
+	.word	osDelay		// CMSIS-RTOS
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "emit" @ ( c -- )
@@ -143,9 +143,10 @@ qkey:
   Wortbirne Flag_visible, "pause" @ ( -- ? )
 pause:
 @------------------------------------------------------------------------------
- 	ldr		r0, =hook_pause
-	ldr		r0, [r0]
-	mov		pc, r0
+	ldr		r0, =1			// parameter for osDelay
+ 	ldr		r1, =hook_pause
+	ldr		r1, [r1]
+	mov		pc, r1
 
 
 @------------------------------------------------------------------------------
