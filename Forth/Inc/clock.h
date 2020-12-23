@@ -1,12 +1,12 @@
 /*
- * rtc.h
+ * clock.h
  *
  *  Created on: 17.02.2020
  *      Author: psi
  */
 
-#ifndef INC_RTC_H_
-#define INC_RTC_H_
+#ifndef INC_CLOCK_H_
+#define INC_CLOCK_H_
 
 void RTC_init(void);
 uint32_t RTC_getTime(void);

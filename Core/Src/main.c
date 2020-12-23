@@ -114,6 +114,7 @@
 #include "block.h"
 #include "app_fatfs.h"
 #include "fs.h"
+#include "clock.h"
 
 /* USER CODE END Includes */
 
@@ -174,7 +175,7 @@ int main(void)
   /* USER CODE BEGIN SysInit */
   // take HSI48 semaphore for the USB
 	while (HAL_HSEM_FastTake(5)) {
-		; // busy wait for
+		; // busy wait for semaphore
 	}
 
   /* USER CODE END SysInit */
@@ -325,7 +326,7 @@ void vApplicationMallocFailedHook(void) {
 
 /* USER CODE END 4 */
 
-/**
+ /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM17 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment

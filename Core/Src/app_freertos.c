@@ -34,11 +34,13 @@
 #include "bsp.h"
 #include "sd_spi.h"
 #include "sd.h"
+#include "fd.h"
 #include "block.h"
 #include "app_fatfs.h"
 #include "fs.h"
 #include "vi.h"
 #include "shci.h"
+#include "clock.h"
 
 
 /* USER CODE END Includes */
@@ -67,7 +69,7 @@ osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
   .name = "Main",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 512 * 12
+  .stack_size = 512 * 4
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -88,6 +90,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 	BSP_init();
+	RTC_init();
 	APPE_Init();
 	UART_init();
 	CDC_init();
@@ -124,6 +127,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_EVENTS */
+  /* add events, ... */
+  /* USER CODE END RTOS_EVENTS */
 
 }
 

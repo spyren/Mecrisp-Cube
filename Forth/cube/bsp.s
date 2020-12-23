@@ -238,4 +238,13 @@ pwmprescale:
 	bl		BSP_setPwmPrescale
 	pop		{r0-r3, pc}
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "rtc-counter"
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		RTC_getCounter
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
 

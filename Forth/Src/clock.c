@@ -3,7 +3,7 @@
  *      Real Time Clock (RTC).
  *
  *  @file
- *      rtc.c
+ *      clock.c
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
@@ -37,7 +37,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "fs.h"
-#include "rtc.h"
+#include "clock.h"
 
 #define DATE_2000_01_01 (946684800u)
 #define DATE_2099_12_31 (4102358400u)
@@ -88,6 +88,8 @@ void RTC_init(void) {
 	if (RTC_SemaphoreID == NULL) {
 		Error_Handler();
 	}
+
+    HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
 }
 
 
@@ -192,7 +194,28 @@ uint64_t RTC_typeTime(uint64_t forth_stack) {
 	return stack;
 }
 
+int RTC_getCounter() {
+	return HAL_RTCEx_GetWakeUpTimer(&hrtc);
+}
+
 
 // Callbacks
 // *********
+
+/**
+  * @brief
+  * 	Wake Up Timer callback. Called every second.
+  *
+  * 	It sets the RTC semaphore to synchronize threads.
+  * @param[in]
+  * 	hrtc RTC handle, not used
+  * @retval
+  * 	None
+  */
+void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc) {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hrtc);
+
+  osSemaphoreRelease(RTC_SemaphoreID);
+}
 
