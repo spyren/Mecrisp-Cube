@@ -26,6 +26,7 @@
 #include "hw_conf.h"
 #include "hw_if.h"
 #include "ble_bufsize.h"
+#include "app_common.h"
 
 /******************************************************************************
  * Application Config
@@ -342,7 +343,7 @@
  *
  *  The following settings are computed with LSI as input to the RTC
  */
-#define CFG_RTCCLK_DIVIDER_CONF 0
+#define CFG_RTCCLK_DIVIDER_CONF 4
 
 #if (CFG_RTCCLK_DIVIDER_CONF == 0)
 /**

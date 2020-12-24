@@ -198,20 +198,87 @@ uint64_t RTC_typeTime(uint64_t forth_stack) {
 }
 
 
+/**
+ *  @brief
+ *      Waits for alarm A.
+ *  @return
+ *      none
+ */
+void RTC_waitAlarmA() {
+	osSemaphoreAcquire(RTC_SemaphoreID, osWaitForever);
+}
+
+
+/**
+ *  @brief
+ *      Waits for alarm A.
+ *  @param[in]
+ *      hour   0..23, -1 don't care
+ *  @param[in]
+ *      minute 0..59, -1 don't care
+ *  @param[in]
+ *      second 0..59, -1 don't care
+ *  @return
+ *      none
+ */
+void RTC_setAlarmA(int hour, int minute, int second) {
+	RTC_AlarmTypeDef sAlarm = {0};
+	uint32_t mask = RTC_ALARMMASK_DATEWEEKDAY;
+
+	if (hour >= 0 && hour <24) {
+		sAlarm.AlarmTime.Hours = hour;
+	} else {
+		sAlarm.AlarmTime.Hours = 0;
+		mask |= RTC_ALARMMASK_HOURS;
+	}
+
+	if (minute >= 0 && minute < 60) {
+		sAlarm.AlarmTime.Minutes = minute;
+	} else {
+		sAlarm.AlarmTime.Minutes = 0;
+		mask |= RTC_ALARMMASK_MINUTES;
+	}
+
+	if (second >= 0 && second < 60) {
+		sAlarm.AlarmTime.Seconds = second;
+	} else {
+		sAlarm.AlarmTime.Seconds = 0;
+		mask |= RTC_ALARMMASK_SECONDS;
+	}
+
+	sAlarm.AlarmTime.SubSeconds = 0;
+	sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_NONE;
+	sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+	sAlarm.AlarmDateWeekDay = 1;
+	sAlarm.AlarmMask = mask;
+
+	// set semaphore
+	osSemaphoreAcquire(RTC_SemaphoreID, 0);
+
+	sAlarm.Alarm = RTC_ALARM_A;
+	if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+}
+
+
 // Callbacks
 // *********
 
 /**
   * @brief
-  * 	Wake Up Timer callback. Called every second.
-  *
+  * 	Alarm A callback.
   * 	It sets the RTC semaphore to synchronize threads.
   * @param[in]
   * 	hrtc RTC handle, not used
   * @retval
   * 	None
   */
-void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc) {
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hrtc);
 

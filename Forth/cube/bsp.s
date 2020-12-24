@@ -239,3 +239,28 @@ pwmprescale:
 	pop		{r0-r3, pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "wait-alarm"
+		@ ( --  ) Wait for alarm A
+// void RTC_waitAlarmA()
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		RTC_waitAlarmA
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "alarm!"
+		@ ( n1 n2 n3 --  ) sets the alarm
+// void RTC_setAlarmA(int hour, int minute, int second)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r2, tos		// n3 second
+	drop
+	movs	r1, tos		// n2 minute
+	drop
+	movs	r0, tos		// n3 hour
+	drop
+	bl		RTC_setAlarmA
+	pop		{r0-r3, pc}
+
