@@ -89,6 +89,9 @@ void RTC_init(void) {
 		Error_Handler();
 	}
 
+	/* RTC WakeUpTimer Interrupt Configuration: EXTI configuration */
+	__HAL_RTC_WAKEUPTIMER_EXTI_ENABLE_IT();
+
     HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
 }
 
@@ -192,10 +195,6 @@ uint64_t RTC_typeTime(uint64_t forth_stack) {
 	stack = FS_type(stack, (uint8_t*)line, strlen(line));
 
 	return stack;
-}
-
-int RTC_getCounter() {
-	return HAL_RTCEx_GetWakeUpTimer(&hrtc);
 }
 
 
