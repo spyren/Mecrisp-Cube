@@ -193,6 +193,7 @@ int main(void)
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace

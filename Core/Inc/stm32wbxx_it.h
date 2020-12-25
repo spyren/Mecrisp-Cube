@@ -59,6 +59,7 @@ void DMA1_Channel2_IRQHandler(void);
 void ADC1_IRQHandler(void);
 void USB_LP_IRQHandler(void);
 void TIM1_TRG_COM_TIM17_IRQHandler(void);
+void TIM2_IRQHandler(void);
 void SPI1_IRQHandler(void);
 void USART1_IRQHandler(void);
 void RTC_Alarm_IRQHandler(void);
