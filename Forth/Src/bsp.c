@@ -951,7 +951,9 @@ void BSP_waitPeriod(void) {
  *      Captured value
  */
 uint32_t BSP_waitIC(uint32_t timeout) {
-	osSemaphoreAcquire(ICOC_CH2_SemaphoreID, timeout);
+	if (osSemaphoreAcquire(ICOC_CH2_SemaphoreID, timeout) == osErrorTimeout) {
+		return 0;
+	}
 	return (HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_2));
 }
 

@@ -419,7 +419,7 @@ pwmprescale:
 	push	{r0-r3, lr}
 	movs	r0, tos		// pin_number
 	drop
-	bl		BSP_waitIC
+	bl		BSP_waitOC
 	pop		{r0-r3, pc}
 
 
@@ -430,7 +430,7 @@ pwmprescale:
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	movs	r0, tos		// timeout
-	bl		BSP_waitOC
+	bl		BSP_waitIC
 	movs	tos, r0		// return value
 	pop		{r0-r3, pc}
 
