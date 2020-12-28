@@ -56,6 +56,8 @@ void BSP_setPrescaleICOC(uint32_t prescale);
 void BSP_setPeriodICOC(uint32_t period);
 void BSP_setCounterICOC(uint32_t count);
 uint32_t BSP_getCounterICOC(void);
+void BSP_startPeriodICOC(void);
+void BSP_stopPeriodICOC(void);
 void BSP_setModeOC(int pin_number, uint32_t mode);
 void BSP_startOC(int pin_number, uint32_t pulse);
 void BSP_stopOC(int pin_number);

@@ -708,7 +708,7 @@ void BSP_setPwmPrescale(uint16_t value) {
  *      none
  */
 void BSP_setPrescaleICOC(uint32_t prescale) {
-	__HAL_TIM_SET_PRESCALER(&htim2, prescale);
+	__HAL_TIM_SET_PRESCALER(&htim2, --prescale);
 }
 
 
@@ -750,6 +750,28 @@ void BSP_setCounterICOC(uint32_t count) {
  */
 uint32_t BSP_getCounterICOC(void) {
 	return __HAL_TIM_GET_COUNTER(&htim2);
+}
+
+
+/**
+ *  @brief
+ *	    Starts the ICOC period
+ *  @return
+ *      none
+ */
+void BSP_startPeriodICOC(void) {
+	HAL_TIM_Base_Start_IT(&htim2);
+}
+
+
+/**
+ *  @brief
+ *	    Stops the ICOC period
+ *  @return
+ *      none
+ */
+void BSP_stopPeriodICOC(void) {
+	HAL_TIM_Base_Stop_IT(&htim2);
 }
 
 
@@ -828,14 +850,17 @@ void BSP_startOC(int pin_number, uint32_t pulse) {
 	switch (pin_number) {
 	case 0:
 		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, 0);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, pulse);
 		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_4);
 		break;
 	case 1:
 		osSemaphoreAcquire(ICOC_CH3_SemaphoreID, 0);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, pulse);
 		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_3);
 		break;
 	case 5:
 		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, 0);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pulse);
 		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1);
 		break;
 	}

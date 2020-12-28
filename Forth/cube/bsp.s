@@ -264,3 +264,174 @@ pwmprescale:
 	bl		RTC_setAlarmA
 	pop		{r0-r3, pc}
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICOCprescale"
+		@ ( u -- )   Sets the input capture / output compare prescale for TIMER2.
+		@            default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
+// void BSP_setPrescaleICOC(uint32_t prescale);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// prescale
+	drop
+	bl		BSP_setPrescaleICOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICOCperiod!"
+		@ ( u -- )    Sets the input capture / output compare (TIMER2) period.
+		@             default $FFFFFFFF (4'294'967'295).
+        @             When the up counter reaches the period, the counter is set to 0.
+        @              For prescale 32 the maximum time is about 1 h 11 m
+// void BSP_setPeriodICOC(uint32_t period);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// period
+	drop
+	bl		BSP_setPeriodICOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICOCcount!"
+		@ ( u -- )    Sets the input capture / output compare counter for TIMER2
+// void BSP_setCounterICOC(uint32_t count);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// count
+	drop
+	bl		BSP_setCounterICOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICOCcount@"
+		@ ( -- u )    Gets the input capture / output compare counter for TIMER2
+// uint32_t BSP_getCounterICOC(void);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		BSP_getCounterICOC
+	movs	tos, r0		// return value
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICOCstart"
+		@ ( -- )      Starts the ICOC period
+// void BSP_startPeriodICOC(void) {
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		BSP_startPeriodICOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICOCstop"
+		@ ( -- )      Stops the ICOC period
+// void BSP_stopPeriodICOC(void) {
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		BSP_stopPeriodICOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "OCmod"
+		@ ( u a -- )  Sets for pin a the OC mode u  0 frozen, 1 active level on match,
+		@             inactive level on match, 3 toggle on match
+        @             4 forced active, 5 forced inactive
+// void BSP_setModeOC(int pin_number, uint32_t mode);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// mode
+	drop
+	bl		BSP_setModeOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "OCstart"
+		@ ( u a -- )  Starts the output compare mode for pin a with pulse u
+// void BSP_startOC(int pin_number, uint32_t pulse);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// pulse
+	drop
+	bl		BSP_startOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "OCstop"
+		@ ( a -- )    Stops output compare for pin a
+// void BSP_stopOC(int pin_number);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	bl		BSP_stopOC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICstart"
+		@ ( u -- )    Starts input capture u: 0 rising edge, 1 falling edge, 2 both edges
+// void BSP_startIC(uint32_t mode);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// mode
+	drop
+	bl		BSP_startIC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICstop"
+		@ ( -- )      Stops input capture
+// void BSP_stopIC(void);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		BSP_stopIC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "waitperiod"
+		@ ( -- )      wait for the end of the TIMER2 period
+// void BSP_waitPeriod(void);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		BSP_waitPeriod
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "OCwait"
+		@ ( a -- )    wait for the end of output capture pin a
+// void BSP_waitOC(int pin_number);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	bl		BSP_waitIC
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "ICwait"
+		@ ( u -- u )    wait for the end of input capture, returns counter u
+// uint32_t BSP_waitIC(uint32_t timeout);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// timeout
+	bl		BSP_waitOC
+	movs	tos, r0		// return value
+	pop		{r0-r3, pc}
+
+
