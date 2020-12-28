@@ -338,6 +338,9 @@ void vApplicationMallocFailedHook(void) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
+	  if (htim->Instance == TIM2) {
+	    BSP_TIM2_PeriodElapsedCallback();
+	  }
 
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM17) {

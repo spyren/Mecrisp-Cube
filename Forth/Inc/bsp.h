@@ -51,5 +51,20 @@ int BSP_getDigitalPin(int pin_number);
 int BSP_getAnalogPin(int pin_number);
 void BSP_setPwmPin(int pin_number, int value);
 void BSP_setPwmPrescale(uint16_t value);
+void BSP_TIM2_PeriodElapsedCallback(void);
+void BSP_setPrescaleICOC(uint32_t prescale);
+void BSP_setPeriodICOC(uint32_t period);
+void BSP_setCounterICOC(uint32_t count);
+uint32_t BSP_getCounterICOC(void);
+void BSP_setModeOC(int pin_number, uint32_t mode);
+void BSP_startOC(int pin_number, uint32_t pulse);
+void BSP_stopOC(int pin_number);
+void BSP_startIC(uint32_t mode);
+void BSP_stopIC(void);
+void BSP_waitPeriod(void);
+uint32_t BSP_waitIC(uint32_t timeout);
+void BSP_waitOC(int pin_number);
+
+
 
 #endif /* INC_BSP_H_ */

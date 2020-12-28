@@ -56,6 +56,7 @@
 // Global Variables
 // ****************
 const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics \n";
+extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
 // ******************
@@ -81,6 +82,12 @@ static const osMutexAttr_t Adc_MutexAttr = {
 };
 
 static osSemaphoreId_t Adc_SemaphoreID;
+
+static osSemaphoreId_t ICOC_period_SemaphoreID;
+static osSemaphoreId_t ICOC_CH1_SemaphoreID;
+static osSemaphoreId_t ICOC_CH2_SemaphoreID;
+static osSemaphoreId_t ICOC_CH3_SemaphoreID;
+static osSemaphoreId_t ICOC_CH4_SemaphoreID;
 
 
 // Private Variables
@@ -112,6 +119,27 @@ void BSP_init(void) {
 		Error_Handler();
 	}
 
+	ICOC_period_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (ICOC_period_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	ICOC_CH1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (ICOC_CH1_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	ICOC_CH2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (ICOC_CH2_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	ICOC_CH3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (ICOC_CH3_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	ICOC_CH4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (ICOC_CH4_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_1;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
@@ -130,6 +158,9 @@ void BSP_init(void) {
 
 }
 
+
+// LEDs
+// ****
 
 /**
  *  @brief
@@ -293,6 +324,9 @@ int BSP_getLED3(void) {
 	return return_value;
 }
 
+
+// Switches
+// ********
 
 /**
  *  @brief
@@ -515,7 +549,7 @@ static const uint32_t AnalogPortPin_a[6] = {
 		ADC_CHANNEL_6, // A2 PA1
 		ADC_CHANNEL_5, // A3 PA0
 		ADC_CHANNEL_4, // A4 PC3
-		ADC_CHANNEL_3   // A5 PC2
+		ADC_CHANNEL_3  // A5 PC2
 };
 
 /**
@@ -561,14 +595,16 @@ typedef struct {
 	uint32_t alternate;
 } PortPinMode_t;
 
-static const PortPinMode_t DigitalPortPinMode_a[6] = {
-				{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,   // 0 in
-				{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,   // 1 pullup
-				{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,   // 2 pulldow
-				{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,   // 3 pushpull
-				{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,   // 4 opendrain
-				{ GPIO_MODE_AF_PP,     GPIO_NOPULL, GPIO_AF1_TIM1 } ,   // 5 pwm
-		};
+static const PortPinMode_t DigitalPortPinMode_a[8] = {
+	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				// 0 in
+	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 pullup
+	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 pulldow
+	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 opendrain
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
+};
 /**
  *  @brief
  *	    Sets the digital port pin mode (D0 .. D15).
@@ -598,6 +634,9 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 	osMutexRelease(DigitalPort_MutexID);
 }
 
+
+// PWM
+// ***
 
 /**
  *  @brief
@@ -655,6 +694,266 @@ void BSP_setPwmPrescale(uint16_t value) {
 }
 
 
+// Input Capture / Output Compare
+// ******************************
+
+/**
+ *  @brief
+ *	    Sets the input capture / output compare prescale for TIMER2.
+ *
+ *	    default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
+ *	@param[in]
+ *      prescale         divider
+ *  @return
+ *      none
+ */
+void BSP_setPrescaleICOC(uint32_t prescale) {
+	__HAL_TIM_SET_PRESCALER(&htim2, prescale);
+}
+
+
+/**
+ *  @brief
+ *	    Sets the input capture / output compare (TIMER2) period. default $FFFFFFFF (4294967295)
+ *
+ *		When the up counter reaches the period, the counter is set to 0.
+ *      For prescale 32 the maximum time is about 1 h 11 m
+ *
+ *	@param[in]
+ *      period
+ *  @return
+ *      none
+ */
+void BSP_setPeriodICOC(uint32_t period) {
+	__HAL_TIM_SET_AUTORELOAD(&htim2, period);
+}
+
+
+/**
+ *  @brief
+ *	    Sets the input capture / output compare counter for TIMER2
+ *	@param[in]
+ *      count
+ *  @return
+ *      none
+ */
+void BSP_setCounterICOC(uint32_t count) {
+	__HAL_TIM_SET_COUNTER(&htim2, count);
+}
+
+
+/**
+ *  @brief
+ *	    Gets the input capture / output compare counter for TIMER2
+ *  @return
+ *      counter value
+ */
+uint32_t BSP_getCounterICOC(void) {
+	return __HAL_TIM_GET_COUNTER(&htim2);
+}
+
+
+/**
+ *  @brief
+ *	    Sets the Output Compare mode
+ *	@param[in]
+ *	    pin_number
+ *	@param[in]
+ *      mode  0 frozen, 1 active level on match, 2 inactive level on match, 3 toggle on match
+ *	          4 forced active, 5 forced inactive
+ *  @return
+ *      none
+ */
+void BSP_setModeOC(int pin_number, uint32_t mode) {
+	TIM_OC_InitTypeDef sConfigOC = {0};
+	uint32_t ch;
+
+	switch (pin_number) {
+	case 0:
+		ch = TIM_CHANNEL_4;
+		break;
+	case 1:
+		ch = TIM_CHANNEL_3;
+		break;
+	case 5:
+		ch = TIM_CHANNEL_1;
+		break;
+	default:
+		return;
+	}
+
+	sConfigOC.Pulse = __HAL_TIM_GET_COMPARE(&htim2, ch);
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	switch (mode) {
+	case 0: // frozen
+		sConfigOC.OCMode = TIM_OCMODE_TIMING;
+		break;
+	case 1: // active level on match
+		sConfigOC.OCMode = TIM_OCMODE_ACTIVE;
+		break;
+	case 2: // inactive level on match
+		sConfigOC.OCMode = TIM_OCMODE_INACTIVE;
+		break;
+	case 3: // toggle on match
+		sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+		break;
+	case 4: // forced active
+		sConfigOC.OCMode = TIM_OCMODE_FORCED_ACTIVE;
+		break;
+	case 5: // forced inactive
+		sConfigOC.OCMode = TIM_OCMODE_FORCED_INACTIVE;
+		break;
+	default:
+		Error_Handler();
+		return;
+	}
+	if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, ch) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+
+/**
+ *  @brief
+ *	    Starts Output Compare
+ *	@param[in]
+ *	    pin_number
+ *	@param[in]
+ *	    pulse
+ *  @return
+ *      none
+ */
+void BSP_startOC(int pin_number, uint32_t pulse) {
+	switch (pin_number) {
+	case 0:
+		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, 0);
+		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_4);
+		break;
+	case 1:
+		osSemaphoreAcquire(ICOC_CH3_SemaphoreID, 0);
+		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_3);
+		break;
+	case 5:
+		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, 0);
+		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1);
+		break;
+	}
+
+}
+
+
+/**
+ *  @brief
+ *	    Stops Output Compare
+ *	@param[in]
+ *	    pin_number
+ *  @return
+ *      none
+ */
+void BSP_stopOC(int pin_number) {
+	switch (pin_number) {
+	case 0:
+		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_4);
+		break;
+	case 1:
+		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_3);
+		break;
+	case 5:
+		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_1);
+		break;
+	}
+}
+
+
+/**
+ *  @brief
+ *	    Starts Input Capture
+ *	@param[in]
+ *      mode  0 rising edge, 1 falling edge, 2 both edges sets the output compare mode
+ *  @return
+ *      none
+ */
+void BSP_startIC(uint32_t mode) {
+	switch(mode) {
+	case 0:
+		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
+		break;
+	case 1:
+		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+		break;
+	case 2:
+		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_BOTHEDGE);
+		break;
+	default:
+		return;
+
+	}
+	osSemaphoreAcquire(ICOC_CH2_SemaphoreID, 0);
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);
+}
+
+
+/**
+ *  @brief
+ *	    Stops Input Capture
+ *  @return
+ *      none
+ */
+void BSP_stopIC(void) {
+	HAL_TIM_IC_Stop_IT(&htim2, TIM_CHANNEL_2);
+
+}
+
+
+/**
+ *  @brief
+ *      Waits for Input Capture / Output Compare timer period.
+ *  @return
+ *      Captured value
+ */
+void BSP_waitPeriod(void) {
+	osSemaphoreAcquire(ICOC_period_SemaphoreID, osWaitForever);
+}
+
+
+/**
+ *  @brief
+ *      Waits for Input Capture.
+ *	@param[in]
+ *      timeout  in ms
+ *  @return
+ *      Captured value
+ */
+uint32_t BSP_waitIC(uint32_t timeout) {
+	osSemaphoreAcquire(ICOC_CH2_SemaphoreID, timeout);
+	return (HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_2));
+}
+
+
+/**
+ *  @brief
+ *      Waits for Output Compare.
+ *	@param[in]
+ *      pin_number  port pin 0 D0, 1 D1, or 5 D5
+ *  @return
+ *      none
+ */
+void BSP_waitOC(int pin_number) {
+	switch (pin_number) {
+	case 0:
+		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, osWaitForever);
+		break;
+	case 1:
+		osSemaphoreAcquire(ICOC_CH3_SemaphoreID, osWaitForever);
+		break;
+	case 5:
+		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, osWaitForever);
+		break;
+	}
+}
+
+
 // Private Functions
 // *****************
 
@@ -695,4 +994,56 @@ void HAL_ADC_ErrorCallback(ADC_HandleTypeDef *hadc) {
 }
 
 
+// Input Capture / Output Compare Interrupt Callbacks
+// **************************************************
+
+/**
+  * @brief  Period elapsed callback in non-blocking mode
+  * @param  htim TIM handle
+  * @retval None
+  */
+void BSP_TIM2_PeriodElapsedCallback() {
+	//		/* Get configured autoreload value */
+	//		autoreload_value = __HAL_TIM_GET_AUTORELOAD(htim);
+	osSemaphoreRelease(ICOC_period_SemaphoreID);
+}
+
+
+/**
+  * @brief  Output Compare callback in non-blocking mode
+  * @param  htim TIM OC handle
+  * @retval None
+  */
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Instance == TIM2) {
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			// D5, PA15
+			osSemaphoreRelease(ICOC_CH1_SemaphoreID);
+		}
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3) {
+			// D1, PA2
+			osSemaphoreRelease(ICOC_CH3_SemaphoreID);
+		}
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4) {
+			// D0, PA3
+			osSemaphoreRelease(ICOC_CH4_SemaphoreID);
+		}
+	}
+}
+
+
+/**
+  * @brief  Input Capture callback in non-blocking mode
+  * @param  htim TIM IC handle
+  * @retval None
+  */
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Instance == TIM2) {
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) {
+			// A2, PA1
+			osSemaphoreRelease(ICOC_CH2_SemaphoreID);
+		}
+	}
+
+}
 
