@@ -241,7 +241,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "wait-alarm"
-		@ ( --  ) Wait for alarm A
+wait_alarm:		@ ( --  ) Wait for alarm A
 // void RTC_waitAlarmA()
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -251,6 +251,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "alarm!"
+set_alarm:
 		@ ( n1 n2 n3 --  ) sets the alarm
 // void RTC_setAlarmA(int hour, int minute, int second)
 @ -----------------------------------------------------------------------------
@@ -267,6 +268,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCprescale"
+ICOCprescale:
 		@ ( u -- )   Sets the input capture / output compare prescale for TIMER2.
 		@            default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 // void BSP_setPrescaleICOC(uint32_t prescale);
@@ -280,6 +282,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCperiod!"
+set_ICOCperiod:
 		@ ( u -- )    Sets the input capture / output compare (TIMER2) period.
 		@             default $FFFFFFFF (4'294'967'295).
         @             When the up counter reaches the period, the counter is set to 0.
@@ -295,6 +298,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCcount!"
+set_ICOCcount:
 		@ ( u -- )    Sets the input capture / output compare counter for TIMER2
 // void BSP_setCounterICOC(uint32_t count);
 @ -----------------------------------------------------------------------------
@@ -307,6 +311,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCcount@"
+get_ICOCcount:
 		@ ( -- u )    Gets the input capture / output compare counter for TIMER2
 // uint32_t BSP_getCounterICOC(void);
 @ -----------------------------------------------------------------------------
@@ -319,6 +324,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCstart"
+ICOCstart:
 		@ ( -- )      Starts the ICOC period
 // void BSP_startPeriodICOC(void) {
 @ -----------------------------------------------------------------------------
@@ -329,6 +335,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCstop"
+ICOCstop:
 		@ ( -- )      Stops the ICOC period
 // void BSP_stopPeriodICOC(void) {
 @ -----------------------------------------------------------------------------
@@ -339,6 +346,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCmod"
+OCmod:
 		@ ( u a -- )  Sets for pin a the OC mode u  0 frozen, 1 active level on match,
 		@             inactive level on match, 3 toggle on match
         @             4 forced active, 5 forced inactive
@@ -355,6 +363,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCstart"
+OCstart:
 		@ ( u a -- )  Starts the output compare mode for pin a with pulse u
 // void BSP_startOC(int pin_number, uint32_t pulse);
 @ -----------------------------------------------------------------------------
@@ -369,6 +378,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCstop"
+OCstop:
 		@ ( a -- )    Stops output compare for pin a
 // void BSP_stopOC(int pin_number);
 @ -----------------------------------------------------------------------------
@@ -381,6 +391,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICstart"
+ICstart:
 		@ ( u -- )    Starts input capture u: 0 rising edge, 1 falling edge, 2 both edges
 // void BSP_startIC(uint32_t mode);
 @ -----------------------------------------------------------------------------
@@ -393,6 +404,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICstop"
+ICstop:
 		@ ( -- )      Stops input capture
 // void BSP_stopIC(void);
 @ -----------------------------------------------------------------------------
@@ -403,6 +415,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "waitperiod"
+waitperiod:
 		@ ( -- )      wait for the end of the TIMER2 period
 // void BSP_waitPeriod(void);
 @ -----------------------------------------------------------------------------
@@ -413,6 +426,7 @@ pwmprescale:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCwait"
+OCwait:
 		@ ( a -- )    wait for the end of output capture pin a
 // void BSP_waitOC(int pin_number);
 @ -----------------------------------------------------------------------------
@@ -426,6 +440,7 @@ pwmprescale:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICwait"
 		@ ( u -- u )    wait for the end of input capture, returns counter u
+ICwait:
 // uint32_t BSP_waitIC(uint32_t timeout);
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -434,4 +449,66 @@ pwmprescale:
 	movs	tos, r0		// return value
 	pop		{r0-r3, pc}
 
+
+// I2C
+// ***
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "I2dev"
+I2dev:
+        @ ( c -- ) Sets the I2C slave device
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos
+	drop
+	bl		IIC_setDevice
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "I2Cget"
+I2Cget:
+        @ ( a size -- ) Get a message
+// int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos			// RxSize
+	drop
+	movs	r0, tos			// *RxBuffer
+	drop
+	bl		IIC_getMessage
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "I2Cput"
+I2Cput:
+        @ ( a size --  ) Put a message
+// int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos			// TxSize
+	drop
+	movs	r0, tos			// *TxBuffer
+	drop
+	bl		IIC_putMessage
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "I2Cputget"
+I2Cputget:
+        @ ( a1 size1 a2 size2 --  ) Put and get a message
+// int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r3, tos			// RxSize
+	drop
+	movs	r2, tos			// *RxBuffer
+	drop
+	movs	r1, tos			// TxSize
+	drop
+	movs	r0, tos			// *TxBuffer
+	drop
+	bl		IIC_putGetMessage
+	movs	tos, r0
+	pop		{r0-r3, pc}
 

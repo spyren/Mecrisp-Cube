@@ -41,6 +41,8 @@
 #include "vi.h"
 #include "shci.h"
 #include "clock.h"
+#include "iic.h"
+#include "oled.h"
 
 
 /* USER CODE END Includes */
@@ -93,6 +95,7 @@ void MX_FREERTOS_Init(void) {
 	RTC_init();
 	APPE_Init();
 	UART_init();
+	IIC_init();
 	CDC_init();
 	FLASH_init();
 	SDSPI_init();
@@ -145,9 +148,10 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
 	SD_getSize();
+	OLED_init();
 
 	osDelay(10);
-	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+//	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 
 	Forth();
 

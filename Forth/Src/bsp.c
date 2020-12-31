@@ -89,6 +89,10 @@ static osSemaphoreId_t ICOC_CH2_SemaphoreID;
 static osSemaphoreId_t ICOC_CH3_SemaphoreID;
 static osSemaphoreId_t ICOC_CH4_SemaphoreID;
 
+static osSemaphoreId_t EXTI_4_SemaphoreID;
+static osSemaphoreId_t EXTI_9_5_SemaphoreID;
+static osSemaphoreId_t EXTI_15_10_SemaphoreID;
+
 
 // Private Variables
 // *****************
@@ -981,6 +985,34 @@ void BSP_waitOC(int pin_number) {
 }
 
 
+/**
+ *  @brief
+ *      Waits for EXTI (external interrupt)
+ *	@param[in]
+ *      pin_number  port pin 2 D2, 4 D4, 7 D7, 10 D10
+ *	@param[in]
+ *      timeout  in ms
+ *  @return
+ *      none
+ */
+void BSP_waitEXTI(int pin_number, int32_t timeout) {
+	switch (pin_number) {
+	case 2:
+		osSemaphoreAcquire(EXTI_9_5_SemaphoreID, timeout);
+		break;
+	case 4:
+		osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
+		break;
+	case 7:
+		osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
+		break;
+	case 10:
+		osSemaphoreAcquire(EXTI_4_SemaphoreID, timeout);
+		break;
+	}
+}
+
+
 // Private Functions
 // *****************
 
@@ -1072,5 +1104,29 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 		}
 	}
 
+}
+
+
+/**
+  * @brief  EXTI line detection callback.
+  * @param GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
+  * @retval None
+  */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	switch (GPIO_Pin) {
+	case GPIO_PIN_4:  // D10
+		osSemaphoreRelease(EXTI_4_SemaphoreID);
+		break;
+	case GPIO_PIN_6:  // D2
+		osSemaphoreRelease(EXTI_9_5_SemaphoreID);
+		break;
+	case GPIO_PIN_10: // D4
+		osSemaphoreRelease(EXTI_15_10_SemaphoreID);
+		break;
+	case GPIO_PIN_13: // D7
+		// already released with GPIO_PIN_10
+		break;
+
+	}
 }
 

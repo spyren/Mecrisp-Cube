@@ -216,6 +216,49 @@ set_stopbits:
 	pop		{r0-r3, pc}
 
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oled-emit"
+oled_emit:
+        @ ( c -- ) Emit one character
+// void OLED_sendChar(char ch)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos
+	drop
+	bl		OLED_sendChar
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oled-pos"
+oled_pos:
+        @ ( x y -- ) Set OLED position
+// void OLED_setPos(uint8_t x, uint8_t y)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos		// y
+	drop
+	movs	r0, tos		// x
+	drop
+	bl		OLED_setPos
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oled-cmd"
+oled_cmd:
+        @ ( a u -- ) send command to OLED
+// void OLED_sendCommand(static uint8_t *command, size)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos		// size
+	drop
+	movs	r0, tos		// command
+	drop
+	bl		OLED_sendCommand
+	pop		{r0-r3, pc}
+
+
 // C Interface to some Forth Words
 //********************************
 
