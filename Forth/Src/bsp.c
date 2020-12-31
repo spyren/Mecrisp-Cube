@@ -144,6 +144,19 @@ void BSP_init(void) {
 		Error_Handler();
 	}
 
+	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_4_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	EXTI_9_5_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_9_5_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	EXTI_15_10_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_15_10_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_1;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
@@ -985,9 +998,70 @@ void BSP_waitOC(int pin_number) {
 }
 
 
+// EXTI
+// ****
+
 /**
  *  @brief
- *      Waits for EXTI (external interrupt)
+ *	    Sets the EXTI port pin mode
+ *	@param[in]
+ *	    pin_number port pin 2 D2, 4 D4, 7 D7, 10 D10, D4 and D7 share the same EXTI line
+ *	@param[in]
+ *      mode  0 rising edge, 1 falling edge, 2 both edges, 3 none
+ *  @return
+ *      none
+ */
+void BSP_setModeEXTI(int pin_number, uint32_t mode) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+	GPIO_TypeDef *port;
+
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+
+	switch (pin_number) {
+	case 2:
+		GPIO_InitStruct.Pin = D2_Pin;
+		port = D2_GPIO_Port;
+		break;
+	case 4:
+		GPIO_InitStruct.Pin = D4_Pin;
+		port = D4_GPIO_Port;
+		break;
+	case 7:
+		GPIO_InitStruct.Pin = D7_Pin;
+		port = D7_GPIO_Port;
+		break;
+	case 10:
+		GPIO_InitStruct.Pin = D10_Pin;
+		port = D10_GPIO_Port;
+		break;
+	default:
+		return;
+	}
+
+	switch (mode) {
+	case 0: // rising edge
+		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+		break;
+	case 1: // falling edge
+		GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+		break;
+	case 2: // both edges
+		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+		break;
+	case 3: // none
+		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+		break;
+	default:
+		Error_Handler();
+		return;
+	}
+	HAL_GPIO_Init(port, &GPIO_InitStruct);
+}
+
+
+/**
+ *  @brief
+ *      Waits for EXTI line (interrupt driven by port pin edge)
  *	@param[in]
  *      pin_number  port pin 2 D2, 4 D4, 7 D7, 10 D10
  *	@param[in]
@@ -995,20 +1069,30 @@ void BSP_waitOC(int pin_number) {
  *  @return
  *      none
  */
-void BSP_waitEXTI(int pin_number, int32_t timeout) {
+int BSP_waitEXTI(int pin_number, int32_t timeout) {
+	osStatus_t status;
 	switch (pin_number) {
 	case 2:
-		osSemaphoreAcquire(EXTI_9_5_SemaphoreID, timeout);
+		status = osSemaphoreAcquire(EXTI_9_5_SemaphoreID, timeout);
 		break;
 	case 4:
-		osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
+		status = osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
 		break;
 	case 7:
-		osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
+		status = osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
 		break;
 	case 10:
-		osSemaphoreAcquire(EXTI_4_SemaphoreID, timeout);
+		status = osSemaphoreAcquire(EXTI_4_SemaphoreID, timeout);
 		break;
+	default:
+		return -1;
+	}
+
+	if (status == osOK) {
+		return 0;
+	} else {
+		// timeout or error
+		return -2;
 	}
 }
 

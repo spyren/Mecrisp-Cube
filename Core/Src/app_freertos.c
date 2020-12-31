@@ -151,7 +151,7 @@ void MainThread(void *argument)
 	OLED_init();
 
 	osDelay(10);
-//	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 
 	Forth();
 

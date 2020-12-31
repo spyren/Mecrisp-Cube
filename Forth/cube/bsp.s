@@ -450,6 +450,36 @@ ICwait:
 	pop		{r0-r3, pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "EXTImod"
+		@ ( u a --  )    Sets for pin a the EXTI mode u: 0 rising edge, 1 falling edge, 2 both edges, 3 none
+EXTImod:
+// void BSP_setModeEXTI(int pin_number, uint32_t mode)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// mode
+	drop
+	bl		BSP_setModeEXTI
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "EXTIwait"
+		@ ( u a --  u )    Waits for EXTI line (interrupt driven by port pin edge)
+EXTIwait:
+// void BSP_waitEXTI(int pin_number, int32_t timeout)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	movs	r1, tos		// timeout
+	bl		BSP_waitEXTI
+	movs	tos, r0		// return value
+	pop		{r0-r3, pc}
+
+
 // I2C
 // ***
 
