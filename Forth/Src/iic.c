@@ -42,11 +42,6 @@
 #include "i2c.h"
 #include "iic.h"
 
-// Rx/Tx Buffer Length
-// *******************
-#define IIC_TX_BUFFER_LENGTH	128
-
-#define IIC_CHAR_SENT		0x01
 
 // Private function prototypes
 // ***************************
@@ -95,6 +90,7 @@ void IIC_init(void) {
 	if (II2_SemaphoreID == NULL) {
 		Error_Handler();
 	}
+
 }
 
 

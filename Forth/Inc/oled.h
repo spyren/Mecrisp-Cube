@@ -28,6 +28,7 @@
 #ifndef INC_OLED_H_
 #define INC_OLED_H_
 
+#define OLED_I2C_ADR	60
 
 void OLED_init(void);
 void OLED_sendCommand(const uint8_t *command);

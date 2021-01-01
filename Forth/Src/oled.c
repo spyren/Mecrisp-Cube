@@ -61,6 +61,7 @@
 
 // Hardware resources
 // ******************
+extern I2C_HandleTypeDef hi2c1;
 
 // RTOS resources
 // **************
@@ -321,6 +322,11 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 void OLED_init(void) {
 	uint8_t i;
 
+	if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADR, 5, 100) != HAL_OK) {
+		// OLED is not ready
+		Error_Handler();
+	}
+
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
 //		OLED_sendCommand(ssd1306_init_sequence[i], sizeof(*ssd1306_init_sequence[i]));
 		OLED_sendCommand(ssd1306_init_sequence[i]);
@@ -332,7 +338,7 @@ void OLED_sendCommand(const uint8_t *command) {
 
 	buf[0] = 0x00; // write command
 	memcpy(&buf[1], &command[1], command[0]);
-	IIC_setDevice(60);
+	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, command[0]+1);
 }
 
@@ -344,7 +350,7 @@ void OLED_setPos(uint8_t x, uint8_t y) {
 	buf[1] = 0xb0 + y;
 	buf[2] = ((x & 0xf0) >> 4) | 0x10; // | 0x10
 	buf[3] = x & 0x0f; // | 0x01
-	IIC_setDevice(60);
+	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 4);
 }
 
@@ -358,7 +364,7 @@ void OLED_sendChar(char ch) {
 	for (i = 0; i < 6; i++) {
 		buf[i+1] = font6x8[c * 6 + i];
 	}
-	IIC_setDevice(60);
+	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 7);
 }
 
@@ -376,7 +382,7 @@ void OLED_sendCharLarge(char ch) {
 //	for (i = 0; i < 8; i++) {
 //		buf[i+9] = font8x16[c * 16 + i+8];
 //	}
-	IIC_setDevice(60);
+	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 17);
 }
 
