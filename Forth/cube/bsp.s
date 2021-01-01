@@ -200,6 +200,7 @@ get_apin:
 		Wortbirne Flag_visible, "dmod"
 set_dmod:
 		@ ( u a --  ) sets the pin mode: 0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain.
+		@                                5 out pwm, 6 input capture, 7 output compare, 8 I2C
 // int BSP_setDigitalPinMode(int pin_number, int mode)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}

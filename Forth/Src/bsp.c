@@ -612,7 +612,7 @@ typedef struct {
 	uint32_t alternate;
 } PortPinMode_t;
 
-static const PortPinMode_t DigitalPortPinMode_a[8] = {
+static const PortPinMode_t DigitalPortPinMode_a[] = {
 	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				// 0 in
 	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 pullup
 	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 pulldow
@@ -621,16 +621,18 @@ static const PortPinMode_t DigitalPortPinMode_a[8] = {
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 }  	// 8 I2C opendrain pullup
 };
 /**
  *  @brief
  *	    Sets the digital port pin mode (D0 .. D15).
  *
- *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain, 5 out pwm.
+ *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
+ *      5 out pwm, 6 input capture, 7 output compare, 8 I2C
  *	@param[in]
  *      pin_number    0 to 15.
  *	@param[in]
- *      mode          0 to 5
+ *      mode          0 to 8
  *  @return
  *      none
  *
