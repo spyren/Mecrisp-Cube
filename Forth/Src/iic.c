@@ -101,7 +101,7 @@ void IIC_init(void) {
  *      None
  */
 void IIC_setDevice(uint16_t dev) {
-	DevAdr = dev;
+	DevAdr = dev << 1;
 }
 
 

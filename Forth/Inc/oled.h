@@ -29,11 +29,15 @@
 #define INC_OLED_H_
 
 #define OLED_I2C_ADR	60
+typedef enum {OLED_FONT6X8, OLED_FONT8X16} OLED_FontT;
 
 void OLED_init(void);
 void OLED_sendCommand(const uint8_t *command);
+void OLED_clear(void);
 void OLED_setPos(uint8_t x, uint8_t y);
+uint8_t OLED_getPosX();
+uint8_t OLED_getPosY();
 void OLED_sendChar(char ch);
-void OLED_sendCharLarge(char ch);
+void OLED_setFont(OLED_FontT font);
 
 #endif /* INC_OLED_H_ */

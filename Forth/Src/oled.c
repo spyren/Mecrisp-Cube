@@ -55,6 +55,9 @@
 
 // Private function prototypes
 // ***************************
+static void setPos(uint8_t x, uint8_t y);
+static void sendChar6x8(char ch);
+static void sendChar8x16(char ch);
 
 // Global Variables
 // ****************
@@ -70,6 +73,11 @@ extern I2C_HandleTypeDef hi2c1;
 
 // Private Variables
 // *****************
+
+uint8_t CurrentPosX = 0;
+uint8_t CurrentPosY = 0;
+
+OLED_FontT CurrentFont = OLED_FONT6X8;
 
 static const uint8_t font6x8 [] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // sp
@@ -164,11 +172,12 @@ static const uint8_t font6x8 [] = {
   0x00, 0x1C, 0xA0, 0xA0, 0xA0, 0x7C, // y
   0x00, 0x44, 0x64, 0x54, 0x4C, 0x44, // z
   0x14, 0x14, 0x14, 0x14, 0x14, 0x14, // horiz lines
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 92 Block
 };
 
 /* Standard ASCII 8x16 font */
 static const uint8_t font8x16 []  = {
-  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // 0
+  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, //   0
   0x00,0x00,0x00,0xF8,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x33,0x30,0x00,0x00,0x00, // ! 1
   0x00,0x10,0x0C,0x06,0x10,0x0C,0x06,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // " 2
   0x40,0xC0,0x78,0x40,0xC0,0x78,0x40,0x00,0x04,0x3F,0x04,0x04,0x3F,0x04,0x04,0x00, // # 3
@@ -265,31 +274,67 @@ static const uint8_t font8x16 []  = {
   0x00,0x06,0x01,0x01,0x02,0x02,0x04,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00, // ~ 94
 };
 
+// Adafruit
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
+static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
+static const uint8_t mplx_ratio[] =     { 2, 0xA8, 31 };		// Set multiplex ratio 32 (1 to 64)
+//static const uint8_t mplx_ratio[] =     { 2, 0xA8, 38 };		// Set multiplex ratio 39 (1 to 64)
+//static const uint8_t mplx_ratio[] =     { 2, 0xA8, 63 };		// Set multiplex ratio 64 (1 to 64)
+static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
+static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
+static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC enable
 static const uint8_t adr_mode_horiz[] =	{ 2, 0x20, 0b00 };		// Set Memory Addressing Mode
 							// 00=Horizontal Addressing Mode; 01=Vertical Addressing Mode;
 							// 10=Page Addressing Mode (RESET); 11=Invalid
-static const uint8_t page_adr[] = 		{ 3, 0x22, 0, 127 };	// Set Page Start Address for Page Addressing Mode, 0-7
-static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
+static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for Page Addressing Mode, 0-7
 static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
 static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
-static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
-static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x3F };		// Set contrast control register
 static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
-static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
-// static const uint8_t display_inverse[] ={ 0xA7 };			// A7=Inverse
-
-static const uint8_t mplx_ratio[] =     { 2, 0xA8, 0x3F };		// Set multiplex ratio(1 to 64)
+static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
+static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
+//static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
+//static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x3F };		// Set contrast control register
+//static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period
+static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period
+//static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc
+static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
 						// 0xA4=Output follows RAM content; 0xA5,Output ignores RAM content
-static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
-static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
 static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
-static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period
-static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration
-static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
-static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC enable
+static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
+
+
+static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
+
 static const uint8_t display_on[] =		{ 1, 0xAF };			// Display ON in normal mode
+
+/*
+static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
+		display_off,
+		clk_div_ratio,
+		mplx_ratio,
+		display_offset,
+		start_line_adr,
+		adr_mode_horiz,
+		page_adr,
+		lower_col_adr,
+		higher_col_adr,
+		seg_remap,
+		com_scan_rev,
+		set_contrast,
+		ram_to_display,
+		div_ratio,
+		pre_charge,
+		com_pin_hw,
+		set_vcomh,
+		dcdc_en,
+		display_normal
+
+//		display_inverse
+};
+*/
+
 
 static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 		display_off,
@@ -306,10 +351,10 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 		ram_to_display,
 		display_offset,
 		clk_div_ratio,
-		div_ratio,
+		div_ratio, //
 		pre_charge,
 		com_pin_hw,
-		set_vcomh,
+		set_vcomh, //
 		dcdc_en,
 		display_on
 };
@@ -322,7 +367,7 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 void OLED_init(void) {
 	uint8_t i;
 
-	if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADR, 5, 100) != HAL_OK) {
+	if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADR << 1, 5, 100) != HAL_OK) {
 		// OLED is not ready
 		Error_Handler();
 	}
@@ -331,6 +376,7 @@ void OLED_init(void) {
 //		OLED_sendCommand(ssd1306_init_sequence[i], sizeof(*ssd1306_init_sequence[i]));
 		OLED_sendCommand(ssd1306_init_sequence[i]);
 	}
+	OLED_clear();
 }
 
 void OLED_sendCommand(const uint8_t *command) {
@@ -344,6 +390,54 @@ void OLED_sendCommand(const uint8_t *command) {
 
 
 void OLED_setPos(uint8_t x, uint8_t y) {
+	setPos(x, y);
+	CurrentPosX = x;
+	CurrentPosY = y;
+}
+
+uint8_t OLED_getPosX() {
+	return CurrentPosX;
+}
+
+
+uint8_t OLED_getPosY() {
+	return CurrentPosY;
+}
+
+
+void OLED_setFont(OLED_FontT font) {
+	CurrentFont = font;
+}
+
+
+void OLED_clear(void) {
+	uint8_t buf[129];
+	uint8_t i;
+
+	OLED_setPos(0, 0);
+	buf[0] = 0x40;  // write data
+	memset(&buf[1], 0, 128);
+	for (i=0; i<4; i++) {
+		IIC_setDevice(OLED_I2C_ADR);
+		IIC_putMessage(buf, 129);
+	}
+	OLED_setPos(0, 0);
+}
+
+
+void OLED_sendChar(char ch) {
+	switch (CurrentFont) {
+	case OLED_FONT6X8:
+		sendChar6x8(ch);
+		break;
+	case OLED_FONT8X16:
+		sendChar8x16(ch);
+		break;
+	}
+}
+
+
+static void setPos(uint8_t x, uint8_t y) {
 	uint8_t buf[4];
 
 	buf[0] = 0x00; // write command
@@ -355,9 +449,13 @@ void OLED_setPos(uint8_t x, uint8_t y) {
 }
 
 
-void OLED_sendChar(char ch) {
+static void sendChar6x8(char ch) {
 	uint8_t buf[7];
 	uint8_t i;
+
+	if (CurrentPosX > 128 - 6) {
+		OLED_setPos(0, CurrentPosY+1);
+	}
 
 	buf[0] = 0x40;  // write data
 	uint8_t c = ch - 32;
@@ -366,24 +464,31 @@ void OLED_sendChar(char ch) {
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 7);
+
+	CurrentPosX += 6;
 }
 
 
-void OLED_sendCharLarge(char ch) {
-	uint8_t buf[17];
+static void sendChar8x16(char ch) {
+	uint8_t buf[9];
 	uint8_t i;
 
 	buf[0] = 0x40;  // write data
 	uint8_t c = ch - 32;
-	for (i = 0; i < 16; i++) {
+	for (i = 0; i < 8; i++) {
 		buf[i+1] = font8x16[c * 16 + i];
 	}
-//	ssd1306_setpos(x, y + 1);
-//	for (i = 0; i < 8; i++) {
-//		buf[i+9] = font8x16[c * 16 + i+8];
-//	}
 	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 17);
+	IIC_putMessage(buf, 9);
+
+	setPos(CurrentPosX, CurrentPosY+1);
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = font8x16[c * 16 + i+8];
+	}
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 9);
+
+	CurrentPosX += 8;
 }
 
 

@@ -230,8 +230,8 @@ oled_emit:
 
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "oled-pos"
-oled_pos:
+        Wortbirne Flag_visible, "oledpos!"
+oled_get_pos:
         @ ( x y -- ) Set OLED position
 // void OLED_setPos(uint8_t x, uint8_t y)
 @ -----------------------------------------------------------------------------
@@ -245,17 +245,55 @@ oled_pos:
 
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "oled-cmd"
-oled_cmd:
-        @ ( a u -- ) send command to OLED
+        Wortbirne Flag_visible, "oledpos@"
+oled_set_pos:
+        @ (  -- x y ) Set OLED position
+// void OLED_getPos(uint8_t x, uint8_t y)
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		OLED_getPosX
+	movs	tos, r0		// x
+	pushdatos
+	bl		OLED_getPosY
+	movs	tos, r0		// y
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oledcmd"
+oledcmd:
+        @ ( -- x y ) send command to OLED
 // void OLED_sendCommand(static uint8_t *command, size)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
-	movs	r1, tos		// size
-	drop
 	movs	r0, tos		// command
 	drop
 	bl		OLED_sendCommand
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oledclr"
+oledclr:
+        @ ( --  ) send command to OLED
+// void OLED_clear()
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	bl		OLED_clear
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oledfont"
+oledfont:
+        @ ( u -- ) select font for the OLED
+// void OLED_setFont(OLED_FontT font);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// font
+	drop
+	bl		OLED_setFont
 	pop		{r0-r3, pc}
 
 
