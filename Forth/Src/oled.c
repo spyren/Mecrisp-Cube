@@ -1,5 +1,9 @@
 /**
  *  @brief
+ *  	OLED driver based on the controller SSD1306.
+ *
+ *  	Resolution 128x32 or 128x64, monochrome.
+ *  	I2C Interface.
  *  @file
  *      oled.c
  *  @author
@@ -24,21 +28,6 @@
  *      You should have received a copy of the GNU General Public License
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
-/**
- * SSD1306xLED - Drivers for SSD1306 controlled dot matrix OLED/PLED 128x64 displays
- *
- * @created: 2014-08-12
- * @author: Neven Boyanov
- *
- * This is part of the Tinusaur/SSD1306xLED project.
- *
- * Copyright (c) 2016 Neven Boyanov, Tinusaur Team. All Rights Reserved.
- * Distributed as open source software under MIT License, see LICENSE.txt file.
- * Please, as a favor, retain the link http://tinusaur.org to The Tinusaur Project.
- *
- * Source code available at: https://bitbucket.org/tinusaur/ssd1306xled
- *
- */
 
 // System include files
 // ********************
@@ -52,6 +41,9 @@
 #include "oled.h"
 #include "iic.h"
 
+// Macros
+// ******
+#define  membersof(x) (sizeof(x) / sizeof(x[0]))
 
 // Private function prototypes
 // ***************************
@@ -69,10 +61,10 @@ extern I2C_HandleTypeDef hi2c1;
 // RTOS resources
 // **************
 
-
-
 // Private Variables
 // *****************
+
+uint8_t oledReady = FALSE;
 
 uint8_t CurrentPosX = 0;
 uint8_t CurrentPosY = 0;
@@ -309,32 +301,6 @@ static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
 
 static const uint8_t display_on[] =		{ 1, 0xAF };			// Display ON in normal mode
 
-/*
-static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
-		display_off,
-		clk_div_ratio,
-		mplx_ratio,
-		display_offset,
-		start_line_adr,
-		adr_mode_horiz,
-		page_adr,
-		lower_col_adr,
-		higher_col_adr,
-		seg_remap,
-		com_scan_rev,
-		set_contrast,
-		ram_to_display,
-		div_ratio,
-		pre_charge,
-		com_pin_hw,
-		set_vcomh,
-		dcdc_en,
-		display_normal
-
-//		display_inverse
-};
-*/
-
 
 static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 		display_off,
@@ -362,57 +328,154 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 
 // Public Functions
 // ****************
-#define  membersof(x) (sizeof(x) / sizeof(x[0]))
 
+/**
+ *  @brief
+ *      Initializes the OLED controller.
+ *  @return
+ *      None
+ */
 void OLED_init(void) {
 	uint8_t i;
 
 	if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADR << 1, 5, 100) != HAL_OK) {
 		// OLED is not ready
-		Error_Handler();
+		return;
 	}
+	oledReady = TRUE;
 
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
 //		OLED_sendCommand(ssd1306_init_sequence[i], sizeof(*ssd1306_init_sequence[i]));
 		OLED_sendCommand(ssd1306_init_sequence[i]);
 	}
 	OLED_clear();
-}
-
-void OLED_sendCommand(const uint8_t *command) {
-	uint8_t buf[5];
-
-	buf[0] = 0x00; // write command
-	memcpy(&buf[1], &command[1], command[0]);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, command[0]+1);
+	OLED_setPos(0,0);
+	OLED_puts("Mecrisp-Cube");
+	OLED_setPos(0,1);
+	OLED_puts("Forth for the STM32WB");
+	OLED_setPos(0,3);
+	OLED_puts("(c)2021 peter@spyr.ch");
 }
 
 
+/**
+ *  @brief
+ *      Writes a char to the OLED. Blocking until char is written into the controller memory.
+ *
+ *      Does not work in ISRs.
+ *  @param[in]
+ *      c  char to write
+ *  @return
+ *      Return EOF on error, 0 on success.
+ */
+int OLED_putc(int c) {
+	if (!oledReady) {
+		return EOF;
+	}
+
+	switch (CurrentFont) {
+	case OLED_FONT6X8:
+		sendChar6x8(c);
+		break;
+	case OLED_FONT8X16:
+		sendChar8x16(c);
+		break;
+	}
+	return 0;
+}
+
+
+/**
+ *  @brief
+ *      Writes a line (string) to the OLED. Blocking until
+ *      string can be written.
+ *
+ *      Does not work in ISRs.
+ *  @param[in]
+ *      s  string to write. C style string.
+ *  @return
+ *      Return EOF on error, 0 on success.
+ */
+int OLED_puts(const char *s) {
+	int i=0;
+
+	while (s[i] != 0) {
+		if (OLED_putc(s[i])) {
+			return EOF;
+		}
+		i++;
+	}
+	return 0;
+}
+
+
+/**
+ *  @brief
+ *  @param[in]
+ *      x  horizontal position, max. (128 / 6) -1, depends on font.
+ *  @param[in]
+ *      y  vertical position, max. 3 for 128x32 or 7 for 128x64 displays.
+ *  @return
+ *      none
+ */
 void OLED_setPos(uint8_t x, uint8_t y) {
+	if (!oledReady) {
+		return;
+	}
+
 	setPos(x, y);
 	CurrentPosX = x;
 	CurrentPosY = y;
 }
 
+
+/**
+ *  @brief
+ *  	Gets the current horizontal position
+ *  @return
+ *      X horizontal position, max. (128 / 6) - 1
+ */
 uint8_t OLED_getPosX() {
 	return CurrentPosX;
 }
 
 
+/**
+ *  @brief
+ *  	Gets the current vertical position
+ *  @return
+ *      Y vertical position, max. 3 for 128x32 or 7 for 128x64 displays.
+ */
 uint8_t OLED_getPosY() {
 	return CurrentPosY;
 }
 
 
+/**
+ *  @brief
+ *  @param[in]
+ *      font
+ *  @return
+ *      none
+ */
 void OLED_setFont(OLED_FontT font) {
 	CurrentFont = font;
 }
 
 
+/**
+ *  @brief
+ *  	Clears the OLED display
+ *  @return
+ *      none
+ */
 void OLED_clear(void) {
 	uint8_t buf[129];
 	uint8_t i;
+
+	if (!oledReady) {
+		return;
+	}
 
 	OLED_setPos(0, 0);
 	buf[0] = 0x40;  // write data
@@ -425,17 +488,30 @@ void OLED_clear(void) {
 }
 
 
-void OLED_sendChar(char ch) {
-	switch (CurrentFont) {
-	case OLED_FONT6X8:
-		sendChar6x8(ch);
-		break;
-	case OLED_FONT8X16:
-		sendChar8x16(ch);
-		break;
+/**
+ *  @brief
+ *      Sends a command to the OLED controller
+ *  @param[in]
+ *  	First byte contains the length of the command.
+ *  @return
+ *      None
+ */
+void OLED_sendCommand(const uint8_t *command) {
+	uint8_t buf[5];
+
+	if (!oledReady) {
+		return;
 	}
+
+	buf[0] = 0x00; // write command
+	memcpy(&buf[1], &command[1], command[0]);
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, command[0]+1);
 }
 
+
+// Private Functions
+// *****************
 
 static void setPos(uint8_t x, uint8_t y) {
 	uint8_t buf[4];
@@ -473,6 +549,10 @@ static void sendChar8x16(char ch) {
 	uint8_t buf[9];
 	uint8_t i;
 
+	if (CurrentPosX > 128 - 8) {
+		OLED_setPos(0, CurrentPosY+2);
+	}
+
 	buf[0] = 0x40;  // write data
 	uint8_t c = ch - 32;
 	for (i = 0; i < 8; i++) {
@@ -489,10 +569,13 @@ static void sendChar8x16(char ch) {
 	IIC_putMessage(buf, 9);
 
 	CurrentPosX += 8;
+	setPos(CurrentPosX, CurrentPosY);
 }
 
 
 //void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
+// 128x32/8=512
+// bitmap?
 //{
 //	uint16_t j = 0;
 //	uint8_t y;

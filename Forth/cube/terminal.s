@@ -225,7 +225,7 @@ oled_emit:
 	push	{r0-r3, lr}
 	movs	r0, tos
 	drop
-	bl		OLED_sendChar
+	bl		OLED_putc
 	pop		{r0-r3, pc}
 
 

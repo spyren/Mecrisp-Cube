@@ -1,7 +1,11 @@
 /**
  *  @brief
+ *  	OLED driver based on the controller SSD1306.
+ *
+ *  	Resolution 128x32 or 128x64, monochrome.
+ *  	I2C Interface.
  *  @file
- *      oled.c
+ *      oled.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
@@ -37,7 +41,8 @@ void OLED_clear(void);
 void OLED_setPos(uint8_t x, uint8_t y);
 uint8_t OLED_getPosX();
 uint8_t OLED_getPosY();
-void OLED_sendChar(char ch);
+int OLED_putc(int c);
+int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 
 #endif /* INC_OLED_H_ */
