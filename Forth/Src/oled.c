@@ -350,10 +350,8 @@ void OLED_init(void) {
 	}
 	OLED_clear();
 	OLED_setPos(0,0);
-	OLED_puts("Mecrisp-Cube");
-	OLED_setPos(0,1);
-	OLED_puts("Forth for the STM32WB");
-	OLED_setPos(0,3);
+	OLED_puts("Mecrisp-Cube\n\r");
+	OLED_puts("Forth for the STM32WB\n\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");
 }
 
@@ -371,6 +369,12 @@ void OLED_init(void) {
 int OLED_putc(int c) {
 	if (!oledReady) {
 		return EOF;
+	}
+
+	if (c == '\r') {
+		// carriage return
+		OLED_setPos(0, CurrentPosY);
+		return 0;
 	}
 
 	switch (CurrentFont) {
@@ -529,7 +533,15 @@ static void sendChar6x8(char ch) {
 	uint8_t buf[7];
 	uint8_t i;
 
+	if (ch == '\n') {
+		// line feed
+		CurrentPosY++;
+		OLED_setPos(CurrentPosX, CurrentPosY);
+		return;
+	}
+
 	if (CurrentPosX > 128 - 6) {
+		// auto wrap
 		OLED_setPos(0, CurrentPosY+1);
 	}
 
@@ -548,6 +560,13 @@ static void sendChar6x8(char ch) {
 static void sendChar8x16(char ch) {
 	uint8_t buf[9];
 	uint8_t i;
+
+	if (ch == '\n') {
+		// line feed
+		CurrentPosY += 2;
+		setPos(CurrentPosX, CurrentPosY);
+		return;
+	}
 
 	if (CurrentPosX > 128 - 8) {
 		OLED_setPos(0, CurrentPosY+2);
