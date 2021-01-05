@@ -118,7 +118,7 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize) {
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
 	// get the Message
-	if (HAL_I2C_Master_Transmit_IT(&hi2c1, DevAdr, RxBuffer, RxSize) == HAL_ERROR) {
+	if (HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, RxBuffer, RxSize) == HAL_ERROR) {
 		// can't get Message
 		Error_Handler();
 	}
@@ -146,7 +146,7 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize) {
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
 	// send the Message
-	if (HAL_I2C_Master_Transmit_IT(&hi2c1, DevAdr, TxBuffer, TxSize) == HAL_ERROR) {
+	if (HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize) == HAL_ERROR) {
 		// can't send message
 		Error_Handler();
 	}
@@ -174,14 +174,14 @@ int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uin
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
 	// send the Message
-	if (HAL_I2C_Master_Sequential_Transmit_IT(&hi2c1, DevAdr, TxBuffer, TxSize, I2C_FIRST_FRAME) == HAL_ERROR) {
+	if (HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize, I2C_FIRST_FRAME) == HAL_ERROR) {
 		// can't send message
 		Error_Handler();
 	}
 	// blocked till message is sent
 	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
 	// get the Message
-	if (HAL_I2C_Master_Sequential_Receive_IT(&hi2c1, DevAdr, RxBuffer, RxSize, I2C_LAST_FRAME) == HAL_ERROR) {
+	if (HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, DevAdr, RxBuffer, RxSize, I2C_LAST_FRAME) == HAL_ERROR) {
 		// can't get Message
 		Error_Handler();
 	}

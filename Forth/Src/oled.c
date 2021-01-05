@@ -53,9 +53,9 @@
 // ***************************
 static void setPos(uint8_t x, uint8_t y);
 static void sendChar6x8(int ch);
-static void sendChar8x16(int ch);
-static void sendChar12x16(int ch);
 static void sendChar8x8(int ch);
+// static void sendChar8x16(int ch);
+static void sendChar12x16(int ch);
 
 
 // Global Variables
