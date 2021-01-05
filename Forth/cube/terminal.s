@@ -247,7 +247,7 @@ oled_get_pos:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oledpos@"
 oled_set_pos:
-        @ (  -- x y ) Set OLED position
+        @ (  -- x y ) Get OLED position
 // void OLED_getPos(uint8_t x, uint8_t y)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -263,7 +263,7 @@ oled_set_pos:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oledcmd"
 oledcmd:
-        @ ( -- x y ) send command to OLED
+        @ ( c-addr -- ) send command to OLED
 // void OLED_sendCommand(static uint8_t *command, size)
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -276,7 +276,7 @@ oledcmd:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oledclr"
 oledclr:
-        @ ( --  ) send command to OLED
+        @ ( --  ) Clears the OLED display
 // void OLED_clear()
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}

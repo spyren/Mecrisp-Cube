@@ -32,8 +32,12 @@
 #ifndef INC_OLED_H_
 #define INC_OLED_H_
 
-#define OLED_I2C_ADR	60
-typedef enum {OLED_FONT6X8, OLED_FONT8X16, OLED_FONT12X16, OLED_FONT8X8} OLED_FontT;
+#define OLED_I2C_ADR		60
+#define OLED_X_RESOLUTION	128
+#define OLED_Y_RESOLUTION	32
+#define OLED_LINES			(OLED_Y_RESOLUTION / 8)
+
+typedef enum {OLED_FONT6X8, OLED_FONT8X8, OLED_FONT8X16, OLED_FONT12X16} OLED_FontT;
 
 void OLED_init(void);
 void OLED_sendCommand(const uint8_t *command);

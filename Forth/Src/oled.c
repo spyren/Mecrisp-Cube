@@ -41,9 +41,9 @@
 #include "oled.h"
 #include "iic.h"
 #include "6x8_vertikal_LSB_1.h"
-#include "8x14_vertikal_LSB_1.h"
-#include "12x16_vertikal_LSB_1.h"
 #include "8x8_vertikal_LSB_1.h"
+//#include "8x14_vertikal_LSB_1.h"
+#include "12x16_vertikal_LSB_1.h"
 
 // Macros
 // ******
@@ -79,39 +79,26 @@ uint8_t CurrentPosY = 0;
 OLED_FontT CurrentFont = OLED_FONT6X8;
 
 
-// Adafruit
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
 static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
-static const uint8_t mplx_ratio[] =     { 2, 0xA8, 31 };		// Set multiplex ratio 32 (1 to 64)
-//static const uint8_t mplx_ratio[] =     { 2, 0xA8, 38 };		// Set multiplex ratio 39 (1 to 64)
-//static const uint8_t mplx_ratio[] =     { 2, 0xA8, 63 };		// Set multiplex ratio 64 (1 to 64)
+static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 32 (1 to 64)
 static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
 static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
 static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC enable
 static const uint8_t adr_mode_horiz[] =	{ 2, 0x20, 0b00 };		// Set Memory Addressing Mode
-							// 00=Horizontal Addressing Mode; 01=Vertical Addressing Mode;
-							// 10=Page Addressing Mode (RESET); 11=Invalid
 static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for Page Addressing Mode, 0-7
 static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
 static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
 static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
-//static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration
 static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
-//static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x3F };		// Set contrast control register
-//static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period
-//static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
-						// 0xA4=Output follows RAM content; 0xA5,Output ignores RAM content
 static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
-
-
-static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
-
+//static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
 static const uint8_t display_on[] =		{ 1, 0xAF };			// Display ON in normal mode
 
 
@@ -158,13 +145,14 @@ void OLED_init(void) {
 	oledReady = TRUE;
 
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
-//		OLED_sendCommand(ssd1306_init_sequence[i], sizeof(*ssd1306_init_sequence[i]));
 		OLED_sendCommand(ssd1306_init_sequence[i]);
 	}
 	OLED_clear();
 	OLED_setPos(0,0);
-	OLED_puts("Mecrisp-Cube\n\r");
-	OLED_puts("Forth for the STM32WB\n\r\n");
+	OLED_setFont(OLED_FONT8X8);
+	OLED_puts("Mecrisp-Cube\r\n\n");
+	OLED_setFont(OLED_FONT6X8);
+	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");
 }
 
@@ -194,14 +182,14 @@ int OLED_putc(int c) {
 	case OLED_FONT6X8:
 		sendChar6x8(c);
 		break;
-	case OLED_FONT8X16:
-		sendChar8x16(c);
-		break;
-	case OLED_FONT12X16:
-		sendChar12x16(c);
-		break;
 	case OLED_FONT8X8:
 		sendChar8x8(c);
+		break;
+	case OLED_FONT8X16:
+//		sendChar8x16(c);
+//		break;
+	case OLED_FONT12X16:
+		sendChar12x16(c);
 		break;
 	}
 
@@ -303,8 +291,8 @@ void OLED_clear(void) {
 
 	OLED_setPos(0, 0);
 	buf[0] = 0x40;  // write data
-	memset(&buf[1], 0, 128);
-	for (i=0; i<4; i++) {
+	memset(&buf[1], 0, OLED_X_RESOLUTION);
+	for (i=0; i<OLED_LINES; i++) {
 		IIC_setDevice(OLED_I2C_ADR);
 		IIC_putMessage(buf, 129);
 	}
@@ -360,7 +348,7 @@ static void sendChar6x8(int ch) {
 		return;
 	}
 
-	if (CurrentPosX > 128 - 6) {
+	if (CurrentPosX > OLED_X_RESOLUTION - 6) {
 		// auto wrap
 		OLED_setPos(0, CurrentPosY+1);
 	}
@@ -387,7 +375,7 @@ static void sendChar8x8(int ch) {
 		return;
 	}
 
-	if (CurrentPosX > 128 - 8) {
+	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
 		// auto wrap
 		OLED_setPos(0, CurrentPosY+1);
 	}
@@ -403,38 +391,38 @@ static void sendChar8x8(int ch) {
 }
 
 
-static void sendChar8x16(int ch) {
-	uint8_t buf[9];
-	uint8_t i;
-
-	if (ch == '\n') {
-		// line feed
-		CurrentPosY += 2;
-		setPos(CurrentPosX, CurrentPosY);
-		return;
-	}
-
-	if (CurrentPosX > 128 - 8) {
-		OLED_setPos(0, CurrentPosY+2);
-	}
-
-	buf[0] = 0x40;  // write data
-	for (i = 0; i < 8; i++) {
-		buf[i+1] = font_8x14[ch][2*i];
-	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
-
-	setPos(CurrentPosX, CurrentPosY+1);
-	for (i = 0; i < 8; i++) {
-		buf[i+1] = font_8x14[ch][2*i+1];
-	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
-
-	CurrentPosX += 8;
-	setPos(CurrentPosX, CurrentPosY);
-}
+//static void sendChar8x16(int ch) {
+//	uint8_t buf[9];
+//	uint8_t i;
+//
+//	if (ch == '\n') {
+//		// line feed
+//		CurrentPosY += 2;
+//		setPos(CurrentPosX, CurrentPosY);
+//		return;
+//	}
+//
+//	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
+//		OLED_setPos(0, CurrentPosY+2);
+//	}
+//
+//	buf[0] = 0x40;  // write data
+//	for (i = 0; i < 8; i++) {
+//		buf[i+1] = font_8x14[ch][2*i];
+//	}
+//	IIC_setDevice(OLED_I2C_ADR);
+//	IIC_putMessage(buf, 9);
+//
+//	setPos(CurrentPosX, CurrentPosY+1);
+//	for (i = 0; i < 8; i++) {
+//		buf[i+1] = font_8x14[ch][2*i+1];
+//	}
+//	IIC_setDevice(OLED_I2C_ADR);
+//	IIC_putMessage(buf, 9);
+//
+//	CurrentPosX += 8;
+//	setPos(CurrentPosX, CurrentPosY);
+//}
 
 
 static void sendChar12x16(int ch) {
@@ -448,7 +436,7 @@ static void sendChar12x16(int ch) {
 		return;
 	}
 
-	if (CurrentPosX > 128 - 12) {
+	if (CurrentPosX > OLED_X_RESOLUTION - 12) {
 		OLED_setPos(0, CurrentPosY+2);
 	}
 
@@ -471,7 +459,7 @@ static void sendChar12x16(int ch) {
 }
 
 //void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
-// 128x32/8=512
+// OLED_X_RESOLUTIONx32/8=512
 // bitmap?
 //{
 //	uint16_t j = 0;
