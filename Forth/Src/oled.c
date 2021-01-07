@@ -4,6 +4,7 @@
  *
  *  	Resolution 128x32 or 128x64, monochrome.
  *  	I2C Interface.
+ *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file
  *      oled.c
  *  @author
@@ -199,6 +200,17 @@ int OLED_putc(int c) {
 
 /**
  *  @brief
+ *      OLED ready for next char.
+ *  @return
+ *      FALSE if the transfer is ongoing.
+ */
+int OLED_Ready(void) {
+	return (IIC_ready());
+}
+
+
+/**
+ *  @brief
  *      Writes a line (string) to the OLED. Blocking until
  *      string can be written.
  *
@@ -235,9 +247,12 @@ void OLED_setPos(uint8_t x, uint8_t y) {
 		return;
 	}
 
-	setPos(x, y);
-	CurrentPosX = x;
-	CurrentPosY = y;
+	if ((x >= 0 && x < OLED_X_RESOLUTION) && (y >=0 && y < OLED_Y_RESOLUTION/8)) {
+		// valid position
+		setPos(x, y);
+		CurrentPosX = x;
+		CurrentPosY = y;
+	}
 }
 
 
@@ -344,13 +359,27 @@ static void sendChar6x8(int ch) {
 	if (ch == '\n') {
 		// line feed
 		CurrentPosY++;
+		if (CurrentPosY*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
 		OLED_setPos(CurrentPosX, CurrentPosY);
 		return;
+	}
+	if (ch == '\b') {
+		// backspace
+		if (CurrentPosX >= 6) {
+			OLED_setPos(CurrentPosX-6, CurrentPosY);
+		}
+		return ;
 	}
 
 	if (CurrentPosX > OLED_X_RESOLUTION - 6) {
 		// auto wrap
-		OLED_setPos(0, CurrentPosY+1);
+		CurrentPosY++;
+		if (CurrentPosY*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
+		OLED_setPos(0, CurrentPosY);
 	}
 
 	buf[0] = 0x40;  // write data
@@ -361,6 +390,15 @@ static void sendChar6x8(int ch) {
 	IIC_putMessage(buf, 7);
 
 	CurrentPosX += 6;
+	if (CurrentPosX >= OLED_X_RESOLUTION) {
+		// auto wrap
+		CurrentPosY++;
+		if (CurrentPosY*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
+		OLED_setPos(0, CurrentPosY);
+	}
+
 }
 
 
@@ -371,13 +409,27 @@ static void sendChar8x8(int ch) {
 	if (ch == '\n') {
 		// line feed
 		CurrentPosY++;
+		if (CurrentPosY*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
 		OLED_setPos(CurrentPosX, CurrentPosY);
+		return;
+	}
+	if (ch == '\b') {
+		// backspace
+		if (CurrentPosX >= 8) {
+			OLED_setPos(CurrentPosX-8, CurrentPosY);
+		}
 		return;
 	}
 
 	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
 		// auto wrap
-		OLED_setPos(0, CurrentPosY+1);
+		CurrentPosY++;
+		if (CurrentPosY*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
+		OLED_setPos(0, CurrentPosY);
 	}
 
 	buf[0] = 0x40;  // write data
@@ -432,12 +484,26 @@ static void sendChar12x16(int ch) {
 	if (ch == '\n') {
 		// line feed
 		CurrentPosY += 2;
+		if (CurrentPosY*16 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
 		setPos(CurrentPosX, CurrentPosY);
+		return;
+	}
+	if (ch == '\b') {
+		// backspace
+		if (CurrentPosX >= 12) {
+			OLED_setPos(CurrentPosX-12, CurrentPosY);
+		}
 		return;
 	}
 
 	if (CurrentPosX > OLED_X_RESOLUTION - 12) {
-		OLED_setPos(0, CurrentPosY+2);
+		CurrentPosY += 2;
+		if (CurrentPosY*16 > OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
+		OLED_setPos(0, CurrentPosY);
 	}
 
 	buf[0] = 0x40;  // write data

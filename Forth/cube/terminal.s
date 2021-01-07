@@ -230,6 +230,18 @@ oled_emit:
 
 
 @ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oled-emit?"
+soled_qemit:
+        @ ( -- ? ) Ready to send a character ?
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		OLED_Ready
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+@ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oledpos!"
 oled_get_pos:
         @ ( x y -- ) Set OLED position

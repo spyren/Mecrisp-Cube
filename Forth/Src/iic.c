@@ -130,6 +130,25 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize) {
 }
 
 
+
+/**
+ *  @brief
+ *		Is I2C ready?
+ *  @return
+ *      TRUE: ready, FALSE: transfer ongoing
+ *      error.
+ */
+int IIC_ready(void) {
+	if (osMutexGetOwner(IIC_MutexID) == NULL) {
+		// ready for the next transfer
+		return TRUE;
+	} else {
+		// transfer ongoing
+		return FALSE;
+	}
+}
+
+
 /**
  *  @brief
  *      Writes a char to the IIC Tx (serial out). Blocking until char can be
