@@ -38,44 +38,44 @@ the old DD 5 1/4\" floppy from 1978 had.
 
 ### RAM Memory Layout
 
-     *      STM32WB55C: 256 KiB RAM
-     *
-     *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-     *       1 KiB Core
-     *      63 KiB RAM Dictionary
-     *
-     *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
-     *       1 KiB Stack         (only for startup)
-     *       1 KiB Heap          (maybe not needed)
-     *       1 KiB UART Tx Buffer
-     *       5 KiB UART Rx Buffer
-     *       4 KiB CDC Rx/Tx Buffer
-     *       2 KiB CDC RxQueue
-     *      10 KiB global variables
-     *      80 KiB RTOS Heap (about 9 KiB free)
-     *         Thread Stack size
-     *              4 KiB Forth (main)
-     *              1 KiB UART_Tx
-     *              1 KiB UART_Rx
-     *              1 KiB CDC
-     *              1 KiB CRS
-     *              1 KiB HRS
-     *              1 KiB HCI_USER_EVT
-     *              1 KiB ADV_UPDATE
-     *              1 KiB SHCI_USER_EVT
-     *
-     *             40 KiB vi text buffer
-     *
-     *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
-     *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
-     *
-     *     (RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
-     *       10 KiB shared between CPU1 and CPU2
-     *       22 KiB secure RAM for CPU2
-     *
-     *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
-     *       16 KiB shared between CPU1 and CPU2
-     *       16 KiB secure RAM for CPU2
+     STM32WB55C: 256 KiB RAM
+     
+     RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
+         1 KiB Core
+        63 KiB RAM Dictionary
+     
+     RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
+         1 KiB Stack         (only for startup)
+         1 KiB Heap          (maybe not needed)
+         1 KiB UART Tx Buffer
+         5 KiB UART Rx Buffer
+         4 KiB CDC Rx/Tx Buffer
+         2 KiB CDC RxQueue
+        10 KiB global variables
+        80 KiB RTOS Heap (about 9 KiB free)
+            Thread Stack size
+            4 KiB Forth (main)
+            1 KiB UART_Tx
+            1 KiB UART_Rx
+            1 KiB CDC
+            1 KiB CRS
+            1 KiB HRS
+            1 KiB HCI_USER_EVT
+            1 KiB ADV_UPDATE
+            1 KiB SHCI_USER_EVT
+     
+        40 KiB vi text buffer
+     
+     RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
+        10 KiB communication between CPU1 and CPU2 (part of RAM2a)
+     
+     (RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
+        10 KiB shared between CPU1 and CPU2
+        22 KiB secure RAM for CPU2
+     
+     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
+        16 KiB shared between CPU1 and CPU2
+        16 KiB secure RAM for CPU2
 
 SD Drive
 --------
@@ -340,18 +340,32 @@ Print current directory:
 or easier with unix like command pwd:
 
     pwd[RET]
-    / ok.
+    0:/ ok.
 
 Change current directory
 
     path 256 accept[RET] common[RET]  ok.
     path swap 2dup str0term drop f_chdir .[RET] 0 ok.
     pwd[RET]
-    /common ok.
+    0:/common ok.
 
     path dup .str" /fsr" f_chdir .[RET] 0 ok.
     pwd[RET]
-    /fsr ok.
+    0:/fsr ok.
+
+Change drive (if you have a microSD connected):
+
+    chdrv 1:[RET]
+    ok.
+    pwd[RET]
+    1:/ ok.
+    cd home[RET] 
+    ok.
+    pwd[RET] 
+    1:/home ok.
+    0:[RET]  ok.
+    pwd[RET] 
+    0:/fsr ok.
 
 Data Structures
 ---------------

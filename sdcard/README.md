@@ -37,11 +37,11 @@ I set the putty terminal configuration to
   * Local echo: Auto
   * Local line editing: Auto
   
-```forth
-Mecrisp-Stellaris 2.5.2 by Matthias Koch. 
+```
+Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
 
-Mecrisp-Cube 1.4.0 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2020 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.8.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics 
+Mecrisp-Cube 1.4.1 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2020 peter@spyr.ch
+  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics 
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
   * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
@@ -142,6 +142,12 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * FatFs R0.12c, some Unix like command line tools
 * BLE Cable Replacement Service.
 * tiny vi - part of BusyBox 
+
+### v1.4.1 
+* Mecrisp-Stellaris RA 
+* Flash Drive
+* OLED driver, I2C, timer, RTC
+* Markdown docs
 
 ## Authors
 
