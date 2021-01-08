@@ -10,7 +10,7 @@
  *
  *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
  *       20 KiB Forth Core
- *      110 KiB Middleware (debug 210 KiB)
+ *      150 KiB Middleware (debug 250 KiB)
  *
  *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
  *      128 KiB Flash Dictionary
