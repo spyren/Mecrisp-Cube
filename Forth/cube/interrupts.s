@@ -24,15 +24,17 @@
 @ All interrupt handlers work the same way and are generated with a macro:
 @------------------------------------------------------------------------------
 
-interrupt exti0
-interrupt exti1
-interrupt exti2
-interrupt exti3
-interrupt exti4
-interrupt adc
-interrupt tim2
-interrupt tim3
-interrupt tim4
+// interrupts are handled by C routines (CubeMX)
+// see bsp.c stm32wbxx_it.c stm32wbxx_hal_msp.c and the peripheral drivers like gpio.c tim.c
+// interrupt exti0
+// interrupt exti1
+// interrupt exti2
+// interrupt exti3
+// interrupt exti4
+// interrupt adc
+// interrupt tim2
+// interrupt tim3
+// interrupt tim4
 
 @------------------------------------------------------------------------------
 

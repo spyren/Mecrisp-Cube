@@ -140,9 +140,10 @@ irq_vektor_\Name:
 @ Common interrupt handlers for all targets
 @ -----------------------------------------------------------------------------
 
-interrupt systick
-initinterrupt fault, faulthandler, unhandled
-initinterrupt collection, nullhandler, unhandled
+// interrupts are handled by C routines (CubeMX)
+// interrupt systick
+// initinterrupt fault, faulthandler, unhandled
+// initinterrupt collection, nullhandler, unhandled
 
 @ -----------------------------------------------------------------------------
 @ Register map for reference purposes
