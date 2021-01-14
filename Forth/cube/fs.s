@@ -1673,4 +1673,29 @@ typetime:
 	pop		{r4-r7, pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "clkdate"
+		@  (  -- u )
+// int RTC_getClockDate(void);
+@ -----------------------------------------------------------------------------
+clkdate:
+	push	{lr}
+	pushdatos
+	bl		RTC_getClockDate
+	movs	tos, r0;
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "clktime"
+		@  (  -- u )
+// int RTC_getClockTime(void);
+@ -----------------------------------------------------------------------------
+clktime:
+	push	{lr}
+	pushdatos
+	bl		RTC_getClockTime
+	movs	tos, r0;
+	pop		{pc}
+
 

@@ -58,7 +58,7 @@ static void cdc_thread(void *argument);
 osThreadId_t CDC_ThreadID;
 const osThreadAttr_t cdc_thread_attributes = {
 		.name = "CDC_Thread",
-		.priority = (osPriority_t) osPriorityNormal,
+		.priority = (osPriority_t) osPriorityHigh,
 		.stack_size = 512*2
 };
 

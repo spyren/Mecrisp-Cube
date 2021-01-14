@@ -200,6 +200,34 @@ uint64_t RTC_typeTime(uint64_t forth_stack) {
 
 /**
  *  @brief
+ *      Gets the time
+ *  @return
+ *      hhmmss
+ */
+uint32_t RTC_getClockTime(void) {
+	RTC_TimeTypeDef sTime;
+
+	HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+	return sTime.Hours*100*100 + sTime.Minutes*100 + sTime.Seconds;
+}
+
+
+/**
+ *  @brief
+ *      Gets the date
+ *  @return
+ *      yyyymmdd
+ */
+uint32_t RTC_getClockDate(void) {
+	RTC_DateTypeDef sDate;
+
+	HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+	return (sDate.Year + 2000)*100*100 + (sDate.Month*100) + sDate.Date;
+}
+
+
+/**
+ *  @brief
  *      Waits for alarm A.
  *  @return
  *      none
