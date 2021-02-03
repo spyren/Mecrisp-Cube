@@ -65,7 +65,7 @@ move:  @ ( Quelladdr Zieladdr Byteanzahl -- ) ( Source Destination Count -- )
   @ ( Destination Count Filling -- )
 @------------------------------------------------------------------------------
   @ 6.1.1540 FILL CORE ( c-addr u char -- ) If u is greater than zero, store char in each of u consecutive characters of memory beginning at c-addr.
-
+fill:
   popda r0 @ Filling byte
   popda r1 @ Count
   @ TOS      Destination

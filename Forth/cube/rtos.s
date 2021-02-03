@@ -28,6 +28,277 @@
  */
 
 
+// USER variables
+// **************
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "TCB"
+		@ ( -- u ) Gets the Task Control Block address
+@ -----------------------------------------------------------------------------
+TCB:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	mov		tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "threadid"
+		@ ( -- u ) Gets the user variable threadid address
+@ -----------------------------------------------------------------------------
+threadid:
+	b		TCB
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "argument"
+		@ ( -- u ) Gets the user variable argument address
+@ -----------------------------------------------------------------------------
+argument:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_argument
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "attr"
+		@ ( -- u ) Gets the user variable attr address
+@ -----------------------------------------------------------------------------
+attr:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_attr
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "XT"
+		@ ( -- u ) Gets the user variable XT address
+@ -----------------------------------------------------------------------------
+XT:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_XT
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "R0"
+		@ ( -- u ) Gets the user variable R0 address
+@ -----------------------------------------------------------------------------
+R0:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_R0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "S0"
+		@ ( -- u ) Gets the user variable S0 address
+@ -----------------------------------------------------------------------------
+S0:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_S0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "#user"
+		@ ( -- u ) Offset to the user area
+@ -----------------------------------------------------------------------------
+sharp_user:
+	push	{lr}
+	pushdatos
+	ldr		tos, =user_free
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "/user"
+		@ ( -- u ) Offset to the user area
+@ -----------------------------------------------------------------------------
+slash_user:
+	push	{lr}
+	pushdatos
+	ldr		tos, =user_size
+	pop		{pc}
+
+
+/*
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "user" @ ( n -- )
+  // : user create , does> @ 0 0 pvTaskGetThreadLocalStoragePointer + ;
+@ -----------------------------------------------------------------------------
+  	push 	{lr}
+	bl		create
+	bl		komma
+	bl		dodoes
+//	bl		dodoes
+	pushdatos			// str r6, [ r7 #-4 ]!
+	subs 	r6, lr, #1	// get constant address?
+	ldr 	tos, [tos]  // @
+
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+
+	adds	tos, tos, r0
+	pop		{pc}
+*/
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "his"  //  ( addr1 n -- addr2 )
+  // Given a task address addr1 (TCB) and user variable offset n, returns the
+  // address of the referenced user variable in that task's user area.
+@ -----------------------------------------------------------------------------
+his:
+  	push 	{lr}
+	movs	r1, tos		// n
+	push	{r1}
+	drop
+	movs	r0, tos		// addr1
+	ldr		r0, [r0]	// get thread handle
+	ldr		r1, =0
+  	bl		pvTaskGetThreadLocalStoragePointer
+  	pop		{r1}
+  	adds	tos, r0, r1	// add offset
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "task" // ( "name" -- )
+  // Creates a task control block TCB. Invoking "name" returns the address of
+  // the task's Task Control Block (TCB).
+@ -----------------------------------------------------------------------------
+	pushdatos
+	ldr		tos, =user_size
+	b		buffer_colon
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "/task" // ( -- n )
+  // n is the size of a Task Control block (same as user area).
+  // This word allows arrays of tasks to be created without having to name each one.
+@ -----------------------------------------------------------------------------
+	b		slash_user
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "construct" // ( addr -- )
+  // Instantiate the task whose TCB is at addr.
+  // Clears the user area aka TCB
+@ -----------------------------------------------------------------------------
+	pushdatos
+	ldr		tos, =user_size
+	pushdatos
+	movs	tos, #0
+	pushdatos
+	b		fill
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "activate" // ( xt addr -- )
+  // Start the task at addr asynchronously executing the word whose execution
+  // token is xt
+@ -----------------------------------------------------------------------------
+  	push 	{lr}
+  	movs	r0, tos		// addr (TCB)
+  	push	{r0}
+  	drop
+  	movs	r1, tos		// xt
+  	drop
+
+ 	adds	r2, r0, #user_XT
+  	str		r1, [r2]	// store XT
+
+	adds	r2, r0, #user_argument
+	ldr		r1, [r2]
+	adds	r2, r0, #user_attr
+	ldr		r2, [r2]
+	ldr		r0, =skeleton
+  	bl		osThreadNew
+  	movs	r1, r0
+  	pop		{r0}
+ 	adds	r2, r0, #user_threadid
+  	str		r1, [r2]	// store threadid
+	pop		{pc}
+
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "stop" // ( -- )
+  // blocks the current task unless or until AWAKEN has been issued
+@ -----------------------------------------------------------------------------
+  	push 	{lr}
+  	ldr		r0, =0x8000
+  	ldr		r1, =0
+  	ldr		r2, =0xFFFFFFFFU	// osWaitForever
+  	bl		osThreadFlagsWait 	// (uint32_t flags, uint32_t options, uint32_t timeout)
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "awaken" // ( addr -- )
+  //
+@ -----------------------------------------------------------------------------
+  	push 	{lr}
+  	movs	r0, tos		// addr
+  	drop
+  	ldr		r0, [r0]
+  	ldr		r1, =0x8000
+  	bl		osThreadFlagsSet	// (osThreadId_t thread_id, uint32_t flags)
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "skeleton" // ( -- )
+  // skeleton for the task
+  // : skeleton
+  //     osNewDataStack
+  //     sp@ S0 !
+  //	 rp@ R0 !
+  //     XT @ execute
+  //     osThreadExit
+  // ;
+@ -----------------------------------------------------------------------------
+skeleton:
+  	push 	{lr}
+  	bl		rtos_osNewDataStack
+  	bl		S0
+  	str		r7, [tos]
+  	drop
+  	bl		R0
+  	str		sp, [tos]
+  	drop
+  	bl		XT
+  	ldr		r0, [tos]
+  	drop
+  	mov 	pc, r0
+  	bl		osThreadExit
+	pop		{pc}
+
+
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osNewDataStack"
 		@ (  --  ) Creates an new data stack for a Forth thread.
@@ -39,6 +310,8 @@ rtos_osNewDataStack:
 	adds	r7, r0, #256	// stack grows down
 	movs	tos, 42
 	pop		{r0-r3, pc}
+
+.ltorg
 
 
 // RTOS datastructures
@@ -205,7 +478,7 @@ slashosSemaphoreAttr:
 	pop		{pc}
 
 
-
+.ltorg
 
 //  ==== Kernel Management Functions ====
 
@@ -335,6 +608,7 @@ rtos_osDelayUntil:
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
+.ltorg
 
 // Thread Management
 // *****************
@@ -655,6 +929,101 @@ rtos_vPortFree:
 	pop		{r0-r3, pc}
 
 
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "vTaskSetThreadLocalStoragePointer"
+		@ (addr1 u addr2 --  ) set the thread local storage pointer
+		@			void vTaskSetThreadLocalStoragePointer(TaskHandle_t xTaskToSet, BaseType_t xIndex, void *pvValue)
+// -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r2, tos		// addr2 pointer to the user area
+	drop
+	movs	r1, tos		// index, usally 0
+	drop
+	movs	r0, tos		// addr1 thread handle
+	drop
+	bl		vTaskSetThreadLocalStoragePointer
+	pop		{r0-r3, pc}
+
+
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "pvTaskGetThreadLocalStoragePointer"
+		@ (addr1 u --  addr2 ) get the thread local storage pointer
+		@			void *pvTaskGetThreadLocalStoragePointer( TaskHandle_t xTaskToQuery, BaseType_t xIndex )
+// -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos		// index, usally 0
+	drop
+	movs	r0, tos		// addr1 thread handle
+	bl		pvTaskGetThreadLocalStoragePointer
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+.ltorg
+
+//  ==== Thread Flags ====
+
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osThreadFlagsSet"
+		@ (addr1 flags --  n ) sets the thread flags for a thread specified by parameter thread_id.
+		                     @ The thread returns the flags stored in the thread control block,
+		                     @ or an error code if highest bit is set (refer to Flags Functions Error Codes)
+		@	uint32_t osThreadFlagsSet(osThreadId_t thread_id, uint32_t flags)
+// -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos		// flags
+	drop
+	movs	r0, tos		// addr1 thread handle
+	bl		osThreadFlagsSet
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osThreadFlagsClear"
+		@ (flags --  n ) clears the specified flags for the currently running thread.
+		               @ It returns the flags before clearing, or an error code
+		               @ if highest bit is set (refer to Flags Functions Error Codes).
+		@	uint32_t osThreadFlagsClear(uint32_t flags)
+// -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos		// flags
+	bl		osThreadFlagsClear
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osThreadFlagsGet"
+		@ (addr1 flags --  n ) returns the flags currently set for the currently running thread.
+		@	uint32_t osThreadFlagsGet(void)
+// -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	pushdatos
+	bl		osThreadFlagsGet
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+// -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "osThreadFlagsWait"
+		@ (flags n1 n2 --  u ) suspends the execution of the currently RUNNING thread until
+		                     @ any or all of the thread flags specified with the parameter flags are set
+		@	uint32_t osThreadFlagsWait(uint32_t flags, uint32_t options, uint32_t timeout)
+// -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r1, tos		// n2
+	drop
+	movs	r0, tos		// n1
+	drop
+	movs	r0, tos		// flags
+	bl		osThreadFlagsWait
+	movs	tos, r0
+	pop		{r0-r3, pc}
+
+
+.ltorg
+
 //  ==== Timer Management Functions ====
 
 // -----------------------------------------------------------------------------
@@ -855,6 +1224,8 @@ rtos_osEventFlagsDelete:
 	pop		{r0-r3, pc}
 
 
+.ltorg
+
 //  ==== Mutex Management Functions ====
 
 // -----------------------------------------------------------------------------
@@ -930,6 +1301,8 @@ rtos_osMutexDelete:
 	movs	tos, r0
 	pop		{r0-r3, pc}
 
+
+.ltorg
 
 //  ==== Semaphore Management Functions ====
 
@@ -1014,6 +1387,7 @@ rtos_osSemaphoreDelete:
 	pop		{r0-r3, pc}
 
 
+.ltorg
 
 //  ==== Message Queue Management Functions ====
 

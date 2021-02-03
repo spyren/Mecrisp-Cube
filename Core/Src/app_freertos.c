@@ -69,7 +69,7 @@
 /* Definitions for Main */
 osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
-  .name = "Main",
+  .name = "ForthTerminal",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 512 * 4
 };

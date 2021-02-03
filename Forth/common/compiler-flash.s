@@ -862,7 +862,7 @@ variable_ram:
   Wortbirne Flag_visible, "buffer:" @ ( Length -- )
   @ Creates an uninitialised buffer of given bytes length.
 @------------------------------------------------------------------------------
-
+buffer_colon:
   push {lr}
   bl create
 

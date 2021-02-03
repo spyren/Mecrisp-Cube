@@ -3,7 +3,10 @@
  *  	OLED driver based on the controller SSD1306.
  *
  *  	Resolution 128x32 or 128x64, monochrome.
- *  	I2C Interface.
+ *  	A page consists of 128 columns (horizontally, x) with 8 pixels (vertically, y).
+ *  	The 8 pixels are in one byte.
+ *  	There are 4 pages in 128x32 display, and 8 pages in a 128x64 display.
+ *  	I2C Interface, address 60.
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file
  *      oled.c
@@ -93,9 +96,12 @@ static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column add
 static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
+//static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration adafruit bonnet
 static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period
+//static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period adafruit bonnet
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
+//static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
 static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
@@ -238,7 +244,7 @@ int OLED_puts(const char *s) {
  *  @param[in]
  *      x  horizontal position, max. (128 / 6) -1, depends on font.
  *  @param[in]
- *      y  vertical position, max. 3 for 128x32 or 7 for 128x64 displays.
+ *      y  vertical position (page), max. 3 for 128x32 or 7 for 128x64 displays.
  *  @return
  *      none
  */
@@ -304,10 +310,10 @@ void OLED_clear(void) {
 		return;
 	}
 
-	OLED_setPos(0, 0);
 	buf[0] = 0x40;  // write data
 	memset(&buf[1], 0, OLED_X_RESOLUTION);
 	for (i=0; i<OLED_LINES; i++) {
+		OLED_setPos(0, i);
 		IIC_setDevice(OLED_I2C_ADR);
 		IIC_putMessage(buf, 129);
 	}
@@ -344,9 +350,9 @@ static void setPos(uint8_t x, uint8_t y) {
 	uint8_t buf[4];
 
 	buf[0] = 0x00; // write command
-	buf[1] = 0xb0 + y;
-	buf[2] = ((x & 0xf0) >> 4) | 0x10; // | 0x10
-	buf[3] = x & 0x0f; // | 0x01
+	buf[1] = 0xb0 + y; // page address
+	buf[2] = ((x & 0xf0) >> 4) | 0x10; // Set Higher Column Start Address
+	buf[3] = x & 0x0f; // | 0x01 // Set Lower Column Start Address
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 4);
 }

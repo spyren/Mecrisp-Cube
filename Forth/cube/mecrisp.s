@@ -239,6 +239,23 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 	ramallot	iap_reply, 4*4
 .endif
 
+.equ	user_size,				128
+
+	ramallot	uservariables, user_size
+.equ	user_threadid,			0
+.equ	user_argument,			4
+.equ	user_attr,				8
+.equ	user_XT,				12
+.equ	user_R0,				16
+.equ	user_S0,				20
+.equ	user_base,				24
+.equ	user_hook_emit,			28
+.equ	user_hook_key,			32
+.equ	user_hook_emit_q,		36
+.equ	user_hook_key_q,		40
+.equ	user_free,				44
+
+
 .equ	RamDictionaryAnfang,	rampointer	@ Start of RAM dictionary
 .equ	RamDictionaryEnde,		RamEnde		@ End of RAM dictionary = End of RAM
 
@@ -396,6 +413,39 @@ Forth:
 // Stack already set in the main thread
 //	ldr		r0, =returnstackanfang
 //	str		sp, [r0]
+
+// set the local storage pointer to the user variables
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	ldr		r2, =uservariables
+	bl		vTaskSetThreadLocalStoragePointer
+
+// store terminal task thread ID to user variable threadid
+	bl		osThreadGetId
+	ldr		r2, =uservariables
+	str		r0, [r2]
+
+// store return stack bottom address to user variable R0
+	ldr		r2, =uservariables
+	add		r2, r2, #user_R0
+	str		r13, [r2]
+
+// set user variables attr and argument to 0
+	ldr		r2, =uservariables
+	ldr		r0, =0
+	add		r2, r2, #user_attr
+	str		r0, [r2]
+	ldr		r2, =uservariables
+	add		r2, r2, #user_argument
+	str		r0, [r2]
+
+// store data stack bottom address to user variable S0
+	ldr		r2, =uservariables
+	add		r2, r2, #user_S0
+	ldr		r0, =datenstackanfang
+	str		r0, [r2]
+
+
 
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"
