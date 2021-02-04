@@ -207,13 +207,12 @@ his:
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "construct" // ( addr -- )
   // Instantiate the task whose TCB is at addr.
-  // Clears the user area aka TCB
+  // Initializes the user area, copy from parent task (terminal task)
 @ -----------------------------------------------------------------------------
 	pushdatos
 	ldr		tos, =user_size
 	pushdatos
 	movs	tos, #0
-	pushdatos
 	b		fill
 
 
@@ -229,19 +228,16 @@ his:
   	movs	r1, tos		// xt
   	drop
 
- 	adds	r2, r0, #user_XT
-  	str		r1, [r2]	// store XT
-
-	adds	r2, r0, #user_argument
-	ldr		r1, [r2]
-	adds	r2, r0, #user_attr
-	ldr		r2, [r2]
+	str		r1, [r0, #user_XT]
+	ldr		r1, [r0, #user_argument]
+	ldr		r2, [r0, #user_attr]
 	ldr		r0, =skeleton
   	bl		osThreadNew
-  	movs	r1, r0
-  	pop		{r0}
- 	adds	r2, r0, #user_threadid
-  	str		r1, [r2]	// store threadid
+  	pop		{r2}		// addr
+  	str		r0, [r2]	// store threadid
+  	movs	r1, #0
+	bl		vTaskSetThreadLocalStoragePointer	// (TaskHandle_t xTaskToSet, BaseType_t xIndex, void *pvValue)
+
 	pop		{pc}
 
 
@@ -284,6 +280,8 @@ his:
 @ -----------------------------------------------------------------------------
 skeleton:
   	push 	{lr}
+  	ldr		r0, =10
+  	bl		osDelay
   	bl		rtos_osNewDataStack
   	bl		S0
   	str		r7, [tos]
