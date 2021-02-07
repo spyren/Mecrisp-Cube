@@ -41,7 +41,7 @@
 // void SD_getSize(void)
 @ -----------------------------------------------------------------------------
 drive:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// n
 	drop
 	ldr		r1, =DriveNumber
@@ -56,7 +56,7 @@ drive:
 	bl		SD_getSize	// drive 1
 
 2:
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ drive:
 // int SD_getBlocks(void)
 @ -----------------------------------------------------------------------------
 number_blocks:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	ldr		r1, =DriveNumber
 	ldr		r0, [r1]
@@ -82,7 +82,7 @@ number_blocks:
 	ldr		r0, =0		// invalid drive -> no blocks
 3:
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -91,9 +91,9 @@ number_blocks:
 // void BLOCK_emptyBuffers(void)
 @ -----------------------------------------------------------------------------
 empty_buffers:
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BLOCK_emptyBuffers
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -102,9 +102,9 @@ empty_buffers:
 // void BLOCK_update(void)
 @ -----------------------------------------------------------------------------
 update:
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BLOCK_update
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -113,11 +113,11 @@ update:
 // uint8_t *BLOCK_get(int block_number)
 @ -----------------------------------------------------------------------------
 block:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// n
 	bl		BLOCK_get
 	movs	tos, r0		// addr
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -126,11 +126,11 @@ block:
 // uint8_t *BLOCK_assign(int block_number)
 @ -----------------------------------------------------------------------------
 buffer:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// n
 	bl		BLOCK_assign
 	movs	tos, r0		// addr
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -139,9 +139,9 @@ buffer:
 // void BLOCK_saveBuffers(void)
 @ -----------------------------------------------------------------------------
 save_buffers:
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BLOCK_saveBuffers
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -150,9 +150,9 @@ save_buffers:
 // void BLOCK_flushBuffers(void)
 @ -----------------------------------------------------------------------------
 flush:
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BLOCK_flushBuffers
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // Forth words which call C functions and which themselves call Forth words

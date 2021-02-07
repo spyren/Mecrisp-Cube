@@ -34,66 +34,66 @@
 set_led1:
 		@ ( n --  ) set LED1 (blue)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		BSP_setLED1
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1@"
 get_led1:
 		@ (  -- n ) get LED1 (blue)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getLED1
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2!"
 set_led2:
 		@ ( n --  ) set LED2 (green)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		BSP_setLED2
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2@"
 get_led2:
 		@ (  -- n ) get LED2 (green)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getLED2
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 	@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3!"
 set_led3:
 		@ ( n --  ) set LED3 (red)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		BSP_setLED3
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3@"
 get_led3:
 		@ (  -- n ) get LED3 (red)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getLED3
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -101,11 +101,11 @@ get_led3:
 get_switch1:
 		@ (  -- n ) get switch1
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getSwitch1
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -113,22 +113,22 @@ get_switch1:
 get_switch2:
 		@ (  -- n ) get switch2
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getSwitch2
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch3?"
 get_switch3:
 		@ (  -- n ) get switch3
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getSwitch3
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dport!"
@@ -136,11 +136,11 @@ set_dport:
 		@ ( n --  ) Sets the digital output port (D0 .. D15).
 // void BSP_setDigitalPort(int state);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// state
 	drop
 	bl		BSP_setDigitalPort
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dport@"
@@ -148,11 +148,11 @@ get_dport:
 		@ (  -- n ) Gets the digital input port (D0 .. D15).
 // int BSP_getDigitalPort(void);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getDigitalPort
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -161,13 +161,13 @@ set_dpin:
 		@ ( u a --  ) Sets the digital output port pin (D0 .. D15).
 // void BSP_setDigitalPin(int pin_number, int state);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// state
 	drop
 	bl		BSP_setDigitalPin
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -176,11 +176,11 @@ get_dpin:
 		@ ( a -- u ) Gets the digital input port pin (D0 .. D15).
 // int BSP_getDigitalPin(int pin_number);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	bl		BSP_getDigitalPin
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -189,11 +189,11 @@ get_apin:
 		@ ( a -- u ) Gets the analog input port pin (A0 .. A5).
 // int BSP_getAnalogPin(int pin_number)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	bl		BSP_getAnalogPin
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -203,13 +203,13 @@ set_dmod:
 		@                                5 out pwm, 6 input capture, 7 output compare, 8 I2C
 // int BSP_setDigitalPinMode(int pin_number, int mode)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// mode
 	drop
 	bl		BSP_setDigitalPinMode
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -218,13 +218,13 @@ set_pwmpin:
 		@ ( u a --  ) sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Frequency is 1 kHz
 // int BSP_setPwmPin(int pin_number, int value)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// value
 	drop
 	bl		BSP_setPwmPin
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -233,11 +233,11 @@ pwmprescale:
 		@ ( u --  ) Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
 // void BSP_setPwmPrescale(int16_t value)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// value
 	drop
 	bl		BSP_setPwmPrescale
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -245,9 +245,9 @@ pwmprescale:
 wait_alarm:		@ ( --  ) Wait for alarm A
 // void RTC_waitAlarmA()
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		RTC_waitAlarmA
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -256,7 +256,7 @@ set_alarm:
 		@ ( n1 n2 n3 --  ) sets the alarm
 // void RTC_setAlarmA(int hour, int minute, int second)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r2, tos		// n3 second
 	drop
 	movs	r1, tos		// n2 minute
@@ -264,7 +264,7 @@ set_alarm:
 	movs	r0, tos		// n3 hour
 	drop
 	bl		RTC_setAlarmA
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -274,11 +274,11 @@ ICOCprescale:
 		@            default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 // void BSP_setPrescaleICOC(uint32_t prescale);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// prescale
 	drop
 	bl		BSP_setPrescaleICOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -290,11 +290,11 @@ set_ICOCperiod:
         @              For prescale 32 the maximum time is about 1 h 11 m
 // void BSP_setPeriodICOC(uint32_t period);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// period
 	drop
 	bl		BSP_setPeriodICOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -303,11 +303,11 @@ set_ICOCcount:
 		@ ( u -- )    Sets the input capture / output compare counter for TIMER2
 // void BSP_setCounterICOC(uint32_t count);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// count
 	drop
 	bl		BSP_setCounterICOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -316,11 +316,11 @@ get_ICOCcount:
 		@ ( -- u )    Gets the input capture / output compare counter for TIMER2
 // uint32_t BSP_getCounterICOC(void);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		BSP_getCounterICOC
 	movs	tos, r0		// return value
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -329,9 +329,9 @@ ICOCstart:
 		@ ( -- )      Starts the ICOC period
 // void BSP_startPeriodICOC(void) {
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BSP_startPeriodICOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -340,9 +340,9 @@ ICOCstop:
 		@ ( -- )      Stops the ICOC period
 // void BSP_stopPeriodICOC(void) {
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BSP_stopPeriodICOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -353,13 +353,13 @@ OCmod:
         @             4 forced active, 5 forced inactive
 // void BSP_setModeOC(int pin_number, uint32_t mode);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// mode
 	drop
 	bl		BSP_setModeOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -368,13 +368,13 @@ OCstart:
 		@ ( u a -- )  Starts the output compare mode for pin a with pulse u
 // void BSP_startOC(int pin_number, uint32_t pulse);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// pulse
 	drop
 	bl		BSP_startOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -383,11 +383,11 @@ OCstop:
 		@ ( a -- )    Stops output compare for pin a
 // void BSP_stopOC(int pin_number);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	bl		BSP_stopOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -396,11 +396,11 @@ ICstart:
 		@ ( u -- )    Starts input capture u: 0 rising edge, 1 falling edge, 2 both edges
 // void BSP_startIC(uint32_t mode);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mode
 	drop
 	bl		BSP_startIC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -409,9 +409,9 @@ ICstop:
 		@ ( -- )      Stops input capture
 // void BSP_stopIC(void);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BSP_stopIC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -420,9 +420,9 @@ waitperiod:
 		@ ( -- )      wait for the end of the TIMER2 period
 // void BSP_waitPeriod(void);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		BSP_waitPeriod
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -431,11 +431,11 @@ OCwait:
 		@ ( a -- )    wait for the end of output capture pin a
 // void BSP_waitOC(int pin_number);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	bl		BSP_waitOC
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -444,11 +444,11 @@ OCwait:
 ICwait:
 // uint32_t BSP_waitIC(uint32_t timeout);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// timeout
 	bl		BSP_waitIC
 	movs	tos, r0		// return value
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -457,13 +457,13 @@ ICwait:
 EXTImod:
 // void BSP_setModeEXTI(int pin_number, uint32_t mode)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// mode
 	drop
 	bl		BSP_setModeEXTI
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -472,13 +472,13 @@ EXTImod:
 EXTIwait:
 // void BSP_waitEXTI(int pin_number, int32_t timeout)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// pin_number
 	drop
 	movs	r1, tos		// timeout
 	bl		BSP_waitEXTI
 	movs	tos, r0		// return value
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // I2C
@@ -489,11 +489,11 @@ EXTIwait:
 I2dev:
         @ ( c -- ) Sets the I2C slave device
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		IIC_setDevice
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "I2Cget"
@@ -501,13 +501,13 @@ I2Cget:
         @ ( a size -- ) Get a message
 // int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos			// RxSize
 	drop
 	movs	r0, tos			// *RxBuffer
 	drop
 	bl		IIC_getMessage
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "I2Cput"
@@ -515,14 +515,14 @@ I2Cput:
         @ ( a size --  ) Put a message
 // int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos			// TxSize
 	drop
 	movs	r0, tos			// *TxBuffer
 	drop
 	bl		IIC_putMessage
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "I2Cputget"
@@ -530,7 +530,7 @@ I2Cputget:
         @ ( a1 size1 a2 size2 --  ) Put and get a message
 // int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r3, tos			// RxSize
 	drop
 	movs	r2, tos			// *RxBuffer
@@ -541,5 +541,5 @@ I2Cputget:
 	drop
 	bl		IIC_putGetMessage
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 

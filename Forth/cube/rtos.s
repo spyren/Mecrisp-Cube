@@ -185,6 +185,10 @@ his:
   	adds	tos, r0, r1	// add offset
 	pop		{pc}
 
+.ltorg
+
+// Task Management
+// ***************
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "task" // ( "name" -- )
@@ -217,7 +221,7 @@ his:
 
 
 @ -----------------------------------------------------------------------------
-  Wortbirne Flag_visible, "activate" // ( xt addr -- )
+  Wortbirne Flag_visible, "start-task" // ( xt addr -- )
   // Start the task at addr asynchronously executing the word whose execution
   // token is xt
 @ -----------------------------------------------------------------------------
@@ -241,7 +245,6 @@ his:
 	pop		{pc}
 
 
-
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "stop" // ( -- )
   // blocks the current task unless or until AWAKEN has been issued
@@ -256,7 +259,7 @@ his:
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "awaken" // ( addr -- )
-  //
+  // wakes up the task
 @ -----------------------------------------------------------------------------
   	push 	{lr}
   	movs	r0, tos		// addr
@@ -279,7 +282,6 @@ his:
   // ;
 @ -----------------------------------------------------------------------------
 skeleton:
-  	push 	{lr}
   	ldr		r0, =10
   	bl		osDelay
   	bl		rtos_osNewDataStack
@@ -293,8 +295,7 @@ skeleton:
   	ldr		r0, [tos]
   	drop
   	mov 	pc, r0
-  	bl		osThreadExit
-	pop		{pc}
+  	bl		osThreadExit	// never returns
 
 
 // -----------------------------------------------------------------------------
@@ -302,12 +303,120 @@ skeleton:
 		@ (  --  ) Creates an new data stack for a Forth thread.
 // -----------------------------------------------------------------------------
 rtos_osNewDataStack:
-	push	{r0-r3, lr}
+	push	{lr}
 	ldr		r0, =256		// 64 levels should be more than enough
 	bl		pvPortMalloc
 	adds	r7, r0, #256	// stack grows down
 	movs	tos, 42
-	pop		{r0-r3, pc}
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "[C" // ( -- )
+  // Begin a critical section. Other tasks cannot execute during a critical
+  // section, but interrupts can.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		osKernelLock
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "C]" // ( -- )
+  // Terminate a critical section.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		osKernelUnlock
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "terminate" // ( -- )
+  // Causes the task executing this word to cease operation
+@ -----------------------------------------------------------------------------
+	bl		osThreadExit
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "suspend" // ( addr -- ior )
+  // Force the task whose TCB is at addr to suspend operation indefinitely.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, [tos]
+	bl		osThreadSuspend
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "resume" // ( addr -- ior )
+  // Cause the task whose TCB is at addr to resume operation at the point at
+  // which it was SUSPENDed (or where the task called STOP).
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, [tos]
+	bl		osThreadResume
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "halt" // ( addr -- )
+  // Cause the task whose TCB is at addr to cease operation permanently at
+  // the next STOP or PAUSE, but to remain instantiated. The task may be reactivated.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	drop
+	bl		osThreadTerminate	// ??
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "kill" // ( addr -- )
+  // Cause the task whose TCB is at addr to cease operation and release all its TCB memory.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, [tos]
+	drop
+	bl		osThreadTerminate
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "mutex-init" // ( addr -- )
+  // Initialize a mutex. Set its state to released.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, =0		// default mutex attribute
+	bl		osMutexNew
+	str		r0, [tos]
+	drop
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "/mutex" // ( -- n )
+  // n is the number of bytes in a mutex.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	ldr		tos, =4
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "get" // ( addr -- )
+  // Obtain control of the mutex at addr. If the mutex is owned by another task,
+  // the task executing GET will wait until the mutex is available.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, [tos]			// mutex ID
+	drop
+	ldr		r1, =0xFFFFFFFFU	// osWaitForever
+	bl		osMutexAcquire
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "release" // ( addr -- )
+  // Relinquish the mutex at addr
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, [tos]		// mutex ID
+	drop
+	bl		osMutexRelease
+	pop		{pc}
 
 .ltorg
 
@@ -527,11 +636,11 @@ slashosSemaphoreAttr:
 //uint32_t osKernelGetTickCount (void);
 // -----------------------------------------------------------------------------
 rtos_osKernelGetTickCount:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osKernelGetTickCount
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -541,11 +650,11 @@ rtos_osKernelGetTickCount:
 // uint32_t osKernelGetTickFreq (void);
 // -----------------------------------------------------------------------------
 rtos_osKernelGetTickFreq:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osKernelGetTickFreq
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -555,11 +664,11 @@ rtos_osKernelGetTickFreq:
 // uint32_t osKernelGetSysTimerCount (void);
 // -----------------------------------------------------------------------------
 rtos_osKernelGetSysTimerCount:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osKernelGetSysTimerCount
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -569,11 +678,11 @@ rtos_osKernelGetSysTimerCount:
 // uint32_t osKernelGetSysTimerFreq (void);
 // -----------------------------------------------------------------------------
 rtos_osKernelGetSysTimerFreq:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osKernelGetSysTimerFreq
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 //  ==== Generic Wait Functions ====
@@ -586,11 +695,11 @@ rtos_osKernelGetSysTimerFreq:
 // osStatus_t osDelay (uint32_t ticks);
 // -----------------------------------------------------------------------------
 rtos_osDelay:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// ticks
 	bl		osDelay
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osDelayUntil"
@@ -600,11 +709,11 @@ rtos_osDelay:
 // osStatus_t osDelayUntil (uint32_t ticks);
 // -----------------------------------------------------------------------------
 rtos_osDelayUntil:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// ticks
 	bl		osDelay
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 .ltorg
 
@@ -624,7 +733,7 @@ rtos_osDelayUntil:
 // osThreadId_t osThreadNew (osThreadFunc_t func, void *argument, const osThreadAttr_t *attr);
 // -----------------------------------------------------------------------------
 rtos_osThreadNew:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r2, tos		// attr
 	drop
 	movs	r1, tos		// argument
@@ -632,7 +741,7 @@ rtos_osThreadNew:
 	movs	r0, tos		// func
 	bl		osThreadNew
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -642,11 +751,11 @@ rtos_osThreadNew:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetId
 rtos_osThreadGetId:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osThreadGetId
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -658,11 +767,11 @@ rtos_osThreadGetId:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetState
 rtos_osThreadGetState:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetState
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -674,11 +783,11 @@ rtos_osThreadGetState:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetName
 rtos_osThreadGetName:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetName
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -690,13 +799,13 @@ rtos_osThreadGetName:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadSetPriority
 rtos_osThreadSetPriority:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// priority
 	drop
 	movs	r0, tos		// set Thread ID
 	bl		osThreadSetPriority
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -708,11 +817,11 @@ rtos_osThreadSetPriority:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetPriority
 rtos_osThreadGetPriority:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetPriority
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -723,11 +832,11 @@ rtos_osThreadGetPriority:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadYield
 rtos_osThreadYield:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osThreadYield
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -739,11 +848,11 @@ rtos_osThreadYield:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadSuspend
 rtos_osThreadSuspend:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadSuspend
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -755,11 +864,11 @@ rtos_osThreadSuspend:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadResume
 rtos_osThreadResume:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadResume
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // not implemented under FreeRTOS
@@ -770,11 +879,11 @@ rtos_osThreadResume:
 //// -----------------------------------------------------------------------------
 //.global		rtos_osThreadDetach
 //rtos_osThreadDetach:
-//	push	{r0-r3, lr}
+//	push	{lr}
 //	movs	r0, tos		// set Thread ID
 //	bl		osThreadDetach
 //	movs	tos, r0		// return state
-//	pop		{r0-r3, pc}
+//	pop		{pc}
 
 
 // not implemented under FreeRTOS
@@ -785,11 +894,11 @@ rtos_osThreadResume:
 //// -----------------------------------------------------------------------------
 //.global		rtos_osThreadJoin
 //rtos_osThreadJoin:
-//	push	{r0-r3, lr}
+//	push	{lr}
 //	movs	r0, tos		// set Thread ID
 //	bl		osThreadJoin
 //	movs	tos, r0
-//	pop		{r0-r3, pc}
+//	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -799,9 +908,7 @@ rtos_osThreadResume:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadExit
 rtos_osThreadExit:
-	push	{r0-r3, lr}
 	bl		osThreadExit
-	pop		{r0-r3, pc}
 
 
 // -----------------------------------------------------------------------------
@@ -813,11 +920,11 @@ rtos_osThreadExit:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadTerminate
 rtos_osThreadTerminate:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadTerminate
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // not implemented under FreeRTOS
@@ -828,11 +935,11 @@ rtos_osThreadTerminate:
 //// -----------------------------------------------------------------------------
 //.global		rtos_osThreadGetStackSize
 //rtos_osThreadGetStackSize:
-//	push	{r0-r3, lr}
+//	push	{lr}
 //	movs	r0, tos		// set Thread ID
 //	bl		osThreadGetStackSize
 //	movs	tos, r0
-//	pop		{r0-r3, pc}
+//	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -844,11 +951,11 @@ rtos_osThreadTerminate:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetStackSpace
 rtos_osThreadGetStackSpace:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// set Thread ID
 	bl		osThreadGetStackSpace
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -859,11 +966,11 @@ rtos_osThreadGetStackSpace:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetCount
 rtos_osThreadGetCount:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osThreadGetCount
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -876,13 +983,13 @@ rtos_osThreadGetCount:
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadEnumerate
 rtos_osThreadEnumerate:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// array items
 	drop
 	movs	r0, tos		// addr thread array
 	bl		osThreadEnumerate
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -892,11 +999,11 @@ rtos_osThreadEnumerate:
 // -----------------------------------------------------------------------------
 .global		rtos_xPortGetFreeHeapSize
 rtos_xPortGetFreeHeapSize:
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		xPortGetFreeHeapSize
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -906,11 +1013,11 @@ rtos_xPortGetFreeHeapSize:
 // -----------------------------------------------------------------------------
 .global		rtos_pvPortMalloc
 rtos_pvPortMalloc:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	bl		pvPortMalloc
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -920,11 +1027,11 @@ rtos_pvPortMalloc:
 // -----------------------------------------------------------------------------
 .global		rtos_vPortFree
 rtos_vPortFree:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		vPortFree
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -932,7 +1039,7 @@ rtos_vPortFree:
 		@ (addr1 u addr2 --  ) set the thread local storage pointer
 		@			void vTaskSetThreadLocalStoragePointer(TaskHandle_t xTaskToSet, BaseType_t xIndex, void *pvValue)
 // -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r2, tos		// addr2 pointer to the user area
 	drop
 	movs	r1, tos		// index, usally 0
@@ -940,7 +1047,7 @@ rtos_vPortFree:
 	movs	r0, tos		// addr1 thread handle
 	drop
 	bl		vTaskSetThreadLocalStoragePointer
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -948,13 +1055,13 @@ rtos_vPortFree:
 		@ (addr1 u --  addr2 ) get the thread local storage pointer
 		@			void *pvTaskGetThreadLocalStoragePointer( TaskHandle_t xTaskToQuery, BaseType_t xIndex )
 // -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// index, usally 0
 	drop
 	movs	r0, tos		// addr1 thread handle
 	bl		pvTaskGetThreadLocalStoragePointer
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 .ltorg
@@ -968,13 +1075,13 @@ rtos_vPortFree:
 		                     @ or an error code if highest bit is set (refer to Flags Functions Error Codes)
 		@	uint32_t osThreadFlagsSet(osThreadId_t thread_id, uint32_t flags)
 // -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// flags
 	drop
 	movs	r0, tos		// addr1 thread handle
 	bl		osThreadFlagsSet
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -984,11 +1091,11 @@ rtos_vPortFree:
 		               @ if highest bit is set (refer to Flags Functions Error Codes).
 		@	uint32_t osThreadFlagsClear(uint32_t flags)
 // -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// flags
 	bl		osThreadFlagsClear
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -996,11 +1103,11 @@ rtos_vPortFree:
 		@ (addr1 flags --  n ) returns the flags currently set for the currently running thread.
 		@	uint32_t osThreadFlagsGet(void)
 // -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		osThreadFlagsGet
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -1009,7 +1116,7 @@ rtos_vPortFree:
 		                     @ any or all of the thread flags specified with the parameter flags are set
 		@	uint32_t osThreadFlagsWait(uint32_t flags, uint32_t options, uint32_t timeout)
 // -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// n2
 	drop
 	movs	r0, tos		// n1
@@ -1017,7 +1124,7 @@ rtos_vPortFree:
 	movs	r0, tos		// flags
 	bl		osThreadFlagsWait
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 .ltorg
@@ -1035,7 +1142,7 @@ rtos_vPortFree:
 // osTimerId_t osTimerNew (osTimerFunc_t func, osTimerType_t type, void *argument, const osTimerAttr_t *attr);
 // -----------------------------------------------------------------------------
 rtos_osTimerNew:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r3, tos		// attr
 	drop
 	movs	r2, tos		// argument
@@ -1045,7 +1152,7 @@ rtos_osTimerNew:
 	movs	r0, tos		// func
 	bl		osTimerNew
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osTimerGetName"
@@ -1055,11 +1162,11 @@ rtos_osTimerNew:
 // const char *osTimerGetName (osTimerId_t timer_id);
 // -----------------------------------------------------------------------------
 rtos_osTimerGetName:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// timer_id
 	bl		osTimerGetName
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osTimerStart"
@@ -1070,13 +1177,13 @@ rtos_osTimerGetName:
 // osStatus_t osTimerStart (osTimerId_t timer_id, uint32_t ticks);
 // -----------------------------------------------------------------------------
 rtos_osTimerStart:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// ticks
 	drop
 	movs	r0, tos		// timer_id
 	bl		osTimerStart
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osTimerStop"
@@ -1089,7 +1196,7 @@ rtos_osTimerStop:
 	movs	r0, tos		// timer_id
 	bl		osTimerStop
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 ///
 // -----------------------------------------------------------------------------
@@ -1100,11 +1207,11 @@ rtos_osTimerStop:
 // uint32_t osTimerIsRunning (osTimerId_t timer_id);
 // -----------------------------------------------------------------------------
 rtos_osTimerIsRunning:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// timer_id
 	bl		osTimerIsRunning
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osTimerDelete"
@@ -1114,11 +1221,11 @@ rtos_osTimerIsRunning:
 // osStatus_t osTimerDelete (osTimerId_t timer_id);
 // -----------------------------------------------------------------------------
 rtos_osTimerDelete:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// timer_id
 	bl		osTimerDelete
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 //  ==== Event Flags Management Functions ====
@@ -1131,11 +1238,11 @@ rtos_osTimerDelete:
 // osEventFlagsId_t osEventFlagsNew (const osEventFlagsAttr_t *attr);
 // -----------------------------------------------------------------------------
 rtos_osEventFlagsNew:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// attr
 	bl		osEventFlagsNew
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsSet"
@@ -1151,7 +1258,7 @@ rtos_osEventFlagsSet:
 	movs	r0, tos		// ef_id
 	bl		osEventFlagsSet
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsClear"
@@ -1162,13 +1269,13 @@ rtos_osEventFlagsSet:
 // uint32_t osEventFlagsClear (osEventFlagsId_t ef_id, uint32_t flags);
 // -----------------------------------------------------------------------------
 rtos_osEventFlagsClear:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// flags
 	drop
 	movs	r0, tos		// ef_id
 	bl		osEventFlagsClear
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsGet"
@@ -1178,11 +1285,11 @@ rtos_osEventFlagsClear:
 // uint32_t osEventFlagsGet (osEventFlagsId_t ef_id);
 // -----------------------------------------------------------------------------
 rtos_osEventFlagsGet:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// ef_id
 	bl		osEventFlagsGet
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsWait"
@@ -1195,7 +1302,7 @@ rtos_osEventFlagsGet:
 // uint32_t osEventFlagsWait (osEventFlagsId_t ef_id, uint32_t flags, uint32_t options, uint32_t timeout);
 // -----------------------------------------------------------------------------
 rtos_osEventFlagsWait:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r3, tos		// timeout
 	drop
 	movs	r2, tos		// options
@@ -1205,7 +1312,7 @@ rtos_osEventFlagsWait:
 	movs	r0, tos		// ef_id
 	bl		osEventFlagsWait
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osEventFlagsDelete"
@@ -1215,11 +1322,11 @@ rtos_osEventFlagsWait:
 // osStatus_t osEventFlagsDelete (osEventFlagsId_t ef_id);
 // -----------------------------------------------------------------------------
 rtos_osEventFlagsDelete:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// ef_id
 	bl		osEventFlagsDelete
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 .ltorg
@@ -1234,11 +1341,11 @@ rtos_osEventFlagsDelete:
 // osMutexId_t osMutexNew (const osMutexAttr_t *attr);
 // -----------------------------------------------------------------------------
 rtos_osMutexNew:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// attr
 	bl		osMutexNew
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMutexAcquire"
@@ -1249,13 +1356,13 @@ rtos_osMutexNew:
 // osStatus_t osMutexAcquire (osMutexId_t mutex_id, uint32_t timeout);
 // -----------------------------------------------------------------------------
 rtos_osMutexAcquire:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// timeout
 	drop
 	movs	r0, tos		// mutex_id
 	bl		osMutexAcquire
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMutexRelease"
@@ -1265,11 +1372,11 @@ rtos_osMutexAcquire:
 // osStatus_t osMutexRelease (osMutexId_t mutex_id);
 // -----------------------------------------------------------------------------
 rtos_osMutexRelease:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mutex_id
 	bl		osMutexRelease
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMutexGetOwner"
@@ -1279,11 +1386,11 @@ rtos_osMutexRelease:
 // osThreadId_t osMutexGetOwner (osMutexId_t mutex_id);
 // -----------------------------------------------------------------------------
 rtos_osMutexGetOwner:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mutex_id
 	bl		osMutexGetOwner
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMutexDelete"
@@ -1293,11 +1400,11 @@ rtos_osMutexGetOwner:
 // osStatus_t osMutexDelete (osMutexId_t mutex_id);
 // -----------------------------------------------------------------------------
 rtos_osMutexDelete:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mutex_id
 	bl		osMutexDelete
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 .ltorg
@@ -1314,7 +1421,7 @@ rtos_osMutexDelete:
 // osSemaphoreId_t osSemaphoreNew (uint32_t max_count, uint32_t initial_count, const osSemaphoreAttr_t *attr);
 // -----------------------------------------------------------------------------
 rtos_osSemaphoreNew:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r2, tos		// attr
 	drop
 	movs	r1, tos		// initial_count
@@ -1322,7 +1429,7 @@ rtos_osSemaphoreNew:
 	movs	r0, tos		// max_count
 	bl		osSemaphoreNew
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // -----------------------------------------------------------------------------
@@ -1334,13 +1441,13 @@ rtos_osSemaphoreNew:
 // osStatus_t osSemaphoreAcquire (osSemaphoreId_t semaphore_id, uint32_t timeout);
 // -----------------------------------------------------------------------------
 rtos_osSemaphoreAcquire:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// timeout
 	drop
 	movs	r0, tos		// semaphore_id
 	bl		osSemaphoreAcquire
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osSemaphoreRelease"
@@ -1350,11 +1457,11 @@ rtos_osSemaphoreAcquire:
 // osStatus_t osSemaphoreRelease (osSemaphoreId_t semaphore_id);
 // -----------------------------------------------------------------------------
 rtos_osSemaphoreRelease:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// semaphore_id
 	bl		osSemaphoreRelease
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osSemaphoreGetCount"
@@ -1364,11 +1471,11 @@ rtos_osSemaphoreRelease:
 // uint32_t osSemaphoreGetCount (osSemaphoreId_t semaphore_id);
 // -----------------------------------------------------------------------------
 rtos_osSemaphoreGetCount:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// semaphore_id
 	bl		osSemaphoreGetCount
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osSemaphoreDelete"
@@ -1378,11 +1485,11 @@ rtos_osSemaphoreGetCount:
 // osStatus_t osSemaphoreDelete (osSemaphoreId_t semaphore_id);
 // -----------------------------------------------------------------------------
 rtos_osSemaphoreDelete:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// semaphore_id
 	bl		osSemaphoreDelete
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 .ltorg
@@ -1399,7 +1506,7 @@ rtos_osSemaphoreDelete:
 // osMessageQueueId_t osMessageQueueNew (uint32_t msg_count, uint32_t msg_size, const osMessageQueueAttr_t *attr);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueNew:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r2, tos		// attr
 	drop
 	movs	r1, tos		// msg_size
@@ -1407,7 +1514,7 @@ rtos_osMessageQueueNew:
 	movs	r0, tos		// msg_count
 	bl		osMessageQueueNew
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueuePut"
@@ -1420,7 +1527,7 @@ rtos_osMessageQueueNew:
 // osStatus_t osMessageQueuePut (osMessageQueueId_t mq_id, const void *msg_ptr, uint8_t msg_prio, uint32_t timeout);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueuePut:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r3, tos		// timeout
 	drop
 	movs	r2, tos		// msg_prio
@@ -1430,7 +1537,7 @@ rtos_osMessageQueuePut:
 	movs	r0, tos		// mq_id
 	bl		osMessageQueuePut
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueGet"
@@ -1443,7 +1550,7 @@ rtos_osMessageQueuePut:
 // osStatus_t osMessageQueueGet (osMessageQueueId_t mq_id, void *msg_ptr, uint8_t *msg_prio, uint32_t timeout);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueGet:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r3, tos		// timeout
 	drop
 	movs	r2, tos		// msg_prio
@@ -1453,7 +1560,7 @@ rtos_osMessageQueueGet:
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueGet
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueGetCapacity"
@@ -1463,11 +1570,11 @@ rtos_osMessageQueueGet:
 // uint32_t osMessageQueueGetCapacity (osMessageQueueId_t mq_id);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueGetCapacity:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueGetCapacity
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueGetMsgSize"
@@ -1477,11 +1584,11 @@ rtos_osMessageQueueGetCapacity:
 // uint32_t osMessageQueueGetMsgSize (osMessageQueueId_t mq_id);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueGetMsgSize:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueGetMsgSize
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueGetCount"
@@ -1491,11 +1598,11 @@ rtos_osMessageQueueGetMsgSize:
 // uint32_t osMessageQueueGetCount (osMessageQueueId_t mq_id);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueGetCount:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueGetCount
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueGetSpace"
@@ -1505,11 +1612,11 @@ rtos_osMessageQueueGetCount:
 // uint32_t osMessageQueueGetSpace (osMessageQueueId_t mq_id);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueGetSpace:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueGetSpace
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueReset"
@@ -1522,7 +1629,7 @@ rtos_osMessageQueueReset:
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueReset
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "osMessageQueueDelete"
@@ -1532,10 +1639,10 @@ rtos_osMessageQueueReset:
 // osStatus_t osMessageQueueDelete (osMessageQueueId_t mq_id);
 // -----------------------------------------------------------------------------
 rtos_osMessageQueueDelete:
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// mq_id
 	bl		osMessageQueueDelete
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 // -----------------------------------------------------------------------------

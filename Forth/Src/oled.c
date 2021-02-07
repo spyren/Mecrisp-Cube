@@ -95,13 +95,22 @@ static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column addr
 static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
 static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
+#ifdef BONNET
+static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration adafruit bonnet
+#else
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
-//static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration adafruit bonnet
+#endif
 static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
+#ifdef BONNET
+static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period adafruit bonnet
+#else
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period
-//static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period adafruit bonnet
+#endif
+#ifdef BONNET
+static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
+#else
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
-//static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
+#endif
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
 static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;

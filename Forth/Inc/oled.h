@@ -33,6 +33,9 @@
 #define INC_OLED_H_
 
 #define OLED_I2C_ADR		60
+
+#define	BONNET				1
+
 #define OLED_X_RESOLUTION	128
 #define OLED_Y_RESOLUTION	64
 #define OLED_LINES			(OLED_Y_RESOLUTION / 8)
