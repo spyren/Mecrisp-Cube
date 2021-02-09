@@ -213,11 +213,16 @@ his:
   // Instantiate the task whose TCB is at addr.
   // Initializes the user area, copy from parent task (terminal task)
 @ -----------------------------------------------------------------------------
-	pushdatos
-	ldr		tos, =user_size
-	pushdatos
-	movs	tos, #0
-	b		fill
+  	push 	{lr}
+	ldr		r2, =user_size		// size in bytes
+	ldr		r0, =uservariables	// source
+wordcopy:
+	ldr		r3, [r0], #4		// load a word from the source and
+	str		r3, [tos], #4		// store it to the destination
+	subs	r2, r2, #4			// decrement the counter
+	bne		wordcopy
+	drop
+  	pop 	{lr}
 
 
 @ -----------------------------------------------------------------------------

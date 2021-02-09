@@ -7,6 +7,7 @@
  *      Console I/O (UART, USB-CDC, BLE) is buffered and RTOS aware.
  *
  *      STM32WB55C: 1 MiB FLASH
+ *      For details see STM32WB55RGVX_FLASH.ld
  *
  *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
  *       20 KiB Forth Core
@@ -27,7 +28,7 @@
  *      63 KiB RAM Dictionary
  *
  *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
- *       1 KiB Stack         (only for startup)
+ *       1 KiB Stack         (for startup and ISRs, MSP)
  *       1 KiB Heap          (maybe not needed)
  *       1 KiB UART Tx Buffer
  *       5 KiB UART Rx Buffer

@@ -22,95 +22,59 @@
   Wortbirne Flag_visible|Flag_variable, "hook-emit" @ ( -- addr )
   CoreVariable hook_emit
 @------------------------------------------------------------------------------
+	push	{lr}
 	pushdatos
-	ldr 	tos, =hook_emit
-	bx lr
-.if	DEFAULT_TERMINAL == UART_TERMINAL
-	.word	serial_emit		// Serial (UART) for terminal
-.else
-.if DEFAULT_TERMINAL == CDC_TERMINAL
-	.word	cdc_emit		// USB CDC for terminal
-.else
-.if	DEFAULT_TERMINAL == CRS_TERMINAL
-	.word	crs_emit		// BLE CRS for terminal
-.endif
-.endif
-.endif
-
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_hook_emit
+	pop		{pc}
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key" @ ( -- addr )
   CoreVariable hook_key
 @------------------------------------------------------------------------------
+	push	{lr}
 	pushdatos
-	ldr		tos, =hook_key
-	bx		lr
-.if	DEFAULT_TERMINAL == UART_TERMINAL
-	.word	serial_key		// Serial (UART) for terminal
-.else
-.if DEFAULT_TERMINAL == CDC_TERMINAL
-	.word	cdc_key			// USB CDC for terminal
-.else
-.if	DEFAULT_TERMINAL == CRS_TERMINAL
-	.word	crs_key			// BLE CRS for terminal
-.endif
-.endif
-.endif
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_hook_key
+	pop		{pc}
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-emit?" @ ( -- addr )
   CoreVariable hook_qemit
 @------------------------------------------------------------------------------
+	push	{lr}
 	pushdatos
-	ldr		tos, =hook_qemit
-	bx		lr
-.if	DEFAULT_TERMINAL == UART_TERMINAL
-	.word	serial_qemit		// Serial (UART) for terminal
-.else
-.if DEFAULT_TERMINAL == CDC_TERMINAL
-	.word	cdc_qemit		// USB CDC for terminal
-.else
-.if	DEFAULT_TERMINAL == CRS_TERMINAL
-	.word	crs_qemit		// BLE CRS for terminal
-.endif
-.endif
-.endif
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_hook_qemit
+	pop		{pc}
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible|Flag_variable, "hook-key?" @ ( -- addr )
   CoreVariable hook_qkey
 @------------------------------------------------------------------------------
+	push	{lr}
 	pushdatos
-	ldr		tos, =hook_qkey
-	bx		lr
-.if	DEFAULT_TERMINAL == UART_TERMINAL
-	.word	serial_qkey		// Serial (UART) for terminal
-.else
-.if DEFAULT_TERMINAL == CDC_TERMINAL
-	.word	cdc_qkey		// USB CDC for terminal
-.else
-.if	DEFAULT_TERMINAL == CRS_TERMINAL
-	.word	crs_qkey		// BLE CRS for terminal
-.endif
-.endif
-.endif
-
-@------------------------------------------------------------------------------
-  Wortbirne Flag_visible|Flag_variable, "hook-pause" @ ( -- addr )
-  CoreVariable hook_pause
-@------------------------------------------------------------------------------
-	pushdatos
-	ldr		tos, =hook_pause
-	bx		lr
-//  .word nop_vektor  @ No Pause defined for default
-	.word	osDelay		// CMSIS-RTOS
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_hook_qkey
+	pop		{pc}
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "emit" @ ( c -- )
 emit:
 @------------------------------------------------------------------------------
 	push	{r0, r1, r2, r3, lr} @ Used in core, registers have to be saved !
-	ldr		r0, =hook_emit
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r0, [r0, #user_hook_emit]
 	bl		hook_intern
 	pop		{r0, r1, r2, r3, pc}
 
@@ -119,7 +83,10 @@ emit:
 key:
 @------------------------------------------------------------------------------
 	push	{r0, r1, r2, r3, lr} @ Used in core, registers have to be saved !
-	ldr		r0, =hook_key
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r0, [r0, #user_hook_key]
 	bl		hook_intern
 	pop		{r0, r1, r2, r3, pc}
 
@@ -127,17 +94,36 @@ key:
   Wortbirne Flag_visible, "emit?" @ ( -- ? )
 qemit:
 @------------------------------------------------------------------------------
-	ldr		r0, =hook_qemit
-	ldr		r0, [r0]
-	mov		pc, r0
+	push	{r0, r1, r2, r3, lr} @ Used in core, registers have to be saved !
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r0, [r0, #user_hook_qemit]
+	bl		hook_intern
+	pop		{r0, r1, r2, r3, pc}
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "key?" @ ( -- ? )
 qkey:
 @------------------------------------------------------------------------------
-	ldr		r0, =hook_qkey
-	ldr		r0, [r0]
-	mov		pc, r0
+	push	{r0, r1, r2, r3, lr} @ Used in core, registers have to be saved !
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r0, [r0, #user_hook_qkey]
+	bl		hook_intern
+	pop		{r0, r1, r2, r3, pc}
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible|Flag_variable, "hook-pause" @ ( -- addr )
+  CoreVariable hook_pause
+@------------------------------------------------------------------------------
+	pushdatos
+	ldr		tos, =hook_pause
+	bx		lr
+
+	.word	osDelay		// CMSIS-RTOS
+
 
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "pause" @ ( -- ? )
@@ -216,6 +202,8 @@ crs_terminal:
 	bx		lr
 
 
+.ltorg
+
 // Redirect emit to key
 //*********************
 
@@ -285,7 +273,6 @@ crs_emit2key:
 
 @------------------------------------------------------------------------------
 hook_intern:
- 	ldr		r0, [r0]
 	mov		pc, r0
 
 

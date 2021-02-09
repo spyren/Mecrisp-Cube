@@ -251,8 +251,8 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 .equ	user_base,				24
 .equ	user_hook_emit,			28
 .equ	user_hook_key,			32
-.equ	user_hook_emit_q,		36
-.equ	user_hook_key_q,		40
+.equ	user_hook_qemit,		36
+.equ	user_hook_qkey,			40
 .equ	user_free,				44
 
 
@@ -426,26 +426,50 @@ Forth:
 	str		r0, [r2]
 
 // store return stack bottom address to user variable R0
-	ldr		r2, =uservariables
-	add		r2, r2, #user_R0
-	str		r13, [r2]
-
-// set user variables attr and argument to 0
-	ldr		r2, =uservariables
-	ldr		r0, =0
-	add		r2, r2, #user_attr
-	str		r0, [r2]
-	ldr		r2, =uservariables
-	add		r2, r2, #user_argument
-	str		r0, [r2]
+	str		r13, [r2, #user_R0]
 
 // store data stack bottom address to user variable S0
-	ldr		r2, =uservariables
-	add		r2, r2, #user_S0
 	ldr		r0, =datenstackanfang
-	str		r0, [r2]
+	str		r0, [r2, #user_S0]
 
+// set user variables attr and argument to 0
+	ldr		r0, =0
+	str		r0, [r2, #user_attr]
+	str		r0, [r2, #user_argument]
 
+// set default hooks for terminal
+.if	DEFAULT_TERMINAL == UART_TERMINAL
+	ldr		r0,	=serial_emit
+	str		r0, [r2, #user_hook_emit]
+	ldr		r0,	=serial_key
+	str		r0, [r2, #user_hook_key]
+	ldr		r0,	=serial_qemit
+	str		r0, [r2, #user_hook_qemit]
+	ldr		r0,	=serial_qkey
+	str		r0, [r2, #user_hook_qkey]
+.else
+.if DEFAULT_TERMINAL == CDC_TERMINAL
+	ldr		r0,	=cdc_emit
+	str		r0, [r2, #user_hook_emit]
+	ldr		r0,	=cdc_key
+	str		r0, [r2, #user_hook_key]
+	ldr		r0,	=cdc_qemit
+	str		r0, [r2, #user_hook_qemit]
+	ldr		r0,	=cdc_qkey
+	str		r0, [r2, #user_hook_qkey]
+.else
+.if	DEFAULT_TERMINAL == CRS_TERMINAL
+	ldr		r0,	=crs_emit
+	str		r0, [r2, #user_hook_emit]
+	ldr		r0,	=crs_key
+	str		r0, [r2, #user_hook_key]
+	ldr		r0,	=crs_qemit
+	str		r0, [r2, #user_hook_qemit]
+	ldr		r0,	=crs_qkey
+	str		r0, [r2, #user_hook_qkey]
+.endif
+.endif
+.endif
 
 	@ Catch the pointers for Flash dictionary
 .include "catchflashpointers.s"

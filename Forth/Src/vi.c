@@ -346,7 +346,7 @@ static char *swap_context(char *);		// goto new context for '' command
 
 void VI_init(void) {
 	text = pvPortMalloc(TEXT_SIZE+100); // some savety margin
-	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS);
+	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS + 8);
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user
 	memset(status_buffer, 0, MAX_INPUT_LEN);
