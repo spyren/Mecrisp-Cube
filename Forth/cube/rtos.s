@@ -217,12 +217,12 @@ his:
 	ldr		r2, =user_size		// size in bytes
 	ldr		r0, =uservariables	// source
 wordcopy:
-	ldr		r3, [r0], #4		// load a word from the source and
-	str		r3, [tos], #4		// store it to the destination
+	ldr		r3, [r0], #4		// load a word from the source (terminal task user variables)
+	str		r3, [tos], #4		// store it to the TCB
 	subs	r2, r2, #4			// decrement the counter
 	bne		wordcopy
 	drop
-  	pop 	{lr}
+  	pop 	{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -279,6 +279,7 @@ wordcopy:
   Wortbirne Flag_visible, "skeleton" // ( -- )
   // skeleton for the task
   // : skeleton
+  //     10 osdelay drop
   //     osNewDataStack
   //     sp@ S0 !
   //	 rp@ R0 !
@@ -299,7 +300,8 @@ skeleton:
   	bl		XT
   	ldr		r0, [tos]
   	drop
-  	mov 	pc, r0
+  	adds 	r0, #1 			// One more for Thumb
+  	blx 	r0
   	bl		osThreadExit	// never returns
 
 

@@ -9014,7 +9014,7 @@ Disassembly of section .text:
  8004d6e:	e7d4      	b.n	8004d1a <Code_1283>
 
 08004d70 <Dictionary_1290>:
- 8004d70:	08004d9a 	.word	0x08004d9a
+ 8004d70:	08004d98 	.word	0x08004d98
  8004d74:	63090000 	.word	0x63090000
  8004d78:	74736e6f 	.word	0x74736e6f
  8004d7c:	74637572 	.word	0x74637572
@@ -9030,88 +9030,89 @@ Disassembly of section .text:
  8004d90:	3a04      	subs	r2, #4
  8004d92:	d1f9      	bne.n	8004d88 <wordcopy>
  8004d94:	cf40      	ldmia	r7!, {r6}
- 8004d96:	f85d eb04 	ldr.w	lr, [sp], #4
+ 8004d96:	bd00      	pop	{pc}
 
-08004d9a <Dictionary_1292>:
- 8004d9a:	4dd0      	.short	0x4dd0
- 8004d9c:	00000800 	.word	0x00000800
- 8004da0:	6174730a 	.word	0x6174730a
- 8004da4:	742d7472 	.word	0x742d7472
- 8004da8:	7361      	.short	0x7361
- 8004daa:	6b          	.byte	0x6b
+08004d98 <Dictionary_1292>:
+ 8004d98:	08004dce 	.word	0x08004dce
+ 8004d9c:	730a0000 	.word	0x730a0000
+ 8004da0:	74726174 	.word	0x74726174
+ 8004da4:	7361742d 	.word	0x7361742d
+ 8004da8:	6b          	.byte	0x6b
 	...
 
-08004dac <Code_1292>:
- 8004dac:	b500      	push	{lr}
- 8004dae:	0030      	movs	r0, r6
- 8004db0:	b401      	push	{r0}
- 8004db2:	cf40      	ldmia	r7!, {r6}
- 8004db4:	0031      	movs	r1, r6
- 8004db6:	cf40      	ldmia	r7!, {r6}
- 8004db8:	60c1      	str	r1, [r0, #12]
- 8004dba:	6841      	ldr	r1, [r0, #4]
- 8004dbc:	6882      	ldr	r2, [r0, #8]
- 8004dbe:	4871      	ldr	r0, [pc, #452]	; (8004f84 <Code_1318+0x12>)
- 8004dc0:	f01c f97a 	bl	80210b8 <osThreadNew>
- 8004dc4:	bc04      	pop	{r2}
- 8004dc6:	6010      	str	r0, [r2, #0]
- 8004dc8:	2100      	movs	r1, #0
- 8004dca:	f01f f94f 	bl	802406c <vTaskSetThreadLocalStoragePointer>
- 8004dce:	bd00      	pop	{pc}
+08004daa <Code_1292>:
+ 8004daa:	b500      	push	{lr}
+ 8004dac:	0030      	movs	r0, r6
+ 8004dae:	b401      	push	{r0}
+ 8004db0:	cf40      	ldmia	r7!, {r6}
+ 8004db2:	0031      	movs	r1, r6
+ 8004db4:	cf40      	ldmia	r7!, {r6}
+ 8004db6:	60c1      	str	r1, [r0, #12]
+ 8004db8:	6841      	ldr	r1, [r0, #4]
+ 8004dba:	6882      	ldr	r2, [r0, #8]
+ 8004dbc:	4871      	ldr	r0, [pc, #452]	; (8004f84 <Code_1318+0x12>)
+ 8004dbe:	f01c f97b 	bl	80210b8 <osThreadNew>
+ 8004dc2:	bc04      	pop	{r2}
+ 8004dc4:	6010      	str	r0, [r2, #0]
+ 8004dc6:	2100      	movs	r1, #0
+ 8004dc8:	f01f f950 	bl	802406c <vTaskSetThreadLocalStoragePointer>
+ 8004dcc:	bd00      	pop	{pc}
 
-08004dd0 <Dictionary_1295>:
- 8004dd0:	08004df0 	.word	0x08004df0
- 8004dd4:	73040000 	.word	0x73040000
- 8004dd8:	6f74      	.short	0x6f74
- 8004dda:	70          	.byte	0x70
+08004dce <Dictionary_1295>:
+ 8004dce:	4dee      	.short	0x4dee
+ 8004dd0:	00000800 	.word	0x00000800
+ 8004dd4:	6f747304 	.word	0x6f747304
+ 8004dd8:	70          	.byte	0x70
 	...
 
-08004ddc <Code_1295>:
- 8004ddc:	b500      	push	{lr}
- 8004dde:	f44f 4000 	mov.w	r0, #32768	; 0x8000
- 8004de2:	f04f 0100 	mov.w	r1, #0
- 8004de6:	f04f 32ff 	mov.w	r2, #4294967295	; 0xffffffff
- 8004dea:	f01c fbf5 	bl	80215d8 <osThreadFlagsWait>
- 8004dee:	bd00      	pop	{pc}
+08004dda <Code_1295>:
+ 8004dda:	b500      	push	{lr}
+ 8004ddc:	f44f 4000 	mov.w	r0, #32768	; 0x8000
+ 8004de0:	f04f 0100 	mov.w	r1, #0
+ 8004de4:	f04f 32ff 	mov.w	r2, #4294967295	; 0xffffffff
+ 8004de8:	f01c fbf6 	bl	80215d8 <osThreadFlagsWait>
+ 8004dec:	bd00      	pop	{pc}
 
-08004df0 <Dictionary_1296>:
- 8004df0:	08004e10 	.word	0x08004e10
- 8004df4:	61060000 	.word	0x61060000
- 8004df8:	656b6177 	.word	0x656b6177
- 8004dfc:	6e          	.byte	0x6e
+08004dee <Dictionary_1296>:
+ 8004dee:	4e0e      	.short	0x4e0e
+ 8004df0:	00000800 	.word	0x00000800
+ 8004df4:	61776106 	.word	0x61776106
+ 8004df8:	656b      	.short	0x656b
+ 8004dfa:	6e          	.byte	0x6e
 	...
 
-08004dfe <Code_1296>:
- 8004dfe:	b500      	push	{lr}
- 8004e00:	0030      	movs	r0, r6
- 8004e02:	cf40      	ldmia	r7!, {r6}
- 8004e04:	6800      	ldr	r0, [r0, #0]
- 8004e06:	f44f 4100 	mov.w	r1, #32768	; 0x8000
- 8004e0a:	f01c fb3b 	bl	8021484 <osThreadFlagsSet>
- 8004e0e:	bd00      	pop	{pc}
+08004dfc <Code_1296>:
+ 8004dfc:	b500      	push	{lr}
+ 8004dfe:	0030      	movs	r0, r6
+ 8004e00:	cf40      	ldmia	r7!, {r6}
+ 8004e02:	6800      	ldr	r0, [r0, #0]
+ 8004e04:	f44f 4100 	mov.w	r1, #32768	; 0x8000
+ 8004e08:	f01c fb3c 	bl	8021484 <osThreadFlagsSet>
+ 8004e0c:	bd00      	pop	{pc}
 
-08004e10 <Dictionary_1298>:
- 8004e10:	08004e4c 	.word	0x08004e4c
- 8004e14:	73080000 	.word	0x73080000
- 8004e18:	656c656b 	.word	0x656c656b
- 8004e1c:	6f74      	.short	0x6f74
- 8004e1e:	6e          	.byte	0x6e
+08004e0e <Dictionary_1298>:
+ 8004e0e:	4e4c      	.short	0x4e4c
+ 8004e10:	00000800 	.word	0x00000800
+ 8004e14:	656b7308 	.word	0x656b7308
+ 8004e18:	6f74656c 	.word	0x6f74656c
+ 8004e1c:	6e          	.byte	0x6e
 	...
 
-08004e20 <Code_1298>:
- 8004e20:	f04f 000a 	mov.w	r0, #10
- 8004e24:	f01c fc4a 	bl	80216bc <osDelay>
- 8004e28:	f000 f81b 	bl	8004e62 <Code_1302>
- 8004e2c:	f7ff ff58 	bl	8004ce0 <Code_1279>
- 8004e30:	6037      	str	r7, [r6, #0]
- 8004e32:	cf40      	ldmia	r7!, {r6}
- 8004e34:	f7ff ff44 	bl	8004cc0 <Code_1277>
- 8004e38:	f8c6 d000 	str.w	sp, [r6]
- 8004e3c:	cf40      	ldmia	r7!, {r6}
- 8004e3e:	f7ff ff2f 	bl	8004ca0 <Code_1275>
- 8004e42:	6830      	ldr	r0, [r6, #0]
- 8004e44:	cf40      	ldmia	r7!, {r6}
- 8004e46:	4687      	mov	pc, r0
+08004e1e <Code_1298>:
+ 8004e1e:	f04f 000a 	mov.w	r0, #10
+ 8004e22:	f01c fc4b 	bl	80216bc <osDelay>
+ 8004e26:	f000 f81c 	bl	8004e62 <Code_1302>
+ 8004e2a:	f7ff ff59 	bl	8004ce0 <Code_1279>
+ 8004e2e:	6037      	str	r7, [r6, #0]
+ 8004e30:	cf40      	ldmia	r7!, {r6}
+ 8004e32:	f7ff ff45 	bl	8004cc0 <Code_1277>
+ 8004e36:	f8c6 d000 	str.w	sp, [r6]
+ 8004e3a:	cf40      	ldmia	r7!, {r6}
+ 8004e3c:	f7ff ff30 	bl	8004ca0 <Code_1275>
+ 8004e40:	6830      	ldr	r0, [r6, #0]
+ 8004e42:	cf40      	ldmia	r7!, {r6}
+ 8004e44:	3001      	adds	r0, #1
+ 8004e46:	4780      	blx	r0
  8004e48:	f01c fa96 	bl	8021378 <osThreadExit>
 
 08004e4c <Dictionary_1302>:
@@ -9275,7 +9276,7 @@ Disassembly of section .text:
  8004f7c:	bd00      	pop	{pc}
  8004f7e:	0000      	.short	0x0000
  8004f80:	20000424 	.word	0x20000424
- 8004f84:	08004e20 	.word	0x08004e20
+ 8004f84:	08004e1e 	.word	0x08004e1e
 
 08004f88 <Dictionary_1320>:
  8004f88:	08004faa 	.word	0x08004faa
