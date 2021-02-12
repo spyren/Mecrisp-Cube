@@ -22,6 +22,7 @@
   Wortbirne Flag_visible|Flag_variable, "hook-emit" @ ( -- addr )
   CoreVariable hook_emit
 @------------------------------------------------------------------------------
+hook_emit:
 	push	{lr}
 	pushdatos
 	ldr		r0, =0	// current task xTaskToQuery = 0
