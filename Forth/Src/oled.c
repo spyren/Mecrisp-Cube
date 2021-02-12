@@ -253,7 +253,7 @@ int OLED_puts(const char *s) {
  *  @param[in]
  *      x  horizontal position, max. (128 / 6) -1, depends on font.
  *  @param[in]
- *      y  vertical position (page), max. 3 for 128x32 or 7 for 128x64 displays.
+ *      y  vertical position (line), max. 3 for 128x32 or 7 for 128x64 displays.
  *  @return
  *      none
  */
@@ -499,7 +499,7 @@ static void sendChar12x16(int ch) {
 	if (ch == '\n') {
 		// line feed
 		CurrentPosY += 2;
-		if (CurrentPosY*16 >= OLED_Y_RESOLUTION) {
+		if ((CurrentPosY+1)*8 >= OLED_Y_RESOLUTION) {
 			CurrentPosY = 0;
 		}
 		setPos(CurrentPosX, CurrentPosY);
@@ -515,7 +515,7 @@ static void sendChar12x16(int ch) {
 
 	if (CurrentPosX > OLED_X_RESOLUTION - 12) {
 		CurrentPosY += 2;
-		if (CurrentPosY*16 > OLED_Y_RESOLUTION) {
+		if ((CurrentPosY+1)*8 >= OLED_Y_RESOLUTION) {
 			CurrentPosY = 0;
 		}
 		OLED_setPos(0, CurrentPosY);
