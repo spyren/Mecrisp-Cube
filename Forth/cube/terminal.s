@@ -35,44 +35,44 @@
 serial_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		UART_putc
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key"
 serial_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		UART_getc
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit?"
 serial_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		UART_TxReady
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-key?"
 serial_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		UART_RxReady
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -80,88 +80,88 @@ serial_qkey:
 cdc_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		CDC_putc
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-key"
 cdc_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		CDC_getc
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-emit?"
 cdc_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		CDC_TxReady
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "cdc-key?"
 cdc_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		CDC_RxReady
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "crs-emit"
 crs_emit:
         @ ( c -- ) Emit one character
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		CRSAPP_putc
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "crs-key"
 crs_key:
         @ ( -- c ) Receive one character
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		CRSAPP_getc
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "crs-emit?"
 crs_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		CRSAPP_TxReady
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "crs-key?"
 crs_qkey:
         @ ( -- ? ) Is there a key press ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		CRSAPP_RxReady
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -170,11 +170,11 @@ set_baudrate:
 		@ ( u --  ) sets baud rate (e.g. 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200)
 // void UART_setBaudrate(const int baudrate)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// baudrate
 	drop
 	bl		UART_setBaudrate
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -183,11 +183,11 @@ set_wordlength:
 		@ ( u --  ) sets word length 7, 8, 9 (including parity)
 // void UART_setWordLength(const int wordlength)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// baudrate
 	drop
 	bl		UART_setWordLength
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -196,11 +196,11 @@ set_paritybit:
 		@ ( u --  ) sets parity bit 0 none, 1 odd, 2 even
 // void UART_setParityBit(const int paritybit)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// baudrate
 	drop
 	bl		UART_setParityBit
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -209,11 +209,11 @@ set_stopbits:
 		@ ( u --  ) sets stop bits 0 1 bit, 1 1.5 bit, 2 2 bit
 // void UART_setStopBits(const int stopbits)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// baudrate
 	drop
 	bl		UART_setStopBits
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -222,11 +222,11 @@ oled_emit:
         @ ( c -- ) Emit one character
 // void OLED_sendChar(char ch)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos
 	drop
 	bl		OLED_putc
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -234,11 +234,11 @@ oled_emit:
 soled_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		OLED_Ready
 	movs	tos, r0
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -247,13 +247,13 @@ oled_get_pos:
         @ ( x y -- ) Set OLED position
 // void OLED_setPos(uint8_t x, uint8_t y)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r1, tos		// y
 	drop
 	movs	r0, tos		// x
 	drop
 	bl		OLED_setPos
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -262,14 +262,14 @@ oled_set_pos:
         @ (  -- x y ) Get OLED position
 // void OLED_getPos(uint8_t x, uint8_t y)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	pushdatos
 	bl		OLED_getPosX
 	movs	tos, r0		// x
 	pushdatos
 	bl		OLED_getPosY
 	movs	tos, r0		// y
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -278,11 +278,11 @@ oledcmd:
         @ ( c-addr -- ) send command to OLED
 // void OLED_sendCommand(static uint8_t *command, size)
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// command
 	drop
 	bl		OLED_sendCommand
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -291,9 +291,9 @@ oledclr:
         @ ( --  ) Clears the OLED display
 // void OLED_clear()
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	bl		OLED_clear
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 @ -----------------------------------------------------------------------------
@@ -302,11 +302,11 @@ oledfont:
         @ ( u -- ) select font for the OLED
 // void OLED_setFont(OLED_FontT font);
 @ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
+	push	{lr}
 	movs	r0, tos		// font
 	drop
 	bl		OLED_setFont
-	pop		{r0-r3, pc}
+	pop		{pc}
 
 
 // C Interface to some Forth Words
