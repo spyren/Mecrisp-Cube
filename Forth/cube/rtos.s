@@ -144,27 +144,26 @@ slash_user:
 	pop		{pc}
 
 
-/*
+
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "user" @ ( n -- )
-  // : user create , does> @ 0 0 pvTaskGetThreadLocalStoragePointer + ;
+  // : user create , does> @ 0 dup pvTaskGetThreadLocalStoragePointer + ;
 @ -----------------------------------------------------------------------------
-  	push 	{lr}
+	push	{lr}
 	bl		create
-	bl		komma
+	bl 		literalkomma
 	bl		dodoes
-//	bl		dodoes
+
 	pushdatos			// str r6, [ r7 #-4 ]!
 	subs 	r6, lr, #1	// get constant address?
 	ldr 	tos, [tos]  // @
 
-	ldr		r0, =0	// current task xTaskToQuery = 0
-	mov		r1, r0	// index
+	ldr		r0, =0		// current task xTaskToQuery = 0
+	mov		r1, r0		// index = 0
 	bl		pvTaskGetThreadLocalStoragePointer
-
 	adds	tos, tos, r0
+
 	pop		{pc}
-*/
 
 
 @ -----------------------------------------------------------------------------

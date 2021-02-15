@@ -80,7 +80,8 @@ emit:
 	mov		r1, r0	// index
 	bl		pvTaskGetThreadLocalStoragePointer
 	ldr		r0, [r0, #user_hook_emit]
-	bl		hook_intern
+	adds	r0, r0, #1		// thumb instruction set
+	blx		r0
 	pop		{r0-r3, pc}
 
 @------------------------------------------------------------------------------
@@ -92,7 +93,8 @@ key:
 	mov		r1, r0	// index
 	bl		pvTaskGetThreadLocalStoragePointer
 	ldr		r0, [r0, #user_hook_key]
-	bl		hook_intern
+	adds	r0, r0, #1		// thumb instruction set
+	blx		r0
 	pop		{r0-r3, pc}
 
 @------------------------------------------------------------------------------
@@ -104,7 +106,8 @@ qemit:
 	mov		r1, r0	// index
 	bl		pvTaskGetThreadLocalStoragePointer
 	ldr		r0, [r0, #user_hook_qemit]
-	bl		hook_intern
+	adds	r0, r0, #1		// thumb instruction set
+	blx		r0
 	pop		{r0-r3, pc}
 
 @------------------------------------------------------------------------------
@@ -116,7 +119,8 @@ qkey:
 	mov		r1, r0	// index
 	bl		pvTaskGetThreadLocalStoragePointer
 	ldr		r0, [r0, #user_hook_qkey]
-	bl		hook_intern
+	adds	r0, r0, #1		// thumb instruction set
+	blx		r0
 	pop		{r0-r3, pc}
 
 @------------------------------------------------------------------------------
@@ -290,10 +294,5 @@ crs_emit2key:
 	drop
 	bl		CRSAPP_putkey
 	pop		{pc}
-
-
-@------------------------------------------------------------------------------
-hook_intern:
-	mov		pc, r0
 
 
