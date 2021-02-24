@@ -144,7 +144,7 @@ slash_user:
 	pop		{pc}
 
 
-
+/* something wrong in paradise
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "user" @ ( n -- )
   // : user create , does> @ 0 dup pvTaskGetThreadLocalStoragePointer + ;
@@ -164,7 +164,7 @@ slash_user:
 	adds	tos, tos, r0
 
 	pop		{pc}
-
+*/
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "his"  //  ( addr1 n -- addr2 )
@@ -336,9 +336,9 @@ skeleton:
 // -----------------------------------------------------------------------------
 rtos_osNewDataStack:
 	push	{lr}
-	ldr		r0, =256		// 64 levels should be more than enough
+	ldr		r0, =128		// 32 levels should be more than enough
 	bl		pvPortMalloc
-	adds	r7, r0, #256	// stack grows down
+	adds	r7, r0, #128	// stack grows down
 	movs	tos, 42
 	pop		{pc}
 

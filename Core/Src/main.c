@@ -145,7 +145,8 @@ const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-
+static void Reset_IPCC( void );
+static void Init_Exti( void );
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -168,17 +169,14 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  Reset_IPCC();
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  // take HSI48 semaphore for the USB
-	while (HAL_HSEM_FastTake(5)) {
-		; // busy wait for semaphore
-	}
+  Init_Exti(); /**< Configure the system Power Mode */
 
   /* USER CODE END SysInit */
 
@@ -296,9 +294,10 @@ void SystemClock_Config(void)
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
    */
-  LL_HSEM_1StepLock( HSEM, 5 );
+  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
   LL_RCC_HSI48_Enable();
 
+  while(!LL_RCC_HSI48_IsReady());
 
   /* USER CODE END Smps */
   /** Enable the SYSCFG APB clock
@@ -329,6 +328,52 @@ void vApplicationMallocFailedHook(void) {
 	Error_Handler();
 } // vApplicationMallocFailedHook
 
+
+static void Reset_IPCC( void )
+{
+	LL_AHB3_GRP1_EnableClock(LL_AHB3_GRP1_PERIPH_IPCC);
+
+	LL_C1_IPCC_ClearFlag_CHx(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C2_IPCC_ClearFlag_CHx(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C1_IPCC_DisableTransmitChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C2_IPCC_DisableTransmitChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C1_IPCC_DisableReceiveChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	LL_C2_IPCC_DisableReceiveChannel(
+			IPCC,
+			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
+			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
+
+	return;
+}
+
+static void Init_Exti( void )
+{
+  /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
+  LL_EXTI_DisableIT_0_31(~0);
+  LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
+
+  return;
+}
 
 /* USER CODE END 4 */
 
