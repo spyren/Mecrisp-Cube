@@ -22,10 +22,6 @@
 #ifndef APP_CONF_H
 #define APP_CONF_H
 
-#include "hw.h"
-#include "hw_conf.h"
-#include "hw_if.h"
-#include "ble_bufsize.h"
 #include "app_common.h"
 
 /******************************************************************************
@@ -34,64 +30,6 @@
 
 /**< generic parameters ******************************************************/
 
-/**
- * Define Tx Power
- */
-#define CFG_TX_POWER                      (0x18) /* -0.15dBm */
-
-/**
- * Define Advertising parameters
- */
-#define CFG_ADV_BD_ADDRESS                (0)
-#define CFG_FAST_CONN_ADV_INTERVAL_MIN    (0x80)   /**< 80ms */
-#define CFG_FAST_CONN_ADV_INTERVAL_MAX    (0xA0)  /**< 100ms */
-#define CFG_LP_CONN_ADV_INTERVAL_MIN      (0x640) /**< 1s */
-#define CFG_LP_CONN_ADV_INTERVAL_MAX      (0xFA0) /**< 2.5s */
-
-/**
- * Define IO Authentication
- */
-#define CFG_BONDING_MODE                 (1)
-#define CFG_FIXED_PIN                    (111111)
-#define CFG_USED_FIXED_PIN               (0)
-#define CFG_ENCRYPTION_KEY_SIZE_MAX      (16)
-#define CFG_ENCRYPTION_KEY_SIZE_MIN      (8)
-
-/**
- * Define IO capabilities
- */
-#define CFG_IO_CAPABILITY_DISPLAY_ONLY       (0x00)
-#define CFG_IO_CAPABILITY_DISPLAY_YES_NO     (0x01)
-#define CFG_IO_CAPABILITY_KEYBOARD_ONLY      (0x02)
-#define CFG_IO_CAPABILITY_NO_INPUT_NO_OUTPUT (0x03)
-#define CFG_IO_CAPABILITY_KEYBOARD_DISPLAY   (0x04)
-
-#define CFG_IO_CAPABILITY              CFG_IO_CAPABILITY_DISPLAY_YES_NO
-
-/**
- * Define MITM modes
- */
-#define CFG_MITM_PROTECTION_NOT_REQUIRED      (0x00)
-#define CFG_MITM_PROTECTION_REQUIRED          (0x01)
-
-#define CFG_MITM_PROTECTION             CFG_MITM_PROTECTION_REQUIRED
-
-/**
- * Define Secure Connections Support
- */
-#define CFG_SECURE_NOT_SUPPORTED       (0x00)
-#define CFG_SECURE_OPTIONAL            (0x01)
-#define CFG_SECURE_MANDATORY           (0x02)
-
-#define CFG_SC_SUPPORT                 CFG_SECURE_OPTIONAL
-
-/**
- * Define Keypress Notification Support
- */
-#define CFG_KEYPRESS_NOT_SUPPORTED      (0x00)
-#define CFG_KEYPRESS_SUPPORTED          (0x01)
-
-#define CFG_KEYPRESS_NOTIFICATION_SUPPORT             CFG_KEYPRESS_NOT_SUPPORTED
 
 /**
  * Numeric Comparison Answers
@@ -105,50 +43,9 @@
 #define CFG_GAP_DEVICE_NAME             "TEMPLATE"
 #define CFG_GAP_DEVICE_NAME_LENGTH      (8)
 
-/**
- * Define PHY
- */
-#define ALL_PHYS_PREFERENCE                             0x00
-#define RX_2M_PREFERRED                                 0x02
-#define TX_2M_PREFERRED                                 0x02
-#define TX_1M                                           0x01
-#define TX_2M                                           0x02
-#define RX_1M                                           0x01
-#define RX_2M                                           0x02
-
-/**
-*   Identity root key used to derive LTK and CSRK
-*/
-#define CFG_BLE_IRK     {0x12,0x34,0x56,0x78,0x9a,0xbc,0xde,0xf0,0x12,0x34,0x56,0x78,0x9a,0xbc,0xde,0xf0}
-
-/**
-* Encryption root key used to derive LTK and CSRK
-*/
-#define CFG_BLE_ERK     {0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21,0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21}
 
 /* USER CODE BEGIN Generic_Parameters */
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.2 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
-
-#undef CFG_GAP_DEVICE_NAME
-#define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
-#undef CFG_GAP_DEVICE_NAME_LENGTH
-#define CFG_GAP_DEVICE_NAME_LENGTH      (13)
-
-/******************************************************************************
- * Cable Replacement Service STM (CRS STM)
- ******************************************************************************/
-/**< Options: Supported(1) or Not Supported(0) */
-#define CRS_STM_UUID128    0x00, 0x00, 0xfe, 0x60, 0xcc, 0x7a, 0x48, 0x2a, 0x98, 0x4a, 0x7f, 0x2e, 0xd5, 0xb3, 0xe5, 0x8f
-#define CRS_STM_TX_UUID128 0x00, 0x00, 0xfe, 0x61, 0x8e, 0x22, 0x45, 0x41, 0x9d, 0x4c, 0x21, 0xed, 0xae, 0x82, 0xed, 0x19
-#define CRS_STM_RX_UUID128 0x00, 0x00, 0xfe, 0x62, 0x8e, 0x22, 0x45, 0x41, 0x9d, 0x4c, 0x21, 0xed, 0xae, 0x82, 0xed, 0x19
-
-#define BLE_DBG_CRS_STM_EN         0
-
-#if ( BLE_DBG_CRS_STM_EN != 0 )
-#define BLE_DBG_CRS_STM_MSG         PRINT_MESG_DBG
-#else
-#define BLE_DBG_CRS_STM_MSG         PRINT_NO_MESG
-#endif
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.2 for STM32F405, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
 
 /* USER CODE END Generic_Parameters */
 
@@ -161,96 +58,6 @@
 /* LSB - Second Byte */
 #define CFG_FEATURE_OTA_REBOOT                  (0x20)
 
-/******************************************************************************
- * BLE Stack
- ******************************************************************************/
-/**
- * Maximum number of simultaneous connections that the device will support.
- * Valid values are from 1 to 8
- */
-#define CFG_BLE_NUM_LINK            2
-
-/**
- * Maximum number of Services that can be stored in the GATT database.
- * Note that the GAP and GATT services are automatically added so this parameter should be 2 plus the number of user services
- */
-#define CFG_BLE_NUM_GATT_SERVICES   8
-
-/**
- * Maximum number of Attributes
- * (i.e. the number of characteristic + the number of characteristic values + the number of descriptors, excluding the services)
- * that can be stored in the GATT database.
- * Note that certain characteristics and relative descriptors are added automatically during device initialization
- * so this parameters should be 9 plus the number of user Attributes
- */
-#define CFG_BLE_NUM_GATT_ATTRIBUTES 68
-
-/**
- * Maximum supported ATT_MTU size
- */
-#define CFG_BLE_MAX_ATT_MTU             (156)
-
-/**
- * Size of the storage area for Attribute values
- *  This value depends on the number of attributes used by application. In particular the sum of the following quantities (in octets) should be made for each attribute:
- *  - attribute value length
- *  - 5, if UUID is 16 bit; 19, if UUID is 128 bit
- *  - 2, if server configuration descriptor is used
- *  - 2*DTM_NUM_LINK, if client configuration descriptor is used
- *  - 2, if extended properties is used
- *  The total amount of memory needed is the sum of the above quantities for each attribute.
- */
-#define CFG_BLE_ATT_VALUE_ARRAY_SIZE    (1344)
-
-/**
- * Prepare Write List size in terms of number of packet
- */
-#define CFG_BLE_PREPARE_WRITE_LIST_SIZE         BLE_PREP_WRITE_X_ATT(CFG_BLE_MAX_ATT_MTU)
-
-/**
- * Number of allocated memory blocks
- */
-#define CFG_BLE_MBLOCK_COUNT            (BLE_MBLOCKS_CALC(CFG_BLE_PREPARE_WRITE_LIST_SIZE, CFG_BLE_MAX_ATT_MTU, CFG_BLE_NUM_LINK))
-
-/**
- * Enable or disable the Extended Packet length feature. Valid values are 0 or 1.
- */
-#define CFG_BLE_DATA_LENGTH_EXTENSION   1
-
-/**
- * Sleep clock accuracy in Slave mode (ppm value)
- */
-#define CFG_BLE_SLAVE_SCA   500
-
-/**
- * Sleep clock accuracy in Master mode
- * 0 : 251 ppm to 500 ppm
- * 1 : 151 ppm to 250 ppm
- * 2 : 101 ppm to 150 ppm
- * 3 : 76 ppm to 100 ppm
- * 4 : 51 ppm to 75 ppm
- * 5 : 31 ppm to 50 ppm
- * 6 : 21 ppm to 30 ppm
- * 7 : 0 ppm to 20 ppm
- */
-#define CFG_BLE_MASTER_SCA   0
-
-/**
- *  Source for the low speed clock for RF wake-up
- *  1 : external high speed crystal HSE/32/32
- *  0 : external low speed crystal ( no calibration )
- */
-#define CFG_BLE_LSE_SOURCE  0
-
-/**
- * Start up time of the high speed (16 or 32 MHz) crystal oscillator in units of 625/256 us (~2.44 us)
- */
-#define CFG_BLE_HSE_STARTUP_TIME  0x148
-
-/**
- * Maximum duration of the connection event when the device is in Slave mode in units of 625/256 us (~2.44 us)
- */
-#define CFG_BLE_MAX_CONN_EVENT_LENGTH  ( 0xFFFFFFFF )
 
 /**
  * Viterbi Mode
@@ -265,34 +72,6 @@
  *  0 : LL + Host
  */
 #define CFG_BLE_LL_ONLY  0
-/******************************************************************************
- * Transport Layer
- ******************************************************************************/
-/**
- * Queue length of BLE Event
- * This parameter defines the number of asynchronous events that can be stored in the HCI layer before
- * being reported to the application. When a command is sent to the BLE core coprocessor, the HCI layer
- * is waiting for the event with the Num_HCI_Command_Packets set to 1. The receive queue shall be large
- * enough to store all asynchronous events received in between.
- * When CFG_TLBLE_MOST_EVENT_PAYLOAD_SIZE is set to 27, this allow to store three 255 bytes long asynchronous events
- * between the HCI command and its event.
- * This parameter depends on the value given to CFG_TLBLE_MOST_EVENT_PAYLOAD_SIZE. When the queue size is to small,
- * the system may hang if the queue is full with asynchronous events and the HCI layer is still waiting
- * for a CC/CS event, In that case, the notification TL_BLE_HCI_ToNot() is called to indicate
- * to the application a HCI command did not receive its command event within 30s (Default HCI Timeout).
- */
-#define CFG_TLBLE_EVT_QUEUE_LENGTH 5
-/**
- * This parameter should be set to fit most events received by the HCI layer. It defines the buffer size of each element
- * allocated in the queue of received events and can be used to optimize the amount of RAM allocated by the Memory Manager.
- * It should not exceed 255 which is the maximum HCI packet payload size (a greater value is a lost of memory as it will
- * never be used)
- * With the current wireless firmware implementation, this parameter shall be kept to 255
- *
- */
-#define CFG_TLBLE_MOST_EVENT_PAYLOAD_SIZE 255   /**< Set to 255 with the memory manager and the mailbox */
-
-#define TL_BLE_EVENT_FRAME_SIZE ( TL_EVT_HDR_SIZE + CFG_TLBLE_MOST_EVENT_PAYLOAD_SIZE )
 /******************************************************************************
  * UART interfaces
  ******************************************************************************/
@@ -309,7 +88,7 @@
 /**
  * Enable/Disable USB interface
  */
-#define CFG_USB_INTERFACE_ENABLE    0
+#define CFG_USB_INTERFACE_ENABLE    1
 
 /******************************************************************************
  * Low Power
@@ -491,63 +270,9 @@ typedef enum
 /******************************************************************************
  * FreeRTOS
  ******************************************************************************/
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
-#define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
-#define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (196 * 8)
-
-#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
-#define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
-#define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
-#define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
-#define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
-#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
-#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
-
-#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
-#define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
-#define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
-#define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
-#define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
-#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
-#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 8)
-
-#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
-#define CFG_HRS_PROCESS_ATTR_BITS             (0)
-#define CFG_HRS_PROCESS_CB_MEM                (0)
-#define CFG_HRS_PROCESS_CB_SIZE               (0)
-#define CFG_HRS_PROCESS_STACK_MEM             (0)
-#define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
-#define CFG_HRS_PROCESS_STACK_SIZE            (192 * 8)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */
-
-/******************************************************************************
- * LOW POWER
- ******************************************************************************/
-/**
- * Supported requester to the MCU Low Power Manager - can be increased up  to 32
- * It lits a bit mapping of all user of the Low Power Manager
- */
-typedef enum
-{
-    CFG_LPM_APP,
-    CFG_LPM_APP_BLE,
-  /* USER CODE BEGIN CFG_LPM_Id_t */
-
-  /* USER CODE END CFG_LPM_Id_t */
-} CFG_LPM_Id_t;
-
-/******************************************************************************
- * OTP manager
- ******************************************************************************/
-#define CFG_OTP_BASE_ADDRESS    OTP_AREA_BASE
-
-#define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
 
 #endif /*APP_CONF_H */
 

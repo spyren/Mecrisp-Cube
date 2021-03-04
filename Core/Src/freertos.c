@@ -26,6 +26,23 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_common.h"
+#include "app_entry.h"
+#include "uart.h"
+#include "flash.h"
+#include "usb_cdc.h"
+#include "bsp.h"
+#include "sd_spi.h"
+#include "sd.h"
+#include "fd.h"
+#include "block.h"
+#include "app_fatfs.h"
+#include "fs.h"
+#include "vi.h"
+#include "shci.h"
+#include "clock.h"
+#include "iic.h"
+#include "oled.h"
 
 /* USER CODE END Includes */
 
@@ -58,6 +75,7 @@ const osThreadAttr_t Main_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+void Forth(void);
 
 /* USER CODE END FunctionPrototypes */
 
@@ -76,6 +94,11 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
    /* Run time stack overflow checking is performed if
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
+	Error_Handler();
+	for(;;) {
+		;
+	}
+
 }
 /* USER CODE END 4 */
 
@@ -92,6 +115,10 @@ void vApplicationMallocFailedHook(void)
    FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
    to query the size of free heap space that remains (although it does not
    provide information on how the remaining heap might be fragmented). */
+	Error_Handler();
+	for(;;) {
+		;
+	}
 }
 /* USER CODE END 5 */
 
@@ -102,6 +129,19 @@ void vApplicationMallocFailedHook(void)
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	BSP_init();
+	RTC_init();
+	APPE_Init();
+	UART_init();
+	IIC_init();
+	CDC_init();
+	FLASH_init();
+	SDSPI_init();
+	SD_init();
+	FD_init();
+	BLOCK_init();
+	FS_init();
+	VI_init();
 
   /* USER CODE END Init */
 
@@ -147,6 +187,10 @@ void MainThread(void *argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN MainThread */
+	SD_getSize();
+	OLED_init();
+
+	Forth();
   /* Infinite loop */
   for(;;)
   {
