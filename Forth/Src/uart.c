@@ -361,9 +361,6 @@ void UART_setWordLength(const int wordlength) {
 	osMutexAcquire(UART_MutexID, osWaitForever);
 
 	switch (wordlength) {
-	case 7:
-		huart1.Init.WordLength = UART_WORDLENGTH_7B;
-		break;
 	case 8:
 		huart1.Init.WordLength = UART_WORDLENGTH_8B;
 		break;
@@ -432,9 +429,6 @@ void UART_setStopBits(const int stopbits) {
 	switch (stopbits) {
 	case 0:
 		huart1.Init.StopBits = UART_STOPBITS_1;
-		break;
-	case 1:
-		huart1.Init.StopBits = UART_STOPBITS_1_5;
 		break;
 	case 2:
 		huart1.Init.StopBits = UART_STOPBITS_2;

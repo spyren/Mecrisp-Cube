@@ -109,11 +109,14 @@ void Error_Handler(void);
 #define D10_Pin GPIO_PIN_9
 #define D10_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-#define B1_DONGLE_Pin GPIO_PIN_10
-#define B1_DONGLE_GPIO_Port GPIOA
-#define LD1_DONGLE_Pin GPIO_PIN_4
-#define LD1_DONGLE_GPIO_Port GPIOA
-
+#define D2_Pin SCK_Pin
+#define D2_GPIO_Port SCK_GPIO_Port
+#define D3_Pin MISO_Pin
+#define D3_GPIO_Port MISO_GPIO_Port
+#define D4_Pin MOSI_Pin
+#define D4_GPIO_Port MOSI_GPIO_Port
+#define D7_Pin GPIO_PIN_13
+#define D7_GPIO_Port GPIOC
 
 /* USER CODE END Private defines */
 

@@ -79,7 +79,6 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "dma.h"
-#include "fatfs.h"
 #include "i2c.h"
 #include "rtc.h"
 #include "sdio.h"

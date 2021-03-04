@@ -27,7 +27,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app_common.h"
-#include "app_entry.h"
 #include "uart.h"
 #include "flash.h"
 #include "usb_cdc.h"
@@ -39,7 +38,6 @@
 #include "app_fatfs.h"
 #include "fs.h"
 #include "vi.h"
-#include "shci.h"
 #include "clock.h"
 #include "iic.h"
 #include "oled.h"
@@ -131,7 +129,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 	BSP_init();
 	RTC_init();
-	APPE_Init();
 	UART_init();
 	IIC_init();
 	CDC_init();

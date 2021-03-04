@@ -34,7 +34,6 @@
 // System include files
 // ********************
 #include "cmsis_os.h"
-#include "shci.h"
 
 // Application include files
 // *************************
@@ -86,8 +85,8 @@ void FLASH_init(void) {
 		Error_Handler();
 	}
 
-	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
-	EraseInitStruct.NbPages     = 1;
+//	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
+//	EraseInitStruct.NbPages     = 1;
 }
 
 
@@ -121,8 +120,8 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 	aquire_flash(FALSE);
 
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
 	data.word[0] = word1;
 	data.word[1] = word2;
@@ -161,11 +160,11 @@ int FLASH_erasePage(uint32_t Address) {
 
 	aquire_flash(TRUE);
 
-	// Clear OPTVERR bit set on virgin samples
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+//	// Clear OPTVERR bit set on virgin samples
+//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
-	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
+//	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
 	if (HAL_FLASHEx_IsOperationSuspended()) {
 		osDelay(2);
 	}
@@ -190,26 +189,26 @@ int FLASH_erasePage(uint32_t Address) {
 
 int aquire_flash(uint8_t Erase) {
 
-	while (HAL_HSEM_FastTake(2)) {
-		; // busy wait for
-	}
+//	while (HAL_HSEM_FastTake(2)) {
+//		; // busy wait for
+//	}
 
 	if (HAL_FLASH_Unlock() == HAL_ERROR) {
 		Error_Handler();
 	}
 
-	if (Erase) {
-		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
-	}
+//	if (Erase) {
+//		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
+//	}
 
-	// enter critical section
-	os_state = osKernelLock();
-	while (HAL_HSEM_IsSemTaken(6)) {
-		; // busy wait
-	}
-	while (HAL_HSEM_FastTake(7)) {
-		; // busy wait for
-	}
+//	// enter critical section
+//	os_state = osKernelLock();
+//	while (HAL_HSEM_IsSemTaken(6)) {
+//		; // busy wait
+//	}
+//	while (HAL_HSEM_FastTake(7)) {
+//		; // busy wait for
+//	}
 
 	return HAL_OK;
 }
@@ -217,20 +216,20 @@ int aquire_flash(uint8_t Erase) {
 
 int release_flash(uint8_t Erase) {
 
-	HAL_HSEM_Release(7, 0);
+//	HAL_HSEM_Release(7, 0);
 
 	// exit critical section
 	osKernelRestoreLock(os_state);
 
-	if (Erase) {
-		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
-	}
+//	if (Erase) {
+//		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
+//	}
 
 	if (HAL_FLASH_Lock() == HAL_ERROR) {
 		Error_Handler();
 	}
 
-	HAL_HSEM_Release(2, 0);
+//	HAL_HSEM_Release(2, 0);
 
 	return HAL_OK;
 }

@@ -24,7 +24,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include "stm32_lpm.h"
+//#include "stm32_lpm.h"
 
 /* Private typedef -----------------------------------------------------------*/
 typedef struct
