@@ -71,9 +71,9 @@ void MX_USB_Device_Init(void)
   /* USER CODE END USB_Device_Init_PreTreatment */
 
   /* Init Device Library, add supported class and start the library. */
-  if (USBD_Init(&hUsbDeviceFS, &CDC_Desc, DEVICE_FS) != USBD_OK) {
-    Error_Handler();
-  }
+//  if (USBD_Init(&hUsbDeviceFS, &CDC_Desc, DEVICE_FS) != USBD_OK) {
+//    Error_Handler();
+//  }
   if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC) != USBD_OK) {
     Error_Handler();
   }

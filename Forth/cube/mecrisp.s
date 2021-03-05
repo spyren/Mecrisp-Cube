@@ -478,10 +478,6 @@ Forth:
 	ldr		r0, =2
 	str		r0, [r1]
 
-	bl		BSP_getSwitch1
-	cmp		r0, #0
-	beq		1f
-	bl		crs_terminal		// button1 pressed on reset -> crs terminal
 1:	bl		BSP_getSwitch2
 	cmp		r0, #0
 	beq		2f

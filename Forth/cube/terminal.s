@@ -119,50 +119,6 @@ cdc_qkey:
 	movs	tos, r0
 	pop		{pc}
 
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "crs-emit"
-crs_emit:
-        @ ( c -- ) Emit one character
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	drop
-	bl		CRSAPP_putc
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "crs-key"
-crs_key:
-        @ ( -- c ) Receive one character
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	pushdatos
-	bl		CRSAPP_getc
-	movs	tos, r0
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "crs-emit?"
-crs_qemit:
-        @ ( -- ? ) Ready to send a character ?
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	pushdatos
-	bl		CRSAPP_TxReady
-	movs	tos, r0
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "crs-key?"
-crs_qkey:
-        @ ( -- ? ) Is there a key press ?
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	pushdatos
-	bl		CRSAPP_RxReady
-	movs	tos, r0
-	pop		{pc}
-
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "baudrate!"

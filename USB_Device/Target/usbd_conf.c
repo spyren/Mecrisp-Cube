@@ -57,7 +57,7 @@ USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status);
 /* Private functions ---------------------------------------------------------*/
 
 /* USER CODE BEGIN 1 */
-static void SystemClockConfig_Resume(void);
+// static void SystemClockConfig_Resume(void);
 
 /* USER CODE END 1 */
 
@@ -256,7 +256,7 @@ void HAL_PCD_ResumeCallback(PCD_HandleTypeDef *hpcd)
   {
     /* Reset SLEEPDEEP bit of Cortex System Control Register. */
     SCB->SCR &= (uint32_t)~((uint32_t)(SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk));
-    SystemClockConfig_Resume();
+//    SystemClockConfig_Resume();
   }
   /* USER CODE END 3 */
   USBD_LL_Resume((USBD_HandleTypeDef*)hpcd->pData);

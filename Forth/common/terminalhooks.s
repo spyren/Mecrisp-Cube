@@ -192,30 +192,6 @@ cdc_terminal:
 
 	pop		{pc}
 
-@------------------------------------------------------------------------------
-  Wortbirne Flag_visible, "crs" @ ( -- )
-@------------------------------------------------------------------------------
-.global		crs_terminal
-crs_terminal:
-	push	{lr}
-	ldr		r0, =0	// current task xTaskToQuery = 0
-	mov		r1, r0	// index
-	bl		pvTaskGetThreadLocalStoragePointer
-
-	ldr		r1, =crs_emit
-	str		r1, [r0, #user_hook_emit]
-
-	ldr		r1, =crs_qemit
-	str		r1, [r0, #user_hook_qemit]
-
-	ldr		r1, =crs_key
-	str		r1, [r0, #user_hook_qemit]
-
-	ldr		r1, =crs_qkey
-	str		r1, [r0, #user_hook_qkey]
-
-	pop		{pc}
-
 
 .ltorg
 
@@ -249,8 +225,6 @@ TERMINAL_redirect:
 	ldr		r1, =serial_emit2key
 	b		3f
 2:
-//	ldr		r1, =crs_emit
-	ldr		r1, =crs_emit2key
 3:
 	str		r1, [r0]
 	pop		{lr}
@@ -288,11 +262,5 @@ serial_emit2key:
 	bl		UART_putkey
 	pop		{pc}
 
-crs_emit2key:
-	push	{lr}
-	movs	r0, tos		// c
-	drop
-	bl		CRSAPP_putkey
-	pop		{pc}
 
 

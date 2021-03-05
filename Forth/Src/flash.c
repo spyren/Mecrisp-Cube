@@ -125,10 +125,10 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 	data.word[0] = word1;
 	data.word[1] = word2;
-	if (HAL_FLASHEx_IsOperationSuspended()) {
-		osDelay(2);
+//	if (HAL_FLASHEx_IsOperationSuspended()) {
+//		osDelay(2);
 //		Error_Handler();
-	}
+//	}
 	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 				data.doubleword);
 	if (return_value != HAL_OK) {
@@ -165,9 +165,9 @@ int FLASH_erasePage(uint32_t Address) {
 //	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
 
 //	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
-	if (HAL_FLASHEx_IsOperationSuspended()) {
-		osDelay(2);
-	}
+//	if (HAL_FLASHEx_IsOperationSuspended()) {
+//		osDelay(2);
+//	}
 	return_value = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
 	if (return_value != HAL_OK) {
 		return_value = HAL_ERROR;

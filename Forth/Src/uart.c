@@ -61,7 +61,7 @@ static void UART_RxThread(void *argument);
 
 // Hardware resources
 // ******************
-extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart3;
 
 // RTOS resources
 // **************
@@ -338,8 +338,8 @@ void UART_setBaudrate(const int baudrate) {
 	// only one thread is allowed to use the UART
 	osMutexAcquire(UART_MutexID, osWaitForever);
 
-	huart1.Init.BaudRate = baudrate;
-	if (HAL_UART_Init(&huart1) != HAL_OK) {
+	huart3.Init.BaudRate = baudrate;
+	if (HAL_UART_Init(&huart3) != HAL_OK) {
 		Error_Handler();
 	}
 	osMutexRelease(UART_MutexID);
@@ -362,16 +362,16 @@ void UART_setWordLength(const int wordlength) {
 
 	switch (wordlength) {
 	case 8:
-		huart1.Init.WordLength = UART_WORDLENGTH_8B;
+		huart3.Init.WordLength = UART_WORDLENGTH_8B;
 		break;
 	case 9:
-		huart1.Init.WordLength = UART_WORDLENGTH_9B;
+		huart3.Init.WordLength = UART_WORDLENGTH_9B;
 		break;
 	default:
-		huart1.Init.WordLength = UART_WORDLENGTH_8B;
+		huart3.Init.WordLength = UART_WORDLENGTH_8B;
 		break;
 	}
-	if (HAL_UART_Init(&huart1) != HAL_OK) {
+	if (HAL_UART_Init(&huart3) != HAL_OK) {
 		Error_Handler();
 	}
 	osMutexRelease(UART_MutexID);
@@ -393,19 +393,19 @@ void UART_setParityBit(const int paritybit) {
 
 	switch (paritybit) {
 	case 0:
-		huart1.Init.Parity = UART_PARITY_NONE;
+		huart3.Init.Parity = UART_PARITY_NONE;
 		break;
 	case 1:
-		huart1.Init.Parity = UART_PARITY_ODD;
+		huart3.Init.Parity = UART_PARITY_ODD;
 		break;
 	case 2:
-		huart1.Init.Parity = UART_PARITY_EVEN;
+		huart3.Init.Parity = UART_PARITY_EVEN;
 		break;
 	default:
-		huart1.Init.Parity = UART_PARITY_NONE;
+		huart3.Init.Parity = UART_PARITY_NONE;
 		break;
 	}
-	if (HAL_UART_Init(&huart1) != HAL_OK) {
+	if (HAL_UART_Init(&huart3) != HAL_OK) {
 		Error_Handler();
 	}
 
@@ -428,16 +428,16 @@ void UART_setStopBits(const int stopbits) {
 
 	switch (stopbits) {
 	case 0:
-		huart1.Init.StopBits = UART_STOPBITS_1;
+		huart3.Init.StopBits = UART_STOPBITS_1;
 		break;
 	case 2:
-		huart1.Init.StopBits = UART_STOPBITS_2;
+		huart3.Init.StopBits = UART_STOPBITS_2;
 		break;
 	default:
-		huart1.Init.StopBits = UART_STOPBITS_1;
+		huart3.Init.StopBits = UART_STOPBITS_1;
 		break;
 	}
-	if (HAL_UART_Init(&huart1) != HAL_OK) {
+	if (HAL_UART_Init(&huart3) != HAL_OK) {
 		Error_Handler();
 	}
 
@@ -467,7 +467,7 @@ static void UART_TxThread(void *argument) {
 			// only one thread is allowed to use the UART
 			osMutexAcquire(UART_MutexID, osWaitForever);
 			// send the character
-			if (HAL_UART_Transmit_IT(&huart1, &UART_TxBuffer, 1) == HAL_ERROR) {
+			if (HAL_UART_Transmit_IT(&huart3, &UART_TxBuffer, 1) == HAL_ERROR) {
 				// can't send char
 				Error_Handler();
 			}
@@ -496,7 +496,7 @@ static void UART_RxThread(void *argument) {
 
 	osMutexAcquire(UART_MutexID, osWaitForever);
 	// wait for the first Rx character
-	if (HAL_UART_Receive_IT(&huart1, &UART_RxBuffer, 1) != HAL_OK) {
+	if (HAL_UART_Receive_IT(&huart3, &UART_RxBuffer, 1) != HAL_OK) {
 		// something went wrong
 		Error_Handler();
 	}
@@ -514,7 +514,7 @@ static void UART_RxThread(void *argument) {
 		}
 		// receive the next character
 		osMutexAcquire(UART_MutexID, osWaitForever);
-		status = HAL_UART_Receive_IT(&huart1, &UART_RxBuffer, 1);
+		status = HAL_UART_Receive_IT(&huart3, &UART_RxBuffer, 1);
 		osMutexRelease(UART_MutexID);
 		if (status != osOK) {
 			// can't receive char
