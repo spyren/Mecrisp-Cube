@@ -118,7 +118,7 @@ void CDC_init(void) {
 		Error_Handler();
 	}
 
-	MX_USB_Device_Init();
+//	MX_USB_Device_Init();
 
 
 }
