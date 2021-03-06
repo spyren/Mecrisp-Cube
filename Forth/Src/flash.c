@@ -45,8 +45,6 @@
 
 // Private function prototypes
 // ***************************
-int aquire_flash(uint8_t Erase);
-int release_flash(uint8_t Erase);
 
 // Global Variables
 // ****************
@@ -85,8 +83,10 @@ void FLASH_init(void) {
 		Error_Handler();
 	}
 
-//	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
-//	EraseInitStruct.NbPages     = 1;
+	EraseInitStruct.TypeErase    = FLASH_TYPEERASE_SECTORS;
+	EraseInitStruct.NbSectors    = 1;
+	EraseInitStruct.Banks        = FLASH_BANK_1;
+	EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
 }
 
 
@@ -118,17 +118,12 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
-	aquire_flash(FALSE);
-
-//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
-//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+	if (HAL_FLASH_Unlock() == HAL_ERROR) {
+		Error_Handler();
+	}
 
 	data.word[0] = word1;
 	data.word[1] = word2;
-//	if (HAL_FLASHEx_IsOperationSuspended()) {
-//		osDelay(2);
-//		Error_Handler();
-//	}
 	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 				data.doubleword);
 	if (return_value != HAL_OK) {
@@ -136,7 +131,9 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 		Error_Handler();
 	}
 
-	release_flash(FALSE);
+	if (HAL_FLASH_Lock() == HAL_ERROR) {
+		Error_Handler();
+	}
 
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
@@ -145,7 +142,24 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 /**
  *  @brief
- *      Erases a page (4 KiB) in the flash.
+ *      Erases a page/sector (16/64/128 KiB) in the flash.
+ *
+ *      16 KiB sectors
+ *		0x08000000  0x08003FFF  0
+ *		0x08004000  0x08007FFF  1
+ *		0x08008000  0x0800BFFF  2
+ *		0x0800C000  0x0800FFFF  3
+ *		64 KiB sector
+ *		0x08010000  0x0801FFFF  4
+ *		128 KiB sectors
+ *		0x08020000  0x0803FFFF  5
+ *		0x08040000  0x0805FFFF  6  here starts the flash dictionary
+ *		0x08060000  0x0807FFFF  7
+ *		0x08080000  0x0809FFFF  8
+ *		0x080A0000  0x080BFFFF  9
+ *		0x080C0000  0x080DFFFF  10
+ *		0x080E0000  0x080FFFFF  11
+ *
  *  @param[in]
  *      Address  first byte
  *  @return
@@ -158,23 +172,45 @@ int FLASH_erasePage(uint32_t Address) {
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
-	aquire_flash(TRUE);
+	if (HAL_FLASH_Unlock() == HAL_ERROR) {
+		Error_Handler();
+	}
 
-//	// Clear OPTVERR bit set on virgin samples
-//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
-//	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
+	if ( (Address >= 0x08000000) && (Address <= 0x08003FFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_0;
+	} else if ( (Address >= 0x08004000) && (Address <= 0x08007FFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_1;
+	} else if ( (Address >= 0x08008000) && (Address <= 0x0800BFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_2;
+	} else if ( (Address >= 0x0800C000) && (Address <= 0x0800FFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_3;
+	} else if ( (Address >= 0x08010000) && (Address <= 0x0801FFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_4;
+	} else if ( (Address >= 0x08020000) && (Address <= 0x0803FFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_5;
+	} else if ( (Address >= 0x08040000) && (Address <= 0x0805FFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_6;
+	} else if ( (Address >= 0x08060000) && (Address <= 0x0807FFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_7;
+	} else if ( (Address >= 0x08080000) && (Address <= 0x08007FFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_8;
+	} else if ( (Address >= 0x080A0000) && (Address <= 0x080BFFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_9;
+	} else if ( (Address >= 0x080C0000) && (Address <= 0x080DFFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_10;
+	} else if ( (Address >= 0x080E0000) && (Address <= 0x080FFFFF) ) {
+		EraseInitStruct.Sector = FLASH_SECTOR_11;
+	}
 
-//	EraseInitStruct.Page = (Address - FLASH_BASE) / FLASH_PAGE_SIZE;
-//	if (HAL_FLASHEx_IsOperationSuspended()) {
-//		osDelay(2);
-//	}
 	return_value = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
 	if (return_value != HAL_OK) {
 		return_value = HAL_ERROR;
 		Error_Handler();
 	}
 
-	release_flash(TRUE);
+	if (HAL_FLASH_Lock() == HAL_ERROR) {
+		Error_Handler();
+	}
 
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
@@ -184,54 +220,6 @@ int FLASH_erasePage(uint32_t Address) {
 // Private Functions
 // *****************
 
-// the STM32WB has only one single flash bank, but 2 CPUs
-// for details see AN5289 chapter 4.7 Flash memory management
 
-int aquire_flash(uint8_t Erase) {
-
-//	while (HAL_HSEM_FastTake(2)) {
-//		; // busy wait for
-//	}
-
-	if (HAL_FLASH_Unlock() == HAL_ERROR) {
-		Error_Handler();
-	}
-
-//	if (Erase) {
-//		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
-//	}
-
-//	// enter critical section
-//	os_state = osKernelLock();
-//	while (HAL_HSEM_IsSemTaken(6)) {
-//		; // busy wait
-//	}
-//	while (HAL_HSEM_FastTake(7)) {
-//		; // busy wait for
-//	}
-
-	return HAL_OK;
-}
-
-
-int release_flash(uint8_t Erase) {
-
-//	HAL_HSEM_Release(7, 0);
-
-	// exit critical section
-	osKernelRestoreLock(os_state);
-
-//	if (Erase) {
-//		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
-//	}
-
-	if (HAL_FLASH_Lock() == HAL_ERROR) {
-		Error_Handler();
-	}
-
-//	HAL_HSEM_Release(2, 0);
-
-	return HAL_OK;
-}
 
 

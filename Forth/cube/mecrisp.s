@@ -83,29 +83,27 @@
 
 @ Konstanten für die Größe des Ram-Speichers
 
-// see stm32wb55xx_flash_cm4.ld
+// see stm32F405RGTX_FLASH.ld
 /*
 MEMORY
-MEMORY
 {
-FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
-FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
-FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
-FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
-RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
+  CCMRAM      (xrw)    : ORIGIN = 0x10000000,   LENGTH = 64K
+  RAM         (xrw)    : ORIGIN = 0x20000000,   LENGTH = 128K
+  FLASH        (rx)    : ORIGIN = 0x08000000,   LENGTH = 256K
+  FLASH_FORTH  (rx)    : ORIGIN = 0x08040000,   LENGTH = 256K
+  FLASH_DRIVE  (rx)    : ORIGIN = 0x08080000,   LENGTH = 512K
+
 }
 */
 
-.equ	RamAnfang,				0x20000000	@ Start of RAM
-.equ	RamEnde,				0x20010000	@ End   of RAM. (64 KiB RAM dictionary)
+.equ	RamAnfang,				0x10000000	@ Start of RAM
+.equ	RamEnde,				0x10010000	@ End   of RAM. (64 KiB RAM dictionary)
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 
 .equ	Kernschutzadresse,		0x08040000	@ Mecrisp core never writes flash below this address.
 .equ	FlashDictionaryAnfang,	0x08040000	@ 256 KiB Flash reserved for core and C.
-.equ	FlashDictionaryEnde,	0x08060000	@ 128 KiB Flash available, 386 KiB for drive, 256 KiB for BLE Stack
+.equ	FlashDictionaryEnde,	0x08060000	@ 128 KiB Flash available, 512 KiB for drive
 .equ	Backlinkgrenze,			RamAnfang	@ Ab dem Ram-Start.
 
 

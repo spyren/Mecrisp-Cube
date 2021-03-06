@@ -21,7 +21,7 @@
  *
  *      STM32F405RG: 128 + 64 KiB RAM
  *
- *      CCMRAM (xrw)            : ORIGIN = 0X10000000, LENGTH = 64K
+ *      CCMRAM (xrw)               : ORIGIN = 0X10000000, LENGTH = 64K
  *       1 KiB Core
  *      63 KiB RAM Dictionary
  *
