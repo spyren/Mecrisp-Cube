@@ -13,15 +13,12 @@
  *       20 KiB Forth Core
  *      150 KiB Middleware (debug 250 KiB)
  *
- *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 256K
- *      128 KiB Flash Dictionary
- *
- *      FLASH_DRIVE (rx)           : ORIGIN = 0x08080000, LENGTH = 512K
- *      512 KiB for built in flash drive
+ *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 768K
+ *      768 KiB Flash Dictionary
  *
  *      STM32F405RG: 128 + 64 KiB RAM
  *
- *      CCMRAM (xrw)               : ORIGIN = 0X10000000, LENGTH = 64K
+ *      CCMRAM (xrw)               : ORIGIN = 0x10000000, LENGTH = 64K
  *       1 KiB Core
  *      63 KiB RAM Dictionary
  *

@@ -45,7 +45,7 @@
 
 
 /* USER CODE BEGIN Generic_Parameters */
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.2 for STM32F405, 63/256 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.2 for STM32F405, 63/768 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
 
 /* USER CODE END Generic_Parameters */
 
