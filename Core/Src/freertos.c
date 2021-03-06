@@ -185,7 +185,7 @@ void MainThread(void *argument)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN MainThread */
 //	SD_getSize();
-//	OLED_init();
+	OLED_init();
 
 	Forth();
   /* Infinite loop */

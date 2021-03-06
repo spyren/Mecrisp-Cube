@@ -168,7 +168,7 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT8X8);
 	OLED_puts("Mecrisp-Cube\r\n\n");
 	OLED_setFont(OLED_FONT6X8);
-	OLED_puts("Forth for the STM32WB\r\n");
+	OLED_puts("Forth for the STM32F4\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");
 }
 
