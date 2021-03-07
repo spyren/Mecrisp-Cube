@@ -89,14 +89,15 @@
 MEMORY
 {
   CCMRAM      (xrw)    : ORIGIN = 0x10000000,   LENGTH = 64K
-  RAM         (xrw)    : ORIGIN = 0x20000000,   LENGTH = 128K
+  RAM_FORTH   (xrw)    : ORIGIN = 0x20000000,   LENGTH = 32K
+  RAM         (xrw)    : ORIGIN = 0x20008000,   LENGTH = 96K
   FLASH        (rx)    : ORIGIN = 0x08000000,   LENGTH = 256K
-  FLASH_FORTH  (rx)    : ORIGIN = 0x08040000,   LENGTH = 762K
+  FLASH_FORTH  (rx)    : ORIGIN = 0x08040000,   LENGTH = 768K
 }
 */
 
-.equ	RamAnfang,				0x10000000	@ Start of RAM
-.equ	RamEnde,				0x10010000	@ End   of RAM. (64 KiB RAM dictionary)
+.equ	RamAnfang,				0x20000000	@ Start of RAM
+.equ	RamEnde,				0x20008000	@ End   of RAM. (16 KiB RAM dictionary)
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 

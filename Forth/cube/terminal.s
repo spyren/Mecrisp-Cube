@@ -288,7 +288,7 @@ TERMINAL_emit:
 // uint64_t TERMINAL_key(uint64_t forth_stack, uint8_t *c);
 .global		TERMINAL_key
 TERMINAL_key:
-	push 	{r4-r7, lr}
+	push 	{r3-r7, lr}
 	movs	tos, r0		// get tos
 	movs	psp, r1		// get psp
 	push	{r2}
@@ -298,7 +298,7 @@ TERMINAL_key:
 	drop
 	movs	r0, tos		// update tos
 	movs	r1, psp		// update psp
-	pop		{r4-r7, pc}
+	pop		{r3-r7, pc}
 
 
 // uint64_t TERMINAL_qemit(uint64_t forth_stack, uint8_t *c);

@@ -19,10 +19,15 @@
  *      STM32F405RG: 128 + 64 KiB RAM
  *
  *      CCMRAM (xrw)               : ORIGIN = 0x10000000, LENGTH = 64K
- *       1 KiB Core
- *      63 KiB RAM Dictionary
+ *      40 KiB text Buffer
+ *       4 KiB screen Buffer
  *
- *      RAM (xrw)                  : ORIGIN = 0x20000000, LENGTH = 128K
+ *		RAM_FORTH                  : ORIGIN = 0x20000000, LENGTH = 32K
+ *		32 KiB
+ *       1 KiB Core
+ *      31 KiB RAM Dictionary
+ *
+ *      RAM (xrw)                  : ORIGIN = 0x20008000, LENGTH = 96K
  *       1 KiB Stack         (for startup and ISRs, MSP)
  *       1 KiB Heap          (maybe not needed)
  *       1 KiB UART Tx Buffer
@@ -31,7 +36,7 @@
  *       2 KiB CDC RxQueue
  *       4 KiB Flash erase Buffer
  *      10 KiB global variables
- *      80 KiB RTOS Heap (about 9 KiB free)
+ *      40 KiB RTOS Heap (about 9 KiB free)
  *         Thread Stack size
  *              4 KiB Forth (main)
  *              1 KiB UART_Tx
@@ -42,8 +47,6 @@
  *              1 KiB HCI_USER_EVT
  *              1 KiB ADV_UPDATE
  *              1 KiB SHCI_USER_EVT
- *
- *             40 KiB vi text buffer
  *
  *
  *  @file
