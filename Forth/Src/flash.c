@@ -66,7 +66,6 @@ static const osMutexAttr_t FLASH_MutexAttr = {
 
 // Variable used for Erase procedure
 static FLASH_EraseInitTypeDef EraseInitStruct;
-static uint32_t os_state;
 
 // Public Functions
 // ****************
@@ -105,11 +104,6 @@ void FLASH_init(void) {
 int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	int return_value;
 
-	union number {
-		uint32_t word[2];
-		uint64_t doubleword;
-	} data;
-
 	if (Address < 0x08040000 || Address > 0x080C0000) {
 		Error_Handler();
 		return -1;
@@ -122,13 +116,16 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 		Error_Handler();
 	}
 
-	data.word[0] = word1;
-	data.word[1] = word2;
-	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
-				data.doubleword);
+	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, word1);
 	if (return_value != HAL_OK) {
 		return_value = HAL_ERROR;
 		Error_Handler();
+	} else {
+		return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address+4, word2);
+		if (return_value != HAL_OK) {
+			return_value = HAL_ERROR;
+			Error_Handler();
+		}
 	}
 
 	if (HAL_FLASH_Lock() == HAL_ERROR) {
