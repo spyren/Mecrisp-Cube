@@ -1,12 +1,12 @@
 # Mecrisp-Cube
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
-The STM32WB Nucleo Board is working out of the box yet. See also [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube).
+The STM32WB Nucleo Board and Adafruit Feather STM32F405 are working out of the box yet. See also [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube).
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
-machine (STM32 Nucleo board) for development and testing purposes. 
+machine (STM32 Nucleo and Adafruit Feather STM32F405 boards) for development and testing purposes. 
 
 ### Prerequisites
 
@@ -15,6 +15,9 @@ machine (STM32 Nucleo board) for development and testing purposes.
   new ideas and to quickly create prototypes with any STM32 MCU. 
   The STM32 Nucleo boards integrate an ST-Link debugger/programmer, 
   so there is no need for a separate probe.
+* [Adafruit Feather STM32F405](https://www.adafruit.com/product/4382) -
+  Stackable Feather board with STM32F405 MCU runs at a blistering 168 MHz. 
+  If you want to debug you need an ST-Link debugger/programmer.
 * Terminal emulator application for PC, e.g.: 
   * [PuTTY](http://www.putty.org/) - Windows and Linux
   * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
