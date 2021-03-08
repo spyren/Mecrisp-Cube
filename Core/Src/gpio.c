@@ -67,6 +67,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  // Button A/B/C D9/D6/D5
+  GPIO_InitStruct.Pin = D5_Pin|D6_Pin|D9_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);

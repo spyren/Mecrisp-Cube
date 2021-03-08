@@ -246,7 +246,7 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(D5_GPIO_Port, D5_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(D9_GPIO_Port, D9_Pin) == GPIO_PIN_RESET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -294,7 +294,7 @@ int BSP_getSwitch3(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(D9_GPIO_Port, D9_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(D5_GPIO_Port, D5_Pin) == GPIO_PIN_RESET) {
 		return_value =  -1;
 	} else {
 		return_value = FALSE;
