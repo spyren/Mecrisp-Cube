@@ -300,8 +300,6 @@ static void redraw(int);				// force a full screen refresh
 static void format_line(char*, char*, int);
 static void refresh(int);				// update the terminal from screen[]
 
-static int keypressed(void);
-static char key(void);
 static ssize_t write_term(const void *buf, size_t nbyte);
 static char* last_char_is(const char *s, int c);
 static int puts_term(const char *s);
@@ -349,7 +347,7 @@ void VI_init(void) {
 //	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS + 8);
 
 	 // use CCM for text buffer
-	text = (char *)0x10000000;
+	text = (char *)0x10000100;
 	screen = text + TEXT_SIZE+100;
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user
@@ -3032,9 +3030,16 @@ static int isblnk(char c) // is the char a blank or tab
 
 static int mysleep(int hund)	// sleep for 'h' 1/100 seconds
 {
+	int c;
+
 	// Don't hang- Wait 5/100 seconds-  1 Sec= 1000000
 	osDelay(10 * hund);
-	return keypressed();
+	stack = TERMINAL_qkey(stack, &c);
+	if (c == 0) {
+		return FALSE;
+	} else {
+		return TRUE;
+	}
 }
 
 
@@ -3097,7 +3102,8 @@ static char readit(void)	// read (maybe cursor) key from stdin
 	bufsiz = strlen(readbuffer);
 	if (bufsiz <= 0) {
 		// the Q is empty, wait for a typed char
-		readbuffer[0] = key();
+		stack = TERMINAL_key(stack, &c);
+		readbuffer[0] = c;
 		bufsiz = 1;
 		readbuffer[bufsiz] = '\0';
 	} else {
@@ -3116,9 +3122,11 @@ static char readit(void)	// read (maybe cursor) key from stdin
 	osDelay(5);
 
 	// keep reading while there are input chars and room in buffer
-	while (keypressed() && bufsiz <= (MAX_INPUT_LEN - 5)) {
+	stack = TERMINAL_qkey(stack, &c);
+	while ((c != 0) && (bufsiz <= (MAX_INPUT_LEN - 5))) {
 		// read the rest of the ESC string
-		readbuffer[bufsiz++] = key();
+		stack = TERMINAL_key(stack, &c);
+		readbuffer[bufsiz++] = c;
 		readbuffer[bufsiz] = '\0';	// Terminate the string
 		osDelay(2);
 	}
@@ -3756,36 +3764,13 @@ static void refresh(int full_screen)
 // Terminal I/O
 // ************
 
-static int keypressed(void) {
-	char c;
-	stack = TERMINAL_qkey(stack, &c);
-	if (c == 0) {
-		return FALSE;
-	} else {
-		return TRUE;
-	}
-}
-
-
-static char key(void) {
-	char c;
-	stack = TERMINAL_key(stack, &c);
-	return c;
-}
-
-
-static void emit(char c) {
-	stack = TERMINAL_emit(stack, c);
-}
-
-
 static ssize_t write_term(const void *buf, size_t nbyte) {
 	const char *buf_p;
 	int i;
 
 	buf_p = buf;
 	for (i=0; i<nbyte; i++) {
-		emit(*(buf_p+i));
+		stack = TERMINAL_emit(stack, *(buf_p+i));
 	}
 	return nbyte;
 }
@@ -3794,7 +3779,7 @@ static ssize_t write_term(const void *buf, size_t nbyte) {
 static int puts_term(const char *s) {
 	int i;
 	for (i=0; i < strlen(s); i++) {
-		emit(*(s+i));
+		stack = TERMINAL_emit(stack, *(s+i));
 	}
 	return 0;
 }

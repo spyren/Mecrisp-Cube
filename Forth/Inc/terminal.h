@@ -8,6 +8,8 @@
 #ifndef INC_TERMINAL_H_
 #define INC_TERMINAL_H_
 
+// Data Stack Pointer SPS is in R1 and Top Of Stack TOS is in R0 (first parameter).
+
 uint64_t TERMINAL_emit(uint64_t forth_stack, char c);
 uint64_t TERMINAL_key(uint64_t forth_stack, char *c);
 uint64_t TERMINAL_qemit(uint64_t forth_stack, char *c);
