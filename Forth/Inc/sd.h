@@ -138,7 +138,7 @@ void    SD_flushBuffers(void);
 uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
 uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
 uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr);
-uint8_t SD_GetCardState(void);
+//uint8_t SD_GetCardState(void);
 uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo);
 
 #endif /* INC_SD_H_ */

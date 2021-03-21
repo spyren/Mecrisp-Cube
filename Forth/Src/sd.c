@@ -89,7 +89,7 @@ int sd_size = 0; // number of blocks
 
 uint8_t scratch_block[SD_BLOCK_SIZE];
 
-SD_HandleTypeDef hsd;
+extern SD_HandleTypeDef hsd;
 
 // Public Functions
 // ****************
@@ -111,32 +111,12 @@ void SD_init(void) {
 		Error_Handler();
 	}
 
-	uint8_t sd_state = SD_OK;
-
 	/* uSD device interface configuration */
 	hsd.Instance = SDIO;
 
-	hsd.Init.ClockEdge           = SDIO_CLOCK_EDGE_RISING;
-	hsd.Init.ClockBypass         = SDIO_CLOCK_BYPASS_DISABLE;
-	hsd.Init.ClockPowerSave      = SDIO_CLOCK_POWER_SAVE_DISABLE;
-	hsd.Init.BusWide             = SDIO_BUS_WIDE_1B;
-	hsd.Init.HardwareFlowControl = SDIO_HARDWARE_FLOW_CONTROL_ENABLE;
-	hsd.Init.ClockDiv            = SDIO_TRANSFER_CLK_DIV;
-
 	/* HAL SD initialization */
 	if(HAL_SD_Init(&hsd) != HAL_OK) {
-		sd_state = SD_ERROR;
 		Error_Handler();
-	}
-
-	/* Configure SD Bus width */
-	if(sd_state == SD_OK) {
-		/* Enable wide operation */
-		if(HAL_SD_ConfigWideBusOperation(&hsd, SDIO_BUS_WIDE_4B) != HAL_OK) {
-			sd_state = SD_ERROR;
-		} else {
-			sd_state = SD_OK;
-		}
 	}
 }
 
@@ -214,12 +194,17 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
 	SdError = FALSE;
+	if (osSemaphoreGetCount(SD_SemaphoreID) > 0) {
+		// reset semaphore
+		osSemaphoreAcquire(SD_SemaphoreID, 0);
+	}
 	if (HAL_SD_ReadBlocks_DMA(&hsd, pData, ReadAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
 		os_status = osSemaphoreAcquire(SD_SemaphoreID, 5000);
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {
+			osDelay(10);
 			retr = SD_OK;
 		}
 	} else {
@@ -251,12 +236,17 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
 	SdError = FALSE;
+	if (osSemaphoreGetCount(SD_SemaphoreID) > 0) {
+		// reset semaphore
+		osSemaphoreAcquire(SD_SemaphoreID, 0);
+	}
 	if (HAL_SD_WriteBlocks_DMA(&hsd, pData, WriteAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
 		os_status = osSemaphoreAcquire(SD_SemaphoreID, 5000);
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {
+			osDelay(10);
 			retr = SD_OK;
 		}
 	} else {
@@ -284,9 +274,9 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
 	if (HAL_SD_Erase(&hsd, StartAddr, EndAddr) == HAL_OK) {
-//		if (HAL_SD_GetCardState(&hsd)  == HAL_SD_CARD_TRANSFER ) {
-//
-//		}
+		while (HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_READY ) {
+			osDelay(2);
+		}
 		retr = SD_OK;
 	} else {
 		Error_Handler();
@@ -304,9 +294,9 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
   *            @arg  SD_TRANSFER_OK: No data transfer is acting
   *            @arg  SD_TRANSFER_BUSY: Data transfer is acting
   */
-uint8_t SD_GetCardState(void) {
-  return((HAL_SD_GetCardState(&hsd) == HAL_SD_CARD_TRANSFER ) ? SD_OK : SD_ERROR);
-}
+//uint8_t SD_GetCardState(void) {
+//  return((HAL_SD_GetCardState(&hsd) == HAL_SD_CARD_TRANSFER ) ? SD_OK : SD_ERROR);
+//}
 
 
 // Private Functions
