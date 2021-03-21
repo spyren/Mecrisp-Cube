@@ -1,10 +1,17 @@
 /**
  *  @brief
- *      Flash drive block read and write.
+ *      Serial Flash drive block read and write.
  *
- *      The internal flash from 0x08060000 to 0x080BFFFF (384 KiB) is used
- *      for the flash drive.
+ *      The on-board 2 MiB Serial Flash W25Q16 is used for the flash drive.
  *      API similar to sd card.
+ *
+ *      From data sheet:
+ *      The W25Q16JV array is organized into 8,192 programmable pages of 256-bytes each.
+ *      Up to 256 bytes can be programmed at a time. Pages can be erased in groups of
+ *      16 (4KB sector erase), groups of 128 (32KB block erase), groups of 256 (64KB
+ *      block erase) or the entire chip (chip erase). The W25Q16JVhas 512 erasable
+ *      sectors and 32 erasable blocks respectively. The small 4KB sectors allow for
+ *      greater flexibility in applications that require data and parameter storage
  *  @file
  *      fd.c
  *  @author
@@ -45,13 +52,29 @@
 
 // Defines
 // *******
-#define FLASH_DUMMY_BYTE		0xFF
-#define	RAM_SHARED				0x20038000
+#define FLASH_DUMMY_BYTE	0xFF
 
+// use CCM for scratch page buffer
+#define	CCM_RAM				(0x10000000 + 50 * 1024)
+
+#define W25Q16_PAGES		(8192)
+#define W25Q16_SECTORS		(8192/16)
+
+#define W25Q16_PAGE_SIZE	(256)
+#define W25Q16_SECTOR_SIZE	(256*16)
+
+// Serial Flash commands
+#define READ_CMD    (0x03)		// Read Data
+#define WRITE_CMD   (0x02)		// Page Program (max. 256 bytes)
+#define WREN_CMD    (0x06)		// Write Enable
+#define WRDI_CMD    (0x04)		// Write Disable
+#define RDSR_CMD    (0x05)		// Read Status Register 1
+#define WRSR_CMD    (0x01)		// Write Status Register 1
+#define SE_CMD 		(0x20)		// Sector Erase – erase one sector in memory array
 
 // Private function prototypes
 // ***************************
-static int flash_page(uint8_t *pData, uint32_t addr, uint16_t block_field);
+static int flash_page(uint8_t *pData, uint32_t flash_addr, uint16_t block_field);
 
 
 // Global Variables
@@ -91,8 +114,8 @@ static uint8_t *scratch_page; 	// protected by FD_MutexID
  *      None
  */
 void FD_init(void) {
-//	scratch_page = (uint8_t *) RAM_SHARED;
-	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
+	scratch_page = (uint8_t *) CCM_RAM;
+//	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
 	*scratch_page = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	if (FD_MutexID == NULL) {
@@ -108,7 +131,7 @@ void FD_init(void) {
  *      None
  */
 void FD_getSize(void) {
-	FD_size = ((FD_END_ADDRESS + 1) - FD_START_ADDRESS) / 1024;
+	FD_size = W25Q16_PAGES / 4;
 }
 
 /**
@@ -139,10 +162,13 @@ int FD_getBlocks(void) {
 uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 
-	if (FD_START_ADDRESS + (ReadAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
+	if ((ReadAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
-		memcpy(pData, (uint8_t *) FD_START_ADDRESS + ReadAddr*FD_BLOCK_SIZE,
-				NumOfBlocks*FD_BLOCK_SIZE);
+		osMutexAcquire(FD_MutexID, osWaitForever);
+		// count = NumOfBlocks * FD_BLOCK_SIZE
+		// adr   = ReadAddr*FD_BLOCK_SIZE
+		osMutexRelease(FD_MutexID);
+
 		retr = SD_OK;
 	}
 	/* Return the reponse */
@@ -174,7 +200,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_PAGE -1));
 
-	if (FD_START_ADDRESS + (WriteAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
+	if ((NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
@@ -186,7 +212,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 			pages++;
 		}
 
-		uint32_t base_flash_addr = FD_START_ADDRESS + base_block_adr * FD_BLOCK_SIZE;
+		uint32_t base_flash_addr = base_block_adr * FD_BLOCK_SIZE;
 		retr = SD_OK;
 		for (i=0; i < pages; i++) {
 			if (i==0 && i == pages -1) {
@@ -245,7 +271,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
   *     block_field: bit0 is block 0, bit1 is block 1 and so on. 8 blocks.
   * @retval
   *     FD status
-  */static int flash_page(uint8_t *pData, uint32_t flash_addr, uint16_t block_field) {
+  */
+static int flash_page(uint8_t *pData, uint32_t flash_addr, uint16_t block_field) {
 	uint8_t retr = SD_OK;
 	int i, j;
 	uint8_t *byte_p;

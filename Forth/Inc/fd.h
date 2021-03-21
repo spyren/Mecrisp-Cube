@@ -17,8 +17,8 @@
 #define FD_BLOCKS_PER_PAGE	(FD_PAGE_SIZE / FD_BLOCK_SIZE)
 #define FD_FLASH_RECORD		8		// double word
 
-#define FD_START_ADDRESS	0x08060000
-#define FD_END_ADDRESS		0x080BFFFF
+#define FD_START_ADDRESS	0x00000000
+#define FD_END_ADDRESS		0x001FFFFF
 
 
 void    FD_init(void);

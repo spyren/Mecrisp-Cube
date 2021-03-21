@@ -346,9 +346,9 @@ void VI_init(void) {
 //	text = pvPortMalloc(TEXT_SIZE+100); // some savety margin
 //	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS + 8);
 
-	 // use CCM for text buffer
-	text = (char *)0x10000100;
-	screen = text + TEXT_SIZE+100;
+	// use CCM for text buffer
+	text = (char *)0x10000100;		// do not start at 0x10000000 because there are memory access below text
+	screen = text + TEXT_SIZE+100;	// screen 128 x 30 = 3840 Bytes
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user
 	memset(status_buffer, 0, MAX_INPUT_LEN);

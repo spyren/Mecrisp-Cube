@@ -31,7 +31,8 @@
 #include "flash.h"
 #include "usb_cdc.h"
 #include "bsp.h"
-#include "sd_spi.h"
+#include "fd_spi.h"
+#include "ext_spi.h"
 #include "sd.h"
 #include "fd.h"
 #include "block.h"
@@ -133,7 +134,7 @@ void MX_FREERTOS_Init(void) {
 	IIC_init();
 	CDC_init();
 	FLASH_init();
-	SDSPI_init();
+//	SDSPI_init();
 	SD_init();
 	FD_init();
 	BLOCK_init();

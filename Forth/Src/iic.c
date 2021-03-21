@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Buffered I2C (or IIC) communication.
+ *      Buffered I2C (or IIC) communication (called STEMMA on Adafruit boards).
  *
  *      Using interrupt for I2C1 peripheral. Separate threads for transmitting
  *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
