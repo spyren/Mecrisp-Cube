@@ -94,6 +94,8 @@ void Error_Handler(void);
 #define D6_GPIO_Port GPIOC
 #define D5_Pin GPIO_PIN_7
 #define D5_GPIO_Port GPIOC
+#define FLASH_CS_Pin GPIO_PIN_15
+#define FLASH_CS_GPIO_Port GPIOA
 #define FLASH_SCK_Pin GPIO_PIN_3
 #define FLASH_SCK_GPIO_Port GPIOB
 #define FLASH_MISO_Pin GPIO_PIN_4
