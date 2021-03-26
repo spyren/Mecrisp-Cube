@@ -292,7 +292,7 @@ uint8_t FD_eraseDrive(void) {
 
 	// Chip Erase Time (2 MiB) typ. 5 s, max. 25 s
 	for (i=0; i<25; i++) {
-		// wait till busy reset, timeout 500 ms
+		// wait till busy reset, timeout 25 s
 		osDelay(1000);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(RDSR_CMD);
@@ -367,8 +367,8 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 		if (block_field & (1 << i)) {
 			// block belongs to sector -> copy
 			memcpy(scratch_sector+i*FD_BLOCK_SIZE, byte_p, FD_BLOCK_SIZE);
+			byte_p += FD_BLOCK_SIZE;
 		}
-		byte_p += FD_BLOCK_SIZE;
 	}
 
 	if (erased) {
@@ -387,7 +387,7 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 		// erase sector
 		erase_sector(flash_addr);
 
-		// flash the sector
+		// flash the sector (all blocks)
 		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
 			flash_block(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE);
 		}

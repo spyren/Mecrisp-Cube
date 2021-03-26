@@ -155,6 +155,29 @@ flush:
 	pop		{pc}
 
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "erasedrv"
+		@ ( -- ) save-buffers empty-buffers
+// uint8_t FD_eraseDrive(void)
+@ -----------------------------------------------------------------------------
+	ldr		r1, =DriveNumber
+	ldr		r0, [r1]
+	cmp		r0, #0
+	bne		1f
+	bl		FD_eraseDrive
+	b		3f
+1:
+	cmp		r0, #1
+	bne		2f
+//	bl		SD_eraseDrive
+	b		3f
+2:
+		// invalid drive
+3:
+	pop		{pc}
+
+
 // Forth words which call C functions and which themselves call Forth words
 // ************************************************************************
 

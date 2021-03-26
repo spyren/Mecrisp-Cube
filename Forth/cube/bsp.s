@@ -478,7 +478,6 @@ I2Cput:
 	movs	r0, tos			// *TxBuffer
 	drop
 	bl		IIC_putMessage
-	movs	tos, r0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -497,6 +496,34 @@ I2Cputget:
 	movs	r0, tos			// *TxBuffer
 	drop
 	bl		IIC_putGetMessage
-	movs	tos, r0
 	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "SPIputc"
+        @ ( c --  ) Put a message
+// void EXTSPI_Write(uint8_t Value)
+@ -----------------------------------------------------------------------------
+SPIputc:
+	push	{lr}
+	movs	r0, tos			// Value
+	drop
+	bl		EXTSPI_Write
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "SPIputget"
+       @ ( a1 a2 size2 --  ) Put and get a message
+// void EXTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength)
+@ -----------------------------------------------------------------------------
+SPIputget:
+ 	push	{lr}
+	movs	r2, tos			// DataLength
+	drop
+	movs	r1, tos			// *DataOut
+	drop
+	movs	r0, tos			// *DataIn
+	drop
+	bl		EXTSPI_WriteReadData
+	pop		{pc}
+
 
