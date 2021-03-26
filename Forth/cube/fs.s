@@ -507,6 +507,21 @@ mkfs:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "dd"
+		@ ( -- ) Convert and copy files (Disk Destroyer :-).
+// uint64_t FS_dd (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+dd:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_dd
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "vi"
 		@ ( -- ) vi editor
 // uint64_t VI_edit(uint64_t forth_stack);
