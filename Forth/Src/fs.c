@@ -112,7 +112,8 @@ uint8_t 	*mkfs_scratch;
  *      None
  */
 void FS_init(void) {
-	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
+	// use CCM for text buffer, 50 KiB already used by vi
+	mkfs_scratch = (uint8_t *) (0x10000000 + 50*1024); // 4 KiB scratch area for mkfs
 //	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	if (FS_MutexID == NULL) {

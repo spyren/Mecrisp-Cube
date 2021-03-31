@@ -204,7 +204,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {
-			osDelay(10);
+			osDelay(2);
 			retr = SD_OK;
 		}
 	} else {

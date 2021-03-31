@@ -111,7 +111,7 @@ static const char vi_Version[] =
 //#define MAX_SCR_COLS		MAX_INPUT_LEN
 #define MAX_SCR_COLS		128
 #define MIN_SCR_COLS		40
-#define MAX_SCR_ROWS		30
+#define MAX_SCR_ROWS		40
 #define MIN_SCR_ROWS		16
 #define MAX_ARGS			10
 
@@ -276,7 +276,6 @@ static char *text_hole_make(char *, int);	// at "p", make a 'size' char hole
 static char *yank_delete(char *, char *, int, int);	// yank text[] into register then delete
 static void show_help(void);			// display some help info
 static void print_literal(char *, char *);	// copy s to buf, convert unprintable
-static int mysleep(int);				// sleep for 'h' 1/100 seconds
 static char readit(void);				// read (maybe cursor) key from stdin
 static char get_one_char(void);			// read 1 char from stdin
 static int file_size(char *);			// what is the char size of "fn"
@@ -348,7 +347,7 @@ void VI_init(void) {
 
 	// use CCM for text buffer
 	text = (char *)0x10000100;		// do not start at 0x10000000 because there are memory access below text
-	screen = text + TEXT_SIZE+100;	// screen 128 x 30 = 3840 Bytes
+	screen = text + TEXT_SIZE+100;	// screen 128 x 40 = 5120 Bytes
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user
 	memset(status_buffer, 0, MAX_INPUT_LEN);
@@ -582,7 +581,8 @@ static void edit_file(char * fn)
 		// poll to see if there is input already waiting. if we are
 		// not able to display output fast enough to keep up, skip
 		// the display update until we catch up with input.
-		if (mysleep(0) == 0) {
+		stack = TERMINAL_qkey(stack, &c);
+		if (c == 0) {
 			// no input pending- so update output
 			refresh(FALSE);
 			show_status_line();
@@ -741,7 +741,7 @@ static void do_cmd(char c)
 	case 18:			// ctrl-R  force redraw
 		place_cursor(0, 0, FALSE);	// put cursor in correct place
 		clear_to_eos();	// tel terminal to erase display
-		(void) mysleep(10);
+		osDelay(10*10);
 		screen_erase();	// erase the internal screen buffer
 		refresh(TRUE);	// this will redraw the entire display
 		break;
@@ -2730,7 +2730,7 @@ static void showmatching(char * p)
 		save_dot = dot;	// remember where we are
 		dot = q;		// go to new loc
 		refresh(FALSE);	// let the user see it
-		(void) mysleep(40);	// give user some time
+		osDelay(40*10);	// give user some time
 		dot = save_dot;	// go back to old loc
 		refresh(FALSE);
 	}
@@ -3028,21 +3028,6 @@ static int isblnk(char c) // is the char a blank or tab
 }
 
 
-static int mysleep(int hund)	// sleep for 'h' 1/100 seconds
-{
-	int c;
-
-	// Don't hang- Wait 5/100 seconds-  1 Sec= 1000000
-	osDelay(10 * hund);
-	stack = TERMINAL_qkey(stack, &c);
-	if (c == 0) {
-		return FALSE;
-	} else {
-		return TRUE;
-	}
-}
-
-
 //----- IO Routines --------------------------------------------
 
 #define ESCCMDS_COUNT (sizeof(esccmds)/sizeof(struct esc_cmds))
@@ -3129,6 +3114,7 @@ static char readit(void)	// read (maybe cursor) key from stdin
 		readbuffer[bufsiz++] = c;
 		readbuffer[bufsiz] = '\0';	// Terminate the string
 		osDelay(2);
+		stack = TERMINAL_qkey(stack, &c);
 	}
 
 	if (bufsiz == 1) {
@@ -3494,7 +3480,7 @@ static void flash(int h)
 {
 	standout_start();	// send "start reverse video" sequence
 	redraw(TRUE);
-	(void) mysleep(h);
+	osDelay(10*h);
 	standout_end();		// send "end reverse video" sequence
 	redraw(TRUE);
 }

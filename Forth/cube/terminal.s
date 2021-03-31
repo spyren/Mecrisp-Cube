@@ -29,6 +29,7 @@
 
 
 .include "terminalhooks.s"
+.ltorg
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "serial-emit"
@@ -264,6 +265,7 @@ oledfont:
 	bl		OLED_setFont
 	pop		{pc}
 
+.ltorg
 
 // C Interface to some Forth Words
 //********************************
