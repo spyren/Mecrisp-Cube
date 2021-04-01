@@ -64,7 +64,8 @@ static const osMutexAttr_t SD_MutexAttr = {
 		0U					// size for control block
 };
 
-static osSemaphoreId_t SD_SemaphoreID;
+static osSemaphoreId_t SD_RxSemaphoreID;
+static osSemaphoreId_t SD_TxSemaphoreID;
 
 
 // Hardware resources
@@ -106,10 +107,16 @@ void SD_init(void) {
 		Error_Handler();
 	}
 
-	SD_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (SD_SemaphoreID == NULL) {
+	SD_RxSemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (SD_RxSemaphoreID == NULL) {
 		Error_Handler();
 	}
+
+	SD_TxSemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (SD_TxSemaphoreID == NULL) {
+		Error_Handler();
+	}
+
 
 	/* uSD device interface configuration */
 	hsd.Instance = SDIO;
@@ -194,13 +201,13 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
 	SdError = FALSE;
-	if (osSemaphoreGetCount(SD_SemaphoreID) > 0) {
+	if (osSemaphoreGetCount(SD_RxSemaphoreID) > 0) {
 		// reset semaphore
-		osSemaphoreAcquire(SD_SemaphoreID, 0);
+		osSemaphoreAcquire(SD_RxSemaphoreID, 0);
 	}
 	if (HAL_SD_ReadBlocks_DMA(&hsd, pData, ReadAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
-		os_status = osSemaphoreAcquire(SD_SemaphoreID, 5000);
+		os_status = osSemaphoreAcquire(SD_RxSemaphoreID, 5000);
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {
@@ -236,17 +243,20 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
 	SdError = FALSE;
-	if (osSemaphoreGetCount(SD_SemaphoreID) > 0) {
+	if (osSemaphoreGetCount(SD_TxSemaphoreID) > 0) {
 		// reset semaphore
-		osSemaphoreAcquire(SD_SemaphoreID, 0);
+		osSemaphoreAcquire(SD_TxSemaphoreID, 0);
 	}
 	if (HAL_SD_WriteBlocks_DMA(&hsd, pData, WriteAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
-		os_status = osSemaphoreAcquire(SD_SemaphoreID, 5000);
+		os_status = osSemaphoreAcquire(SD_TxSemaphoreID, 5000);
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {
 			osDelay(10);
+			while ( HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_TRANSFER ) {
+				osDelay(5);
+			}
 			retr = SD_OK;
 		}
 	} else {
@@ -274,8 +284,9 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
 	if (HAL_SD_Erase(&hsd, StartAddr, EndAddr) == HAL_OK) {
-		while (HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_READY ) {
-			osDelay(2);
+		osDelay(10);
+		while (HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_TRANSFER ) {
+			osDelay(5);
 		}
 		retr = SD_OK;
 	} else {
@@ -317,7 +328,7 @@ void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd)
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsd);
 
-  osSemaphoreRelease(SD_SemaphoreID);
+  osSemaphoreRelease(SD_TxSemaphoreID);
 }
 
 /**
@@ -330,7 +341,7 @@ void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hsd);
 
-  osSemaphoreRelease(SD_SemaphoreID);
+  osSemaphoreRelease(SD_RxSemaphoreID);
 }
 
 /**
@@ -344,7 +355,8 @@ void HAL_SD_ErrorCallback(SD_HandleTypeDef *hsd)
   UNUSED(hsd);
 
   SdError = TRUE;
-  osSemaphoreRelease(SD_SemaphoreID);
+  osSemaphoreRelease(SD_RxSemaphoreID);
+  osSemaphoreRelease(SD_TxSemaphoreID);
 }
 
 /**
@@ -358,6 +370,7 @@ void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd)
   UNUSED(hsd);
 
   SdError = TRUE;
-  osSemaphoreRelease(SD_SemaphoreID);
+  osSemaphoreRelease(SD_RxSemaphoreID);
+  osSemaphoreRelease(SD_TxSemaphoreID);
 }
 
