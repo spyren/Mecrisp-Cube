@@ -9,6 +9,7 @@
  *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2 (Dongle: D6)
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
  *        - Timer Capture/Compare
+ *        - NeoPixel
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -64,6 +65,7 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim6;
 
 // RTOS resources
 // **************
@@ -1071,4 +1073,84 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		break;
 	}
 }
+
+
+// NeoPixel LED
+// ************
+
+#define T0H		17	// 0.4 us, 42 MHz -> 23.8 ns, 0.4 us / 23.8 ns = 16.8
+#define T1H		33	// 0.8 us
+#define T0L		36	// 0.85 us, 35.7
+#define T1L		19	// 0.45 us, 18.9
+
+/**
+ *  @brief
+ *	    Sets the NeoPixel RGB LED.
+ *
+ *	@param[in]
+ *      rgb    Lowest (1st) byte blue, 2nd byte green, 3th byte red
+ *  @return
+ *      none
+ *
+ */
+void BSP_setNeoPixel(int rgb) {
+	uint32_t GRB;
+	uint8_t i;
+
+	GRB =   rgb & 0x0000FF; 		// blue
+	GRB |= (rgb & 0x00FF00) << 8;	// green
+	GRB |= (rgb & 0xFF0000) >> 8;	// red
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// synchronize the pre scaler
+	__HAL_TIM_SET_AUTORELOAD(&htim6, T1H);
+	HAL_TIM_Base_Start(&htim6);
+
+	for (i=0; i<24; i++) {
+
+		while (! __HAL_TIM_GET_FLAG(&htim6, TIM_FLAG_UPDATE)) {
+			; //  busy wait for reload
+		}
+		HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_SET);
+		if ((GRB & 0x800000) == 0) {	// ; highest bit
+			// 0
+			// T0H
+			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
+			__HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);
+			__HAL_TIM_SET_AUTORELOAD(&htim6, T0H);
+			while (! __HAL_TIM_GET_FLAG(&htim6, TIM_FLAG_UPDATE)) {
+				; //  busy wait for reload
+			}
+			HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_RESET);
+			// T0L
+			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
+			__HAL_TIM_SET_AUTORELOAD(&htim6, T0L);
+
+		} else {
+			// 1
+			// T1H
+			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
+			__HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);
+			__HAL_TIM_SET_AUTORELOAD(&htim6, T1H);
+			HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_RESET);
+			while (! __HAL_TIM_GET_FLAG(&htim6, TIM_FLAG_UPDATE)) {
+				; //  busy wait for reload
+			}
+			// T1L
+			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
+			__HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);
+			__HAL_TIM_SET_AUTORELOAD(&htim6, T1L);
+		}
+		GRB = GRB << 1;
+	}
+
+	HAL_TIM_Base_Stop(&htim6);
+
+	osMutexRelease(DigitalPort_MutexID);
+}
+
+
+
 

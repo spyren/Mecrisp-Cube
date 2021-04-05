@@ -52,6 +52,17 @@ get_led1:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "neopixel!"
+set_neopixel:
+		@ ( n --  ) set neopixel (rgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		BSP_setNeoPixel
+	pop		{pc}
+
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
