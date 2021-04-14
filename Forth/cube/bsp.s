@@ -546,10 +546,10 @@ SPIputget:
 */
 .ltorg
 
-.equ	T0H,		4	// 0.3 us
-.equ	T1H,		10	// 0.8 us
-.equ	T0L,		9	// 0.8 us
-.equ	T1L,		3	// 0.3 us
+.equ	T0H,		16	// 0.3 us
+.equ	T1H,		40	// 0.8 us
+.equ	T0L,		36	// 0.8 us
+.equ	T1L,		12	// 0.3 us
 
 //	Registers
 .equ	GPIO_BSRR,	0x18	// GPIOx->BSRR bit set/reset
