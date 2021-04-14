@@ -538,3 +538,50 @@ SPIputget:
 	pop		{pc}
 
 
+/*
+	void BSP_neopixelDataTx(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint32_t rgb);
+	                                      R0              R1        R2
+
+	Cycle = 1 / 168 MHz = 6 ns
+*/
+.ltorg
+
+.equ	T0H,		4	// 0.3 us
+.equ	T1H,		10	// 0.8 us
+.equ	T0L,		9	// 0.8 us
+.equ	T1L,		3	// 0.3 us
+
+//	Registers
+.equ	GPIO_BSRR,	0x18	// GPIOx->BSRR bit set/reset
+
+
+.global		BSP_neopixelDataTx
+BSP_neopixelDataTx:
+	push	{r4-r6, lr}
+	lsl		r3, r1, #16			// clear port pin for BSRR
+	mov		r6, #24				// 24 bits
+
+bit_loop:
+	lsls	r2, r2, #1			// get the next bit -> set the carry bit
+	ittee	cs
+	movcs	r4, #T1H
+	movcs	r5, #T1L
+	movcc	r4, #T0H
+	movcc	r5, #T0L
+
+
+	// set DOUT pin high
+	str		r1, [r0, #GPIO_BSRR]
+1:	subs	r4, r4, #1
+	bne		1b
+
+	// set DOUT pin low
+	str		r3, [r0, #GPIO_BSRR]
+2:	subs	r5, r5, #1
+	bne		2b
+
+	subs	r6, r6, #1
+	bne		bit_loop
+
+	pop		{r4-r6, pc}
+

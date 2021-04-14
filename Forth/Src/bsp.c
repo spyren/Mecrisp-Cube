@@ -1078,11 +1078,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 // NeoPixel LED
 // ************
 
-#define T0H		17	// 0.4 us, 42 MHz -> 23.8 ns, 0.4 us / 23.8 ns = 16.8
-#define T1H		33	// 0.8 us
-#define T0L		36	// 0.85 us, 35.7
-#define T1L		19	// 0.45 us, 18.9
-
 /**
  *  @brief
  *	    Sets the NeoPixel RGB LED.
@@ -1093,62 +1088,26 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
  *      none
  *
  */
-void BSP_setNeoPixel(int rgb) {
-	uint32_t GRB;
-	uint8_t i;
+void BSP_setNeoPixel(uint32_t rgb) {
+	uint32_t GRBx;
 
-	GRB =   rgb & 0x0000FF; 		// blue
-	GRB |= (rgb & 0x00FF00) << 8;	// green
-	GRB |= (rgb & 0xFF0000) >> 8;	// red
+	GRBx =   rgb & 0x00FF0000;			// red
+	GRBx |= (rgb & 0x0000FF00) << 16;	// green
+	GRBx |= (rgb & 0x000000FF) << 8; 	// blue
 
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// synchronize the pre scaler
-	__HAL_TIM_SET_AUTORELOAD(&htim6, T1H);
-	HAL_TIM_Base_Start(&htim6);
+	// do not disturb, it takes about 10 + 1.25 us * 24 = 40 us
+	BACKUP_PRIMASK();
+	DISABLE_IRQ();
 
-	for (i=0; i<24; i++) {
+	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, GRBx);
 
-		while (! __HAL_TIM_GET_FLAG(&htim6, TIM_FLAG_UPDATE)) {
-			; //  busy wait for reload
-		}
-		HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_SET);
-		if ((GRB & 0x800000) == 0) {	// ; highest bit
-			// 0
-			// T0H
-			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
-			__HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);
-			__HAL_TIM_SET_AUTORELOAD(&htim6, T0H);
-			while (! __HAL_TIM_GET_FLAG(&htim6, TIM_FLAG_UPDATE)) {
-				; //  busy wait for reload
-			}
-			HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_RESET);
-			// T0L
-			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
-			__HAL_TIM_SET_AUTORELOAD(&htim6, T0L);
-
-		} else {
-			// 1
-			// T1H
-			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
-			__HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);
-			__HAL_TIM_SET_AUTORELOAD(&htim6, T1H);
-			HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_RESET);
-			while (! __HAL_TIM_GET_FLAG(&htim6, TIM_FLAG_UPDATE)) {
-				; //  busy wait for reload
-			}
-			// T1L
-			__HAL_TIM_CLEAR_FLAG(&htim6, TIM_FLAG_UPDATE);
-			__HAL_TIM_CLEAR_IT(&htim6, TIM_IT_UPDATE);
-			__HAL_TIM_SET_AUTORELOAD(&htim6, T1L);
-		}
-		GRB = GRB << 1;
-	}
-
-	HAL_TIM_Base_Stop(&htim6);
+	RESTORE_PRIMASK();
 
 	osMutexRelease(DigitalPort_MutexID);
+	osDelay(1);
 }
 
 
