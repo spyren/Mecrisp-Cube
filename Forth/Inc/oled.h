@@ -32,7 +32,7 @@
 #ifndef INC_OLED_H_
 #define INC_OLED_H_
 
-#define OLED_I2C_ADR		60
+#define OLED_I2C_ADR		60		/* 0x3C */
 
 //#define	BONNET				1
 
