@@ -315,7 +315,7 @@ typedef struct {
 	uint16_t pin;
 } PortPin_t;
 
-static const PortPin_t PortPin_a[16] = {
+static const PortPin_t PortPin_a[23] = {
 		{ D0_GPIO_Port, D0_Pin } ,
 		{ D1_GPIO_Port, D1_Pin } ,
 		{ D2_GPIO_Port, D2_Pin } ,
@@ -331,7 +331,14 @@ static const PortPin_t PortPin_a[16] = {
 		{ D12_GPIO_Port, D12_Pin } ,
 		{ D13_GPIO_Port, D13_Pin } ,
 		{ D14_GPIO_Port, D14_Pin } ,
-		{ D15_GPIO_Port, D15_Pin }
+		{ D15_GPIO_Port, D15_Pin } ,
+		{ A0_GPIO_Port, A0_Pin } ,		// analog pins start with offset 16
+		{ A1_GPIO_Port, A1_Pin } ,
+		{ A2_GPIO_Port, A2_Pin } ,
+		{ A3_GPIO_Port, A3_Pin } ,
+		{ A4_GPIO_Port, A4_Pin } ,
+		{ A5_GPIO_Port, A5_Pin } ,
+		{ A6_GPIO_Port, A6_Pin } ,
 };
 
 /**
@@ -482,14 +489,16 @@ typedef struct {
 
 static const PortPinMode_t DigitalPortPinMode_a[] = {
 	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				// 0 in
-	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 pullup
-	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 pulldow
-	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 opendrain
+	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 in pullup
+	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 in pulldow
+	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 out pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 out opendrain
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF2_TIM4 } ,	// 5 pwm pushpull (same for TIM3)
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 }  	// 8 I2C opendrain pullup
+	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	// 8 I2C opendrain pullup
+	{ GPIO_MODE_AF_PP, 	   GPIO_PULLUP,   GPIO_AF7_USART3 } ,// 9 USART pullup
+	{ GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 } 				// 10 analog in
 };
 /**
  *  @brief
@@ -689,6 +698,7 @@ void BSP_stopPeriodICOC(void) {
 void BSP_setModeOC(int pin_number, uint32_t mode) {
 	TIM_OC_InitTypeDef sConfigOC = {0};
 	uint32_t ch;
+//	TIM_HandleTypeDef *timer;
 
 	switch (pin_number) {
 	case 0:
@@ -697,9 +707,18 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
 	case 1:
 		ch = TIM_CHANNEL_3;
 		break;
-	case 5:
-		ch = TIM_CHANNEL_1;
-		break;
+//	case 2:
+//		ch = TIM_CHANNEL_1;
+//		timer = &htim1;
+//		break;
+//	case 3:
+//		ch = TIM_CHANNEL_2;
+//		timer = &htim1;
+//		break;
+//	case 4:
+//		ch = TIM_CHANNEL_3;
+//		timer = &htim1;
+//		break;
 	default:
 		return;
 	}
@@ -767,7 +786,7 @@ void BSP_startOC(int pin_number, uint32_t pulse) {
  *  @brief
  *	    Stops Output Compare
  *	@param[in]
- *	    pin_number
+ *	    pin_number D0, D1, D2, D3, D4
  *  @return
  *      none
  */
@@ -779,9 +798,15 @@ void BSP_stopOC(int pin_number) {
 	case 1:
 		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_3);
 		break;
-	case 5:
-		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_1);
-		break;
+//	case 2:
+//		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1);
+//		break;
+//	case 3:
+//		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1);
+//		break;
+//	case 4:
+//		HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1);
+//		break;
 	}
 }
 
@@ -797,20 +822,20 @@ void BSP_stopOC(int pin_number) {
 void BSP_startIC(uint32_t mode) {
 	switch(mode) {
 	case 0:
-		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_RISING);
+		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_RISING);
 		break;
 	case 1:
-		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_FALLING);
+		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_FALLING);
 		break;
 	case 2:
-		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_2, TIM_INPUTCHANNELPOLARITY_BOTHEDGE);
+		__HAL_TIM_SET_CAPTUREPOLARITY(&htim2, TIM_CHANNEL_1, TIM_INPUTCHANNELPOLARITY_BOTHEDGE);
 		break;
 	default:
 		return;
 
 	}
 	osSemaphoreAcquire(ICOC_CH1_SemaphoreID, 0);
-	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2);
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1);
 }
 
 
@@ -821,7 +846,7 @@ void BSP_startIC(uint32_t mode) {
  *      none
  */
 void BSP_stopIC(void) {
-	HAL_TIM_IC_Stop_IT(&htim2, TIM_CHANNEL_2);
+	HAL_TIM_IC_Stop_IT(&htim2, TIM_CHANNEL_1);
 
 }
 
@@ -849,7 +874,7 @@ uint32_t BSP_waitIC(uint32_t timeout) {
 	if (osSemaphoreAcquire(ICOC_CH1_SemaphoreID, timeout) == osErrorTimeout) {
 		return 0;
 	}
-	return (HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_2));
+	return (HAL_TIM_ReadCapturedValue(&htim2, TIM_CHANNEL_1));
 }
 
 
@@ -1046,8 +1071,8 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
   */
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM2) {
-		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) {
-			// A2, PA1
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			// A1, PA5
 			osSemaphoreRelease(ICOC_CH1_SemaphoreID);
 		}
 	}
