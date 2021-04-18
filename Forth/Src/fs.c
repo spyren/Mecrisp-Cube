@@ -158,7 +158,8 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	fr = f_open(&fil, path, FA_READ);
 	if (fr) {
 		// open failed
-		strcpy(line, "Err: file not found");
+		stack = FS_type(stack, (uint8_t*)path, strlen(path));
+		strcpy(line, ": can't find file\n");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
 
