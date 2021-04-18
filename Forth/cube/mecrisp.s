@@ -505,6 +505,12 @@ Forth:
 	bl		fs_strlen
 	bl		stype
 
+    // include 0:/etc/rc.local
+    pushdatos
+   	ldr		tos, =rc_local
+    bl		fs_strlen
+    bl		included
+
 	@ Ready to fly !
 .include "boot.s"
 

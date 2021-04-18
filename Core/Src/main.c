@@ -123,6 +123,7 @@
 
 /* USER CODE BEGIN PV */
 const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
+const char rc_local[] = RC_LOCAL;
 
 /* USER CODE END PV */
 

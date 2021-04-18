@@ -77,8 +77,15 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  // Button A/B/C D9/D6/D5
-  GPIO_InitStruct.Pin = D5_Pin|D6_Pin|D9_Pin;
+  // Button A D9
+  GPIO_InitStruct.Pin = D9_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(D9_GPIO_Port, &GPIO_InitStruct);
+
+  // Button B/C D6/D5
+  GPIO_InitStruct.Pin = D5_Pin|D6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
