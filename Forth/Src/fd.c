@@ -229,6 +229,29 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 }
 
 
+/**
+  * @brief
+  *     Erase Drive
+  *
+  * @retval
+  *     FD status
+  */
+uint8_t FD_eraseDrive(void) {
+	uint8_t retr = SD_OK;
+	uint32_t flash_addr;
+
+	osMutexAcquire(FD_MutexID, osWaitForever);
+	for (flash_addr = FD_START_ADDRESS; flash_addr<FD_END_ADDRESS; flash_addr += FD_PAGE_SIZE) {
+		if (FLASH_erasePage(flash_addr) != HAL_OK) {
+			retr = SD_ERROR;
+			break;
+		}
+	}
+	osMutexRelease(FD_MutexID);
+	return retr;
+}
+
+
 // Private Functions
 // *****************
 

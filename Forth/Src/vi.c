@@ -276,7 +276,6 @@ static char *text_hole_make(char *, int);	// at "p", make a 'size' char hole
 static char *yank_delete(char *, char *, int, int);	// yank text[] into register then delete
 static void show_help(void);			// display some help info
 static void print_literal(char *, char *);	// copy s to buf, convert unprintable
-static int mysleep(int);				// sleep for 'h' 1/100 seconds
 static char readit(void);				// read (maybe cursor) key from stdin
 static char get_one_char(void);			// read 1 char from stdin
 static int file_size(char *);			// what is the char size of "fn"
@@ -300,8 +299,6 @@ static void redraw(int);				// force a full screen refresh
 static void format_line(char*, char*, int);
 static void refresh(int);				// update the terminal from screen[]
 
-static int keypressed(void);
-static char key(void);
 static ssize_t write_term(const void *buf, size_t nbyte);
 static char* last_char_is(const char *s, int c);
 static int puts_term(const char *s);
@@ -580,7 +577,8 @@ static void edit_file(char * fn)
 		// poll to see if there is input already waiting. if we are
 		// not able to display output fast enough to keep up, skip
 		// the display update until we catch up with input.
-		if (mysleep(0) == 0) {
+		stack = TERMINAL_qkey(stack, &c);
+		if (c == 0) {
 			// no input pending- so update output
 			refresh(FALSE);
 			show_status_line();
@@ -739,7 +737,7 @@ static void do_cmd(char c)
 	case 18:			// ctrl-R  force redraw
 		place_cursor(0, 0, FALSE);	// put cursor in correct place
 		clear_to_eos();	// tel terminal to erase display
-		(void) mysleep(10);
+		osDelay(10*10);
 		screen_erase();	// erase the internal screen buffer
 		refresh(TRUE);	// this will redraw the entire display
 		break;
@@ -2728,7 +2726,7 @@ static void showmatching(char * p)
 		save_dot = dot;	// remember where we are
 		dot = q;		// go to new loc
 		refresh(FALSE);	// let the user see it
-		(void) mysleep(40);	// give user some time
+		osDelay(40*10);	// give user some time
 		dot = save_dot;	// go back to old loc
 		refresh(FALSE);
 	}
@@ -3026,14 +3024,6 @@ static int isblnk(char c) // is the char a blank or tab
 }
 
 
-static int mysleep(int hund)	// sleep for 'h' 1/100 seconds
-{
-	// Don't hang- Wait 5/100 seconds-  1 Sec= 1000000
-	osDelay(10 * hund);
-	return keypressed();
-}
-
-
 //----- IO Routines --------------------------------------------
 
 #define ESCCMDS_COUNT (sizeof(esccmds)/sizeof(struct esc_cmds))
@@ -3093,7 +3083,8 @@ static char readit(void)	// read (maybe cursor) key from stdin
 	bufsiz = strlen(readbuffer);
 	if (bufsiz <= 0) {
 		// the Q is empty, wait for a typed char
-		readbuffer[0] = key();
+		stack = TERMINAL_key(stack, &c);
+		readbuffer[0] = c;
 		bufsiz = 1;
 		readbuffer[bufsiz] = '\0';
 	} else {
@@ -3112,11 +3103,14 @@ static char readit(void)	// read (maybe cursor) key from stdin
 	osDelay(5);
 
 	// keep reading while there are input chars and room in buffer
-	while (keypressed() && bufsiz <= (MAX_INPUT_LEN - 5)) {
+	stack = TERMINAL_qkey(stack, &c);
+	while ((c != 0) && (bufsiz <= (MAX_INPUT_LEN - 5))) {
 		// read the rest of the ESC string
-		readbuffer[bufsiz++] = key();
+		stack = TERMINAL_key(stack, &c);
+		readbuffer[bufsiz++] = c;
 		readbuffer[bufsiz] = '\0';	// Terminate the string
 		osDelay(2);
+		stack = TERMINAL_qkey(stack, &c);
 	}
 
 	if (bufsiz == 1) {
@@ -3482,7 +3476,7 @@ static void flash(int h)
 {
 	standout_start();	// send "start reverse video" sequence
 	redraw(TRUE);
-	(void) mysleep(h);
+	osDelay(10*h);
 	standout_end();		// send "end reverse video" sequence
 	redraw(TRUE);
 }
@@ -3752,36 +3746,13 @@ static void refresh(int full_screen)
 // Terminal I/O
 // ************
 
-static int keypressed(void) {
-	char c;
-	stack = TERMINAL_qkey(stack, &c);
-	if (c == 0) {
-		return FALSE;
-	} else {
-		return TRUE;
-	}
-}
-
-
-static char key(void) {
-	char c;
-	stack = TERMINAL_key(stack, &c);
-	return c;
-}
-
-
-static void emit(char c) {
-	stack = TERMINAL_emit(stack, c);
-}
-
-
 static ssize_t write_term(const void *buf, size_t nbyte) {
 	const char *buf_p;
 	int i;
 
 	buf_p = buf;
 	for (i=0; i<nbyte; i++) {
-		emit(*(buf_p+i));
+		stack = TERMINAL_emit(stack, *(buf_p+i));
 	}
 	return nbyte;
 }
@@ -3790,7 +3761,7 @@ static ssize_t write_term(const void *buf, size_t nbyte) {
 static int puts_term(const char *s) {
 	int i;
 	for (i=0; i < strlen(s); i++) {
-		emit(*(s+i));
+		stack = TERMINAL_emit(stack, *(s+i));
 	}
 	return 0;
 }

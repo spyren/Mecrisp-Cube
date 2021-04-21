@@ -28,5 +28,6 @@ int 	FD_getBlocks(void);
 uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
 uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
 uint8_t FD_Erase(uint32_t StartAddr, uint32_t EndAddr);
+uint8_t FD_eraseDrive(void);
 
 #endif /* INC_SD_H_ */

@@ -521,7 +521,6 @@ I2Cput:
 	movs	r0, tos			// *TxBuffer
 	drop
 	bl		IIC_putMessage
-	movs	tos, r0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -540,6 +539,5 @@ I2Cputget:
 	movs	r0, tos			// *TxBuffer
 	drop
 	bl		IIC_putGetMessage
-	movs	tos, r0
 	pop		{pc}
 

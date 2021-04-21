@@ -157,7 +157,8 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	fr = f_open(&fil, path, FA_READ);
 	if (fr) {
 		// open failed
-		strcpy(line, "Err: file not found");
+		stack = FS_type(stack, (uint8_t*)path, strlen(path));
+		strcpy(line, ": can't find file\n");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
 
@@ -1447,6 +1448,125 @@ uint64_t FS_mkfs(uint64_t forth_stack) {
 	return stack;
 }
 
+
+/**
+ *  @brief
+ *      Convert and copy files (Disk Destroyer :-)
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @return
+ *      TOS (lower word) and SPS (higher word)
+ */
+uint64_t FS_dd(uint64_t forth_stack) {
+	FRESULT fr;     /* FatFs return code */
+	uint8_t *str = NULL;
+	int count = 1;
+	UINT rd_count, wr_count;
+	int param = 0;
+	FIL fil_src;	/* File object */
+	FIL fil_dest;	/* File object */
+	int blocks;
+	int block;
+	uint8_t status;
+
+	uint64_t stack;
+	stack = forth_stack;
+
+	stack = FS_cr(stack);
+
+	FD_getSize();
+	blocks = FD_getBlocks();
+	while (TRUE) {
+		// get tokens till end of line
+		stack = FS_token(stack, &str, &count);
+		if (count == 0) {
+			// no more tokens
+			break;
+		}
+
+		param++;
+		if (param == 1) {
+			memcpy(path, str, count);
+			path[count] = 0;
+			continue;
+		} else if (param == 2) {
+			memcpy(line, str, count);
+			line[count] = 0;
+		} else {
+			;
+		}
+	}
+
+	if (param == 2) {
+		if (! strcmp (path, "0:")) {
+			// flash drive is source, file is destination
+			fr = f_open(&fil_dest, line, FA_CREATE_ALWAYS | FA_WRITE);
+			if (fr == FR_OK) {
+				// copy drive to file
+				block = 0;
+				for (block=0; block<blocks; block++) {
+					status = FD_ReadBlocks(&BLOCK_Buffers[0].Data, block, 2);
+					if (status != SD_OK) {
+						strcpy(path, "Read error");
+						stack = FS_type(stack, (uint8_t*)path, strlen(path));
+						break;
+					}
+					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &wr_count);
+					if (fr != FR_OK) {
+						strcpy(path, "Write error");
+						stack = FS_type(stack, (uint8_t*)path, strlen(path));
+						break;
+					}
+				}
+				f_close(&fil_dest);
+			} else {
+				// open destination failed
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+				strcpy(line, ": can't create file");
+				stack = FS_type(stack, (uint8_t*)line, strlen(line));
+			}
+
+
+		} else if (! strcmp (line, "0:")) {
+			// flash drive is destination, file is source
+			fr = f_open(&fil_src, path, FA_READ);
+			if (fr == FR_OK) {
+				// copy file to drive
+				block = 0;
+				while (!f_eof(&fil_src)) {
+					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &rd_count);
+					if (fr != FR_OK) {
+						strcpy(path, "Read error");
+						stack = FS_type(stack, (uint8_t*)path, strlen(path));
+						break;
+					}
+					status = FD_WriteBlocks(&BLOCK_Buffers[0].Data, block, 2);
+					block += 2;
+					if (status != SD_OK) {
+						strcpy(path, "Write error");
+						stack = FS_type(stack, (uint8_t*)path, strlen(path));
+						break;
+					}
+				}
+				f_close(&fil_src);
+			} else {
+				// open source failed
+				stack = FS_type(stack, (uint8_t*)path, strlen(path));
+				strcpy(path, ": file not found");
+				stack = FS_type(stack, (uint8_t*)path, strlen(path));
+			}
+
+		} else {
+			strcpy(path, "Source or destination has to be flash drive 0:");
+			stack = FS_type(stack, (uint8_t*)path, strlen(path));
+		}
+	} else {
+		strcpy(path, "Wrong number of parameters");
+		stack = FS_type(stack, (uint8_t*)path, strlen(path));
+	}
+
+	return stack;
+}
 
 
 int FS_FIL_size(void) {

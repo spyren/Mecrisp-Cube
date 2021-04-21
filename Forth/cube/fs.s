@@ -155,6 +155,28 @@ flush:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "erasedrv"
+		@ ( -- ) save-buffers empty-buffers
+// uint8_t FD_eraseDrive(void)
+@ -----------------------------------------------------------------------------
+	ldr		r1, =DriveNumber
+	ldr		r0, [r1]
+	cmp		r0, #0
+	bne		1f
+	bl		FD_eraseDrive
+	b		3f
+1:
+	cmp		r0, #1
+	bne		2f
+//	bl		SD_eraseDrive
+	b		3f
+2:
+		// invalid drive
+3:
+	pop		{pc}
+
+
 // Forth words which call C functions and which themselves call Forth words
 // ************************************************************************
 
@@ -484,18 +506,33 @@ mkfs:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "dd"
+		@ ( -- ) Convert and copy files (Disk Destroyer :-).
+// uint64_t FS_dd (uint64_t forth_stack);
+@ -----------------------------------------------------------------------------
+dd:
+	push	{lr}
+	movs	r0, tos		// get tos
+	movs	r1, psp		// get psp
+	bl		FS_dd
+	movs	tos, r0		// update tos
+	movs	psp, r1		// update psp
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "vi"
 		@ ( -- ) vi editor
 // uint64_t VI_edit(uint64_t forth_stack);
 @ -----------------------------------------------------------------------------
 vi:
-	push	{lr}
+	push	{r4-r5, lr}
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
 	bl		VI_edit
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
-	pop		{pc}
+	pop		{r4-r5, pc}
 
 
 // C Interface to some Forth Words

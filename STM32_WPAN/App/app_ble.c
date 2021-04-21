@@ -359,6 +359,14 @@ void APP_BLE_Init( void )
    */
   BleApplicationContext.Device_Connection_Status = APP_BLE_IDLE;
   BleApplicationContext.BleApplicationContext_legacy.connectionHandle = 0xFFFF;  
+
+  /* Select which mechanism is used by CPU2 to protect its timing versus flash operation */
+  SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+  /**
+   * The error flag shall be cleared before moving forward
+   */
+  __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_OPTVERR);
+
   /**
    * From here, all initialization are BLE application specific
    */

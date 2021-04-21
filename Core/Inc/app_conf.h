@@ -127,7 +127,8 @@
 #define CFG_BLE_ERK     {0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21,0xfe,0xdc,0xba,0x09,0x87,0x65,0x43,0x21}
 
 /* USER CODE BEGIN Generic_Parameters */
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.2 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.3 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
+#define RC_LOCAL "0:/etc/rc.local"
 
 #undef CFG_GAP_DEVICE_NAME
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
