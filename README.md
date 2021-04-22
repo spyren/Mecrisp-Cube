@@ -29,7 +29,7 @@ Flash the Mecrisp-Cube [binary](Release/MecrispCube.bin) to the Nucleo Board.
 
 1. Connect the Nucleo Board USB ST-LINK to the PC
 2. Copy [binary](Release/MecrispCube.bin) (`MecrispCube.bin`) to the USB mass 
-   storage NODE_WB55RG
+   storage NODE_WB55RG. Or even better the [binary with tools and drive](sdcard/boot/MecrispCubeFS.bin).
 
 Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`) 
