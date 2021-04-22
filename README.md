@@ -10,11 +10,14 @@ machine (STM32 Nucleo board) for development and testing purposes.
 
 ### Prerequisites
 
-* [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) - 
-  The highly affordable STM32 Nucleo boards allow anyone to try out 
-  new ideas and to quickly create prototypes with any STM32 MCU. 
-  The STM32 Nucleo boards integrate an ST-Link debugger/programmer, 
-  so there is no need for a separate probe.
+* One of these boards
+  * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) - 
+    The highly affordable STM32 Nucleo boards allow anyone to try out 
+    new ideas and to quickly create prototypes with any STM32 MCU. 
+    The STM32 Nucleo boards integrate an ST-Link debugger/programmer, 
+    so there is no need for a separate probe.
+  * [STM32F405 Adafruit Feather Express Board](https://www.adafruit.com/product/4382) - 
+    ST takes flight in this Feather board. The new STM32F405 Feather that we (Adafruit) designed runs CircuitPython (and _Forth_) at a blistering 168MHz – our fastest CircuitPython board ever! We put a STEMMA QT / Qwiic port on the end, so you can really easily plug and play I2C sensors.
 * Terminal emulator application for PC, e.g.: 
   * [PuTTY](http://www.putty.org/) - Windows and Linux
   * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
@@ -38,13 +41,15 @@ I set the putty terminal configuration to
   * Local line editing: Auto
   
 ```
-Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
+Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
-Mecrisp-Cube 1.4.1 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2020 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics 
+Mecrisp-Cube 1.4.3 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch
+  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
   * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+
+include 0:/etc/rc.local
 23 5 / .[CR] 4  ok.
 : hello ." World" ;[CR]  ok.
 hello[CR] World ok.
@@ -140,16 +145,20 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * FatFs R0.12c, some Unix like command line tools
 * BLE Cable Replacement Service.
 * tiny vi - part of BusyBox 
-### v1.4.1 
+### v1.4.1 OLED/FlashDrive Release
 * Mecrisp-Stellaris RA 
 * Flash Drive
 * OLED driver, I2C, timer, RTC
 * Markdown docs
+### v1.4.3 F405 Release
+* Own Tags for F405 and WB55 chips
+* `0:/etc/rc.local` startup script
+* 2 MiB flash drive for F405
 
 ## Authors
 
-* **Matthias Koch** - *Forth on ARM Cortex M0/M4* - [Mecrisp Stellaris](http://mecrisp.sourceforge.net/)
 * **Peter Schmid** - *Initial work* - [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube)
+* **Matthias Koch** - *Forth on ARM Cortex M0/M4* - [Mecrisp Stellaris](http://mecrisp.sourceforge.net/)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
