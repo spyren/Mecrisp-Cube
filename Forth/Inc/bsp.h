@@ -69,6 +69,7 @@ void BSP_waitOC(int pin_number);
 
 void BSP_neopixelDataTx(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint32_t GRBx);
 void BSP_setNeoPixel(uint32_t rgb);
+void BSP_setNeoPixels(uint32_t *buffer, uint32_t len);
 
 
 #endif /* INC_BSP_H_ */

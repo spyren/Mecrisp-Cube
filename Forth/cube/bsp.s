@@ -63,6 +63,20 @@ set_neopixel:
 	bl		BSP_setNeoPixel
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "neopixels"
+neopixels:
+		@ ( addr len --  ) set neopixels
+// void BSP_setNeoPixels(uint32_t *buffer, unit32_t len)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r1, tos		// len
+	drop
+	movs	r0, tos		// buffer
+	drop
+	bl		BSP_setNeoPixels
+	pop		{pc}
+
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
@@ -453,7 +467,7 @@ EXTIwait:
 // ***
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "I2dev"
+        Wortbirne Flag_visible, "I2Cdev"
 I2dev:
         @ ( c -- ) Sets the I2C slave device
 @ -----------------------------------------------------------------------------
@@ -584,4 +598,59 @@ bit_loop:
 	bne		bit_loop
 
 	pop		{r4-r6, pc}
+
+
+/*
+	void BSP_neopixelDataTx(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint32_t *buffer, uint32_t len);
+	                                      R0              R1        R2 GRBx           R3
+
+	Cycle = 1 / 168 MHz = 6 ns
+	R0 GPIOx
+	R1 GPIO_Pin set
+	R2 *buffer
+	R3 pixels
+	R4 high time
+	R5 low time
+	R6 bit count
+	R7 bits
+	R8 GPIO_Pin reset
+*/
+
+
+.global		BSP_neopixelBufferTx
+BSP_neopixelBufferTx:
+	push	{r4-r8, lr}
+	lsl		r8, r1, #16			// clear port pin for BSRR
+
+pixel_loop:
+	mov		r6, #24				// 24 bits
+	ldr		r7, [r2]			// get bits
+
+bit_loop2:
+	lsls	r7, r7, #1			// get the next bit -> set the carry bit
+	ittee	cs
+	movcs	r4, #T1H
+	movcs	r5, #T1L
+	movcc	r4, #T0H
+	movcc	r5, #T0L
+
+
+	// set DOUT pin high
+	str		r1, [r0, #GPIO_BSRR]
+1:	subs	r4, r4, #1
+	bne		1b
+
+	// set DOUT pin low
+	str		r8, [r0, #GPIO_BSRR]
+2:	subs	r5, r5, #1
+	bne		2b
+
+	subs	r6, r6, #1
+	bne		bit_loop2
+
+	add		r2, r2, #4
+	subs	r3, r3, #1
+	bne		pixel_loop
+
+	pop		{r4-r8, pc}
 

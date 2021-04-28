@@ -1123,7 +1123,7 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// do not disturb, it takes about 10 + 1.25 us * 24 = 40 us
+	// do not disturb, it takes about 1.25 us * 24 = 30 us
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
@@ -1136,5 +1136,33 @@ void BSP_setNeoPixel(uint32_t rgb) {
 }
 
 
+/**
+ *  @brief
+ *	    Sets the NeoPixel RGB LEDs.
+ *
+ *	@param[in]
+ *      buffer    array of pixels
+ *	@param[in]
+ *      len       array length
+ *  @return
+ *      none
+ *
+ */
+void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
+	uint32_t GRBx;
 
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// do not disturb, it takes about 1.25 us * 24 = 30 us
+	BACKUP_PRIMASK();
+	DISABLE_IRQ();
+
+	BSP_neopixelBufferTx(D6_GPIO_Port, D6_Pin, buffer, len);
+
+	RESTORE_PRIMASK();
+
+	osMutexRelease(DigitalPort_MutexID);
+	osDelay(1);
+}
 
