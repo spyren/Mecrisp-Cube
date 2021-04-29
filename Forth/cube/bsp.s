@@ -601,8 +601,8 @@ bit_loop:
 
 
 /*
-	void BSP_neopixelDataTx(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint32_t *buffer, uint32_t len);
-	                                      R0              R1        R2 GRBx           R3
+	void BSP_neopixelBufferTx(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint32_t *buffer, uint32_t len);
+	                                      R0              R1             R2 rgb           R3
 
 	Cycle = 1 / 168 MHz = 6 ns
 	R0 GPIOx
@@ -623,8 +623,14 @@ BSP_neopixelBufferTx:
 	lsl		r8, r1, #16			// clear port pin for BSRR
 
 pixel_loop:
+	ldr		r7, [r2]			// r7 = 00rrggbb
+	lsl		r7, r7, #8			// r7 = rrggbb00
+	mov		r6, r7				// r6 = rrggbb00
+	bfc		r6, #16, #16		// r6 = 0000bb00
+	rev16	r7, r7				// r7 = ggrr00bb
+	bfc		r7, #0, #16			// r7 = ggrr0000
+	add		r7, r7, r6			// r7 = ggrrbb00
 	mov		r6, #24				// 24 bits
-	ldr		r7, [r2]			// get bits
 
 bit_loop2:
 	lsls	r7, r7, #1			// get the next bit -> set the carry bit

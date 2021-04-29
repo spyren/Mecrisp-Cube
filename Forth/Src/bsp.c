@@ -1149,7 +1149,6 @@ void BSP_setNeoPixel(uint32_t rgb) {
  *
  */
 void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
-	uint32_t GRBx;
 
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
