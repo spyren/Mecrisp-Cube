@@ -1114,12 +1114,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
  *
  */
 void BSP_setNeoPixel(uint32_t rgb) {
-	uint32_t GRBx;
-
-	GRBx =   rgb & 0x00FF0000;			// red
-	GRBx |= (rgb & 0x0000FF00) << 16;	// green
-	GRBx |= (rgb & 0x000000FF) << 8; 	// blue
-
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
@@ -1127,7 +1121,7 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, GRBx);
+	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
 
 	RESTORE_PRIMASK();
 

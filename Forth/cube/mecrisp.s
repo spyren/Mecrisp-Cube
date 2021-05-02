@@ -331,6 +331,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "rtos.s"
 .include "bsp.s"
 .include "fs.s"
+.include "wings.s"
 .ltorg
 
 .include "interrupts-common.s"
@@ -384,6 +385,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "rtos.s"
 .include "bsp.s"
 .include "fs.s"
+.include "wings.s"
 .ltorg
 
 .include "interrupts-common.s"

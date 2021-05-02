@@ -42,6 +42,7 @@
 #include "clock.h"
 #include "iic.h"
 #include "oled.h"
+#include "plex.h"
 
 /* USER CODE END Includes */
 
@@ -187,6 +188,7 @@ void MainThread(void *argument)
   /* USER CODE BEGIN MainThread */
 //	SD_getSize();
 	OLED_init();
+	PLEX_init();
 
 	Forth();
   /* Infinite loop */
