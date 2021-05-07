@@ -41,6 +41,17 @@ set_neopixel:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "neopixel@"
+get_neopixel:
+		@ (  --  n ) get neopixel (rgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getNeoPixel
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "neopixels"
 neopixels:
 		@ ( addr len --  ) set neopixels

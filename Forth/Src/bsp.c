@@ -100,6 +100,8 @@ static osSemaphoreId_t EXTI_3_SemaphoreID;
 
 // Private Variables
 // *****************
+uint32_t neo_pixel = 0;
+
 ADC_ChannelConfTypeDef sConfig = {0};
 extern ADC_HandleTypeDef hadc1;
 
@@ -1125,8 +1127,22 @@ void BSP_setNeoPixel(uint32_t rgb) {
 
 	RESTORE_PRIMASK();
 
+	neo_pixel = rgb;
 	osMutexRelease(DigitalPort_MutexID);
 	osDelay(1);
+}
+
+
+/**
+ *  @brief
+ *	    Get the NeoPixel RGB LED.
+ *
+ *  @return
+ *      Lowest (1st) byte blue, 2nd byte green, 3th byte red
+ *
+ */
+int BSP_getNeoPixel(void) {
+	return neo_pixel;
 }
 
 
