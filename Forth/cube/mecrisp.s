@@ -251,7 +251,10 @@ MEMORY
 .equ	user_hook_key,			32
 .equ	user_hook_qemit,		36
 .equ	user_hook_qkey,			40
-.equ	user_free,				44
+.equ	user_stdin,				44
+.equ	user_stdout,			48
+.equ	user_stderr,			52
+.equ	user_free,				56
 
 
 .equ	RamDictionaryAnfang,	rampointer	@ Start of RAM dictionary
@@ -436,6 +439,11 @@ Forth:
 	ldr		r0, =0
 	str		r0, [r2, #user_attr]
 	str		r0, [r2, #user_argument]
+
+// set user variables stdin, stdout, and stderr
+	str		r0, [r2, #user_stdin]
+	str		r0, [r2, #user_stdout]
+	str		r0, [r2, #user_stderr]
 
 // set default hooks for terminal
 .if	DEFAULT_TERMINAL == UART_TERMINAL

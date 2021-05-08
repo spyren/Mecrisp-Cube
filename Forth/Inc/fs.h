@@ -32,6 +32,7 @@ int FS_FILINFO_altname(void);
 int FS_f_eof(FIL* fp);
 FSIZE_t FS_f_size(FIL* fp);
 int FS_f_error(FIL* fp);
+int FS_getc(FIL* fp);
 
 uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
 uint64_t FS_cat      (uint64_t forth_stack);

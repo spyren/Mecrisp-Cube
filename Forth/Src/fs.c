@@ -1613,6 +1613,7 @@ int FS_FILINFO_altname(void) {
 	return(sizeof(FSIZE_t)+sizeof(WORD)+sizeof(WORD)+sizeof(BYTE));
 }
 
+// expand some macros to make it usable in assembler
 int FS_f_eof(FIL* fp) {
 	return f_eof(fp);
 }
@@ -1625,6 +1626,28 @@ int FS_f_error(FIL* fp) {
 	return f_error(fp);
 }
 
+/**
+ *  @brief
+ *     Reads the next character from stream and returns it as an unsigned char cast to an
+       int, or EOF on end of file or error.
+ *  @param[in]
+ *      fp   File object structure
+ *  @return
+ *     unsigned char cast to an int, or EOF on end of file or error.
+ */
+int FS_getc(FIL* fp) {
+	int buffer;
+	uint32_t count;
+
+	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
+		return -1;
+	}
+
+	if (count != 1) {
+		return -2;
+	}
+	return buffer;
+}
 
 // Private Functions
 // *****************
