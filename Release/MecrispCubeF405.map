@@ -2284,44 +2284,45 @@ LOAD /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
                 0x0000000008000190                . = ALIGN (0x4)
  *(.text)
  .text          0x0000000008000190       0x40 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard/crtbegin.o
- .text          0x00000000080001d0     0x6f9c Forth/cube/mecrisp.o
-                0x00000000080024fc                uart_terminal
-                0x0000000008002524                cdc_terminal
-                0x0000000008002578                TERMINAL_redirect
-                0x00000000080025b8                TERMINAL_unredirect
-                0x0000000008002834                TERMINAL_emit
-                0x000000000800284a                TERMINAL_key
-                0x0000000008002862                TERMINAL_qemit
-                0x000000000800287a                TERMINAL_qkey
-                0x000000000800523e                rtos_osThreadGetId
-                0x0000000008005264                rtos_osThreadGetState
-                0x0000000008005286                rtos_osThreadGetName
-                0x00000000080052ac                rtos_osThreadSetPriority
-                0x00000000080052d6                rtos_osThreadGetPriority
-                0x00000000080052f6                rtos_osThreadYield
-                0x000000000800531a                rtos_osThreadSuspend
-                0x000000000800533c                rtos_osThreadResume
-                0x000000000800535c                rtos_osThreadExit
-                0x0000000008005378                rtos_osThreadTerminate
-                0x00000000080053a0                rtos_osThreadGetStackSpace
-                0x00000000080053c4                rtos_osThreadGetCount
-                0x00000000080053ea                rtos_osThreadEnumerate
-                0x0000000008005416                rtos_xPortGetFreeHeapSize
-                0x0000000008005438                rtos_pvPortMalloc
-                0x0000000008005454                rtos_vPortFree
-                0x00000000080061ce                FS_catch_evaluate
-                0x0000000008006232                FS_evaluate
-                0x000000000800624e                FS_cr
-                0x000000000800625e                FS_type
-                0x000000000800627a                FS_token
-                0x000000000800629a                FS_accept
-                0x0000000008006c14                BSP_neopixelDataTx
-                0x0000000008006c4e                BSP_neopixelBufferTx
-                0x0000000008006f56                Forth
- .text          0x000000000800716c       0x14 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strcmp.o)
-                0x000000000800716c                strcmp
- .text          0x0000000008007180       0x10 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strlen.o)
-                0x0000000008007180                strlen
+ .text          0x00000000080001d0     0x6f94 Forth/cube/mecrisp.o
+                0x00000000080024f8                uart_terminal
+                0x0000000008002520                cdc_terminal
+                0x0000000008002574                TERMINAL_redirect
+                0x00000000080025b4                TERMINAL_unredirect
+                0x0000000008002830                TERMINAL_emit
+                0x0000000008002846                TERMINAL_key
+                0x000000000800285e                TERMINAL_qemit
+                0x0000000008002876                TERMINAL_qkey
+                0x0000000008005236                rtos_osThreadGetId
+                0x000000000800525c                rtos_osThreadGetState
+                0x000000000800527e                rtos_osThreadGetName
+                0x00000000080052a4                rtos_osThreadSetPriority
+                0x00000000080052ce                rtos_osThreadGetPriority
+                0x00000000080052ee                rtos_osThreadYield
+                0x0000000008005312                rtos_osThreadSuspend
+                0x0000000008005334                rtos_osThreadResume
+                0x0000000008005354                rtos_osThreadExit
+                0x0000000008005370                rtos_osThreadTerminate
+                0x0000000008005398                rtos_osThreadGetStackSpace
+                0x00000000080053bc                rtos_osThreadGetCount
+                0x00000000080053e2                rtos_osThreadEnumerate
+                0x000000000800540e                rtos_xPortGetFreeHeapSize
+                0x0000000008005430                rtos_pvPortMalloc
+                0x000000000800544c                rtos_vPortFree
+                0x00000000080061c6                FS_catch_evaluate
+                0x000000000800622a                FS_evaluate
+                0x0000000008006246                FS_cr
+                0x0000000008006256                FS_type
+                0x0000000008006272                FS_token
+                0x0000000008006292                FS_accept
+                0x0000000008006c0c                BSP_neopixelDataTx
+                0x0000000008006c46                BSP_neopixelBufferTx
+                0x0000000008006f4e                Forth
+ .text          0x0000000008007164       0x14 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strcmp.o)
+                0x0000000008007164                strcmp
+ .text          0x0000000008007178       0x10 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strlen.o)
+                0x0000000008007178                strlen
+ *fill*         0x0000000008007188        0x8 
  .text          0x0000000008007190       0xa0 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-memchr.o)
                 0x0000000008007190                memchr
  .text          0x0000000008007230       0xa0 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard/libgcc.a(_aeabi_ldivmod.o)

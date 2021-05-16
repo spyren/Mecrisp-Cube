@@ -103,7 +103,7 @@ MEMORY
 
 .equ	Kernschutzadresse,		0x08040000	@ Mecrisp core never writes flash below this address.
 .equ	FlashDictionaryAnfang,	0x08040000	@ 256 KiB Flash reserved for core and C.
-.equ	FlashDictionaryEnde,	0x08060000	@ 128 KiB Flash available, 512 KiB for drive
+.equ	FlashDictionaryEnde,	0x08100000	@ 768 KiB Flash available
 .equ	Backlinkgrenze,			RamAnfang	@ Ab dem Ram-Start.
 
 
