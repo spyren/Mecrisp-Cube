@@ -1,4 +1,4 @@
-
+CR .( ansification.fs loading ... )
 \ -----------------------------------------------------------------------------
 \   Layer for ANS Forth compatibility and coverage
 \ -----------------------------------------------------------------------------
@@ -25,7 +25,7 @@
 
 \ -----------------------------------------------------------------------------
 
-true variable ansification?
+false variable ansification?
 
 : mecrisp-style  ( -- ) false ansification? ! ;
 : standard-style ( -- ) true  ansification? ! ;
@@ -45,7 +45,8 @@ true variable ansification?
 
 : >body ( addr -- addr* ) begin dup 2 - h@ $4780 <> while 2 + repeat 1-foldable ;
 
-: .( ( -- ) [char] ) ['] ." $1E + call, parse string, immediate 0-foldable ;
+\ maybe resident word
+[IFNDEF] .( : .( ( -- ) [char] ) ['] ." $1E + call, parse string, immediate 0-foldable ; [THEN]
 
 : :noname ( -- addr ) 0 s" : (noname)" evaluate drop here 2 - ;
 
