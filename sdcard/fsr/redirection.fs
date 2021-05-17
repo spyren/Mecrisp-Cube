@@ -132,22 +132,12 @@ CR .( redirection.fs loading ... )
 \ oled display
 \ ************
 
-: >oled ( -- addr1 addr2 )  \ redirection to oled
-  hook-emit @
-  hook-emit? @
-  ['] oled-emit hook-emit !
-  ['] oled-emit? hook-emit? !
-;
+[IFDEF] oled-emit : >oled  hook-emit @  hook-emit? @  ['] oled-emit hook-emit !  ['] oled-emit? hook-emit? ! ; [THEN]
 
 \ plex display
 \ ************
 
-: >plex ( -- addr1 addr2 )  \ redirection to cplexrs
-  hook-emit @
-  hook-emit? @
-  ['] plex-emit hook-emit !
-  ['] plex-emit? hook-emit? !
-;
+[IFDEF] plex-emit : >plex  hook-emit @  hook-emit? @  ['] plex-emit hook-emit !  ['] plex-emit? hook-emit? ! ; [THEN]
 
 \ terminate redirection
 \ ********************
