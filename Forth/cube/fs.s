@@ -155,6 +155,7 @@ flush:
 	pop		{pc}
 
 
+
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "erasedrv"
 		@ ( -- ) save-buffers empty-buffers
@@ -526,13 +527,13 @@ dd:
 // uint64_t VI_edit(uint64_t forth_stack);
 @ -----------------------------------------------------------------------------
 vi:
-	push	{r4-r5, lr}
+	push	{lr}
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
 	bl		VI_edit
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
-	pop		{r4-r5, pc}
+	pop		{pc}
 
 
 // C Interface to some Forth Words
@@ -670,6 +671,124 @@ FS_accept:
 	movs	r0, tos		// update tos
 	movs	r1, psp		// update psp
 	pop		{r4-r7, pc}
+
+
+// FAT stdin/stdout user variables
+// *******************************
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "stdin" @ ( -- addr )
+  // user variable user_stdin
+@------------------------------------------------------------------------------
+fs_stdin:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_stdin
+	pop		{pc}
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "stdout" @ ( -- addr )
+  // user variable user_stdout
+@------------------------------------------------------------------------------
+fs_stdout:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_stdout
+	pop		{pc}
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "stderr" @ ( -- addr )
+  // user variable user_std_err
+@------------------------------------------------------------------------------
+fs_stderr:
+	push	{lr}
+	pushdatos
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	adds	tos, r0, #user_stderr
+	pop		{pc}
+
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "fs-emit" @ ( c -- )
+fs_emit:
+@------------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r1, [r0, #user_stdout]	// file descriptor
+	movs	r0, tos					// char
+	drop
+	bl		f_putc
+	pop		{pc}
+
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "fs-emit?" @ ( --  ?)
+fs_qemit:
+@------------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r1, [r0, #user_stdout]	// file descriptor
+	bl		FS_f_eof
+	cmp		r0, #0
+	beq		1f
+	ldr		r0, =0
+	b		2f
+1:
+	ldr		r0, =-1	// true
+2:
+	pushdatos
+	movs	tos, r0
+	pop		{pc}
+
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "fs-key" @ ( -- c )
+fs_key:
+@------------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r0, [r0, #user_stdin]	// file descriptor
+	bl		FS_getc
+	pushdatos
+	mov		tos, r0
+	pop		{pc}
+
+
+@------------------------------------------------------------------------------
+  Wortbirne Flag_visible, "fs-key?" @ (  -- ? )
+fs_qkey:
+@------------------------------------------------------------------------------
+	push	{lr}
+	ldr		r0, =0	// current task xTaskToQuery = 0
+	mov		r1, r0	// index
+	bl		pvTaskGetThreadLocalStoragePointer
+	ldr		r1, [r0, #user_stdin]	// file descriptor
+	bl		FS_f_eof
+	cmp		r0, #0
+	beq		1f
+	ldr		r0, =0
+	b		2f
+1:
+	ldr		r0, =-1	// true
+2:
+	pushdatos
+	movs	tos, r0
+	pop		{pc}
+
 
 
 // FAT FS datastructures

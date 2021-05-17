@@ -144,7 +144,7 @@ slash_user:
 	pop		{pc}
 
 
-/* something wrong in paradise
+/* something wrong in paradise -> see utils.fs
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "user" @ ( n -- )
   // : user create , does> @ 0 dup pvTaskGetThreadLocalStoragePointer + ;

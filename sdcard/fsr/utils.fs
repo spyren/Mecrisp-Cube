@@ -13,15 +13,6 @@ CR .( utils.fs loading ... )
   drop
 ;
 
-: .r ( n u -- )
-  over #digits 
-  over 0< if
-    1+
-  then
-  - spaces
-  .
-;
-
 : tolower ( C -- c ) 
   32 or 
 ;
@@ -51,18 +42,3 @@ CR .( utils.fs loading ... )
     2drop cr query   \ Fetch new line.
   repeat
 ;
-
-: 0: (  --  )
-  s0" 0:" drop f_chdrive if
-    ." invalid drive"
-  then
-;
-
-
-: 1: (  --  )
-  s0" 1:" drop f_chdrive if
-    ." invalid drive"
-  then
-;
-
-
