@@ -44,10 +44,10 @@
 #include "main.h"
 #include "oled.h"
 #include "iic.h"
-#include "6x8_vertikal_LSB_1.h"
-#include "8x8_vertikal_LSB_1.h"
-//#include "8x14_vertikal_LSB_1.h"
-#include "12x16_vertikal_LSB_1.h"
+#include "font6x8.h"
+#include "font8x8.h"
+#include "font8x14.h"
+#include "font12x16.h"
 
 // Macros
 // ******
@@ -58,7 +58,7 @@
 static void setPos(uint8_t x, uint8_t y);
 static void sendChar6x8(int ch);
 static void sendChar8x8(int ch);
-// static void sendChar8x16(int ch);
+static void sendChar8x16(int ch);
 static void sendChar12x16(int ch);
 
 
@@ -75,12 +75,12 @@ extern I2C_HandleTypeDef hi2c1;
 // Private Variables
 // *****************
 
-uint8_t oledReady = FALSE;
+static uint8_t oledReady = FALSE;
 
-uint8_t CurrentPosX = 0;
-uint8_t CurrentPosY = 0;
+static uint8_t CurrentPosX = 0;
+static uint8_t CurrentPosY = 0;
 
-OLED_FontT CurrentFont = OLED_FONT6X8;
+static OLED_FontT CurrentFont = OLED_FONT6X8;
 
 
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
@@ -170,6 +170,9 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");
+#ifdef DEBUG
+	OLED_puts("\r\nDebug");
+#endif
 }
 
 
@@ -202,8 +205,8 @@ int OLED_putc(int c) {
 		sendChar8x8(c);
 		break;
 	case OLED_FONT8X16:
-//		sendChar8x16(c);
-//		break;
+		sendChar8x16(c);
+		break;
 	case OLED_FONT12X16:
 		sendChar12x16(c);
 		break;
@@ -399,7 +402,7 @@ static void sendChar6x8(int ch) {
 
 	buf[0] = 0x40;  // write data
 	for (i = 0; i < 6; i++) {
-		buf[i+1] = font_6x8[ch][i];
+		buf[i+1] = FONT6X8_getColumn(ch, i);
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 7);
@@ -449,7 +452,7 @@ static void sendChar8x8(int ch) {
 
 	buf[0] = 0x40;  // write data
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = font_8x8[ch][i];
+		buf[i+1] = FONT8X8_getColumn(ch, i);
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 9);
@@ -458,38 +461,52 @@ static void sendChar8x8(int ch) {
 }
 
 
-//static void sendChar8x16(int ch) {
-//	uint8_t buf[9];
-//	uint8_t i;
-//
-//	if (ch == '\n') {
-//		// line feed
-//		CurrentPosY += 2;
-//		setPos(CurrentPosX, CurrentPosY);
-//		return;
-//	}
-//
-//	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
-//		OLED_setPos(0, CurrentPosY+2);
-//	}
-//
-//	buf[0] = 0x40;  // write data
-//	for (i = 0; i < 8; i++) {
-//		buf[i+1] = font_8x14[ch][2*i];
-//	}
-//	IIC_setDevice(OLED_I2C_ADR);
-//	IIC_putMessage(buf, 9);
-//
-//	setPos(CurrentPosX, CurrentPosY+1);
-//	for (i = 0; i < 8; i++) {
-//		buf[i+1] = font_8x14[ch][2*i+1];
-//	}
-//	IIC_setDevice(OLED_I2C_ADR);
-//	IIC_putMessage(buf, 9);
-//
-//	CurrentPosX += 8;
-//	setPos(CurrentPosX, CurrentPosY);
-//}
+static void sendChar8x16(int ch) {
+	uint8_t buf[9];
+	uint8_t i;
+
+	if (ch == '\n') {
+		// line feed
+		CurrentPosY += 2;
+		if ((CurrentPosY+1)*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
+		setPos(CurrentPosX, CurrentPosY);
+		return;
+	}
+	if (ch == '\b') {
+		// backspace
+		if (CurrentPosX >= 8) {
+			OLED_setPos(CurrentPosX-12, CurrentPosY);
+		}
+		return;
+	}
+
+	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
+		CurrentPosY += 2;
+		if ((CurrentPosY+1)*8 >= OLED_Y_RESOLUTION) {
+			CurrentPosY = 0;
+		}
+		OLED_setPos(0, CurrentPosY);
+	}
+
+	buf[0] = 0x40;  // write data
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = FONT8X14_getUpperColumn(ch, i);
+	}
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 9);
+
+	setPos(CurrentPosX, CurrentPosY+1);
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = FONT8X14_getLowerColumn(ch, i);
+	}
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 9);
+
+	CurrentPosX += 8;
+	setPos(CurrentPosX, CurrentPosY);
+}
 
 
 static void sendChar12x16(int ch) {
@@ -523,14 +540,14 @@ static void sendChar12x16(int ch) {
 
 	buf[0] = 0x40;  // write data
 	for (i = 0; i < 12; i++) {
-		buf[i+1] = font_12x16[ch][2*i];
+		buf[i+1] = FONT12X16_getUpperColumn(ch, i);
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 13);
 
 	setPos(CurrentPosX, CurrentPosY+1);
 	for (i = 0; i < 12; i++) {
-		buf[i+1] = font_12x16[ch][2*i+1];
+		buf[i+1] = FONT12X16_getLowerColumn(ch, i);
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 13);

@@ -1,14 +1,39 @@
-/*
- * 8x8_vertikal_LSB_1.h
+/**
+ *  @brief
+ *  	Font 8x8 vertikal LSB
  *
- *  Created on: 02.01.2021
- *      Author: psi
+ *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
+ *  @file
+ *      font8x8.c
+ *  @author
+ *      Peter Schmid, peter@spyr.ch
+ *  @date
+ *      2021-04-30
+ *  @remark
+ *      Language: C, STM32CubeIDE GCC
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This project Mecrsip-Cube is free software: you can redistribute it
+ *      and/or modify it under the terms of the GNU General Public License
+ *      as published by the Free Software Foundation, either version 3 of
+ *      the License, or (at your option) any later version.
+ *
+ *      Mecrsip-Cube is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *      General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
-#ifndef INC_8X8_H_
-#define INC_8X8_H_
-
+#ifdef DEBUG
+// DEBUG: save some space and use only 128 chars
+const char font_8x8[128][8]={
+#else
 const char font_8x8[256][8]={
+#endif
 		{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},	// 0x00
 		{0x7E,0x81,0x95,0xB1,0xB1,0x95,0x81,0x7E},	// 0x01
 		{0x7E,0xFF,0xEB,0xCF,0xCF,0xEB,0xFF,0x7E},	// 0x02
@@ -137,6 +162,7 @@ const char font_8x8[256][8]={
 		{0x41,0x41,0x77,0x3E,0x08,0x08,0x00,0x00},	// 0x7D
 		{0x02,0x03,0x01,0x03,0x02,0x03,0x01,0x00},	// 0x7E
 		{0x78,0x7C,0x46,0x43,0x46,0x7C,0x78,0x00},	// 0x7F
+#ifndef DEBUG
 		{0x1E,0xBF,0xE1,0x61,0x33,0x12,0x00,0x00},	// 0x80
 		{0x3A,0x7A,0x40,0x40,0x7A,0x7A,0x40,0x00},	// 0x81
 		{0x38,0x7C,0x56,0x57,0x5D,0x18,0x00,0x00},	// 0x82
@@ -265,6 +291,23 @@ const char font_8x8[256][8]={
 		{0x00,0x19,0x1D,0x15,0x17,0x12,0x00,0x00},	// 0xFD
 		{0x00,0x00,0x3C,0x3C,0x3C,0x3C,0x00,0x00},	// 0xFE
 		{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00} 	// 0xFF
-		};
+#endif
+};
 
-#endif /* INC_8X8_H_ */
+/**
+ *  @brief
+ *      Gets a column from a character bit pattern. Lowest bit is on the top.
+ *
+ *  @param[in]
+ *      ch  char to write
+ *  @param[in]
+ *      column  from left to right
+ *  @return
+ *      bit pattern for the char
+ */
+int FONT8X8_getColumn(int ch, int column) {
+	return font_8x8[ch][column];
+}
+
+
+
