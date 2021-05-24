@@ -97,8 +97,6 @@
 #include "rf.h"
 #include "rtc.h"
 #include "spi.h"
-#include "app_entry.h"
-#include "app_common.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"

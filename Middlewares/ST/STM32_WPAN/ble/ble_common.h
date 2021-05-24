@@ -84,12 +84,10 @@ extern "C" {
 #define ALIGN(n)             __attribute__((aligned(n)))
 #endif
 
-#ifndef PAUSE
 #define PAUSE( t )           M_BEGIN \
                                volatile int _i; \
                                for ( _i = t; _i > 0; _i -- ); \
                              M_END
-#endif
 
 #define DIVF( x, y )         ((x)/(y))
 
