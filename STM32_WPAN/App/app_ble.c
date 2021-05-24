@@ -66,18 +66,6 @@ typedef struct _tSecurityParams
   uint8_t bonding_mode;
 
   /**
-   * Flag to tell whether OOB data has
-   * to be used during the pairing process
-   */
-  uint8_t OOB_Data_Present; 
-
-  /**
-   * OOB data to be used in the pairing process if
-   * OOB_Data_Present is set to TRUE
-   */
-  uint8_t OOB_Data[16]; 
-
-  /**
    * this variable indicates whether to use a fixed pin
    * during the pairing process or a passkey has to be
    * requested to the application during the pairing process
@@ -254,10 +242,10 @@ uint8_t  manuf_data[14] = {
 /* Global variables ----------------------------------------------------------*/
 osMutexId_t MtxHciId;
 osSemaphoreId_t SemHciId;
-osThreadId_t AdvUpdateThreadId;
-osThreadId_t HciUserEvtThreadId;
+osThreadId_t AdvUpdateProcessId;
+osThreadId_t HciUserEvtProcessId;
 
-const osThreadAttr_t AdvUpdateThread_attr = {
+const osThreadAttr_t AdvUpdateProcess_attr = {
     .name = CFG_ADV_UPDATE_PROCESS_NAME,
     .attr_bits = CFG_ADV_UPDATE_PROCESS_ATTR_BITS,
     .cb_mem = CFG_ADV_UPDATE_PROCESS_CB_MEM,
@@ -267,7 +255,7 @@ const osThreadAttr_t AdvUpdateThread_attr = {
     .stack_size = CFG_ADV_UPDATE_PROCESS_STACK_SIZE
 };
 
-const osThreadAttr_t HciUserEvtThread_attr = {
+const osThreadAttr_t HciUserEvtProcess_attr = {
     .name = CFG_HCI_USER_EVT_PROCESS_NAME,
     .attr_bits = CFG_HCI_USER_EVT_PROCESS_ATTR_BITS,
     .cb_mem = CFG_HCI_USER_EVT_PROCESS_CB_MEM,
@@ -278,17 +266,17 @@ const osThreadAttr_t HciUserEvtThread_attr = {
 };
 
 /* Private function prototypes -----------------------------------------------*/
-static void HciUserEvtThread(void *argument);
+static void HciUserEvtProcess(void *argument);
 static void BLE_UserEvtRx( void * pPayload );
 static void BLE_StatusNot( HCI_TL_CmdStatus_t status );
 static void Ble_Tl_Init( void );
 static void Ble_Hci_Gap_Gatt_Init(void);
 static const uint8_t* BleGetBdAddress( void );
 static void Adv_Request( APP_BLE_ConnStatus_t New_Status );
-//static void Add_Advertisment_Service_UUID_16b( uint16_t servUUID );
+static void Add_Advertisment_Service_UUID_16b( uint16_t servUUID );
 static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength);
 static void Adv_Mgr( void );
-static void AdvUpdateThread(void *argument);
+static void AdvUpdateProcess(void *argument);
 static void Adv_Update( void );
 
 /* USER CODE BEGIN PFP */
@@ -320,8 +308,11 @@ void APP_BLE_Init( void )
     CFG_BLE_MAX_CONN_EVENT_LENGTH,
     CFG_BLE_HSE_STARTUP_TIME,
     CFG_BLE_VITERBI_MODE,
-    CFG_BLE_LL_ONLY,
-    0}
+	CFG_BLE_OPTIONS,
+	0,
+	CFG_BLE_MAX_COC_INITIATOR_NBR,
+	CFG_BLE_MIN_TX_POWER,
+	CFG_BLE_MAX_TX_POWER}
   };
 
   /**
@@ -337,12 +328,15 @@ void APP_BLE_Init( void )
   /**
    * Register the hci transport layer to handle BLE User Asynchronous Events
    */
-  HciUserEvtThreadId = osThreadNew(HciUserEvtThread, NULL, &HciUserEvtThread_attr);
+  HciUserEvtProcessId = osThreadNew(HciUserEvtProcess, NULL, &HciUserEvtProcess_attr);
 
   /**
    * Starts the BLE Stack on CPU2
    */
-  SHCI_C2_BLE_Init( &ble_init_cmd_packet );
+  if (SHCI_C2_BLE_Init( &ble_init_cmd_packet ) != SHCI_Success)
+  {
+	  Error_Handler();
+  }
 
   /**
    * Initialization of HCI & GATT & GAP layer
@@ -370,7 +364,7 @@ void APP_BLE_Init( void )
   /**
    * From here, all initialization are BLE application specific
    */
-  AdvUpdateThreadId = osThreadNew(AdvUpdateThread, NULL, &AdvUpdateThread_attr);
+  AdvUpdateProcessId = osThreadNew(AdvUpdateProcess, NULL, &AdvUpdateProcess_attr);
 
   /**
    * Initialization of ADV - Ad Manufacturer Element - Support OTA Bit Mask
@@ -398,17 +392,17 @@ void APP_BLE_Init( void )
    * Make device discoverable
    */
 
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
-//  Add_Advertisment_Service_UUID_16b(HEART_RATE_SERVICE_UUID);
-//
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID;
-//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
-//  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
+  Add_Advertisment_Service_UUID_16b(HEART_RATE_SERVICE_UUID);
 
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_128_BIT_SERV_UUID;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;;
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID;
+  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
   Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_128_BIT_SERV_UUID;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;;
+//  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
 
   /* Initialize intervals for reconnexion without intervals update */
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
@@ -433,16 +427,19 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 {
   hci_event_pckt *event_pckt;
   evt_le_meta_event *meta_evt;
-  evt_blue_aci *blue_evt;
+  evt_blecore_aci *blecore_evt;
   hci_le_phy_update_complete_event_rp0 *evt_le_phy_update_complete; 
   uint8_t TX_PHY, RX_PHY;
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
 
   event_pckt = (hci_event_pckt*) ((hci_uart_pckt *) pckt)->data;
+  /* USER CODE BEGIN SVCCTL_App_Notification */
+
+  /* USER CODE END SVCCTL_App_Notification */
 
   switch (event_pckt->evt)
   {
-    case EVT_DISCONN_COMPLETE:
+    case HCI_DISCONNECTION_COMPLETE_EVT_CODE:
     {
       hci_disconnection_complete_event_rp0 *disconnection_complete_event;
       disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) event_pckt->data;
@@ -462,9 +459,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
-    break; /* EVT_DISCONN_COMPLETE */
+    break; /* HCI_DISCONNECTION_COMPLETE_EVT_CODE */
 
-    case EVT_LE_META_EVENT:
+    case HCI_LE_META_EVT_CODE:
     {
       meta_evt = (evt_le_meta_event*) event_pckt->data;
       /* USER CODE BEGIN EVT_LE_META_EVENT */
@@ -472,14 +469,14 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /* USER CODE END EVT_LE_META_EVENT */
       switch (meta_evt->subevent)
       {
-        case EVT_LE_CONN_UPDATE_COMPLETE:
+        case HCI_LE_CONNECTION_UPDATE_COMPLETE_SUBEVT_CODE:
           APP_DBG_MSG("\r\n\r** CONNECTION UPDATE EVENT WITH CLIENT \n");
 
           /* USER CODE BEGIN EVT_LE_CONN_UPDATE_COMPLETE */
 
           /* USER CODE END EVT_LE_CONN_UPDATE_COMPLETE */
           break;
-        case EVT_LE_PHY_UPDATE_COMPLETE:
+        case HCI_LE_PHY_UPDATE_COMPLETE_SUBEVT_CODE:
           APP_DBG_MSG("EVT_UPDATE_PHY_COMPLETE \n");
           evt_le_phy_update_complete = (hci_le_phy_update_complete_event_rp0*)meta_evt->data;
           if (evt_le_phy_update_complete->Status == 0)
@@ -513,7 +510,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
           /* USER CODE END EVT_LE_PHY_UPDATE_COMPLETE */          
           break;
-        case EVT_LE_CONN_COMPLETE:
+        case HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE:
         {
           hci_le_connection_complete_event_rp0 *connection_complete_event;
 
@@ -524,7 +521,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
 
           HW_TS_Stop(BleApplicationContext.Advertising_mgr_timer_Id);
 
-          APP_DBG_MSG("EVT_LE_CONN_COMPLETE for connection handle 0x%x\n", connection_complete_event->Connection_Handle);
+          APP_DBG_MSG("HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE for connection handle 0x%x\n", connection_complete_event->Connection_Handle);
           if (BleApplicationContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
           {
             /* Connection as client */
@@ -541,7 +538,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           osThreadFlagsSet(CRS_ThreadId, CRSAPP_CONNECTED);
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }
-        break; /* HCI_EVT_LE_CONN_COMPLETE */
+        break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
 
         default:
           /* USER CODE BEGIN SUBEVENT_DEFAULT */
@@ -550,21 +547,21 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           break;
       }
     }
-    break; /* HCI_EVT_LE_META_EVENT */
+    break; /* HCI_LE_META_EVT_CODE */
 
-    case EVT_VENDOR:
-      blue_evt = (evt_blue_aci*) event_pckt->data;
+    case HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE:
+    	blecore_evt = (evt_blecore_aci*) event_pckt->data;
       /* USER CODE BEGIN EVT_VENDOR */
 
       /* USER CODE END EVT_VENDOR */
-      switch (blue_evt->ecode)
+      switch (blecore_evt->ecode)
       {
       /* USER CODE BEGIN ecode */
         aci_gap_pairing_complete_event_rp0 *pairing_complete;
 
-      case EVT_BLUE_GAP_LIMITED_DISCOVERABLE:
-        APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_LIMITED_DISCOVERABLE \n");
-          break; /* EVT_BLUE_GAP_LIMITED_DISCOVERABLE */
+      case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
+    	  APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
+          break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
 
       case EVT_BLUE_GAP_PASS_KEY_REQUEST:
         APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_PASS_KEY_REQUEST \n");
@@ -1009,12 +1006,12 @@ static void Adv_Mgr( void )
    * The background is the only place where the application can make sure a new aci command
    * is not sent if there is a pending one
    */
-  osThreadFlagsSet( AdvUpdateThreadId, 1 );
+  osThreadFlagsSet( AdvUpdateProcessId, 1 );
 
   return;
 }
 
-static void AdvUpdateThread(void *argument)
+static void AdvUpdateProcess(void *argument)
 {
   UNUSED(argument);
 
@@ -1032,7 +1029,7 @@ static void Adv_Update( void )
   return;
 }
 
-static void HciUserEvtThread(void *argument)
+static void HciUserEvtProcess(void *argument)
 {
   UNUSED(argument);
 
@@ -1054,7 +1051,7 @@ static void HciUserEvtThread(void *argument)
 void hci_notify_asynch_evt(void* pdata)
 {
   UNUSED(pdata);
-  osThreadFlagsSet( HciUserEvtThreadId, 1 );
+  osThreadFlagsSet( HciUserEvtProcessId, 1 );
   return;
 }
 

@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
  ******************************************************************************
   * File Name          : App/ble_conf.h
@@ -6,7 +7,7 @@
  ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -16,6 +17,7 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef BLE_CONF_H
@@ -84,11 +86,11 @@
  * Heart Rate Service (HRS)
  ******************************************************************************/
 #define BLE_CFG_HRS_BODY_SENSOR_LOCATION_CHAR               1/**< BODY SENSOR LOCATION CHARACTERISTIC */
-#define BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG               0/**< ENERGY EXTENDED INFO FLAG */
+#define BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG               1/**< ENERGY EXTENDED INFO FLAG */
 #define BLE_CFG_HRS_ENERGY_RR_INTERVAL_FLAG                 1/**< Max number of RR interval values - Shall not be greater than 9 */
 
 /******************************************************************************
- * GAP Service - Apprearance
+ * GAP Service - Appearance
  ******************************************************************************/
 
 #define BLE_CFG_UNKNOWN_APPEARANCE                  (0)
