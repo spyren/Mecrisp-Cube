@@ -608,4 +608,4 @@ PA3.GPIO_Label=D0
 PB1.GPIOParameters=GPIO_Label
 PA7.Signal=SPI1_MOSI
 PA6.Locked=true
-isbadioc=true
+isbadioc=false

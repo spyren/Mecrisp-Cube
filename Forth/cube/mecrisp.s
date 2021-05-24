@@ -335,6 +335,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .ltorg
 .include "rtos.s"
 .include "bsp.s"
+.include "wings.s"
 .include "fs.s"
 .ltorg
 

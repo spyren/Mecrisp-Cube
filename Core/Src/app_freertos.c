@@ -43,7 +43,7 @@
 #include "clock.h"
 #include "iic.h"
 #include "oled.h"
-
+#include "plex.h"
 
 /* USER CODE END Includes */
 
@@ -149,6 +149,7 @@ void MainThread(void *argument)
   /* USER CODE BEGIN MainThread */
 	SD_getSize();
 	OLED_init();
+	PLEX_init();
 
 	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory

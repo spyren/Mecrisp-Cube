@@ -235,7 +235,7 @@ uint8_t  manuf_data[14] = {
 };
 
 /* USER CODE BEGIN PV */
-//static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
+static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
 
@@ -551,9 +551,9 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       /* USER CODE BEGIN ecode */
         aci_gap_pairing_complete_event_rp0 *pairing_complete;
 
-      case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
-    	  APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
-          break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
+//      case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
+//    	  APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
+//          break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
 
       case EVT_BLUE_GAP_PASS_KEY_REQUEST:
         APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_PASS_KEY_REQUEST \n");
@@ -589,45 +589,49 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
          APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_KEYPRESS_NOTIFICATION \n");
           break; /* EVT_BLUE_GAP_KEY_PRESS_NOTIFICATION */
 
-       case (EVT_BLUE_GAP_NUMERIC_COMPARISON_VALUE):
-          APP_DBG_MSG("numeric_value = %u\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
+      case (EVT_BLUE_GAP_NUMERIC_COMPARISON_VALUE):
+        		  APP_DBG_MSG("numeric_value = %u\n",
+        				  ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
 
-          APP_DBG_MSG("Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
+      APP_DBG_MSG("Hex_value = %x\n",
+    		  ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
 
-          aci_gap_numeric_comparison_value_confirm_yesno(BleApplicationContext.BleApplicationContext_legacy.connectionHandle, 1); /* CONFIRM_YES = 1 */
+      aci_gap_numeric_comparison_value_confirm_yesno(BleApplicationContext.BleApplicationContext_legacy.connectionHandle, 1); /* CONFIRM_YES = 1 */
 
-          APP_DBG_MSG("\r\n\r** aci_gap_numeric_comparison_value_confirm_yesno-->YES \n");
-          break;
+      APP_DBG_MSG("\r\n\r** aci_gap_numeric_comparison_value_confirm_yesno-->YES \n");
+      break;
 
-          case (EVT_BLUE_GAP_PAIRING_CMPLT):
-          {
-            pairing_complete = (aci_gap_pairing_complete_event_rp0*)blue_evt->data;
+      case (EVT_BLUE_GAP_PAIRING_CMPLT):
+        		  {
+          evt_blue_aci *blue_evt;
 
-            APP_DBG_MSG("BLE_CTRL_App_Notification: EVT_BLUE_GAP_PAIRING_CMPLT, pairing_complete->Status = %d\n",pairing_complete->Status);
-            if (pairing_complete->Status == 0)
-            {
-              APP_DBG_MSG("\r\n\r** Pairing OK \n");
-            }
-            else
-            {
-              APP_DBG_MSG("\r\n\r** Pairing KO \n");
-            }
-          }
-           break;
+          blue_evt = (evt_blue_aci*) event_pckt->data;
+
+    	  pairing_complete = (aci_gap_pairing_complete_event_rp0*)blue_evt->data;
+
+    	  APP_DBG_MSG("BLE_CTRL_App_Notification: EVT_BLUE_GAP_PAIRING_CMPLT, pairing_complete->Status = %d\n",pairing_complete->Status);
+    	  if (pairing_complete->Status == 0)
+    	  {
+    		  APP_DBG_MSG("\r\n\r** Pairing OK \n");
+    	  }
+    	  else
+    	  {
+    		  APP_DBG_MSG("\r\n\r** Pairing KO \n");
+    	  }
+        		  }
+      break;
 
       /* USER CODE END ecode */
-        case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
-        APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
-        /* USER CODE BEGIN EVT_BLUE_GAP_PROCEDURE_COMPLETE */
+      case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
+    	  APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
+    	  /* USER CODE BEGIN EVT_BLUE_GAP_PROCEDURE_COMPLETE */
 
-        /* USER CODE END EVT_BLUE_GAP_PROCEDURE_COMPLETE */
-          break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
+    	  /* USER CODE END EVT_BLUE_GAP_PROCEDURE_COMPLETE */
+    	  break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
 
-      /* USER CODE BEGIN BLUE_EVT */
+    	  /* USER CODE BEGIN BLUE_EVT */
 
-      /* USER CODE END BLUE_EVT */
+    	  /* USER CODE END BLUE_EVT */
       }
       break; /* HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE */
 

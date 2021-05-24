@@ -98,6 +98,8 @@ static osSemaphoreId_t EXTI_15_10_SemaphoreID;
 // *****************
 ADC_ChannelConfTypeDef sConfig = {0};
 extern ADC_HandleTypeDef hadc1;
+uint32_t neo_pixel = 0;
+
 
 
 // Public Functions
@@ -1215,4 +1217,79 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 	}
 }
+
+
+// NeoPixel LED
+// ************
+
+/**
+ *  @brief
+ *	    Sets the NeoPixel RGB LED.
+ *
+ *	@param[in]
+ *      rgb    Lowest (1st) byte blue, 2nd byte green, 3th byte red
+ *  @return
+ *      none
+ *
+ */
+void BSP_setNeoPixel(uint32_t rgb) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// do not disturb, it takes about 1.25 us * 24 = 30 us
+	BACKUP_PRIMASK();
+	DISABLE_IRQ();
+
+	BSP_neopixelDataTx(D9_GPIO_Port, D9_Pin, rgb);
+
+	RESTORE_PRIMASK();
+
+	neo_pixel = rgb;
+	osMutexRelease(DigitalPort_MutexID);
+	osDelay(1);
+}
+
+
+/**
+ *  @brief
+ *	    Get the NeoPixel RGB LED.
+ *
+ *  @return
+ *      Lowest (1st) byte blue, 2nd byte green, 3th byte red
+ *
+ */
+int BSP_getNeoPixel(void) {
+	return neo_pixel;
+}
+
+
+/**
+ *  @brief
+ *	    Sets the NeoPixel RGB LEDs.
+ *
+ *	@param[in]
+ *      buffer    array of pixels
+ *	@param[in]
+ *      len       array length
+ *  @return
+ *      none
+ *
+ */
+void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// do not disturb, it takes about 1.25 us * 24 = 30 us
+	BACKUP_PRIMASK();
+	DISABLE_IRQ();
+
+	BSP_neopixelBufferTx(D6_GPIO_Port, D6_Pin, buffer, len);
+
+	RESTORE_PRIMASK();
+
+	osMutexRelease(DigitalPort_MutexID);
+	osDelay(1);
+}
+
 

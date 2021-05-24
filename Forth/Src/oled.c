@@ -171,7 +171,8 @@ void OLED_init(void) {
 	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");
 #ifdef DEBUG
-	OLED_puts("\r\nDebug");
+	OLED_setPos(0,1);
+	OLED_puts("Debug");
 #endif
 }
 
