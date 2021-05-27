@@ -287,7 +287,7 @@ void APP_BLE_Init( void )
 {
 /* USER CODE BEGIN APP_BLE_Init_1 */
 
-/* USER CODE END APP_BLE_Init_1 */
+	/* USER CODE END APP_BLE_Init_1 */
   SHCI_C2_Ble_Init_Cmd_Packet_t ble_init_cmd_packet =
   {
     {{0,0,0}},                          /**< Header unused */
@@ -374,6 +374,11 @@ void APP_BLE_Init( void )
   HRSAPP_Init();
 
   /**
+   * Initialize CRS (Cable Replacement Server) Application
+   */
+//  CRSAPP_Init();
+
+  /**
    * Create timer to handle the connection state machine
    */
 
@@ -389,21 +394,17 @@ void APP_BLE_Init( void )
   AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
   AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
 
-  // CRS Advertising
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID;
-  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
-  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
+//  // CRS Advertising
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID;
+//  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+//  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
 
   /**
   * Start to Advertise to be connected by Collector
    */
-   Adv_Request(APP_BLE_FAST_ADV);
+  Adv_Request(APP_BLE_FAST_ADV);
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
-  /**
-   * Initialize CRS (Cable Replacement Server) Application
-   */
-  CRSAPP_Init();
 
 /* USER CODE END APP_BLE_Init_2 */
   return;
