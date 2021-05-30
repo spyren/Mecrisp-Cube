@@ -7,7 +7,7 @@
   *****************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -235,6 +235,7 @@ uint8_t  manuf_data[14] = {
 };
 
 /* USER CODE BEGIN PV */
+
 static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
@@ -287,7 +288,7 @@ void APP_BLE_Init( void )
 {
 /* USER CODE BEGIN APP_BLE_Init_1 */
 
-	/* USER CODE END APP_BLE_Init_1 */
+/* USER CODE END APP_BLE_Init_1 */
   SHCI_C2_Ble_Init_Cmd_Packet_t ble_init_cmd_packet =
   {
     {{0,0,0}},                          /**< Header unused */
@@ -374,9 +375,9 @@ void APP_BLE_Init( void )
   HRSAPP_Init();
 
   /**
-   * Initialize CRS (Cable Replacement Server) Application
-   */
-//  CRSAPP_Init();
+  * Initialize CRS (Cable Replacement Server) Application
+  */
+  CRSAPP_Init();
 
   /**
    * Create timer to handle the connection state machine
@@ -390,19 +391,20 @@ void APP_BLE_Init( void )
   BleApplicationContext.BleApplicationContext_legacy.advtServUUID[0] = AD_TYPE_16_BIT_SERV_UUID;
   BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen = 1;
   Add_Advertisment_Service_UUID(HEART_RATE_SERVICE_UUID);
-  /* Initialize intervals for reconnexion without intervals update */
-  AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
-  AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
 
 //  // CRS Advertising
 //  BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] = AD_TYPE_128_BIT_SERV_UUID;
 //  BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
 //  Add_Advertisment_Service_UUID_128b(&CRS_STM_UUID[0], sizeof(CRS_STM_UUID));
 
+  /* Initialize intervals for reconnexion without intervals update */
+  AdvIntervalMin = CFG_FAST_CONN_ADV_INTERVAL_MIN;
+  AdvIntervalMax = CFG_FAST_CONN_ADV_INTERVAL_MAX;
+
   /**
   * Start to Advertise to be connected by Collector
    */
-  Adv_Request(APP_BLE_FAST_ADV);
+   Adv_Request(APP_BLE_FAST_ADV);
 
 /* USER CODE BEGIN APP_BLE_Init_2 */
 
@@ -550,89 +552,18 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       switch (blecore_evt->ecode)
       {
       /* USER CODE BEGIN ecode */
-        aci_gap_pairing_complete_event_rp0 *pairing_complete;
-
-//      case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
-//    	  APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
-//          break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
-
-      case EVT_BLUE_GAP_PASS_KEY_REQUEST:
-        APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_PASS_KEY_REQUEST \n");
-
-        aci_gap_pass_key_resp(BleApplicationContext.BleApplicationContext_legacy.connectionHandle,123456);
-
-        APP_DBG_MSG("\r\n\r** aci_gap_pass_key_resp \n");
-          break; /* EVT_BLUE_GAP_PASS_KEY_REQUEST */
-
-      case EVT_BLUE_GAP_AUTHORIZATION_REQUEST:
-        APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_AUTHORIZATION_REQUEST \n");
-          break; /* EVT_BLUE_GAP_AUTHORIZATION_REQUEST */
-
-      case EVT_BLUE_GAP_SLAVE_SECURITY_INITIATED:
-        APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_SLAVE_SECURITY_INITIATED \n");
-          break; /* EVT_BLUE_GAP_SLAVE_SECURITY_INITIATED */
-
-      case EVT_BLUE_GAP_BOND_LOST:
-        APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_BOND_LOST \n");
-          aci_gap_allow_rebond(BleApplicationContext.BleApplicationContext_legacy.connectionHandle);
-        APP_DBG_MSG("\r\n\r** Send allow rebond \n");
-          break; /* EVT_BLUE_GAP_BOND_LOST */
-
-      case EVT_BLUE_GAP_DEVICE_FOUND:
-        APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_DEVICE_FOUND \n");
-          break; /* EVT_BLUE_GAP_DEVICE_FOUND */
-
-      case EVT_BLUE_GAP_ADDR_NOT_RESOLVED:
-         APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_DEVICE_FOUND \n");
-          break; /* EVT_BLUE_GAP_DEVICE_FOUND */
-
-      case (EVT_BLUE_GAP_KEYPRESS_NOTIFICATION):
-         APP_DBG_MSG("\r\n\r** EVT_BLUE_GAP_KEYPRESS_NOTIFICATION \n");
-          break; /* EVT_BLUE_GAP_KEY_PRESS_NOTIFICATION */
-
-      case (EVT_BLUE_GAP_NUMERIC_COMPARISON_VALUE):
-        		  APP_DBG_MSG("numeric_value = %u\n",
-        				  ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
-
-      APP_DBG_MSG("Hex_value = %x\n",
-    		  ((aci_gap_numeric_comparison_value_event_rp0 *)(blue_evt->data))->Numeric_Value);
-
-      aci_gap_numeric_comparison_value_confirm_yesno(BleApplicationContext.BleApplicationContext_legacy.connectionHandle, 1); /* CONFIRM_YES = 1 */
-
-      APP_DBG_MSG("\r\n\r** aci_gap_numeric_comparison_value_confirm_yesno-->YES \n");
-      break;
-
-      case (EVT_BLUE_GAP_PAIRING_CMPLT):
-        		  {
-          evt_blue_aci *blue_evt;
-
-          blue_evt = (evt_blue_aci*) event_pckt->data;
-
-    	  pairing_complete = (aci_gap_pairing_complete_event_rp0*)blue_evt->data;
-
-    	  APP_DBG_MSG("BLE_CTRL_App_Notification: EVT_BLUE_GAP_PAIRING_CMPLT, pairing_complete->Status = %d\n",pairing_complete->Status);
-    	  if (pairing_complete->Status == 0)
-    	  {
-    		  APP_DBG_MSG("\r\n\r** Pairing OK \n");
-    	  }
-    	  else
-    	  {
-    		  APP_DBG_MSG("\r\n\r** Pairing KO \n");
-    	  }
-        		  }
-      break;
 
       /* USER CODE END ecode */
-      case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
-    	  APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
-    	  /* USER CODE BEGIN EVT_BLUE_GAP_PROCEDURE_COMPLETE */
+        case ACI_GAP_PROC_COMPLETE_VSEVT_CODE:
+        APP_DBG_MSG("\r\n\r** ACI_GAP_PROC_COMPLETE_VSEVT_CODE \n");
+        /* USER CODE BEGIN EVT_BLUE_GAP_PROCEDURE_COMPLETE */
 
-    	  /* USER CODE END EVT_BLUE_GAP_PROCEDURE_COMPLETE */
-    	  break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
+        /* USER CODE END EVT_BLUE_GAP_PROCEDURE_COMPLETE */
+          break; /* ACI_GAP_PROC_COMPLETE_VSEVT_CODE */
 
-    	  /* USER CODE BEGIN BLUE_EVT */
+      /* USER CODE BEGIN BLUE_EVT */
 
-    	  /* USER CODE END BLUE_EVT */
+      /* USER CODE END BLUE_EVT */
       }
       break; /* HCI_VENDOR_SPECIFIC_DEBUG_EVT_CODE */
 

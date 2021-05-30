@@ -463,6 +463,11 @@ void IPCC_C1_RX_IRQHandler(void)
   return;
 }
 
+void RTC_WKUP_IRQHandler(void)
+{
+  HW_TS_RTC_Wakeup_Handler();
+}
+
 /*
 void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )
 {
