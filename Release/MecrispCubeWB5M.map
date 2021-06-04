@@ -7927,7 +7927,7 @@ MB_MEM2         0x00000000200301e0      0x877
  MB_MEM2        0x00000000200301e8      0x860 Core/Src/app_entry.o
  MB_MEM2        0x0000000020030a48        0xf Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
                 0x0000000020030a57                _eMB_MEM2 = .
-OUTPUT(MecrispCube.elf elf32-littlearm)
+OUTPUT(MecrispCubeWB5M.elf elf32-littlearm)
 LOAD linker stubs
 LOAD /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc.a
 LOAD /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libm.a

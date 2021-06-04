@@ -1,5 +1,5 @@
 
-MecrispCube.elf:     file format elf32-littlearm
+MecrispCubeWB5M.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
