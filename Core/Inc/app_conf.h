@@ -571,7 +571,7 @@ typedef enum
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
 #define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
-#define CFG_HRS_PROCESS_STACK_SIZE            (192 * 8)
+#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 8)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */

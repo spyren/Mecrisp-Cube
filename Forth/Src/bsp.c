@@ -55,7 +55,7 @@
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.11.0, USB-CDC, BLE Stack 5.0 (C) 2021 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources

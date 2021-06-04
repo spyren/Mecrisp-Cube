@@ -44,7 +44,7 @@
 
 // Global Variables
 // ****************
-const char RTOS_Version[] = "  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com\n";
+const char RTOS_Version[] = "  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com\n";
 
 // Public Functions
 // ****************

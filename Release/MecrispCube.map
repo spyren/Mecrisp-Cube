@@ -7050,7 +7050,7 @@ BLE_APP_CONTEXT
                 0x000000002001058c        0xe STM32_WPAN/App/hrs_app.o
                 0x000000002001059c                . = ALIGN (0x4)
 
-.bss            0x00000000200105a0    0x191c8 load address 0x0000000008031163
+.bss            0x00000000200105a0    0x18ec8 load address 0x0000000008031163
                 0x00000000200105a0                _sbss = .
                 0x00000000200105a0                __bss_start__ = _sbss
  *(.bss)
@@ -7289,228 +7289,228 @@ BLE_APP_CONTEXT
  .bss.KernelState
                 0x0000000020010ccc        0x4 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.Timer_Stack.14747
-                0x0000000020010cd0      0x600 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020010cd0      0x300 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.Timer_TCB.14746
-                0x00000000200112d0       0x60 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020010fd0       0x60 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.pxCurrentTCB
-                0x0000000020011330        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
-                0x0000000020011330                pxCurrentTCB
+                0x0000000020011030        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011030                pxCurrentTCB
  .bss.pxDelayedTaskList
-                0x0000000020011334        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011034        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.pxOverflowDelayedTaskList
-                0x0000000020011338        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011038        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.pxReadyTasksLists
-                0x000000002001133c      0x460 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x000000002001103c      0x460 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxCurrentNumberOfTasks
-                0x000000002001179c        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x000000002001149c        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxDeletedTasksWaitingCleanUp
-                0x00000000200117a0        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114a0        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxSchedulerSuspended
-                0x00000000200117a4        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114a4        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxTaskNumber
-                0x00000000200117a8        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114a8        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxTopReadyPriority
-                0x00000000200117ac        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114ac        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xDelayedTaskList1
-                0x00000000200117b0       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114b0       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xDelayedTaskList2
-                0x00000000200117c4       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114c4       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xNextTaskUnblockTime
-                0x00000000200117d8        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114d8        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xNumOfOverflows
-                0x00000000200117dc        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114dc        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xPendedTicks
-                0x00000000200117e0        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114e0        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xPendingReadyList
-                0x00000000200117e4       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114e4       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xSchedulerRunning
-                0x00000000200117f8        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114f8        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xSuspendedTaskList
-                0x00000000200117fc       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200114fc       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xTasksWaitingTermination
-                0x0000000020011810       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011510       0x14 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xTickCount
-                0x0000000020011824        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011524        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xYieldPending
-                0x0000000020011828        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011528        0x4 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.pxCurrentTimerList
-                0x000000002001182c        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x000000002001152c        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.pxOverflowTimerList
-                0x0000000020011830        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011530        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.ucStaticTimerQueueStorage.6984
-                0x0000000020011834       0xa0 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011534       0xa0 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xActiveTimerList1
-                0x00000000200118d4       0x14 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200115d4       0x14 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xActiveTimerList2
-                0x00000000200118e8       0x14 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200115e8       0x14 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xLastTime.6933
-                0x00000000200118fc        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200115fc        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xStaticTimerQueue.6983
-                0x0000000020011900       0x50 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011600       0x50 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xTimerQueue
-                0x0000000020011950        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011650        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xTimerTaskHandle
-                0x0000000020011954        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011654        0x4 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.ucMaxSysCallPriority
-                0x0000000020011958        0x1 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
- *fill*         0x0000000020011959        0x3 
+                0x0000000020011658        0x1 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
+ *fill*         0x0000000020011659        0x3 
  .bss.ulMaxPRIGROUPValue
-                0x000000002001195c        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
- .bss.pxEnd     0x0000000020011960        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
- .bss.ucHeap    0x0000000020011964    0x14000 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x000000002001165c        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
+ .bss.pxEnd     0x0000000020011660        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+ .bss.ucHeap    0x0000000020011664    0x14000 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xBlockAllocatedBit
-                0x0000000020025964        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020025664        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xFreeBytesRemaining
-                0x0000000020025968        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020025668        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xMinimumEverFreeBytesRemaining
-                0x000000002002596c        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x000000002002566c        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xNumberOfSuccessfulAllocations
-                0x0000000020025970        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020025670        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xNumberOfSuccessfulFrees
-                0x0000000020025974        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
- .bss.xStart    0x0000000020025978        0x8 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020025674        0x4 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+ .bss.xStart    0x0000000020025678        0x8 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.bd_addr_udn
-                0x0000000020025980        0x6 STM32_WPAN/App/app_ble.o
- *fill*         0x0000000020025986        0x2 
+                0x0000000020025680        0x6 STM32_WPAN/App/app_ble.o
+ *fill*         0x0000000020025686        0x2 
  .bss.CRS_RxQueueId
-                0x0000000020025988        0x4 STM32_WPAN/App/crs_app.o
+                0x0000000020025688        0x4 STM32_WPAN/App/crs_app.o
  .bss.CRS_TxQueueId
-                0x000000002002598c        0x4 STM32_WPAN/App/crs_app.o
+                0x000000002002568c        0x4 STM32_WPAN/App/crs_app.o
  .bss.FreeBufCb
-                0x0000000020025990        0x4 STM32_WPAN/Target/hw_ipcc.o
+                0x0000000020025690        0x4 STM32_WPAN/Target/hw_ipcc.o
  .bss.mem.14942
-                0x0000000020025994      0x220 USB_Device/Target/usbd_conf.o
+                0x0000000020025694      0x220 USB_Device/Target/usbd_conf.o
  .bss.OffModeDisable
-                0x0000000020025bb4        0x4 Utilities/lpm/tiny_lpm/stm32_lpm.o
+                0x00000000200258b4        0x4 Utilities/lpm/tiny_lpm/stm32_lpm.o
  .bss.StopModeDisable
-                0x0000000020025bb8        0x4 Utilities/lpm/tiny_lpm/stm32_lpm.o
+                0x00000000200258b8        0x4 Utilities/lpm/tiny_lpm/stm32_lpm.o
  .bss.__tzname_dst
-                0x0000000020025bbc        0xb /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzset_r.o)
+                0x00000000200258bc        0xb /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzset_r.o)
  .bss.__tzname_std
-                0x0000000020025bc7        0xb /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzset_r.o)
- *fill*         0x0000000020025bd2        0x2 
+                0x00000000200258c7        0xb /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzset_r.o)
+ *fill*         0x00000000200258d2        0x2 
  .bss.prev_tzenv
-                0x0000000020025bd4        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzset_r.o)
+                0x00000000200258d4        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzset_r.o)
  .bss._daylight
-                0x0000000020025bd8        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzvars.o)
-                0x0000000020025bd8                _daylight
+                0x00000000200258d8        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzvars.o)
+                0x00000000200258d8                _daylight
  .bss._timezone
-                0x0000000020025bdc        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzvars.o)
-                0x0000000020025bdc                _timezone
+                0x00000000200258dc        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-tzvars.o)
+                0x00000000200258dc                _timezone
  .bss.__malloc_free_list
-                0x0000000020025be0        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-nano-mallocr.o)
-                0x0000000020025be0                __malloc_free_list
+                0x00000000200258e0        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-nano-mallocr.o)
+                0x00000000200258e0                __malloc_free_list
  .bss.__malloc_sbrk_start
-                0x0000000020025be4        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-nano-mallocr.o)
-                0x0000000020025be4                __malloc_sbrk_start
+                0x00000000200258e4        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-nano-mallocr.o)
+                0x00000000200258e4                __malloc_sbrk_start
  *(COMMON)
- COMMON         0x0000000020025be8       0x64 Core/Src/adc.o
-                0x0000000020025be8                hadc1
- COMMON         0x0000000020025c4c        0xc Core/Src/app_entry.o
-                0x0000000020025c4c                MtxShciId
-                0x0000000020025c50                ShciUserEvtProcessId
-                0x0000000020025c54                SemShciId
- COMMON         0x0000000020025c58        0x4 Core/Src/app_freertos.o
-                0x0000000020025c58                MainHandle
- COMMON         0x0000000020025c5c      0x10c Core/Src/i2c.o
-                0x0000000020025c5c                hdma_i2c1_tx
-                0x0000000020025cbc                hi2c1
-                0x0000000020025d08                hdma_i2c1_rx
- COMMON         0x0000000020025d68       0x24 Core/Src/rtc.o
-                0x0000000020025d68                hrtc
- COMMON         0x0000000020025d8c      0x124 Core/Src/spi.o
-                0x0000000020025d8c                hspi1
-                0x0000000020025df0                hdma_spi1_rx
-                0x0000000020025e50                hdma_spi1_tx
- COMMON         0x0000000020025eb0       0x4c Core/Src/stm32wbxx_hal_timebase_tim.o
-                0x0000000020025eb0                htim17
- COMMON         0x0000000020025efc       0x98 Core/Src/tim.o
-                0x0000000020025efc                htim1
-                0x0000000020025f48                htim2
- COMMON         0x0000000020025f94       0x90 Core/Src/usart.o
-                0x0000000020025f94                huart1
- COMMON         0x0000000020026024        0x4 Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.o
-                0x0000000020026024                uwTick
- COMMON         0x0000000020026028      0x474 FATFS/App/app_fatfs.o
-                0x0000000020026028                USERPathSD
-                0x000000002002602c                USERPathFD
-                0x0000000020026030                USERFile
-                0x0000000020026260                USERFatFs
- *fill*         0x000000002002649c        0x4 
- COMMON         0x00000000200264a0     0x1020 Forth/Src/block.o
-                0x00000000200264a0                BLOCK_Buffers
- COMMON         0x00000000200274c0      0x80c Forth/Src/fs.o
-                0x00000000200274c0                path
-                0x00000000200275c0                mkfs_scratch
-                0x00000000200275c4                fno
-                0x00000000200276dc                dj
-                0x0000000020027714                line
-                0x0000000020027840                pattern
-                0x0000000020027854                FatFs_FD
-                0x0000000020027a90                FatFs_SD
- COMMON         0x0000000020027ccc        0x4 Forth/Src/iic.o
-                0x0000000020027ccc                IIC_MutexID
- COMMON         0x0000000020027cd0      0x248 Forth/Src/sd.o
-                0x0000000020027cd0                scratch_block
-                0x0000000020027ed0                CardInfo
- COMMON         0x0000000020027f18        0x4 Forth/Src/uart.o
-                0x0000000020027f18                UART_MutexID
- COMMON         0x0000000020027f1c       0x10 Forth/Src/usb_cdc.o
-                0x0000000020027f1c                CDC_RxQueueId
-                0x0000000020027f20                CDC_EvtFlagsID
-                0x0000000020027f24                CDC_ThreadID
-                0x0000000020027f28                CDC_TxQueueId
- COMMON         0x0000000020027f2c       0x40 Middlewares/Third_Party/FreeRTOS/Source/queue.o
-                0x0000000020027f2c                xQueueRegistry
- COMMON         0x0000000020027f6c       0x10 STM32_WPAN/App/app_ble.o
-                0x0000000020027f6c                SemHciId
-                0x0000000020027f70                HciUserEvtProcessId
-                0x0000000020027f74                MtxHciId
-                0x0000000020027f78                AdvUpdateProcessId
- COMMON         0x0000000020027f7c        0x4 STM32_WPAN/App/crs_app.o
-                0x0000000020027f7c                CRS_ThreadId
- COMMON         0x0000000020027f80        0x4 STM32_WPAN/App/hrs_app.o
-                0x0000000020027f80                HrsProcessId
- COMMON         0x0000000020027f84      0x2d0 USB_Device/App/usb_device.o
-                0x0000000020027f84                hUsbDeviceFS
- COMMON         0x0000000020028254     0x1010 USB_Device/App/usbd_cdc_if.o
-                0x0000000020028254                BuffLength
-                0x0000000020028258                UserRxBufferFS
-                0x0000000020028a58                UserTxBufferFS
-                0x0000000020029258                UserTxBufPtrOut
-                0x000000002002925c                uwPrescalerValue
-                0x0000000020029260                UserTxBufPtrIn
- COMMON         0x0000000020029264      0x200 USB_Device/App/usbd_desc.o
-                0x0000000020029264                USBD_StrDesc
- COMMON         0x0000000020029464      0x2f4 USB_Device/Target/usbd_conf.o
-                0x0000000020029464                hpcd_USB_FS
- COMMON         0x0000000020029758        0x9 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-lock.o)
-                0x0000000020029758                __lock___atexit_recursive_mutex
-                0x0000000020029759                __lock___arc4random_mutex
-                0x000000002002975a                __lock___env_recursive_mutex
-                0x000000002002975b                __lock___sinit_recursive_mutex
-                0x000000002002975c                __lock___malloc_recursive_mutex
-                0x000000002002975d                __lock___at_quick_exit_mutex
-                0x000000002002975e                __lock___dd_hash_mutex
-                0x000000002002975f                __lock___tz_mutex
-                0x0000000020029760                __lock___sfp_recursive_mutex
- *fill*         0x0000000020029761        0x3 
- COMMON         0x0000000020029764        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-reent.o)
-                0x0000000020029764                errno
-                0x0000000020029768                . = ALIGN (0x4)
-                0x0000000020029768                _ebss = .
-                0x0000000020029768                __bss_end__ = _ebss
+ COMMON         0x00000000200258e8       0x64 Core/Src/adc.o
+                0x00000000200258e8                hadc1
+ COMMON         0x000000002002594c        0xc Core/Src/app_entry.o
+                0x000000002002594c                MtxShciId
+                0x0000000020025950                ShciUserEvtProcessId
+                0x0000000020025954                SemShciId
+ COMMON         0x0000000020025958        0x4 Core/Src/app_freertos.o
+                0x0000000020025958                MainHandle
+ COMMON         0x000000002002595c      0x10c Core/Src/i2c.o
+                0x000000002002595c                hdma_i2c1_tx
+                0x00000000200259bc                hi2c1
+                0x0000000020025a08                hdma_i2c1_rx
+ COMMON         0x0000000020025a68       0x24 Core/Src/rtc.o
+                0x0000000020025a68                hrtc
+ COMMON         0x0000000020025a8c      0x124 Core/Src/spi.o
+                0x0000000020025a8c                hspi1
+                0x0000000020025af0                hdma_spi1_rx
+                0x0000000020025b50                hdma_spi1_tx
+ COMMON         0x0000000020025bb0       0x4c Core/Src/stm32wbxx_hal_timebase_tim.o
+                0x0000000020025bb0                htim17
+ COMMON         0x0000000020025bfc       0x98 Core/Src/tim.o
+                0x0000000020025bfc                htim1
+                0x0000000020025c48                htim2
+ COMMON         0x0000000020025c94       0x90 Core/Src/usart.o
+                0x0000000020025c94                huart1
+ COMMON         0x0000000020025d24        0x4 Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.o
+                0x0000000020025d24                uwTick
+ COMMON         0x0000000020025d28      0x474 FATFS/App/app_fatfs.o
+                0x0000000020025d28                USERPathSD
+                0x0000000020025d2c                USERPathFD
+                0x0000000020025d30                USERFile
+                0x0000000020025f60                USERFatFs
+ *fill*         0x000000002002619c        0x4 
+ COMMON         0x00000000200261a0     0x1020 Forth/Src/block.o
+                0x00000000200261a0                BLOCK_Buffers
+ COMMON         0x00000000200271c0      0x80c Forth/Src/fs.o
+                0x00000000200271c0                path
+                0x00000000200272c0                mkfs_scratch
+                0x00000000200272c4                fno
+                0x00000000200273dc                dj
+                0x0000000020027414                line
+                0x0000000020027540                pattern
+                0x0000000020027554                FatFs_FD
+                0x0000000020027790                FatFs_SD
+ COMMON         0x00000000200279cc        0x4 Forth/Src/iic.o
+                0x00000000200279cc                IIC_MutexID
+ COMMON         0x00000000200279d0      0x248 Forth/Src/sd.o
+                0x00000000200279d0                scratch_block
+                0x0000000020027bd0                CardInfo
+ COMMON         0x0000000020027c18        0x4 Forth/Src/uart.o
+                0x0000000020027c18                UART_MutexID
+ COMMON         0x0000000020027c1c       0x10 Forth/Src/usb_cdc.o
+                0x0000000020027c1c                CDC_RxQueueId
+                0x0000000020027c20                CDC_EvtFlagsID
+                0x0000000020027c24                CDC_ThreadID
+                0x0000000020027c28                CDC_TxQueueId
+ COMMON         0x0000000020027c2c       0x40 Middlewares/Third_Party/FreeRTOS/Source/queue.o
+                0x0000000020027c2c                xQueueRegistry
+ COMMON         0x0000000020027c6c       0x10 STM32_WPAN/App/app_ble.o
+                0x0000000020027c6c                SemHciId
+                0x0000000020027c70                HciUserEvtProcessId
+                0x0000000020027c74                MtxHciId
+                0x0000000020027c78                AdvUpdateProcessId
+ COMMON         0x0000000020027c7c        0x4 STM32_WPAN/App/crs_app.o
+                0x0000000020027c7c                CRS_ThreadId
+ COMMON         0x0000000020027c80        0x4 STM32_WPAN/App/hrs_app.o
+                0x0000000020027c80                HrsProcessId
+ COMMON         0x0000000020027c84      0x2d0 USB_Device/App/usb_device.o
+                0x0000000020027c84                hUsbDeviceFS
+ COMMON         0x0000000020027f54     0x1010 USB_Device/App/usbd_cdc_if.o
+                0x0000000020027f54                BuffLength
+                0x0000000020027f58                UserRxBufferFS
+                0x0000000020028758                UserTxBufferFS
+                0x0000000020028f58                UserTxBufPtrOut
+                0x0000000020028f5c                uwPrescalerValue
+                0x0000000020028f60                UserTxBufPtrIn
+ COMMON         0x0000000020028f64      0x200 USB_Device/App/usbd_desc.o
+                0x0000000020028f64                USBD_StrDesc
+ COMMON         0x0000000020029164      0x2f4 USB_Device/Target/usbd_conf.o
+                0x0000000020029164                hpcd_USB_FS
+ COMMON         0x0000000020029458        0x9 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-lock.o)
+                0x0000000020029458                __lock___atexit_recursive_mutex
+                0x0000000020029459                __lock___arc4random_mutex
+                0x000000002002945a                __lock___env_recursive_mutex
+                0x000000002002945b                __lock___sinit_recursive_mutex
+                0x000000002002945c                __lock___malloc_recursive_mutex
+                0x000000002002945d                __lock___at_quick_exit_mutex
+                0x000000002002945e                __lock___dd_hash_mutex
+                0x000000002002945f                __lock___tz_mutex
+                0x0000000020029460                __lock___sfp_recursive_mutex
+ *fill*         0x0000000020029461        0x3 
+ COMMON         0x0000000020029464        0x4 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_1.5.0.202011040924/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-reent.o)
+                0x0000000020029464                errno
+                0x0000000020029468                . = ALIGN (0x4)
+                0x0000000020029468                _ebss = .
+                0x0000000020029468                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x0000000020029768      0x800 load address 0x0000000008031163
-                0x0000000020029768                . = ALIGN (0x8)
-                0x0000000020029768                PROVIDE (end = .)
+                0x0000000020029468      0x800 load address 0x0000000008031163
+                0x0000000020029468                . = ALIGN (0x8)
+                0x0000000020029468                PROVIDE (end = .)
                 [!provide]                        PROVIDE (_end = .)
-                0x0000000020029b68                . = (. + _Min_Heap_Size)
- *fill*         0x0000000020029768      0x400 
-                0x0000000020029f68                . = (. + _Min_Stack_Size)
- *fill*         0x0000000020029b68      0x400 
-                0x0000000020029f68                . = ALIGN (0x8)
+                0x0000000020029868                . = (. + _Min_Heap_Size)
+ *fill*         0x0000000020029468      0x400 
+                0x0000000020029c68                . = (. + _Min_Stack_Size)
+ *fill*         0x0000000020029868      0x400 
+                0x0000000020029c68                . = ALIGN (0x8)
 
 /DISCARD/
  libc.a(*)
