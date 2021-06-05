@@ -119,10 +119,7 @@ void HardFault_Handler(void)
     );
 */
 
-	// christmas tree
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+	// christmas tree RGB LED!!
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {

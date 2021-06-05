@@ -35,15 +35,8 @@
 
 void BSP_init(void);
 
-void BSP_setLED1(int state);
-int BSP_getLED1(void);
-void BSP_setLED2(int state);
-int BSP_getLED2(void);
-void BSP_setLED3(int state);
-int BSP_getLED3(void);
 int BSP_getSwitch1(void);
 int BSP_getSwitch2(void);
-int BSP_getSwitch3(void);
 void BSP_setDigitalPort(int state);
 int BSP_getDigitalPort(void);
 void BSP_setDigitalPin(int pin_number, int state);
