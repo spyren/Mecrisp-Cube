@@ -66,6 +66,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
 extern IPCC_HandleTypeDef hipcc;
 extern DMA_HandleTypeDef hdma_quadspi;
+extern QSPI_HandleTypeDef hqspi;
 extern RTC_HandleTypeDef hrtc;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
@@ -194,6 +195,20 @@ void DebugMon_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32wbxx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles Flash global interrupt.
+  */
+void FLASH_IRQHandler(void)
+{
+  /* USER CODE BEGIN FLASH_IRQn 0 */
+
+  /* USER CODE END FLASH_IRQn 0 */
+  HAL_FLASH_IRQHandler();
+  /* USER CODE BEGIN FLASH_IRQn 1 */
+
+  /* USER CODE END FLASH_IRQn 1 */
+}
 
 /**
   * @brief This function handles EXTI line0 interrupt.
@@ -558,6 +573,20 @@ void HSEM_IRQHandler(void)
   /* USER CODE BEGIN HSEM_IRQn 1 */
 
   /* USER CODE END HSEM_IRQn 1 */
+}
+
+/**
+  * @brief This function handles QUADSPI global interrupt.
+  */
+void QUADSPI_IRQHandler(void)
+{
+  /* USER CODE BEGIN QUADSPI_IRQn 0 */
+
+  /* USER CODE END QUADSPI_IRQn 0 */
+  HAL_QSPI_IRQHandler(&hqspi);
+  /* USER CODE BEGIN QUADSPI_IRQn 1 */
+
+  /* USER CODE END QUADSPI_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
