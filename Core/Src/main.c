@@ -94,6 +94,8 @@
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
+#include "ipcc.h"
+#include "quadspi.h"
 #include "rf.h"
 #include "rtc.h"
 #include "spi.h"
@@ -174,6 +176,9 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
+  /* IPCC initialisation */
+   MX_IPCC_Init();
+
   /* USER CODE BEGIN SysInit */
   Init_Exti(); /**< Configure the system Power Mode */
 
@@ -182,18 +187,21 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
+  MX_ADC1_Init();
+  MX_I2C3_Init();
+  MX_QUADSPI_Init();
   MX_RF_Init();
   MX_RTC_Init();
-//  MX_USB_Device_Init();
-  MX_ADC1_Init();
-  MX_TIM1_Init();
-  MX_SPI1_Init();
+  MX_USART1_UART_Init();
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
-  MX_TIM2_Init();
+//  MX_USB_Device_Init();
   MX_I2C1_Init();
+  MX_SPI1_Init();
+  MX_TIM1_Init();
+  MX_TIM2_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
@@ -273,10 +281,11 @@ void SystemClock_Config(void)
   */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP
                               |RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USART1
-                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_USB
-                              |RCC_PERIPHCLK_ADC;
+                              |RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_I2C3
+                              |RCC_PERIPHCLK_USB|RCC_PERIPHCLK_ADC;
   PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
   PeriphClkInitStruct.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInitStruct.I2c3ClockSelection = RCC_I2C3CLKSOURCE_PCLK1;
   PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
   PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_SYSCLK;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
