@@ -6,8 +6,8 @@
  *      Forth is a CMSIS-RTOS Thread (FreeRTOS Task) MainThread.
  *      Console I/O (UART, USB-CDC, BLE) is buffered and RTOS aware.
  *
- *      STM32WB55C: 1 MiB FLASH
- *      For details see STM32WB55RGVX_FLASH.ld
+ *      STM32WB55VG: 1 MiB FLASH
+ *      For details see STM32WB55VGYX_FLASH.ld
  *
  *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
  *       20 KiB Forth Core

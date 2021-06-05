@@ -181,7 +181,7 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
-  BSP_setLED2(TRUE);
+  // BSP_setLED2(TRUE); RGB LED !!
   osEventFlagsSet(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 3 */

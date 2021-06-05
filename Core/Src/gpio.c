@@ -21,7 +21,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-
+void shared_io(void);
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -145,9 +145,24 @@ void MX_GPIO_Init(void)
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
+  shared_io();
 }
 
 /* USER CODE BEGIN 2 */
+void shared_io(void) {
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
+
+	/*Configure GPIO pin : D10 */
+	GPIO_InitStruct.Pin = D10_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(D10_GPIO_Port, &GPIO_InitStruct);
+
+}
 
 /* USER CODE END 2 */
 
