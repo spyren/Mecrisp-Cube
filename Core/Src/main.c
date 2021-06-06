@@ -417,7 +417,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	// Set RGB LED!!
+	BSP_setRgbLED(BSP_getRgbLED() | 0x800000); // Set RGB red LED to 50 %
   /* USER CODE END Error_Handler_Debug */
 }
 

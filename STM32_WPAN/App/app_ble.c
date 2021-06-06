@@ -446,7 +446,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
       Adv_Request(APP_BLE_FAST_ADV);
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
-      // BSP_setLED1(FALSE); RGB LED !!
+      BSP_setRgbLED(BSP_getRgbLED() & 0xFFFF00); // Clear blue LED
       /* USER CODE END EVT_DISCONN_COMPLETE */
     }
 
@@ -525,7 +525,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification( void *pckt )
           }
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle = connection_complete_event->Connection_Handle;
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-          // BSP_setLED1(TRUE); RGB LED !!
+          BSP_setRgbLED(BSP_getRgbLED() | 0x000080); // set blue LED to 50 %
           osThreadFlagsSet(CRS_ThreadId, CRSAPP_CONNECTED);
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
         }

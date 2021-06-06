@@ -96,6 +96,8 @@ void Error_Handler(void);
 #define D3_GPIO_Port GPIOD
 #define D9_Pin GPIO_PIN_15
 #define D9_GPIO_Port GPIOD
+#define RGB_SELECT_Pin GPIO_PIN_1
+#define RGB_SELECT_GPIO_Port GPIOH
 #define OLED_CS_Pin GPIO_PIN_0
 #define OLED_CS_GPIO_Port GPIOH
 #define OLED_RST_Pin GPIO_PIN_8
@@ -141,11 +143,6 @@ void Error_Handler(void);
 #define D10_Pin GPIO_PIN_4
 #define D10_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
-#define B1_DONGLE_Pin GPIO_PIN_10
-#define B1_DONGLE_GPIO_Port GPIOA
-#define LD1_DONGLE_Pin GPIO_PIN_4
-#define LD1_DONGLE_GPIO_Port GPIOA
-
 
 /* USER CODE END Private defines */
 

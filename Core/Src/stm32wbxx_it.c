@@ -119,7 +119,7 @@ void HardFault_Handler(void)
     );
 */
 
-	// christmas tree RGB LED!!
+	BSP_setRgbLED(0xFF0000); // Set RGB red LED to 100 %
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
