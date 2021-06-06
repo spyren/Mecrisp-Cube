@@ -39,6 +39,7 @@
 #include "usb_cdc.h"
 #include "usbd_cdc_if.h"
 #include "usb_device.h"
+#include "bsp.h"
 
 
 #define CDC_TX_SENT	0x01
@@ -241,6 +242,8 @@ static void cdc_thread(void *argument) {
 	for(;;) {
 		// blocked till a character is in the Tx queue
 		if (osMessageQueueGet(CDC_TxQueueId, &buffer, 0, osWaitForever) == osOK) {
+//			uint32_t old_rgbled = BSP_getRgbLED();
+//			BSP_setRgbLED(0x007f00); // set RGB LED to green 50 % intensity
 			// blocked till CDC transmit ready
 			osEventFlagsWait(CDC_EvtFlagsID, CDC_TX_READY,
 					osFlagsWaitAny | osFlagsNoClear, osWaitForever);
@@ -253,6 +256,7 @@ static void cdc_thread(void *argument) {
 				// transmit busy
 				Error_Handler();
 			}
+//			BSP_setRgbLED(old_rgbled);
 		} else {
 			// can't write to the queue
 			Error_Handler();
