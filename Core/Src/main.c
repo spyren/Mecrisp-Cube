@@ -94,6 +94,7 @@
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
+#include "ipcc.h"
 #include "rf.h"
 #include "rtc.h"
 #include "spi.h"
@@ -173,6 +174,9 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
+
+  /* IPCC initialisation */
+   MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
   Init_Exti(); /**< Configure the system Power Mode */
@@ -408,7 +412,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	BSP_setRgbLED(BSP_getRgbLED() | 0x800000); // Set RGB red LED to 50 %
+	BSP_setLED1(); // Set red LED
   /* USER CODE END Error_Handler_Debug */
 }
 

@@ -28,29 +28,27 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
-
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "rgbled!"
-set_rgbled:
-		@ ( n --  ) set RGB LED (rgb)
+		Wortbirne Flag_visible, "led1!"
+set_led1:
+		@ ( n --  ) set LED1 (blue)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r0, tos
 	drop
-	bl		BSP_setRgbLED
+	bl		BSP_setLED1
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "rgbled@"
-get_rgbledl:
-		@ (  --  n ) get RGB LED (rgb)
+		Wortbirne Flag_visible, "led1@"
+get_led1:
+		@ (  -- n ) get LED1 (blue)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl		BSP_getRgbLED
+	bl		BSP_getLED1
 	movs	tos, r0
 	pop		{pc}
-
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
@@ -63,7 +61,6 @@ get_switch1:
 	movs	tos, r0
 	pop		{pc}
 
-
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch2?"
 get_switch2:
@@ -72,6 +69,17 @@ get_switch2:
 	push	{lr}
 	pushdatos
 	bl		BSP_getSwitch2
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switch3?"
+get_switch3:
+		@ (  -- n ) get switch3
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitch3
 	movs	tos, r0
 	pop		{pc}
 
