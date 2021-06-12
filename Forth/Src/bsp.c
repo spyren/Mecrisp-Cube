@@ -6,7 +6,7 @@
  *        - Switches (SW1, SW2)
  *        - Digital port pins D0 to D15
  *        - Analog port pins A0 to A5
- *        - PWM: D3 TIM1CH1, D6 TIM16CH1, D9 TIM1CH2
+ *        - PWM: D3 TIM1CH1, D9 TIM1CH2
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
  *        - Timer Capture/Compare
  *
@@ -64,7 +64,6 @@ extern TIM_HandleTypeDef htim2;
 // Hardware resources
 // ******************
 extern TIM_HandleTypeDef htim1;
-extern TIM_HandleTypeDef htim16;
 
 // RTOS resources
 // **************
@@ -172,7 +171,6 @@ void BSP_init(void) {
 
 	// start PWM
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
 }
@@ -180,54 +178,54 @@ void BSP_init(void) {
 // LEDs
 // ****
 
-// RGB LED
-// ************
-
 /**
  *  @brief
- *	    Sets the RGB LED.
+ *	    Sets the LED1 (red).
  *
- *	    The SPI baudrate has to be lower than 2.4 MHz
- *	    For 2 MHz it takes about 20 * 0.5 us = 10 us.
  *	@param[in]
- *      rgb    Lowest (1st) byte blue, 2nd byte green, 3th byte red
+ *      state    FALSE for dark LED, TRUE for bright LED.
  *  @return
  *      none
  *
  */
-void BSP_setRgbLED(uint32_t rgb) {
+void BSP_setLED1(int state) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	rgb_led = rgb;
-	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_SET);
-
-	SDSPI_Write(0b00000000); // give some time
-
-	rgb_buffer[0] = easy_set(0b00111010); 			// "start" byte
-	rgb_buffer[1] = easy_set(rgb >> 16);			// red
-	rgb_buffer[2] = easy_set((rgb >> 8) & 0xFF);	// green
-	rgb_buffer[3] = easy_set(rgb & 0xFF);			// blue
-	SDSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 16);
-	SDSPI_Write(0b10001000); // GSLAT
-
-	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
+	if (state) {
+		HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, GPIO_PIN_RESET);
+	}
 
 	osMutexRelease(DigitalPort_MutexID);
-	osDelay(1);
 }
+
 
 /**
  *  @brief
- *	    Get the RGB LED.
+ *      Gets the LED1 (red) state
  *
  *  @return
- *      Lowest (1st) byte blue, 2nd byte green, 3th byte red
- *
+ *      FALSE for dark LED, TRUE for bright LED.
  */
-int BSP_getRgbLED(void) {
-	return rgb_led;
+int BSP_getLED1(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(D12_GPIO_Port, D12_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
 }
+
+
 
 // Switches
 // ********
@@ -246,7 +244,7 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(D9_GPIO_Port, D9_Pin) == GPIO_PIN_RESET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -270,7 +268,7 @@ int BSP_getSwitch2(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(B2_GPIO_Port, B2_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(D6_GPIO_Port, D6_Pin) == GPIO_PIN_RESET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -280,25 +278,64 @@ int BSP_getSwitch2(void) {
 	return return_value;
 }
 
-// digital port pins D0 to D15 (Arduino numbering)
-// ***********************************************
+/**
+ *  @brief
+ *      Gets the switch3 state
+ *
+ *      No debouncing
+ *  @return
+ *      FALSE for open switch, TRUE for closed (pressed) switch.
+ */
+int BSP_getSwitch3(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(D5_GPIO_Port, D5_Pin) == GPIO_PIN_RESET) {
+		return_value =  -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+
+// digital port pins D0 to D15 (Feather STM32F405 numbering)
+// *********************************************************
 
 typedef struct {
-	GPIO_TypeDef *port;
+	GPIO_TypeDef* port;
 	uint16_t pin;
 } PortPin_t;
 
-static const PortPin_t PortPin_a[22] = { { D0_GPIO_Port, D0_Pin }, {
-		D1_GPIO_Port, D1_Pin }, { D2_GPIO_Port, D2_Pin },
-		{ D3_GPIO_Port, D3_Pin }, { D4_GPIO_Port, D4_Pin }, { D5_GPIO_Port,
-				D5_Pin }, { D6_GPIO_Port, D6_Pin }, { D7_GPIO_Port, D7_Pin }, {
-				D8_GPIO_Port, D9_Pin }, { D9_GPIO_Port, D9_Pin }, {
-				D10_GPIO_Port, D10_Pin }, { D11_GPIO_Port, D11_Pin }, {
-				D12_GPIO_Port, D12_Pin }, { D13_GPIO_Port, D13_Pin }, {
-				D14_GPIO_Port, D14_Pin }, { D15_GPIO_Port, D15_Pin }, {
-				A0_GPIO_Port, A0_Pin }, { A1_GPIO_Port, A1_Pin }, {
-				A2_GPIO_Port, A2_Pin }, { A3_GPIO_Port, A3_Pin }, {
-				A4_GPIO_Port, A4_Pin }, { A5_GPIO_Port, A5_Pin } };
+static const PortPin_t PortPin_a[23] = {
+		{ D0_GPIO_Port, D0_Pin } ,
+		{ D1_GPIO_Port, D1_Pin } ,
+		{ D2_GPIO_Port, D2_Pin } ,
+		{ D3_GPIO_Port, D3_Pin } ,
+		{ D4_GPIO_Port, D4_Pin } ,
+		{ D5_GPIO_Port, D5_Pin } ,
+		{ D6_GPIO_Port, D6_Pin } ,
+		{ D0_GPIO_Port, D0_Pin } ,  // D7 does not exist
+		{ D0_GPIO_Port, D0_Pin } ,  // D8 does not exist
+		{ D9_GPIO_Port, D9_Pin } ,
+		{ D10_GPIO_Port, D10_Pin } ,
+		{ D11_GPIO_Port, D11_Pin } ,
+		{ D12_GPIO_Port, D12_Pin } ,
+		{ D13_GPIO_Port, D13_Pin } ,
+		{ D14_GPIO_Port, D14_Pin } ,
+		{ D15_GPIO_Port, D15_Pin } ,
+		{ A0_GPIO_Port, A0_Pin } ,		// analog pins start with offset 16
+		{ A1_GPIO_Port, A1_Pin } ,
+		{ A2_GPIO_Port, A2_Pin } ,
+		{ A3_GPIO_Port, A3_Pin } ,
+		{ A4_GPIO_Port, A4_Pin } ,
+		{ A5_GPIO_Port, A5_Pin } ,
+};
+
 
 /**
  *  @brief
@@ -389,16 +426,17 @@ int BSP_getDigitalPin(int pin_number) {
 	return return_value;
 }
 
-// analog port pins A0 to A5 (Arduino numbering)
-// *********************************************
-static const uint32_t AnalogPortPin_a[6] = {
-ADC_CHANNEL_4,  // A0 PC3
-		ADC_CHANNEL_7,  // A1 PA2
-		ADC_CHANNEL_10, // A2 PA5
-		ADC_CHANNEL_2,  // A3 PC1
-		ADC_CHANNEL_13, // A4 PC4
-		ADC_CHANNEL_14  // A5 PC5
-		};
+// analog port pins A0 to A6 (Feather STM32F405 numbering)
+// *******************************************************
+static const uint32_t AnalogPortPin_a[7] = {
+		ADC_CHANNEL_4,  // A0 PA4
+		ADC_CHANNEL_5,  // A1 PA5
+		ADC_CHANNEL_6,  // A2 PA6
+		ADC_CHANNEL_7,  // A3 PA7
+		ADC_CHANNEL_14, // A4 PC4
+		ADC_CHANNEL_15, // A5 PC5
+		ADC_CHANNEL_3   // A6 PA3
+};
 
 /**
  *  @brief
@@ -509,10 +547,6 @@ void BSP_setPwmPin(int pin_number, int value) {
 		// D3 TIM1CH1
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, value);
 		break;
-	case 6:
-		// D6 TIM16CH1
-		__HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, value);
-		break;
 	case 9:
 		// D9 TIM1CH2
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
@@ -537,7 +571,6 @@ void BSP_setPwmPrescale(uint16_t value) {
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
 	__HAL_TIM_SET_PRESCALER(&htim1, ++value);
-	__HAL_TIM_SET_PRESCALER(&htim16, ++value);
 
 	osMutexRelease(DigitalPort_MutexID);
 }
