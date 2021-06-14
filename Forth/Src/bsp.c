@@ -232,6 +232,30 @@ int BSP_getLED1(void) {
 
 /**
  *  @brief
+ *      Gets the MCU_USER state
+ *
+ *      No debouncing
+ *  @return
+ *      FALSE for open switch, TRUE for closed (pressed) switch.
+ */
+int BSP_getSwitchUser(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(MCU_USER_GPIO_Port, MCU_USER_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+/**
+ *  @brief
  *      Gets the switch1 state
  *
  *      No debouncing

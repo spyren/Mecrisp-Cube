@@ -80,12 +80,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   if(uartHandle->Instance==USART1)
   {
   /* USER CODE BEGIN USART1_MspInit 0 */
-	  if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		  // Pull-Ups for the dongle, protect from BREAK if NC
-		  GPIO_InitStruct.Pull = GPIO_PULLUP;
-	  } else {
-		  GPIO_InitStruct.Pull = GPIO_NOPULL;
-	  }
+	  // Pull-Ups for the UART Rx protect from BREAK if NC
+	  GPIO_InitStruct.Pull = GPIO_PULLUP;
 
   /* USER CODE END USART1_MspInit 0 */
     /* USART1 clock enable */
@@ -98,7 +94,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     */
     GPIO_InitStruct.Pin = D1_Pin|D0_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
+//    GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);

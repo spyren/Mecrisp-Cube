@@ -51,6 +51,18 @@ get_led1:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switchuser?"
+get_switchuser:
+		@ (  -- n ) get MCU USER switch
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitchUser
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
 get_switch1:
 		@ (  -- n ) get switch1

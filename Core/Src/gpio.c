@@ -92,6 +92,7 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(FLASH_CS_GPIO_Port, &GPIO_InitStruct);
 
+  shared_io();
 }
 
 /* USER CODE BEGIN 2 */
@@ -107,6 +108,21 @@ void shared_io(void) {
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(D10_GPIO_Port, &GPIO_InitStruct);
+
+	// pull-ups for D6, D5, and D9 (push buttons)
+	GPIO_InitStruct.Pin = D6_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D5_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(D5_GPIO_Port, &GPIO_InitStruct);
+	GPIO_InitStruct.Pin = D9_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(D9_GPIO_Port, &GPIO_InitStruct);
+
 
 }
 
