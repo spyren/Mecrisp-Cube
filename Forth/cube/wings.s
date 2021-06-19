@@ -74,10 +74,10 @@ neopixels:
 */
 .ltorg
 
-.equ	T0H,		3	// 0.3 us
-.equ	T1H,		8	// 0.8 us
-.equ	T0L,		7	// 0.8 us
-.equ	T1L,		2	// 0.3 us
+.equ	T0H,		4	// 0.4 us / (3 * 31.25 ns) = 4.27  -> 4
+.equ	T1H,		8	// 0.8 us / (3 * 31.25 ns) = 8.53  -> 8
+.equ	T0L,		5	// 0.85 us / (3 * 31.25 ns) = 9.07 -> 5 (4 turns less)
+.equ	T1L,		1	// 0.45 us / (3 * 31.25 ns) = 4.53 -> 1 (4 turns less)
 
 //	Registers
 .equ	GPIO_BSRR,	0x18	// GPIOx->BSRR bit set/reset

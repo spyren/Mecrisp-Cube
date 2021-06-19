@@ -42,6 +42,7 @@
 #include "shci.h"
 #include "clock.h"
 #include "iic.h"
+#include "bsp.h"
 #include "oled.h"
 #include "plex.h"
 
@@ -155,6 +156,7 @@ void MainThread(void *argument)
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 
+	BSP_setLED1(FALSE); // switch off power on LED
 	Forth();
 
 	/* Infinite loop */

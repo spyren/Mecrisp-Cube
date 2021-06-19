@@ -184,20 +184,20 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
   MX_RF_Init();
   MX_RTC_Init();
 //  MX_USB_Device_Init();
   MX_ADC1_Init();
-  MX_TIM1_Init();
-  MX_SPI1_Init();
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
-  MX_I2C1_Init();
+  MX_TIM1_Init();
   MX_TIM2_Init();
+  MX_SPI1_Init();
+  MX_I2C1_Init();
+  MX_USART1_UART_Init();
+  MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
@@ -412,7 +412,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	BSP_setLED1(); // Set red LED
+	BSP_setLED1(TRUE); // Set red LED
   /* USER CODE END Error_Handler_Debug */
 }
 
