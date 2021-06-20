@@ -1140,14 +1140,17 @@ uint64_t FS_df(uint64_t forth_stack) {
 	FRESULT fr;     /* FatFs return code */
 	FATFS *fatfs;
 	DWORD nclst;
-
+	int tot_sect, fre_sect;
 	uint64_t stack;
 	stack = forth_stack;
 
 	stack = FS_cr(stack);
 	fr = f_getfree("", &nclst, &fatfs);  /* Get current directory path */
 	if (fr == FR_OK) {
-		snprintf(line, sizeof(line), "%lu KiB (%lu SD-Blocks)", nclst/2, nclst);
+	    /* Get total sectors and free sectors */
+	    tot_sect = (fatfs->n_fatent - 2) * fatfs->csize;
+	    fre_sect = nclst * fatfs->csize;
+		snprintf(line, sizeof(line), "%u KiB (%lu Clusters) free from %u KiB", fre_sect/2, nclst, tot_sect/2);
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	} else {
 		strcpy(line, "Err: no volume");

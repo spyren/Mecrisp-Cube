@@ -13,13 +13,13 @@
   * @brief  Block Size
   */
 #define FD_BLOCK_SIZE		0x200	// 512 bytes in a block
-#define FD_PAGE_SIZE		0x1000	// 4 KiB page for the STM32WB
+#define FD_PAGE_SIZE		0x1000	// 4 KiB page for the W25Q128
 #define FD_BLOCKS_PER_PAGE	(FD_PAGE_SIZE / FD_BLOCK_SIZE)
 #define FD_FLASH_RECORD		8		// double word
 
-#define FD_START_ADDRESS	0x08060000
-#define FD_END_ADDRESS		0x080BFFFF
-
+// 16 MiB
+#define FD_START_ADDRESS	0x00000000
+#define FD_END_ADDRESS		0x01FFFFFF
 
 void    FD_init(void);
 void    FD_getSize(void);
