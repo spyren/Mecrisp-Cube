@@ -9,18 +9,15 @@
  *      STM32WB55VG: 1 MiB FLASH
  *      For details see STM32WB55VGYX_FLASH.ld
  *
- *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+ *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 384K
  *       20 KiB Forth Core
  *      150 KiB Middleware (debug 250 KiB)
  *
- *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
- *      128 KiB Flash Dictionary
+ *      FLASH_FORTH (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+ *      384 KiB Flash Dictionary
  *
- *      FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
- *      384 KiB future use for built in flash drive
-
  *      FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-
+ *
  *      STM32WB55C: 256 KiB RAM
  *
  *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
@@ -203,6 +200,13 @@ int main(void)
   // test for SWO debug trace
   printf("Hallo Velo\n");
 #endif
+  /**
+   * This prevents the CPU2 to disable the HSI48 oscillator when
+   * it does not use anymore the RNG IP
+   */
+//  LL_RCC_HSI48_Enable();
+//  while(!LL_RCC_HSI48_IsReady());
+  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
 
   /* USER CODE END 2 */
 
@@ -292,15 +296,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   /* USER CODE BEGIN Smps */
-
-  /**
-   * This prevents the CPU2 to disable the HSI48 oscillator when
-   * it does not use anymore the RNG IP
-   */
-  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
-  LL_RCC_HSI48_Enable();
-
-  while(!LL_RCC_HSI48_IsReady());
 
   /* USER CODE END Smps */
   /** Enable the SYSCFG APB clock
