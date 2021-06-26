@@ -60,7 +60,7 @@ osThreadId_t CDC_ThreadID;
 const osThreadAttr_t cdc_thread_attributes = {
 		.name = "CDC_Thread",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 512*2
+		.stack_size = 128*8
 };
 
 // Definitions for TxQueue

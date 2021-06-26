@@ -71,7 +71,7 @@ static osThreadId_t UART_TxThreadId;
 static const osThreadAttr_t UART_TxThreadAttr = {
 		.name = "UART_TxThread",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 512 * 2
+		.stack_size = 128 * 5
 };
 
 // Definitions for UART Rx thread
@@ -79,7 +79,7 @@ static osThreadId_t UART_RxThreadId;
 static const osThreadAttr_t UART_RxThreadAttr = {
 		.name = "UART_RxThread",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 512 * 2
+		.stack_size = 128 * 5
 };
 
 osMutexId_t UART_MutexID;

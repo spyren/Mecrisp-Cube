@@ -109,9 +109,9 @@ static const char vi_Version[] =
 #define FALSE			((int)0)
 #endif							/* TRUE */
 //#define MAX_SCR_COLS		MAX_INPUT_LEN
-#define MAX_SCR_COLS		128
+#define MAX_SCR_COLS		100
 #define MIN_SCR_COLS		40
-#define MAX_SCR_ROWS		30
+#define MAX_SCR_ROWS		25
 #define MIN_SCR_ROWS		16
 #define MAX_ARGS			10
 

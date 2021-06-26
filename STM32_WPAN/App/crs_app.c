@@ -67,7 +67,7 @@ osThreadId_t CRS_ThreadId;
 static const osThreadAttr_t crs_ThreadAttr = {
 		.name = "CRS_Thread",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 512 * 2
+		.stack_size = 128 * 5
 };
 
 static osMutexId_t CRS_MutexID;

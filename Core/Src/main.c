@@ -204,8 +204,6 @@ int main(void)
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
    */
-//  LL_RCC_HSI48_Enable();
-//  while(!LL_RCC_HSI48_IsReady());
   LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
 
   /* USER CODE END 2 */
