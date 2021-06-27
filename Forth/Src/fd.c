@@ -52,6 +52,8 @@
 
 // Defines
 // *******
+#define	RAM_SHARED			0x20038000
+
 #define FLASH_DUMMY_BYTE	0xFF
 
 #define W25Q128_PAGES		(65536)
@@ -116,12 +118,14 @@ static uint8_t *scratch_sector; 	// protected by FD_MutexID
  */
 void FD_init(void) {
 //	SDSPI_init();
-	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
+	scratch_sector = (uint8_t *) RAM_SHARED;
+//	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	if (FD_MutexID == NULL) {
 		Error_Handler();
 	}
+	FD_getSize();
 }
 
 
