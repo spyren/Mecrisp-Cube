@@ -18,6 +18,8 @@ machine (STM32 Nucleo board) for development and testing purposes.
     so there is no need for a separate probe.
   * [STM32F405 Adafruit Feather Express Board](https://www.adafruit.com/product/4382) - 
     ST takes flight in this Feather board. The new STM32F405 Feather that we (Adafruit) designed runs CircuitPython (and _Forth_) at a blistering 168MHz – our fastest CircuitPython board ever! We put a STEMMA QT / Qwiic port on the end, so you can really easily plug and play I2C sensors.
+  * [STM32WB Feather Development Board ](https://www.reclaimerlabs.com/stm32wb-feather) - 
+    This Adafruit Feather compatible development board is from [Reclaimer Labs](https://www.reclaimerlabs.com/). You can find more information about this excellent board on the Reclaimer Labs Site. 
 * Terminal emulator application for PC, e.g.: 
   * [PuTTY](http://www.putty.org/) - Windows and Linux
   * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
@@ -43,9 +45,9 @@ I set the putty terminal configuration to
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
-Mecrisp-Cube 1.4.3 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics
-  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com
+Mecrisp-Cube 1.4.4 for STM32WB Feather, 63/384 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch
+  * Firmware Package STM32Cube FW_WB V1.11.0, USB-CDC, BLE Stack 5.0 (C) 2021 STMicroelectronics
+  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
   * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
 
@@ -154,6 +156,9 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Own Tags for F405 and WB55 chips
 * `0:/etc/rc.local` startup script
 * 2 MiB flash drive for F405
+### v1.4.4 WB Feather Release
+* 16 MiB flash drive for WB Feather
+* New memory layout (WB Feather): 384 KiB for the firmware, 384 KiB for the FLASH dictionary
 
 ## Authors
 
