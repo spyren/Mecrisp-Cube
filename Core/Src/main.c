@@ -46,6 +46,7 @@
  *              1 KiB SHCI_USER_EVT
  *
  *             40 KiB vi text buffer
+ *             10 KiB for Forth Threads/Tasks
  *
  *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
  *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
@@ -55,7 +56,7 @@
  *       22 KiB secure RAM for CPU2
  *
  *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
- *       16 KiB shared between CPU1 and CPU2
+ *       16 KiB shared between CPU1 and CPU2 -> used for some buffers
  *       16 KiB secure RAM for CPU2
  *
  *
@@ -186,15 +187,15 @@ int main(void)
   MX_RTC_Init();
 //  MX_USB_Device_Init();
   MX_ADC1_Init();
-  if (MX_FATFS_Init() != APP_OK) {
-    Error_Handler();
-  }
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
   MX_GPIO_Init();
+  if (MX_FATFS_Init() != APP_OK) {
+    Error_Handler();
+  }
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace

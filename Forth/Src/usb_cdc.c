@@ -93,7 +93,7 @@ osEventFlagsId_t CDC_EvtFlagsID;
 void CDC_init(void) {
 	// Create the queue(s)
 	// creation of TxQueue
-	CDC_TxQueueId = osMessageQueueNew(200, sizeof(uint8_t), &cdc_TxQueue_attributes);
+	CDC_TxQueueId = osMessageQueueNew(1024, sizeof(uint8_t), &cdc_TxQueue_attributes);
 	if (CDC_TxQueueId == NULL) {
 		// no queue created
 		Error_Handler();

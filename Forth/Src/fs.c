@@ -56,8 +56,7 @@
 // Defines
 // *******
 #define LINE_LENGTH				256
-#define	RAM_SHARED				(0x20038000 + 0x1000)
-#define	SCRATCH_SIZE			0x0400					// 1 KiB scratch
+#define	SCRATCH_SIZE			RAM_SHARED_FS_SIZE		// 4 KiB scratch
 
 // Private typedefs
 // ****************
@@ -112,8 +111,8 @@ uint8_t 	*mkfs_scratch;
  *      None
  */
 void FS_init(void) {
-	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
-//	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
+	mkfs_scratch = (uint8_t *) RAM_SHARED_FS;	// 4 KiB scratch area for mkfs
+//	mkfs_scratch = pvPortMalloc(SCRATCH_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	if (FS_MutexID == NULL) {
 		Error_Handler();

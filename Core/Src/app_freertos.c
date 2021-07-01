@@ -149,6 +149,7 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
 	SD_getSize();
+	FD_reset();
 	OLED_init();
 	PLEX_init();
 

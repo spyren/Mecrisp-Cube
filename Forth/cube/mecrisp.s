@@ -519,11 +519,15 @@ Forth:
 	bl		fs_strlen
 	bl		stype
 
+	bl		BSP_getSwitch3		// if button3 is pressed ignore rc.local
+	cmp		r0, #0
+	bne		3f
     // include 0:/etc/rc.local
     pushdatos
    	ldr		tos, =rc_local
     bl		fs_strlen
     bl		included
+3:
 
 	@ Ready to fly !
 .include "boot.s"

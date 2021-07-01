@@ -52,8 +52,6 @@
 
 // Defines
 // *******
-#define	RAM_SHARED			0x20038000
-
 #define FLASH_DUMMY_BYTE	0xFF
 
 #define W25Q128_PAGES		(65536)
@@ -71,6 +69,8 @@
 #define WRSR_CMD    (0x01)		// Write Status Register 1
 #define SE_CMD 		(0x20)		// Sector Erase – erase one sector in memory array
 #define CE_CMD 		(0x60)		// Chip Erase
+#define EN_RES_CMD	(0x66)		// Enable Reset
+#define RESET_CMD	(0x99)		// Reset
 
 
 // Private function prototypes
@@ -112,13 +112,13 @@ static uint8_t *scratch_sector; 	// protected by FD_MutexID
 
 /**
  *  @brief
- *      Initializes the flash drive.
+ *      Initializes the serial flash drive.
  *  @return
  *      None
  */
 void FD_init(void) {
 //	SDSPI_init();
-	scratch_sector = (uint8_t *) RAM_SHARED;
+	scratch_sector = (uint8_t *) RAM_SHARED_SECTOR;
 //	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
@@ -128,10 +128,28 @@ void FD_init(void) {
 	FD_getSize();
 }
 
+/**
+ *  @brief
+ *      Reset the serial flash device.
+ *  @return
+ *      None
+ */
+void FD_reset(void) {
+	// reset chip
+	osMutexAcquire(FD_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	SDSPI_Write(EN_RES_CMD);
+	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	SDSPI_Write(RESET_CMD);
+	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(FD_MutexID);
+}
+
 
 /**
  *  @brief
- *      Initializes the flash drive and get the size in KiB.
+ *      Initializes the serial flash drive and get the size in KiB.
  *  @return
  *      None
  */
@@ -141,7 +159,7 @@ void FD_getSize(void) {
 
 /**
  *  @brief
- *      Get the flash drive size in KiB.
+ *      Get the serial flash drive size in KiB.
  *  @return
  *      size in KiB
  */
@@ -152,7 +170,7 @@ int FD_getBlocks(void) {
 
 /**
   * @brief
-  *     Reads block(s) from a specified address from the flash drive.
+  *     Reads block(s) from a specified address from the serial flash drive.
   *
   * @param
   *     pData: Pointer to the buffer that will contain the data to transmit
@@ -191,9 +209,9 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 
 /**
   * @brief
-  *     Writes block(s) to a specified address to the internal flash.
+  *     Writes block(s) to a specified address to the serial flash drive.
   *
-  *     The flash is divided in 4 KiB (erasable) sectors.
+  *     The serial flash is divided in 4 KiB (erasable) sectors.
   *     If any byte in the block is not 0xFF the sector where the block
   *     belongs to has to be erased. The whole sector
   *     has to be saved before.
@@ -316,7 +334,7 @@ uint8_t FD_eraseDrive(void) {
 
 /**
   * @brief
-  *     Writes blocks to a flash sector.
+  *     Writes blocks to a serial flash sector.
   *
   *     The 512 bytes blocks have to be contiguous and marked in a bitfield.
   * @param
@@ -447,7 +465,7 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 
 /**
   * @brief
-  *     Erases a flash sector.
+  *     Erases a serial flash sector.
   * @param
   *     flash_addr: sector address (4 KiB sectors).
   * @retval

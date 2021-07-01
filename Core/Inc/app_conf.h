@@ -133,9 +133,20 @@
 #define CFG_USE_SMPS    1
 
 /* USER CODE BEGIN Generic_Parameters */
-#define MECRISP_CUBE_TAG "1.4.3"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.3 for STM32WB Feather, 63/384 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
+#define MECRISP_CUBE_TAG "1.4.4"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32WB Feather, 63/384 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
+
+// The SRAM2b is not part of the linker file because it is all secure for
+// any FW CPU2 supporting the Thread protocol. For BLE only applications,
+// the linker file may be updated with a new section to map RW data into
+// the SRAM2B from SRAM2B_BASE up to the SNBRSA address.
+// 16 KiB are shared
+#define	RAM_SHARED_B				0x20038000
+#define	RAM_SHARED_SECTOR			RAM_SHARED_B
+#define	RAM_SHARED_SECTOR_SIZE		0x1000
+#define	RAM_SHARED_FS				(RAM_SHARED_SECTOR + RAM_SHARED_SECTOR_SIZE)
+#define	RAM_SHARED_FS_SIZE			0x1000
 
 #undef CFG_GAP_DEVICE_NAME
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
