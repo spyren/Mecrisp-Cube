@@ -558,7 +558,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
+#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityAboveNormal
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 8)
 
 #define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
@@ -566,7 +566,7 @@ typedef enum
 #define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
 #define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
-#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
+#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityAboveNormal
 #define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
 
 #define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
@@ -574,7 +574,7 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
 #define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
-#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
+#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityAboveNormal
 #define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 6)
 
 #define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
@@ -582,7 +582,7 @@ typedef enum
 #define CFG_HRS_PROCESS_CB_MEM                (0)
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
-#define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
+#define CFG_HRS_PROCESS_PRIORITY              osPriorityAboveNormal
 #define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
 
 /* USER CODE BEGIN FreeRTOS_Defines */

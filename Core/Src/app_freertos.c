@@ -153,7 +153,7 @@ void MainThread(void *argument)
 	OLED_init();
 	PLEX_init();
 
-	osDelay(10);
+	osDelay(200);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 

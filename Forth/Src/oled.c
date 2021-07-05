@@ -166,13 +166,13 @@ void OLED_init(void) {
 	OLED_clear();
 	OLED_setPos(0,0);
 	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-Cube\r\n");
+	OLED_puts("Mecrisp-Cube");
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts(MECRISP_CUBE_TAG);
 #ifdef DEBUG
-	OLED_puts(" Debug\r\n");
+	OLED_puts("\r\nDebug\r\n");
 #else
-	OLED_puts("\r\n");
+	OLED_puts("\r\n\r\n");
 #endif
 	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");

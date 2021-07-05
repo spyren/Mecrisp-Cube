@@ -22,6 +22,7 @@
 #define FD_END_ADDRESS		0x01FFFFFF
 
 void    FD_init(void);
+void 	FD_reset(void);
 void    FD_getSize(void);
 int 	FD_getBlocks(void);
 
