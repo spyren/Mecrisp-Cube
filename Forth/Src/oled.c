@@ -1,6 +1,6 @@
 /**
  *  @brief
- *  	OLED driver based on the controller SSD1306.
+ *  	OLED driver based on the controller SSD1306 (and SH1107).
  *
  *  	Resolution 128x32 or 128x64, monochrome.
  *  	A page consists of 128 columns (horizontally, x) with 8 pixels (vertically, y).
@@ -8,6 +8,10 @@
  *  	There are 4 pages in 128x32 display, and 8 pages in a 128x64 display.
  *  	I2C Interface, address 60.
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
+ *
+ *  	The FeatherWing 128x64 OLED is different. x and y are interchanged,
+ *  	that means pages can't be written in the same way :-(
+ *  	but portrait is easy to implement.
  *  @file
  *      oled.c
  *  @author
@@ -84,35 +88,99 @@ static OLED_FontT CurrentFont = OLED_FONT6X8;
 
 
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x50 };		// --set display clock divide ratio/oscillator frequency POR
+//static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x51 };		// --set display clock divide ratio/oscillator frequency POR
+#else
 static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
+#endif
+
 static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 32 (1 to 64)
+//static const uint8_t mplx_ratio[] =     { 2, 0xA8, 0x7F };		// Set multiplex ratio 32 (1 to 64)
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t display_offset[] = { 2, 0xD3, 0x60 };		// Set display offset. 00 = no offset
+#else
 static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
+#endif
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t start_line_adr[] = { 2, 0xDC, 0x00 };		// display start line
+#else
 static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
+#endif
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t dcdc_en[] =		{ 2, 0xAD, 0x8A };		// Set DC-DC enable
+#else
 static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC enable
+#endif
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t adr_mode_horiz[] =	{ 1, 0x20 };			// Set Memory Addressing Mode?
+//static const uint8_t adr_mode_horiz[] =	{ 1, 0x21 };			// Set Memory Addressing Mode?
+#else
 static const uint8_t adr_mode_horiz[] =	{ 2, 0x20, 0b00 };		// Set Memory Addressing Mode
+#endif
+
 static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for Page Addressing Mode, 0-7
 static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
 static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t seg_remap[] = 		{ 1, 0xA0 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
+#else
 static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
+#endif
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t com_scan_rev[] = 	{ 1, 0xC0 };			// Set COM Output Scan Direction
+//static const uint8_t com_scan_rev[] = 	{ 1, 0xCF };			// Set COM Output Scan Direction
+#else
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
+#endif
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x4F };		// Set contrast control register (128)
+#else
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
+#endif
+
 #ifdef BONNET
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration adafruit bonnet
 #else
+#ifdef SH1107_PORTRAIT
+static const uint8_t com_pin_hw[] =     { 1, 0xE3 };			// NOP
+#else
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
 #endif
-static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
+#endif
+
 #ifdef BONNET
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period adafruit bonnet
 #else
-static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period
+static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period & SH1107
 #endif
+
 #ifdef BONNET
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
 #else
+#ifdef SH1107_PORTRAIT
+static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x35};		// --set vcomh 0x20,0.77xVcc
+#else
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 #endif
+#endif
+
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
+
+#ifdef SH1107_PORTRAIT
+static const uint8_t div_ratio[] =      { 1, 0xE3 };			// NOP
+#else
 static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
+#endif
+
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
 //static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
 static const uint8_t display_on[] =		{ 1, 0xAF };			// Display ON in normal mode
@@ -133,10 +201,10 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 		ram_to_display,
 		display_offset,
 		clk_div_ratio,
-		div_ratio, //
+		div_ratio,
 		pre_charge,
 		com_pin_hw,
-		set_vcomh, //
+		set_vcomh,
 		dcdc_en,
 		display_on
 };

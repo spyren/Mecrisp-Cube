@@ -35,9 +35,31 @@
 #define OLED_I2C_ADR		60
 
 //#define	BONNET				1
+//#define	SH1107				1
+#define	SH1107_PORTRAIT		1
 
+#ifdef SH1107_PORTRAIT
+#define OLED_X_RESOLUTION	64
+#else
 #define OLED_X_RESOLUTION	128
+#endif
+
+#ifdef BONNET
+#define OLED_Y_RESOLUTION	64
+#endif
+
+#ifdef SH1107_PORTRAIT
+#define OLED_Y_RESOLUTION	128
+#endif
+
+#ifdef SH1107
+#define OLED_Y_RESOLUTION	64
+#endif
+
+#ifndef OLED_Y_RESOLUTION
 #define OLED_Y_RESOLUTION	32
+#endif
+
 #define OLED_LINES			(OLED_Y_RESOLUTION / 8)
 
 typedef enum {OLED_FONT6X8, OLED_FONT8X8, OLED_FONT8X16, OLED_FONT12X16} OLED_FontT;
