@@ -148,6 +148,7 @@ void PWR_ExitSleepMode( void )
   * @param none
   * @retval none
   */
+__attribute__((unused))
 static void Switch_On_HSI( void )
 {
   LL_RCC_HSI_Enable( );

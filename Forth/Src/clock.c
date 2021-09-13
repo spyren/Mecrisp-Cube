@@ -181,7 +181,7 @@ int RTC_setTime(uint32_t timestamp){
 uint64_t RTC_typeTime(uint64_t forth_stack) {
 	RTC_TimeTypeDef sTime;
 	RTC_DateTypeDef sDate;
-	char line[22];
+	char line[25];
 
 	uint64_t stack;
 	stack = forth_stack;

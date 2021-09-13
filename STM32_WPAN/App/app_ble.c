@@ -235,7 +235,7 @@ uint8_t  manuf_data[14] = {
 };
 
 /* USER CODE BEGIN PV */
-
+__attribute__((unused))
 static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
@@ -963,6 +963,7 @@ static void HciUserEvtProcess(void *argument)
 }
 
 /* USER CODE BEGIN FD_SPECIFIC_FUNCTIONS */
+__attribute__((unused))
 static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength) {
 	int8_t i;
 

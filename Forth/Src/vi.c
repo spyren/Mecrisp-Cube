@@ -1095,7 +1095,7 @@ static void do_cmd(char c)
 		dir = FORWARD;
 		if (c == 'B')
 			dir = BACK;
-		if (c == 'W' || isspace(dot[dir])) {
+		if (c == 'W' || isspace((unsigned char) dot[dir])) {
 			dot = skip_thing(dot, 1, dir, S_TO_WS);
 			dot = skip_thing(dot, 2, dir, S_OVER_WS);
 		}
@@ -1245,12 +1245,12 @@ static void do_cmd(char c)
 		if ((dot + dir) < text || (dot + dir) > end - 1)
 			break;
 		dot += dir;
-		if (isspace(*dot)) {
+		if (isspace((unsigned char) *dot)) {
 			dot = skip_thing(dot, (c == 'e') ? 2 : 1, dir, S_OVER_WS);
 		}
-		if (isalnum(*dot) || *dot == '_') {
+		if (isalnum((unsigned char) *dot) || *dot == '_') {
 			dot = skip_thing(dot, 1, dir, S_END_ALNUM);
-		} else if (ispunct(*dot)) {
+		} else if (ispunct((unsigned char) *dot)) {
 			dot = skip_thing(dot, 1, dir, S_END_PUNCT);
 		}
 		break;
@@ -1390,14 +1390,14 @@ static void do_cmd(char c)
 		if (cmdcnt-- > 1) {
 			do_cmd(c);
 		}				// repeat cnt
-		if (isalnum(*dot) || *dot == '_') {	// we are on ALNUM
+		if (isalnum((unsigned char) *dot) || *dot == '_') {	// we are on ALNUM
 			dot = skip_thing(dot, 1, FORWARD, S_END_ALNUM);
-		} else if (ispunct(*dot)) {	// we are on PUNCT
+		} else if (ispunct((unsigned char) *dot)) {	// we are on PUNCT
 			dot = skip_thing(dot, 1, FORWARD, S_END_PUNCT);
 		}
 		if (dot < end - 1)
 			dot++;		// move over word
-		if (isspace(*dot)) {
+		if (isspace((unsigned char) *dot)) {
 			dot = skip_thing(dot, 2, FORWARD, S_OVER_WS);
 		}
 		break;
@@ -1418,10 +1418,10 @@ static void do_cmd(char c)
 		if (cmdcnt-- > 1) {
 			do_cmd(c);
 		}				// repeat cnt
-		if (islower(*dot)) {
+		if (islower((unsigned char) *dot)) {
 			*dot = toupper(*dot);
 			file_modified = TRUE;	// has the file been modified
-		} else if (isupper(*dot)) {
+		} else if (isupper((unsigned char) *dot)) {
 			*dot = tolower(*dot);
 			file_modified = TRUE;	// has the file been modified
 		}
@@ -1525,7 +1525,7 @@ static char *get_one_address(char * p, int *addr)	// get colon addr, if present
 		p++;
 		q = begin_line(end - 1);
 		*addr = count_lines(text, q);
-	} else if (isdigit(*p)) {	// specific line number
+	} else if (isdigit((unsigned char) *p)) {	// specific line number
 		sscanf(p, "%d%n", addr, &st);
 		p += st;
 	} else {			// I don't reconise this
@@ -1614,7 +1614,7 @@ static void colon(char * buf)
 	// get the COMMAND into cmd[]
 	buf1 = cmd;
 	while (*buf != '\0') {
-		if (isspace(*buf))
+		if (isspace((unsigned char) *buf))
 			break;
 		*buf1++ = *buf++;
 	}
@@ -2315,7 +2315,7 @@ static void dot_scroll(int cnt, int dir)
 static void dot_skip_over_ws(void)
 {
 	// skip WS
-	while (isspace(*dot) && *dot != '\n' && dot < end - 1)
+	while (isspace((unsigned char) *dot) && *dot != '\n' && dot < end - 1)
 		dot++;
 }
 

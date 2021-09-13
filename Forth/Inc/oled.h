@@ -35,26 +35,23 @@
 #define OLED_I2C_ADR		60
 
 //#define	BONNET				1
-//#define	SH1107				1
-#define	SH1107_PORTRAIT		1
+#define	SH1107				1
+#define	SH1107_LANDSCAPE	1
 
-#ifdef SH1107_PORTRAIT
-#define OLED_X_RESOLUTION	64
-#else
+#ifdef SH1107
+#ifdef SH1107_LANDSCAPE
 #define OLED_X_RESOLUTION	128
+#define OLED_Y_RESOLUTION	64
+#else
+#define OLED_X_RESOLUTION	64
+#define OLED_Y_RESOLUTION	128
+#endif
 #endif
 
 #ifdef BONNET
 #define OLED_Y_RESOLUTION	64
 #endif
 
-#ifdef SH1107_PORTRAIT
-#define OLED_Y_RESOLUTION	128
-#endif
-
-#ifdef SH1107
-#define OLED_Y_RESOLUTION	64
-#endif
 
 #ifndef OLED_Y_RESOLUTION
 #define OLED_Y_RESOLUTION	32
@@ -73,5 +70,9 @@ uint8_t OLED_getPosY();
 int OLED_putc(int c);
 int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
+
+#ifdef SH1107
+void OLED_readRAM(const int row, const int column, unsigned char *buffer);
+#endif
 
 #endif /* INC_OLED_H_ */

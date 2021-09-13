@@ -89,98 +89,62 @@ static OLED_FontT CurrentFont = OLED_FONT6X8;
 
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
 
-#ifdef SH1107_PORTRAIT
+#ifdef SH1107
 static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x50 };		// --set display clock divide ratio/oscillator frequency POR
-//static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x51 };		// --set display clock divide ratio/oscillator frequency POR
+#ifdef SH1107_LANDSCAPE
+static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 64
 #else
-static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
+static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_X_RESOLUTION -1 };		// Set multiplex ratio 64
 #endif
-
-static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 32 (1 to 64)
-//static const uint8_t mplx_ratio[] =     { 2, 0xA8, 0x7F };		// Set multiplex ratio 32 (1 to 64)
-
-#ifdef SH1107_PORTRAIT
+#ifdef SH1107_LANDSCAPE
+static const uint8_t display_offset[] = { 2, 0xD3, 0x20 };		// Set display offset. 00 = no offset
+#else
 static const uint8_t display_offset[] = { 2, 0xD3, 0x60 };		// Set display offset. 00 = no offset
-#else
-static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
 #endif
-
-#ifdef SH1107_PORTRAIT
 static const uint8_t start_line_adr[] = { 2, 0xDC, 0x00 };		// display start line
-#else
-static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
-#endif
-
-#ifdef SH1107_PORTRAIT
 static const uint8_t dcdc_en[] =		{ 2, 0xAD, 0x8A };		// Set DC-DC enable
-#else
-static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC enable
-#endif
-
-#ifdef SH1107_PORTRAIT
 static const uint8_t adr_mode_horiz[] =	{ 1, 0x20 };			// Set Memory Addressing Mode?
-//static const uint8_t adr_mode_horiz[] =	{ 1, 0x21 };			// Set Memory Addressing Mode?
-#else
-static const uint8_t adr_mode_horiz[] =	{ 2, 0x20, 0b00 };		// Set Memory Addressing Mode
-#endif
-
 static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for Page Addressing Mode, 0-7
 static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
 static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
-
-#ifdef SH1107_PORTRAIT
 static const uint8_t seg_remap[] = 		{ 1, 0xA0 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
-#else
-static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
-#endif
-
-#ifdef SH1107_PORTRAIT
-static const uint8_t com_scan_rev[] = 	{ 1, 0xC0 };			// Set COM Output Scan Direction
-//static const uint8_t com_scan_rev[] = 	{ 1, 0xCF };			// Set COM Output Scan Direction
-#else
+#ifdef SH1107_LANDSCAPE
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
-#endif
-
-#ifdef SH1107_PORTRAIT
-static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x4F };		// Set contrast control register (128)
 #else
-static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
+static const uint8_t com_scan_rev[] = 	{ 1, 0xC0 };			// Set COM Output Scan Direction
 #endif
-
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x4F };		// Set contrast control register (128)
+static const uint8_t div_ratio[] =      { 1, 0xE3 };			// NOP
+static const uint8_t com_pin_hw[] =     { 1, 0xE3 };			// NOP
+static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x35};		// --set vcomh 0x20,0.77xVcc
+static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period & SH1107
+#else
+// SSD1306
+static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
+static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 32 or 64
+static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
+static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
+static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC enable
+static const uint8_t adr_mode_horiz[] =	{ 2, 0x20, 0b00 };		// Set Memory Addressing Mode
+static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for Page Addressing Mode, 0-7
+static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
+static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
+static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
+static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
+static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
 #ifdef BONNET
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration adafruit bonnet
-#else
-#ifdef SH1107_PORTRAIT
-static const uint8_t com_pin_hw[] =     { 1, 0xE3 };			// NOP
-#else
-static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
-#endif
-#endif
-
-#ifdef BONNET
+static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period adafruit bonnet
 #else
+static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
+static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period & SH1107
 #endif
 
-#ifdef BONNET
-static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
-#else
-#ifdef SH1107_PORTRAIT
-static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x35};		// --set vcomh 0x20,0.77xVcc
-#else
-static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 #endif
-#endif
-
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
-
-#ifdef SH1107_PORTRAIT
-static const uint8_t div_ratio[] =      { 1, 0xE3 };			// NOP
-#else
-static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
-#endif
-
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
 //static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
 static const uint8_t display_on[] =		{ 1, 0xAF };			// Display ON in normal mode
@@ -395,12 +359,20 @@ void OLED_clear(void) {
 	}
 
 	buf[0] = 0x40;  // write data
-	memset(&buf[1], 0, OLED_X_RESOLUTION);
+	memset(&buf[1], 0, 128);
+#ifdef SH1107_LANDSCAPE
+	for (i=0; i<(128/8); i++) {
+		OLED_setPos(i*8, 0);
+		IIC_setDevice(OLED_I2C_ADR);
+		IIC_putMessage(buf, 65);
+	}
+#else
 	for (i=0; i<OLED_LINES; i++) {
 		OLED_setPos(0, i);
 		IIC_setDevice(OLED_I2C_ADR);
 		IIC_putMessage(buf, 129);
 	}
+#endif
 	OLED_setPos(0, 0);
 }
 
@@ -426,6 +398,27 @@ void OLED_sendCommand(const uint8_t *command) {
 	IIC_putMessage(buf, command[0]+1);
 }
 
+#ifdef SH1107
+/**
+ *  @brief
+ *      Read data from display RAM into a buffer
+ *
+ *
+ *  @param[in]
+ *  	First byte contains the length of the command.
+ *  @return
+ *      None
+ */
+void OLED_readRAM(const int row, const int column, unsigned char *buffer) {
+	if (!oledReady) {
+		return;
+	}
+
+	buffer[0] = 0x00; // write command
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buffer, buffer[0]+1);
+}
+#endif
 
 // Private Functions
 // *****************
@@ -434,9 +427,15 @@ static void setPos(uint8_t x, uint8_t y) {
 	uint8_t buf[4];
 
 	buf[0] = 0x00; // write command
+#ifdef SH1107_LANDSCAPE
+	buf[1] = 0xb0 + x/8; // page address
+	buf[2] = (((y*8) & 0xf0) >> 4) | 0x10; // Set Higher Column Start Address
+	buf[3] = (y*8) & 0x0f; // | 0x01 // Set Lower Column Start Address
+#else
 	buf[1] = 0xb0 + y; // page address
 	buf[2] = ((x & 0xf0) >> 4) | 0x10; // Set Higher Column Start Address
 	buf[3] = x & 0x0f; // | 0x01 // Set Lower Column Start Address
+#endif
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 4);
 }
@@ -473,11 +472,21 @@ static void sendChar6x8(int ch) {
 	}
 
 	buf[0] = 0x40;  // write data
+#ifdef	SH1107_LANDSCAPE
+	for (i = 0; i < 6; i++) {
+		buf[i+1] = 0;
+	}
+
+	FONT6X8_transposeGlyph(ch, buf+1);
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 7);
+#else
 	for (i = 0; i < 6; i++) {
 		buf[i+1] = FONT6X8_getColumn(ch, i);
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 7);
+#endif
 
 	CurrentPosX += 6;
 	if (CurrentPosX >= OLED_X_RESOLUTION) {
@@ -488,6 +497,10 @@ static void sendChar6x8(int ch) {
 		}
 		OLED_setPos(0, CurrentPosY);
 	}
+
+#ifdef SH1107_LANDSCAPE
+	OLED_setPos(CurrentPosX, CurrentPosY);
+#endif
 
 }
 
@@ -523,13 +536,44 @@ static void sendChar8x8(int ch) {
 	}
 
 	buf[0] = 0x40;  // write data
+#ifdef	SH1107_LANDSCAPE
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = 0;
+	}
+
+	FONT8X8_transposeGlyph(ch, buf+1);
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 9);
+#else
+	uint8_t tx[2];
+	tx[0] = 0x40;  // write data
+	uint8_t j;
+
+	// fill the array with 8 columns
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = FONT8X8_getColumn(ch, i);
 	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+
+	// write rows
+	for (j = 0; j < 8; j++) {
+
+		for (i = 0; i < 8; i++) {
+			if (buf[i]) {
+
+			}
+			tx[1] = bit j buf[i];
+		}
+		IIC_setDevice(OLED_I2C_ADR);
+		IIC_putMessage(tx, 2);
+	}
+
+
+#endif
 
 	CurrentPosX += 8;
+#ifdef SH1107_LANDSCAPE
+	OLED_setPos(CurrentPosX, CurrentPosY);
+#endif
 }
 
 
