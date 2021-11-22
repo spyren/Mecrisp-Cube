@@ -90,7 +90,8 @@ static OLED_FontT CurrentFont = OLED_FONT6X8;
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
 
 #ifdef SH1107
-static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x50 };		// --set display clock divide ratio/oscillator frequency POR
+//static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x50 };		// --set display clock divide ratio/oscillator frequency POR
+static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x41 };		// --set display clock divide ratio/oscillator frequency POR
 #ifdef SH1107_LANDSCAPE
 static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 64
 #else
@@ -113,7 +114,8 @@ static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Dir
 #else
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC0 };			// Set COM Output Scan Direction
 #endif
-static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x4F };		// Set contrast control register (128)
+//static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x4F };		// Set contrast control register (128)
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x6E };		// Set contrast control register (128)
 static const uint8_t div_ratio[] =      { 1, 0xE3 };			// NOP
 static const uint8_t com_pin_hw[] =     { 1, 0xE3 };			// NOP
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x35};		// --set vcomh 0x20,0.77xVcc
@@ -186,6 +188,9 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 void OLED_init(void) {
 	uint8_t i;
 
+	BSP_setDigitalPin(11, 0); // D11 low (command)
+	BSP_setDigitalPinMode(11, 3); // D11 output push pull
+
 	if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADR << 1, 5, 100) != HAL_OK) {
 		// OLED is not ready
 		return;
@@ -194,6 +199,10 @@ void OLED_init(void) {
 
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
 		OLED_sendCommand(ssd1306_init_sequence[i]);
+	}
+	if (OLED_readStatus() != 7) {
+		// the display is BUSY or OFF or the ID is not 7
+		;
 	}
 	OLED_clear();
 	OLED_setPos(0,0);
@@ -401,23 +410,131 @@ void OLED_sendCommand(const uint8_t *command) {
 #ifdef SH1107
 /**
  *  @brief
- *      Read data from display RAM into a buffer
+ *      Read the status and ID byte from the OLED controller
+ *  @return
+ *      None Bit7: BUSY; Bit6: ON 0, OFF 1; Bit5..7: ID 000111
+ */
+int OLED_readStatus(void) {
+	uint8_t status;
+
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_getMessage(&status, 1);
+	return status;
+}
+
+
+/**
+ *  @brief
+ *      Read data from display RAM into a buffer at the Cursor Position
  *
+ *         page x   page y   page z   page t
+ *       | Byte 0 | Byte 1 | Byte 2 | Byte 3 |
+ *       |01234567|01234567|01234567|01234567|
+ *       +--------+--------+--------+--------+
+ *      0|aaaaaaaa|        |        |        |
+ *      1|bbbbbbbb|        |        |        |
+ *      2|cccccccc|        |        |        |
+ *      3|dddddddd|        |        |        |
+ *      4|eeeeeeee|        |        |        |
+ *      5|ffffffff|        |        |        |
+ *      6|gggggggg|        |        |        |
+ *      7|hhhhhhhh|        |        |        |
  *
  *  @param[in]
- *  	First byte contains the length of the command.
+ *  	Buffer  see above
  *  @return
  *      None
  */
-void OLED_readRAM(const int row, const int column, unsigned char *buffer) {
+void OLED_readRAM(unsigned int *buffer, const int pages) {
+	int byte_i;
+	int row_i;
+
+	uint8_t data[8];
+
 	if (!oledReady) {
 		return;
 	}
 
-	buffer[0] = 0x00; // write command
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buffer, buffer[0]+1);
+	// clear buffer
+	for (row_i = 0; row_i < 8; row_i++) {
+		buffer[row_i] = 0;
+		data[row_i] = 0;
+	}
+
+	// read RAM
+	for (byte_i = 0; byte_i < pages; byte_i++) {
+		if (CurrentPosX+byte_i*8 > OLED_X_RESOLUTION) {
+			break;
+		}
+		setPos(CurrentPosX+byte_i*8, CurrentPosY);
+
+		BSP_setDigitalPin(11, 1); // D11 high (data)
+		IIC_setDevice(OLED_I2C_ADR_DATA);
+		IIC_getMessage(data, 8);
+		BSP_setDigitalPin(11, 0); // D11 low (command)
+
+		// move page to the byte position
+		for (row_i = 0; row_i < 8; row_i++) {
+			buffer[row_i] |= (data[row_i] << (byte_i*8));
+		}
+	}
 }
+
+/**
+ *  @brief
+ *      Write data to display RAM at the Cursor Position
+ *
+ *         page x   page y   page z   page t
+ *       | Byte 0 | Byte 1 | Byte 2 | Byte 3 |
+ *       |01234567|01234567|01234567|01234567|
+ *       +--------+--------+--------+--------+
+ *      0|aaaaaaaa|        |        |        |
+ *      1|bbbbbbbb|        |        |        |
+ *      2|cccccccc|        |        |        |
+ *      3|dddddddd|        |        |        |
+ *      4|eeeeeeee|        |        |        |
+ *      5|ffffffff|        |        |        |
+ *      6|gggggggg|        |        |        |
+ *      7|hhhhhhhh|        |        |        |
+ *
+ *  @param[in]
+ *  	buffer see above
+ *  @return
+ *      None
+ */
+void OLED_writeRAM(unsigned int *buffer, const int pages) {
+	int byte_i;
+	int row_i;
+
+	uint8_t data[9];
+
+	if (!oledReady) {
+		return;
+	}
+
+	// write RAM
+	data[0] = 0x40;  // write data
+	for (byte_i = 0; byte_i < pages; byte_i++) {
+		if (CurrentPosX+byte_i*8 > OLED_X_RESOLUTION) {
+			break;
+		}
+		setPos(CurrentPosX+byte_i*8, CurrentPosY);
+
+		// prepare buffer
+		for (row_i = 0; row_i < 8; row_i++) {
+			data[row_i+1] = (buffer[row_i] << (byte_i*8)) & 0xFF;
+		}
+
+		IIC_setDevice(OLED_I2C_ADR);
+		IIC_putMessage(data, 9);
+		// write direct into the display RAM
+//		BSP_setDigitalPin(11, 1); // D11 high (data)
+//		IIC_setDevice(OLED_I2C_ADR_DATA);
+//		IIC_putMessage(data+1, 8);
+//		BSP_setDigitalPin(11, 0); // D11 low (command)
+	}
+}
+
 #endif
 
 // Private Functions
@@ -442,7 +559,11 @@ static void setPos(uint8_t x, uint8_t y) {
 
 
 static void sendChar6x8(int ch) {
+#ifdef	SH1107_LANDSCAPE
+	uint8_t buf[9];
+#else
 	uint8_t buf[7];
+#endif
 	uint8_t i;
 
 	if (ch == '\n') {
@@ -471,19 +592,26 @@ static void sendChar6x8(int ch) {
 		OLED_setPos(0, CurrentPosY);
 	}
 
-	buf[0] = 0x40;  // write data
 #ifdef	SH1107_LANDSCAPE
-	for (i = 0; i < 6; i++) {
-		buf[i+1] = 0;
-	}
+	unsigned int ram[8];
 
-	FONT6X8_transposeGlyph(ch, buf+1);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 7);
+	OLED_readRAM(ram, 2);
+	FONT6X8_transposeGlyph(ch, buf);
+	for (i = 0; i < 8; i++) {
+		// clear 6 bits
+		ram[i] &= ~(0x3F << (CurrentPosX % 8));
+		// set 6 bits
+		ram[i] |= buf[i] << (CurrentPosX % 8);
+//		ram[i] |= buf[i];
+	}
+	OLED_writeRAM(ram, 2);
+
+
 #else
 	for (i = 0; i < 6; i++) {
 		buf[i+1] = FONT6X8_getColumn(ch, i);
 	}
+	buf[0] = 0x40;  // write data
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 7);
 #endif

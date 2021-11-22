@@ -320,6 +320,10 @@ void FONT6X8_transposeGlyph(int ch, unsigned char* pattern) {
 	int x, y;
 	int column;
 
+	for (x=0; x<8; x++) {
+		pattern[x] = 0;
+	}
+
 	for (y=0; y<6; y++) {
 		column = FONT6X8_getColumn(ch, y);
 		if (column) {

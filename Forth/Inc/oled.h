@@ -32,7 +32,9 @@
 #ifndef INC_OLED_H_
 #define INC_OLED_H_
 
-#define OLED_I2C_ADR		60
+#define OLED_I2C_ADR		60		// 0x3c
+#define OLED_I2C_ADR_DATA	61		// 0x3d for data read/write
+
 
 //#define	BONNET				1
 #define	SH1107				1
@@ -72,7 +74,9 @@ int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 
 #ifdef SH1107
-void OLED_readRAM(const int row, const int column, unsigned char *buffer);
+int OLED_readStatus(void);
+void OLED_readRAM(unsigned int *buffer, const int pages);
+void OLED_writeRAM(unsigned int *buffer, const int pages);
 #endif
 
 #endif /* INC_OLED_H_ */
