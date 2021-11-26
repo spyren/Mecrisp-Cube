@@ -33,8 +33,6 @@
 #define INC_OLED_H_
 
 #define OLED_I2C_ADR		60		// 0x3c
-#define OLED_I2C_ADR_DATA	61		// 0x3d for data read/write
-
 
 //#define	BONNET				1
 #define	SH1107				1
