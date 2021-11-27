@@ -6,7 +6,10 @@
  *  	A page consists of 128 columns (horizontally, x) with 8 pixels (vertically, y).
  *  	The 8 pixels are in one byte.
  *  	There are 4 pages in 128x32 display, and 8 pages in a 128x64 display.
+ *  	A page is 8 pixel wide stripe on the display.
  *  	I2C Interface, address 60.
+ *  	The display RAM can not be read over the I2C, therefore the display content is
+ *  	mirrored in a buffer.
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *
  *  	The FeatherWing 128x64 OLED is different. x and y are interchanged,
@@ -64,7 +67,8 @@ static void putGlyph6x8(int ch);
 static void putGlyph8x8(int ch);
 static void putGlyph8x16(int ch);
 static void putGlyph12x16(int ch);
-
+static int autowrap(int ch, int width, int row);
+static void transpose_page(int page, int upper, uint8_t *buf);
 
 // Global Variables
 // ****************
@@ -200,7 +204,7 @@ void OLED_init(void) {
 	}
 	oledReady = TRUE;
 
-	display_buffer = pvPortMalloc(sizeof(display_buffer_t));	//
+	display_buffer = pvPortMalloc(sizeof(display_buffer_t));
 
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
 		OLED_sendCommand(ssd1306_init_sequence[i]);
@@ -222,7 +226,6 @@ void OLED_init(void) {
 #endif
 	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2021 peter@spyr.ch");
-
 }
 
 
@@ -348,6 +351,7 @@ uint8_t OLED_getPosY() {
 
 /**
  *  @brief
+ *  	Set the current font
  *  @param[in]
  *      font
  *  @return
@@ -388,12 +392,59 @@ void OLED_clear(void) {
 	}
 #endif
 	OLED_setPos(0, 0);
+	display_buffer->blob[0] =  0;
 }
 
 
 /**
  *  @brief
+ *  	Update the OLED display
+ *  @return
+ *      none
+ */
+void OLED_update(void) {
+	int i;
+	int j;
+	int oldx = CurrentPosX;
+	int oldy = CurrentPosY;
+
+	uint8_t buf[9];
+
+	if (!oledReady) {
+		return;
+	}
+
+	buf[0] = 0x40;
+	OLED_setPos(0, 0);
+
+#ifdef SH1107_LANDSCAPE
+	for (i=0; i<OLED_LINES; i++) {
+		for (j=0; j<(OLED_X_RESOLUTION/8); j++) {
+			transpose_page(0, 1, buf);
+			OLED_setPos(j*8, i);
+		}
+	}
+
+#else
+	for (i=0; i<OLED_LINES; i++) {
+		for (j=0; j<(OLED_X_RESOLUTION/8); j++) {
+			memcpy(buf+1, &display_buffer->rows[i][j*8], 8);
+
+			OLED_setPos(j*8, i);
+			IIC_setDevice(OLED_I2C_ADR);
+			IIC_putMessage(buf, 9);
+		}
+	}
+#endif
+	OLED_setPos(oldx, oldy);
+
+}
+
+/**
+ *  @brief
  *      Sends a command to the OLED controller
+ *
+ *      Max. length of a command is 4 bytes.
  *  @param[in]
  *  	First byte contains the length of the command.
  *  @return
@@ -431,6 +482,16 @@ int OLED_readStatus(void) {
 // Private Functions
 // *****************
 
+/**
+ *  @brief
+ *      Set the display position (page and column address)
+ *  @param[in]
+ *  	x 0 .. 127, column
+ *  @param[in]
+ *  	y 0 .. OLED_LINES, page/line
+ *  @return
+ *      None
+ */
 static void setPos(uint8_t x, uint8_t y) {
 	uint8_t buf[4];
 
@@ -454,6 +515,8 @@ static void setPos(uint8_t x, uint8_t y) {
  *      Put a glyph in 6x8 font to the display
  *  @param[in]
  *  	ch code page 850
+ *  @return
+ *      None
  */
 static void putGlyph6x8(int ch) {
 #ifdef	SH1107_LANDSCAPE
@@ -463,30 +526,8 @@ static void putGlyph6x8(int ch) {
 #endif
 	uint8_t i;
 
-	if (ch == '\n') {
-		// line feed
-		CurrentPosY++;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(CurrentPosX, CurrentPosY);
-		return;
-	}
-	if (ch == '\b') {
-		// backspace
-		if (CurrentPosX >= 6) {
-			OLED_setPos(CurrentPosX-6, CurrentPosY);
-		}
+	if (autowrap(ch, 6, 1)) {
 		return ;
-	}
-
-	if (CurrentPosX > OLED_X_RESOLUTION - 6) {
-		// auto wrap
-		CurrentPosY++;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
 	}
 
 	// fill the buffer with 6 columns
@@ -497,50 +538,13 @@ static void putGlyph6x8(int ch) {
 	buf[0] = 0x40;  // write data
 
 #ifdef	SH1107_LANDSCAPE
-	int x, y;
-	int column;
-	int fragment;
-
-	// check for fragmentation
-	fragment = CurrentPosX % 8;
-
 	// first page
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY][CurrentPosX-fragment+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the first page
-	setPos(CurrentPosX-fragment, CurrentPosY);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	transpose_page(0, 1, buf);
 
 	// second page
-	if (fragment+6 >= 8)  {
+	if ((CurrentPosX % 6) >= 8)  {
 		// second page needed
-		memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-		// transpose glyph and copy into I2C array
-		for (y=0; y<8; y++) {
-			column = display_buffer->rows[CurrentPosY][CurrentPosX+(8-fragment)+y];
-			if (column) {
-				// only needed if a bit is set
-				for (x=0; x<8; x++) {
-					buf[x+1] |= ((column & 0x01) << y);
-					column = column >> 1;
-				}
-			}
-		}
-		// set pos to the beginning of the second page
-		setPos(CurrentPosX+(8-fragment), CurrentPosY);
-		IIC_setDevice(OLED_I2C_ADR);
-		IIC_putMessage(buf, 9);
+		transpose_page(1, 1, buf);
 	}
 
 #else
@@ -552,19 +556,7 @@ static void putGlyph6x8(int ch) {
 	IIC_putMessage(buf, 7);
 #endif
 
-	CurrentPosX += 6;
-	if (CurrentPosX >= OLED_X_RESOLUTION) {
-		// auto wrap
-		CurrentPosY++;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
-#ifdef SH1107_LANDSCAPE
-	} else {
-		OLED_setPos(CurrentPosX, CurrentPosY);
-#endif
-	}
+	postwrap(6, 1);
 }
 
 
@@ -573,35 +565,15 @@ static void putGlyph6x8(int ch) {
  *      Put a glyph in 8x8 font to the display
  *  @param[in]
  *  	ch code page 850
+ *  @return
+ *      None
  */
 static void putGlyph8x8(int ch) {
 	uint8_t buf[9];
 	uint8_t i;
 
-	if (ch == '\n') {
-		// line feed
-		CurrentPosY++;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(CurrentPosX, CurrentPosY);
-		return;
-	}
-	if (ch == '\b') {
-		// backspace
-		if (CurrentPosX >= 8) {
-			OLED_setPos(CurrentPosX-8, CurrentPosY);
-		}
-		return;
-	}
-
-	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
-		// auto wrap
-		CurrentPosY++;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
+	if (autowrap(ch, 8, 1)) {
+		return ;
 	}
 
 	// fill the buffer with 8 columns
@@ -612,49 +584,13 @@ static void putGlyph8x8(int ch) {
 	buf[0] = 0x40;  // write data
 
 #ifdef	SH1107_LANDSCAPE
-	int x, y;
-	int column;
-	int fragment;
-
-	// check for fragmentation
-	fragment = CurrentPosX % 8;
-
 	// first page
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY][CurrentPosX-fragment+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the first page
-	setPos(CurrentPosX-fragment, CurrentPosY);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	transpose_page(0, 1, buf);
 
 	// second page
-	if (fragment == 0) {
-		memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-		// transpose glyph and copy into I2C array
-		for (y=0; y<8; y++) {
-			column = display_buffer->rows[CurrentPosY][CurrentPosX+(8-fragment)+y];
-			if (column) {
-				// only needed if a bit is set
-				for (x=0; x<8; x++) {
-					buf[x+1] |= ((column & 0x01) << y);
-					column = column >> 1;
-				}
-			}
-		}
-		// set pos to the beginning of the second page
-		setPos(CurrentPosX+(8-fragment), CurrentPosY);
-		IIC_setDevice(OLED_I2C_ADR);
-		IIC_putMessage(buf, 9);
+	if ((CurrentPosX % 8) >= 8)  {
+		// second page needed
+		transpose_page(1, 1, buf);
 	}
 
 #else
@@ -666,19 +602,7 @@ static void putGlyph8x8(int ch) {
 	IIC_putMessage(buf, 9);
 #endif
 
-	CurrentPosX += 8;
-	if (CurrentPosX >= OLED_X_RESOLUTION) {
-		// auto wrap
-		CurrentPosY++;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
-#ifdef SH1107_LANDSCAPE
-	} else {
-		OLED_setPos(CurrentPosX, CurrentPosY);
-#endif
-	}
+	postwrap(8, 1);
 }
 
 
@@ -687,34 +611,15 @@ static void putGlyph8x8(int ch) {
  *      Put a glyph in 8x16 font to the display
  *  @param[in]
  *  	ch code page 850
+ *  @return
+ *      None
  */
 static void putGlyph8x16(int ch) {
 	uint8_t buf[9];
 	uint8_t i;
 
-	if (ch == '\n') {
-		// line feed
-		CurrentPosY += 2;
-		if ((CurrentPosY+1) >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		setPos(CurrentPosX, CurrentPosY);
-		return;
-	}
-	if (ch == '\b') {
-		// backspace
-		if (CurrentPosX >= 8) {
-			OLED_setPos(CurrentPosX-12, CurrentPosY);
-		}
-		return;
-	}
-
-	if (CurrentPosX > OLED_X_RESOLUTION - 8) {
-		CurrentPosY += 2;
-		if ((CurrentPosY+1) >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
+	if (autowrap(ch, 8, 2)) {
+		return ;
 	}
 
 	// fill the buffer with 8 columns
@@ -726,88 +631,18 @@ static void putGlyph8x16(int ch) {
 	buf[0] = 0x40;  // write data
 
 #ifdef	SH1107_LANDSCAPE
-	int x, y;
-	int column;
-	int fragment;
-
-	// check for fragmentation
-	fragment = CurrentPosX % 8;
-
-	// first page
-	// upper
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY][CurrentPosX-fragment+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the first page
-	setPos(CurrentPosX-fragment, CurrentPosY);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
-
-	// lower
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY+1][CurrentPosX-fragment+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the first page
-	setPos(CurrentPosX-fragment, CurrentPosY+1);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	// first page, upper
+	transpose_page(0, 1, buf);
+	// first page, lower
+	transpose_page(0, 0, buf);
 
 	// second page
-	if (fragment == 0) {
-		// upper
-		memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-		// transpose glyph and copy into I2C array
-		for (y=0; y<8; y++) {
-			column = display_buffer->rows[CurrentPosY][CurrentPosX+(8-fragment)+y];
-			if (column) {
-				// only needed if a bit is set
-				for (x=0; x<8; x++) {
-					buf[x+1] |= ((column & 0x01) << y);
-					column = column >> 1;
-				}
-			}
-		}
-		// set pos to the beginning of the second page
-		setPos(CurrentPosX+(8-fragment), CurrentPosY);
-		IIC_setDevice(OLED_I2C_ADR);
-		IIC_putMessage(buf, 9);
-
-		// lower
-		memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-		// transpose glyph and copy into I2C array
-		for (y=0; y<8; y++) {
-			column = display_buffer->rows[CurrentPosY+1][CurrentPosX+(8-fragment)+y];
-			if (column) {
-				// only needed if a bit is set
-				for (x=0; x<8; x++) {
-					buf[x+1] |= ((column & 0x01) << y);
-					column = column >> 1;
-				}
-			}
-		}
-		// set pos to the beginning of the second page
-		setPos(CurrentPosX+(8-fragment), CurrentPosY+1);
-		IIC_setDevice(OLED_I2C_ADR);
-		IIC_putMessage(buf, 9);
+	if ((CurrentPosX % 8) >= 8)  {
+		// second page needed
+		transpose_page(1, 1, buf);
+		transpose_page(1, 0, buf);
 	}
+
 
 #else
 	// copy into I2C array
@@ -826,19 +661,7 @@ static void putGlyph8x16(int ch) {
 
 #endif
 
-	CurrentPosX += 8;
-	if (CurrentPosX >= OLED_X_RESOLUTION) {
-		// auto wrap
-		CurrentPosY += 2;
-		if (CurrentPosY >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
-#ifdef SH1107_LANDSCAPE
-	} else {
-		OLED_setPos(CurrentPosX, CurrentPosY);
-#endif
-	}
+	postwrap(8, 2);
 }
 
 
@@ -847,34 +670,15 @@ static void putGlyph8x16(int ch) {
  *      Put a glyph in 12x16 font to the display
  *  @param[in]
  *  	ch code page 850
+ *  @return
+ *      None
  */
 static void putGlyph12x16(int ch) {
 	uint8_t buf[13];
 	uint8_t i;
 
-	if (ch == '\n') {
-		// line feed
-		CurrentPosY += 2;
-		if ((CurrentPosY+1) >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		setPos(CurrentPosX, CurrentPosY);
-		return;
-	}
-	if (ch == '\b') {
-		// backspace
-		if (CurrentPosX >= 12) {
-			OLED_setPos(CurrentPosX-12, CurrentPosY);
-		}
-		return;
-	}
-
-	if (CurrentPosX > OLED_X_RESOLUTION - 12) {
-		CurrentPosY += 2;
-		if ((CurrentPosY+1) >= OLED_LINES) {
-			CurrentPosY = 0;
-		}
-		OLED_setPos(0, CurrentPosY);
+	if (autowrap(ch, 12, 2)) {
+		return ;
 	}
 
 	// fill the buffer with 12 columns
@@ -886,89 +690,22 @@ static void putGlyph12x16(int ch) {
 	buf[0] = 0x40;  // write data
 
 #ifdef	SH1107_LANDSCAPE
-	int x, y;
-	int column;
-	int fragment;
+	// first page, upper
+	transpose_page(0, 1, buf);
+	// first page, lower
+	transpose_page(0, 0, buf);
 
-	// check for fragmentation
-	fragment = CurrentPosX % 8;
-
-	// first page (it needs 2 or 3 pages)
-	// upper
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY][CurrentPosX-fragment+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the first page
-	setPos(CurrentPosX-fragment, CurrentPosY);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
-
-	// lower
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY+1][CurrentPosX-fragment+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the first page
-	setPos(CurrentPosX-fragment, CurrentPosY+1);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
-
-	// second page
-	// upper
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY][CurrentPosX+(8-fragment)+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the second page
-	setPos(CurrentPosX+(8-fragment), CurrentPosY);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
-
-	// lower
-	memset(buf+1, 0, sizeof(buf)-1); 	// clear the I2C array
-	// transpose glyph and copy into I2C array
-	for (y=0; y<8; y++) {
-		column = display_buffer->rows[CurrentPosY+1][CurrentPosX+(8-fragment)+y];
-		if (column) {
-			// only needed if a bit is set
-			for (x=0; x<8; x++) {
-				buf[x+1] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-	// set pos to the beginning of the second page
-	setPos(CurrentPosX+(8-fragment), CurrentPosY+1);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	// second page, upper
+	transpose_page(1, 1, buf);
+	// first page, lower
+	transpose_page(1, 0, buf);
 
 	// third page
+	if ((CurrentPosX % 8) >= 8)  {
+		// third page needed
+		transpose_page(2, 1, buf);
+		transpose_page(2, 0, buf);
+	}
 
 
 #else
@@ -988,10 +725,113 @@ static void putGlyph12x16(int ch) {
 
 #endif
 
-	CurrentPosX += 8;
+	postwrap(12, 2);
+}
+
+
+/**
+ *  @brief
+ *      Test for special chars and for free space
+ *  @param[in]
+ *  	ch character
+ *  @param[in]
+ *  	width character width
+ *  @param[in]
+ *  	row per character
+ *  @return
+ *  	1 finished, 0 ready for glyph
+ */
+static int autowrap(int ch, int width, int row) {
+	if (ch == '\n') {
+		// line feed
+		CurrentPosY += row;
+		if (CurrentPosY >= OLED_LINES) {
+			CurrentPosY = 0;
+		}
+		OLED_setPos(CurrentPosX, CurrentPosY);
+		return 1;
+	}
+	if (ch == '\b') {
+		// backspace
+		if (CurrentPosX >= width) {
+			OLED_setPos(CurrentPosX-width, CurrentPosY);
+		}
+		return 1;
+	}
+
+	if (CurrentPosX > OLED_X_RESOLUTION - width) {
+		// auto wrap line
+		CurrentPosY += row;
+		if (CurrentPosY >= OLED_LINES) {
+			// auto wrap display
+			CurrentPosY = 0;
+		}
+		OLED_setPos(0, CurrentPosY);
+	}
+	return 0;
+}
+
+
+/**
+ *  @brief
+ *      Transpose a glyph for one page (stripe) from buffer to display
+ *  @param[in]
+ *  	page 0, 1 or 2
+ *  @param[in]
+ *  	upper 1, 0 lower
+ *  @param[in]
+ *  	buffer for I2C
+ *  @return
+ *      None
+ */
+static void transpose_page(int page, int upper, uint8_t *buf) {
+	int x, y;
+	int column;
+	int fragment;
+	int row = CurrentPosY;
+	int col;
+	// check for fragmentation
+	fragment = CurrentPosX % 8;
+
+	if (!upper) {
+		row++;
+	}
+
+	col = CurrentPosX-fragment+page*8;
+
+	memset(buf+1, 0, 8); 	// clear the I2C array
+	// transpose glyph and copy into I2C array
+	for (y=0; y<8; y++) {
+		column = display_buffer->rows[row][col+y];
+		if (column) {
+			// only needed if a bit is set
+			for (x=0; x<8; x++) {
+				buf[x+1] |= ((column & 0x01) << y);
+				column = column >> 1;
+			}
+		}
+	}
+	// set pos to the beginning of the first page
+	setPos(col, row);
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 9);
+}
+
+
+/**
+ *  @brief
+ *      Test for wrap
+ *  @param[in]
+ *  	width character width
+ *  @param[in]
+ *  	row per character
+ */
+void postwrap(int width, int row) {
+	CurrentPosX += width;
+
 	if (CurrentPosX >= OLED_X_RESOLUTION) {
 		// auto wrap
-		CurrentPosY += 2;
+		CurrentPosY += row;
 		if (CurrentPosY >= OLED_LINES) {
 			CurrentPosY = 0;
 		}
@@ -1003,6 +843,8 @@ static void putGlyph12x16(int ch) {
 	}
 }
 
+
+// XPM ? ICO (Favicon)
 //void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
 // OLED_X_RESOLUTIONx32/8=512
 // bitmap?

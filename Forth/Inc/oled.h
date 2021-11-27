@@ -64,6 +64,7 @@ typedef enum {OLED_FONT6X8, OLED_FONT8X8, OLED_FONT8X16, OLED_FONT12X16} OLED_Fo
 void OLED_init(void);
 void OLED_sendCommand(const uint8_t *command);
 void OLED_clear(void);
+void OLED_update(void);
 void OLED_setPos(uint8_t x, uint8_t y);
 uint8_t OLED_getPosX();
 uint8_t OLED_getPosY();
@@ -73,8 +74,6 @@ void OLED_setFont(OLED_FontT font);
 
 #ifdef SH1107
 int OLED_readStatus(void);
-void OLED_readRAM(unsigned int *buffer, const int pages);
-void OLED_writeRAM(unsigned int *buffer, const int pages);
 #endif
 
 #endif /* INC_OLED_H_ */

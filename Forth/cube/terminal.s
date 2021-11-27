@@ -297,6 +297,17 @@ oledclr:
 
 
 @ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oledupdate"
+oledclr:
+        @ ( --  ) Update the OLED display
+// void OLED_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		OLED_update
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oledfont"
 oledfont:
         @ ( u -- ) select font for the OLED
