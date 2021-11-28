@@ -32,29 +32,49 @@
 #ifndef INC_OLED_H_
 #define INC_OLED_H_
 
+#define OLED_4PIN_128X32	0		// the cheap one with 4 pins, Adafruit Raspberry Pi #3527
+#define	OLED_BONNET_128X64	1		// Adafruit Bonnet for Raspberry Pi #3531
+#define OLED_FEATHER_128X32	2		// Adafruit FeatherWing #2900
+#define OLED_FEATHER_128X64	3		// Adafruit FeatherWing #4650
+#define OLED_OCTOPUS_128X64	4		// Octopus PIS-1277
+
+#define OLED_LANDSCAPE		0
+#define	OLED_PORTRAIT		1
+
+// configure your OLED type
+#define OLED_DISPLAY_TYPE	OLED_FEATHER_128X64
+#define	OLED_ORIENTATION	OLED_LANDSCAPE
+
 #define OLED_I2C_ADR		60		// 0x3c
 
-//#define	BONNET				1
-#define	SH1107				1
-#define	SH1107_LANDSCAPE	1
+#define OLED_SSD1306		0
+#define OLED_SH1107			1
+#define OLED_DRIVER			OLED_SSD1306
 
-#ifdef SH1107
-#ifdef SH1107_LANDSCAPE
-#define OLED_X_RESOLUTION	128
-#define OLED_Y_RESOLUTION	64
-#else
-#define OLED_X_RESOLUTION	64
-#define OLED_Y_RESOLUTION	128
-#endif
-#endif
-
-#ifdef BONNET
-#define OLED_Y_RESOLUTION	64
-#endif
-
-
-#ifndef OLED_Y_RESOLUTION
-#define OLED_Y_RESOLUTION	32
+#if OLED_DISPLAY_TYPE == OLED_4PIN_128X32
+	#define OLED_X_RESOLUTION	128
+	#define OLED_Y_RESOLUTION	32
+#elif OLED_DISPLAY_TYPE == OLED_BONNET_128X64
+	#define OLED_X_RESOLUTION	128
+	#define OLED_Y_RESOLUTION	64
+#elif OLED_DISPLAY_TYPE == OLED_FEATHER_128X32
+	#define OLED_X_RESOLUTION	128
+	#define OLED_Y_RESOLUTION	32
+#elif OLED_DISPLAY_TYPE == OLED_FEATHER_128X64
+	#undef OLED_DRIVER
+	#define OLED_DRIVER			OLED_SH1107
+	#if OLED_ORIENTATION == OLED_LANDSCAPE
+		#define OLED_X_RESOLUTION	128
+		#define OLED_Y_RESOLUTION	64
+		#define	SH1107_LANDSCAPE	1
+		#define OLED_PAGE_VERTICAL	1
+	#else
+		#define OLED_X_RESOLUTION	64
+		#define OLED_Y_RESOLUTION	128
+	#endif
+#elif OLED_DISPLAY_TYPE == OLED_OCTOPUS_128X64
+	#define OLED_X_RESOLUTION	128
+	#define OLED_Y_RESOLUTION	64
 #endif
 
 #define OLED_LINES			(OLED_Y_RESOLUTION / 8)
@@ -71,9 +91,7 @@ uint8_t OLED_getPosY();
 int OLED_putc(int c);
 int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
-
-#ifdef SH1107
 int OLED_readStatus(void);
-#endif
+
 
 #endif /* INC_OLED_H_ */

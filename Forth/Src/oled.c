@@ -68,7 +68,10 @@ static void putGlyph8x8(int ch);
 static void putGlyph8x16(int ch);
 static void putGlyph12x16(int ch);
 static int autowrap(int ch, int width, int row);
+#ifdef OLED_PAGE_VERTICAL
 static void transpose_page(int page, int upper, uint8_t *buf);
+#endif
+void postwrap(int width, int row);
 
 // Global Variables
 // ****************
@@ -99,15 +102,14 @@ static display_buffer_t *display_buffer;
 
 static const uint8_t display_off[] =	{ 1, 0xAE };			// Display OFF (sleep mode)
 
-#ifdef SH1107
-//static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x50 };		// --set display clock divide ratio/oscillator frequency POR
+#if OLED_DRIVER == OLED_SH1107
 static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x41 };		// --set display clock divide ratio/oscillator frequency POR
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 64
 #else
 static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_X_RESOLUTION -1 };		// Set multiplex ratio 64
 #endif
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 static const uint8_t display_offset[] = { 2, 0xD3, 0x20 };		// Set display offset. 00 = no offset
 #else
 static const uint8_t display_offset[] = { 2, 0xD3, 0x60 };		// Set display offset. 00 = no offset
@@ -119,18 +121,17 @@ static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for
 static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
 static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address
 static const uint8_t seg_remap[] = 		{ 1, 0xA0 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
 #else
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC0 };			// Set COM Output Scan Direction
 #endif
-//static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x4F };		// Set contrast control register (128)
 static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x6E };		// Set contrast control register (128)
 static const uint8_t div_ratio[] =      { 1, 0xE3 };			// NOP
 static const uint8_t com_pin_hw[] =     { 1, 0xE3 };			// NOP
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x35};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period & SH1107
-#else
+#elif OLED_DRIVER == OLED_SSD1306
 // SSD1306
 static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency
 static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 32 or 64
@@ -145,7 +146,7 @@ static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=ad
 static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
 static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x8F };		// Set contrast control register
 static const uint8_t div_ratio[] =      { 1, 0xF0 };			// --set divide ratio
-#ifdef BONNET
+#if OLED_DISPLAY_TYPE == OLED_BONNET_128X64
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x12 };		// Set com pins hardware configuration adafruit bonnet
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x40};		// --set vcomh 0x20,0.77xVcc adafruit bonnet
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge period adafruit bonnet
@@ -153,9 +154,9 @@ static const uint8_t pre_charge[] =     { 2, 0xD9, 0xF1 };		// Set pre-charge pe
 static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardware configuration
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period & SH1107
-#endif
+#endif // BONNET
 
-#endif
+#endif // OLED_DRIVER
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
 //static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
@@ -209,8 +210,14 @@ void OLED_init(void) {
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
 		OLED_sendCommand(ssd1306_init_sequence[i]);
 	}
-	if (OLED_readStatus() != 7) {
-		// the display is BUSY or OFF or the ID is not 7
+	if (OLED_readStatus() == 7) {
+		// most probably a SH1107 driver
+		;
+	} else if (OLED_readStatus() == 3) {
+		// most probably a SSD1306 driver
+		;
+	} else {
+		// the display is BUSY or OFF
 		;
 	}
 	OLED_clear();
@@ -378,7 +385,7 @@ void OLED_clear(void) {
 	memset(display_buffer->blob, 0, sizeof(display_buffer->blob));
 	display_buffer->blob[0] =  0x40;  // write data
 
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 	for (i=0; i<(128/8); i++) {
 		OLED_setPos(i*8, 0);
 		IIC_setDevice(OLED_I2C_ADR);
@@ -417,7 +424,7 @@ void OLED_update(void) {
 	buf[0] = 0x40;
 	OLED_setPos(0, 0);
 
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 	for (i=0; i<OLED_LINES; i++) {
 		for (j=0; j<(OLED_X_RESOLUTION/8); j++) {
 			transpose_page(0, 1, buf);
@@ -496,7 +503,7 @@ static void setPos(uint8_t x, uint8_t y) {
 	uint8_t buf[4];
 
 	buf[0] = 0x00; // write command
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 	buf[1] = 0xb0 + x/8; // page address
 	buf[2] = (((y*8) & 0xf0) >> 4) | 0x10; // Set Higher Column Start Address
 	buf[3] = (y*8) & 0x0f; // | 0x01 // Set Lower Column Start Address
@@ -519,7 +526,7 @@ static void setPos(uint8_t x, uint8_t y) {
  *      None
  */
 static void putGlyph6x8(int ch) {
-#ifdef	SH1107_LANDSCAPE
+#ifdef	OLED_PAGE_VERTICAL
 	uint8_t buf[9];
 #else
 	uint8_t buf[7];
@@ -537,7 +544,7 @@ static void putGlyph6x8(int ch) {
 
 	buf[0] = 0x40;  // write data
 
-#ifdef	SH1107_LANDSCAPE
+#ifdef	OLED_PAGE_VERTICAL
 	// first page
 	transpose_page(0, 1, buf);
 
@@ -550,7 +557,7 @@ static void putGlyph6x8(int ch) {
 #else
 	// copy into I2C array
 	for (i = 0; i < 6; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY];
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 7);
@@ -583,7 +590,7 @@ static void putGlyph8x8(int ch) {
 
 	buf[0] = 0x40;  // write data
 
-#ifdef	SH1107_LANDSCAPE
+#ifdef	OLED_PAGE_VERTICAL
 	// first page
 	transpose_page(0, 1, buf);
 
@@ -596,7 +603,7 @@ static void putGlyph8x8(int ch) {
 #else
 	// copy into I2C array
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY];
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 9);
@@ -622,7 +629,7 @@ static void putGlyph8x16(int ch) {
 		return ;
 	}
 
-	// fill the buffer with 8 columns
+	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 8; i++) {
 		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT8X14_getUpperColumn(ch, i);
 		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = FONT8X14_getLowerColumn(ch, i);
@@ -630,7 +637,7 @@ static void putGlyph8x16(int ch) {
 
 	buf[0] = 0x40;  // write data
 
-#ifdef	SH1107_LANDSCAPE
+#ifdef	OLED_PAGE_VERTICAL
 	// first page, upper
 	transpose_page(0, 1, buf);
 	// first page, lower
@@ -647,7 +654,7 @@ static void putGlyph8x16(int ch) {
 #else
 	// copy into I2C array
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY];
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 9);
@@ -681,7 +688,7 @@ static void putGlyph12x16(int ch) {
 		return ;
 	}
 
-	// fill the buffer with 12 columns
+	// fill the buffer with 12 columns on 2 lines (pages)
 	for (i = 0; i < 12; i++) {
 		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT12X16_getUpperColumn(ch, i);
 		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = FONT12X16_getLowerColumn(ch, i);
@@ -689,7 +696,7 @@ static void putGlyph12x16(int ch) {
 
 	buf[0] = 0x40;  // write data
 
-#ifdef	SH1107_LANDSCAPE
+#ifdef	OLED_PAGE_VERTICAL
 	// first page, upper
 	transpose_page(0, 1, buf);
 	// first page, lower
@@ -711,7 +718,7 @@ static void putGlyph12x16(int ch) {
 #else
 	// copy into I2C array
 	for (i = 0; i < 12; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY];
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 13);
@@ -771,7 +778,7 @@ static int autowrap(int ch, int width, int row) {
 	return 0;
 }
 
-
+#ifdef OLED_PAGE_VERTICAL
 /**
  *  @brief
  *      Transpose a glyph for one page (stripe) from buffer to display
@@ -816,7 +823,7 @@ static void transpose_page(int page, int upper, uint8_t *buf) {
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 9);
 }
-
+#endif
 
 /**
  *  @brief
@@ -825,6 +832,8 @@ static void transpose_page(int page, int upper, uint8_t *buf) {
  *  	width character width
  *  @param[in]
  *  	row per character
+ *  @return
+ *  	none
  */
 void postwrap(int width, int row) {
 	CurrentPosX += width;
@@ -836,7 +845,7 @@ void postwrap(int width, int row) {
 			CurrentPosY = 0;
 		}
 		OLED_setPos(0, CurrentPosY);
-#ifdef SH1107_LANDSCAPE
+#ifdef OLED_PAGE_VERTICAL
 	} else {
 		OLED_setPos(CurrentPosX, CurrentPosY);
 #endif
