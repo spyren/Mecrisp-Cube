@@ -147,7 +147,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	SD_getSize();
+//	SD_getSize();
 	OLED_init();
 	PLEX_init();
 

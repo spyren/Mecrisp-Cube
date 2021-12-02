@@ -185,7 +185,7 @@ cdc_terminal:
 	str		r1, [r0, #user_hook_qemit]
 
 	ldr		r1, =cdc_key
-	str		r1, [r0, #user_hook_qemit]
+	str		r1, [r0, #user_hook_key]
 
 	ldr		r1, =cdc_qkey
 	str		r1, [r0, #user_hook_qkey]
@@ -209,7 +209,7 @@ crs_terminal:
 	str		r1, [r0, #user_hook_qemit]
 
 	ldr		r1, =crs_key
-	str		r1, [r0, #user_hook_qemit]
+	str		r1, [r0, #user_hook_key]
 
 	ldr		r1, =crs_qkey
 	str		r1, [r0, #user_hook_qkey]
