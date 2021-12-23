@@ -207,6 +207,11 @@ int main(void)
   // test for SWO debug trace
   printf("Hallo Velo\n");
 #endif
+  /**
+   * This prevents the CPU2 to disable the HSI48 oscillator when
+   * it does not use anymore the RNG IP
+   */
+  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
 
   /* USER CODE END 2 */
 
@@ -297,15 +302,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   /* USER CODE BEGIN Smps */
-
-  /**
-   * This prevents the CPU2 to disable the HSI48 oscillator when
-   * it does not use anymore the RNG IP
-   */
-  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
-  LL_RCC_HSI48_Enable();
-
-  while(!LL_RCC_HSI48_IsReady());
 
   /* USER CODE END Smps */
   /** Enable the SYSCFG APB clock
