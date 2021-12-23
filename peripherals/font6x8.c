@@ -304,34 +304,3 @@ int FONT6X8_getColumn(int ch, int column) {
 	return font_6x8[ch][column];
 }
 
-
-/**
- *  @brief
- *      Set the pixels in 8 char array with the transposed glyph pattern.
- *
- *  @param[in]
- *      ch  char to write
- *  @param[in, out]
- *      pattern glyph 8 char array
- *  @return
- *      none
- */
-void FONT6X8_transposeGlyph(int ch, unsigned char* pattern) {
-	int x, y;
-	int column;
-
-	for (x=0; x<8; x++) {
-		pattern[x] = 0;
-	}
-
-	for (y=0; y<6; y++) {
-		column = FONT6X8_getColumn(ch, y);
-		if (column) {
-			for (x=0; x<8; x++) {
-				pattern[x] |= ((column & 0x01) << y);
-				column = column >> 1;
-			}
-		}
-	}
-}
-
