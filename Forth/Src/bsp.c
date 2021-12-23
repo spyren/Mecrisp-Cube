@@ -1240,7 +1240,7 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelDataTx(D9_GPIO_Port, D9_Pin, rgb);
+	BSP_neopixelDataTx(D6_GPIO_Port, D6_Pin, rgb);
 
 	RESTORE_PRIMASK();
 
