@@ -298,9 +298,9 @@ oledclr:
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oledupdate"
-oledclr:
+oledupdate:
         @ ( --  ) Update the OLED display
-// void OLED_clear()
+// void OLED_update()
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	bl		OLED_update
