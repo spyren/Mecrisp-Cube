@@ -49,7 +49,7 @@ Archive member included to satisfy reference by file (symbol)
 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_2.0.0.202105311346/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strftime.o)
                               ./peripherals/fs.o (strftime)
 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_2.0.0.202105311346/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strlen.o)
-                              ./Forth/cube/mecrisp.o (strlen)
+                              ./Forth/mecrisp.o (strlen)
 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_2.0.0.202105311346/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strncasecmp.o)
                               ./vi/vi.o (strncasecmp)
 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_2.0.0.202105311346/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/hard/libc_nano.a(lib_a-strncmp.o)
@@ -1645,8 +1645,8 @@ Discarded input sections
  .text          0x0000000000000000        0x0 ./FATFS/Target/user_diskio.o
  .data          0x0000000000000000        0x0 ./FATFS/Target/user_diskio.o
  .bss           0x0000000000000000        0x0 ./FATFS/Target/user_diskio.o
- .data          0x0000000000000000        0x0 ./Forth/cube/mecrisp.o
- .bss           0x0000000000000000        0x0 ./Forth/cube/mecrisp.o
+ .data          0x0000000000000000        0x0 ./Forth/mecrisp.o
+ .bss           0x0000000000000000        0x0 ./Forth/mecrisp.o
  .text          0x0000000000000000        0x0 ./Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.o
  .data          0x0000000000000000        0x0 ./Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.o
  .bss           0x0000000000000000        0x0 ./Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.o
@@ -2975,7 +2975,7 @@ LOAD ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_adc.o
 LOAD ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_ll_usb.o
 LOAD ./FATFS/App/app_fatfs.o
 LOAD ./FATFS/Target/user_diskio.o
-LOAD ./Forth/cube/mecrisp.o
+LOAD ./Forth/mecrisp.o
 LOAD ./Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.o
 LOAD ./Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.o
 LOAD ./Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.o
@@ -3079,7 +3079,7 @@ LOAD /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.g
                 0x0000000008000140                . = ALIGN (0x4)
  *(.text)
  .text          0x0000000008000140       0x40 /opt/st/stm32cubeide_1.6.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.9-2020-q2-update.linux64_2.0.0.202105311346/tools/bin/../lib/gcc/arm-none-eabi/9.3.1/thumb/v7e-m+fp/hard/crtbegin.o
- .text          0x0000000008000180     0x7090 ./Forth/cube/mecrisp.o
+ .text          0x0000000008000180     0x7090 ./Forth/mecrisp.o
                 0x00000000080024ac                uart_terminal
                 0x00000000080024d4                cdc_terminal
                 0x00000000080024fc                crs_terminal
@@ -7626,7 +7626,7 @@ BLE_APP_CONTEXT
  .ARM.attributes
                 0x00000000000009cb       0x34 ./FATFS/Target/user_diskio.o
  .ARM.attributes
-                0x00000000000009ff       0x25 ./Forth/cube/mecrisp.o
+                0x00000000000009ff       0x25 ./Forth/mecrisp.o
  .ARM.attributes
                 0x0000000000000a24       0x34 ./Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.o
  .ARM.attributes
