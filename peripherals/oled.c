@@ -225,7 +225,7 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT8X8);
 	OLED_puts("Mecrisp-Cube");
 	OLED_setFont(OLED_FONT6X8);
-	OLED_puts("1.4.x");
+	OLED_puts(MECRISP_CUBE_TAG);
 #ifdef DEBUG
 	OLED_puts("\r\nDebug\r\n");
 #else
