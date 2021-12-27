@@ -66,9 +66,9 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for Main */
-osThreadId_t MainHandle;
-const osThreadAttr_t Main_attributes = {
+/* Definitions for FORTH_ConThread */
+osThreadId_t FORTH_ConThreadHandle;
+const osThreadAttr_t FORTH_ConThread_attributes = {
   .name = "FORTH_ConThread",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 512 * 4
@@ -124,8 +124,8 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of Main */
-  MainHandle = osThreadNew(MainThread, NULL, &Main_attributes);
+  /* creation of FORTH_ConThread */
+  FORTH_ConThreadHandle = osThreadNew(MainThread, NULL, &FORTH_ConThread_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
