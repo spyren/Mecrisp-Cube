@@ -541,3 +541,14 @@ I2Cputget:
 	bl		IIC_putGetMessage
 	pop		{pc}
 
+	@ -----------------------------------------------------------------------------
+			Wortbirne Flag_visible, "watchdog"
+	watchdog:
+			@ ( -- )      activate watchdog
+	// void WATCHDOG_init(void);
+	@ -----------------------------------------------------------------------------
+		push	{lr}
+		bl		WATCHDOG_init
+		pop		{pc}
+
+
