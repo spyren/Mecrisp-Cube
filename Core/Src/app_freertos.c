@@ -44,6 +44,7 @@
 #include "iic.h"
 #include "oled.h"
 #include "plex.h"
+#include "watchdog.h"
 
 /* USER CODE END Includes */
 
@@ -91,6 +92,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
 	APPE_Init();

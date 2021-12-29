@@ -8,6 +8,30 @@
 #ifndef INC_CLOCK_H_
 #define INC_CLOCK_H_
 
+#define RTC_MAGIC_COOKIE	(0xa5a5a5a5)
+
+// Type Definitions
+// ****************
+
+/** Structure holding RTC backup registers preserved during reset (except POR/cold start) */
+typedef struct {
+	/** magic cookie if the RTC is already running, in 1st RTC Backup Register (RTC_BKP0R)*/
+	uint32_t        rtc;
+	/** magic cookie if the watchdog has bitten, in 3rd RTC Backup Register    (RTC_BKP1R)*/
+	uint32_t        watchdog;
+	/** where (address) the watchdog has bitten, in 5th RTC Backup Register    (RTC_BKP2R)*/
+	uint32_t        watchdog_adr;
+	/** watchdog bites, in 9thd RTC Backup Register                            (RTC_BKP3R)*/
+	uint32_t        watchdog_bites;
+} RTC_Backup_t;
+
+
+// Constants
+// *********
+
+/** The preserved values are located in the RTC backup registers */
+#define RTC_Backup         (*(RTC_Backup_t *)(&RTC->BKP0R))
+
 void RTC_init(void);
 uint32_t RTC_getTime(void);
 int RTC_setTime(uint32_t timestamp);

@@ -541,14 +541,42 @@ I2Cputget:
 	bl		IIC_putGetMessage
 	pop		{pc}
 
-	@ -----------------------------------------------------------------------------
-			Wortbirne Flag_visible, "watchdog"
-	watchdog:
-			@ ( -- )      activate watchdog
-	// void WATCHDOG_init(void);
-	@ -----------------------------------------------------------------------------
-		push	{lr}
-		bl		WATCHDOG_init
-		pop		{pc}
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog"
+watchdog:
+	@ ( -- )      activate watchdog
+// void WATCHDOG_activate(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		WATCHDOG_activate
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog?"
+get_watchdog_bitten:
+	@ ( -- flag )      Has the WATCHDOG bitten?
+// int WATCHDOG_bitten(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		WATCHDOG_bitten
+	cmp		r0, #0
+	beq		1f
+	ldr		r0, =-1	// true
+1:
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog#"
+get_watchdog_bites:
+	@ ( -- u )      How many times has the watchdog bitten since cold startup?
+// int WATCHDOG_bites(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		WATCHDOG_bites
+	movs	tos, r0			// bites
+	pop		{pc}
 
 
