@@ -133,9 +133,16 @@
 #define CFG_USE_SMPS    1
 
 /* USER CODE BEGIN Generic_Parameters */
+
 #define MECRISP_CUBE_TAG "1.4.4"
 #define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
+
+/* if asserts are not required uncomment next line */
+#define CFG_ASSERT_ON
+
+/* if no logs are required uncomment next line */
+#define CFG_LOG_MSG  "0:/var/log/messages"
 
 #undef CFG_GAP_DEVICE_NAME
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"

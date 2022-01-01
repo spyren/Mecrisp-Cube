@@ -15,14 +15,22 @@
 
 /** Structure holding RTC backup registers preserved during reset (except POR/cold start) */
 typedef struct {
-	/** magic cookie if the RTC is already running, in 1st RTC Backup Register (RTC_BKP0R)*/
+	/** magic cookie if the RTC is already running                             (RTC_BKP0R)*/
 	uint32_t        rtc;
-	/** magic cookie if the watchdog has bitten, in 3rd RTC Backup Register    (RTC_BKP1R)*/
+	/** magic cookie if the watchdog has bitten                                (RTC_BKP1R)*/
 	uint32_t        watchdog;
-	/** where (address) the watchdog has bitten, in 5th RTC Backup Register    (RTC_BKP2R)*/
+	/** where (address) the watchdog has bitten                                (RTC_BKP2R)*/
 	uint32_t        watchdog_adr;
-	/** watchdog bites, in 9thd RTC Backup Register                            (RTC_BKP3R)*/
+	/** watchdog bites                                                         (RTC_BKP3R)*/
 	uint32_t        watchdog_bites;
+	/** magic cookie if an assert occurred                                     (RTC_BKP4R)*/
+	uint32_t        assert;
+	/** assert count                                                           (RTC_BKP5R)*/
+	uint32_t        assert_cnt;
+	/** assert ID                                                              (RTC_BKP6R)*/
+	uint32_t        assert_id;
+	/** assert parameter e.g. address where the assert occurred                (RTC_BKP7R)*/
+	uint32_t        assert_param;
 } RTC_Backup_t;
 
 

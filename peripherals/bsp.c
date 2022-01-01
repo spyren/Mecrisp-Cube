@@ -9,6 +9,7 @@
  *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2 (Dongle: D6)
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
  *        - Timer Capture/Compare
+ *        - NeoPixel
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->

@@ -23,6 +23,7 @@
 #include "stm32wbxx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "assert.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,6 +119,8 @@ void HardFault_Handler(void)
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+
+	ASSERT_fatal(0, ASSERT_HARD_FAULT, SCB->CFSR);
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -132,6 +135,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_MEM_MANAGE_FAULT, SCB->CFSR);
 
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
@@ -147,6 +151,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_BUS_FAULT, SCB->CFSR);
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
@@ -162,6 +167,9 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
+
+	/* Configurable Fault Status Registers */
+	ASSERT_fatal(0, ASSERT_USAGE_FAULT, SCB->CFSR);
 
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)

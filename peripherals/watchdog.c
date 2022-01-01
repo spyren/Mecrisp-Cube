@@ -144,6 +144,18 @@ int WATCHDOG_bites(void) {
 	return RTC_Backup.watchdog_bites;
 }
 
+/**
+ *  @brief
+ *      Get address where the watchdog bit
+ *
+ *  @return
+ *      Address
+ *
+ */
+int WATCHDOG_adr(void) {
+	return RTC_Backup.watchdog_adr;
+}
+
 
 // Private Functions
 // *****************

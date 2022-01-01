@@ -45,6 +45,7 @@
 #include "oled.h"
 #include "plex.h"
 #include "watchdog.h"
+#include "assert.h"
 
 /* USER CODE END Includes */
 
@@ -148,24 +149,26 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-  /* USER CODE BEGIN MainThread */
+/* USER CODE BEGIN MainThread */
 //	SD_getSize();
 	OLED_init();
 	PLEX_init();
+	ASSERT_init();
 
 	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
-	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
+		// CPU2 hardfault
+//		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
+	} else {
+		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+	}
 
 	Forth();
 
-	/* Infinite loop */
-	for(;;)
-	{
-		Error_Handler();
-		osDelay(1);
-	}
-  /* USER CODE END MainThread */
+	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0)
+
+/* USER CODE END MainThread */
 }
 
 /* Private application code --------------------------------------------------*/

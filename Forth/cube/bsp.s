@@ -579,4 +579,86 @@ get_watchdog_bites:
 	movs	tos, r0			// bites
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog@"
+get_watchdog_adr:
+	@ ( -- a )      How many times has the watchdog bitten since cold startup?
+// int WATCHDOG_adr(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		WATCHDOG_adr
+	movs	tos, r0			// address
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert"
+assert:
+	@ ( -- u )      How many asserts occurred since cold startup?
+// int ASSERT_getCount(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getCount
+	movs	tos, r0			// count
+	pop		{pc}
+
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert?"
+get_assert:
+	@ ( -- flag )      ASSERT occurred since cold startup?
+// int ASSERT_occurred(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_occurred
+	cmp		r0, #0
+	beq		1f
+	ldr		r0, =-1	// true
+1:
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert#"
+get_assert_count:
+	@ ( -- u )      How many asserts occurred since cold startup?
+// int ASSERT_getCount(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getCount
+	movs	tos, r0			// count
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert@"
+get_assert_adr:
+	@ ( -- u1 u2 )      Assert number u1 and parameter u2 e.g. address where the assert occurred
+// int ASSERT_getId(void);  int ASSERT_getParam(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getId
+	movs	tos, r0			// ID
+	pushdatos
+	bl		ASSERT_getParam
+	movs	tos, r0			// Parameter
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, ".assert"
+print_assert:
+	@ ( u --  )      Print assert message
+// int ASSERT_getCount(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getCount
+	movs	tos, r0			// count
+	pop		{pc}
+
 
