@@ -30,7 +30,7 @@
 
 
 #ifdef DEBUG
-// DEBUG: save some space and use only 128 chars
+// DEBUG: save some space and use only 1 char
 const char font_8x14[1][16]={
 #else
 const char font_8x14[256][16]={

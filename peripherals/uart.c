@@ -42,6 +42,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "uart.h"
+#include "assert.h"
 
 // Rx/Tx Buffer Length
 // *******************
@@ -121,33 +122,22 @@ void UART_init(void) {
 	// creation of TxQueue
 	UART_TxQueueId = osMessageQueueNew(UART_TX_BUFFER_LENGTH, sizeof(uint8_t),
 			&uart_TxQueue_attributes);
-	if (UART_TxQueueId == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(UART_TxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
 	// creation of RxQueue
 	UART_RxQueueId = osMessageQueueNew(UART_RX_BUFFER_LENGTH, sizeof(uint8_t),
 			&uart_RxQueue_attributes);
-	if (UART_RxQueueId == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(UART_RxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
 
 	UART_MutexID = osMutexNew(&UART_MutexAttr);
-	if (UART_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(UART_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
 
 	// creation of UART_TxThread
 	UART_TxThreadId = osThreadNew(UART_TxThread, NULL, &UART_TxThreadAttr);
-	if (UART_TxThreadId == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(UART_TxThreadId != NULL, ASSERT_THREAD_CREATION, 0);
 
 	// creation of UART_RxThread
 	UART_RxThreadId = osThreadNew(UART_RxThread, NULL, &UART_RxThreadAttr);
-	if (UART_RxThreadId == NULL) {
-		Error_Handler();
-	}
-
+	ASSERT_fatal(UART_RxThreadId != NULL, ASSERT_THREAD_CREATION, 0);
 }
 
 /**
@@ -512,6 +502,7 @@ static void UART_RxThread(void *argument) {
 	for(;;) {
 		// blocked till a character is received
 		status = osThreadFlagsWait(UART_CHAR_RECEIVED, osFlagsWaitAny, osWaitForever);
+		ASSERT_nonfatal(UART_RxBuffer != 0x03, ASSERT_UART_SIGINT, 0) // ^C character abort
 		// put the received character into the queue
 		status = osMessageQueuePut(UART_RxQueueId, &UART_RxBuffer, 0, 100);
 		if (status != osOK) {
@@ -566,7 +557,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
 
-	Error_Handler();
+	ASSERT_nonfatal(0, ASSERT_UART_ERROR_CALLBACK, 0);
 }
 
 
@@ -579,6 +570,6 @@ void HAL_UARTEx_RxFifoFullCallback(UART_HandleTypeDef *huart) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(huart);
 
-	Error_Handler();
+	ASSERT_nonfatal(0, ASSERT_UART_FIFO, 0);
 }
 

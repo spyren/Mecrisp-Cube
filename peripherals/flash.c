@@ -41,6 +41,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "flash.h"
+#include "assert.h"
 
 #define PROCESS_ID	11
 
@@ -82,9 +83,7 @@ static uint32_t os_state;
  */
 void FLASH_init(void) {
 	FLASH_MutexID = osMutexNew(&FLASH_MutexAttr);
-	if (FLASH_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FLASH_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
 
 	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
 	EraseInitStruct.NbPages     = 1;
@@ -194,9 +193,7 @@ int aquire_flash(uint8_t Erase) {
 		; // busy wait for
 	}
 
-	if (HAL_FLASH_Unlock() == HAL_ERROR) {
-		Error_Handler();
-	}
+	ASSERT_nonfatal(HAL_FLASH_Unlock() != HAL_ERROR, ASSERT_FLASH_UNLOCK, 0);
 
 	if (Erase) {
 		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
@@ -226,9 +223,7 @@ int release_flash(uint8_t Erase) {
 		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
 	}
 
-	if (HAL_FLASH_Lock() == HAL_ERROR) {
-		Error_Handler();
-	}
+	ASSERT_nonfatal(HAL_FLASH_Lock() != HAL_ERROR, ASSERT_FLASH_LOCK, 0);
 
 	HAL_HSEM_Release(2, 0);
 

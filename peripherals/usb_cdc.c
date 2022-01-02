@@ -39,6 +39,7 @@
 #include "usb_cdc.h"
 #include "usbd_cdc_if.h"
 #include "usb_device.h"
+#include "assert.h"
 
 
 #define CDC_TX_SENT	0x01
@@ -93,30 +94,18 @@ void CDC_init(void) {
 	// Create the queue(s)
 	// creation of TxQueue
 	CDC_TxQueueId = osMessageQueueNew(200, sizeof(uint8_t), &cdc_TxQueue_attributes);
-	if (CDC_TxQueueId == NULL) {
-		// no queue created
-		Error_Handler();
-	}
+	ASSERT_fatal(CDC_TxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
 	// creation of RxQueue
 	CDC_RxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &cdc_RxQueue_attributes);
-	if (CDC_RxQueueId == NULL) {
-		// no queue created
-		Error_Handler();
-	}
+	ASSERT_fatal(CDC_RxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
 
 	// Create Event Flags
 	CDC_EvtFlagsID = osEventFlagsNew(NULL);
-	if (CDC_EvtFlagsID == NULL) {
-		// no event flags created
-		Error_Handler();
-	}
+	ASSERT_fatal(CDC_EvtFlagsID != NULL, ASSERT_EVENT_FLAGS_CREATION, 0);
 
 	// creation of CDC_Thread
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
-	if (CDC_ThreadID == NULL) {
-		// no thread created
-		Error_Handler();
-	}
+	ASSERT_fatal(CDC_ThreadID != NULL, ASSERT_THREAD_CREATION, 0);
 
 	MX_USB_Device_Init();
 

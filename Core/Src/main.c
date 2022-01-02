@@ -58,8 +58,8 @@
  *       22 KiB secure RAM for CPU2
  *
  *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
- *       16 KiB shared between CPU1 and CPU2
- *       16 KiB secure RAM for CPU2
+ *       15 KiB shared between CPU1 and CPU2
+ *       17 KiB secure RAM for CPU2
  *
  *
  *  @file
@@ -320,15 +320,12 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	Error_Handler();
-	for(;;) {
-		;
-	}
+	ASSERT_fatal(0, ASSERT_STACK_OVERFLOW, (uint32_t) pcTaskName);
 }
 
 
 void vApplicationMallocFailedHook(void) {
-	Error_Handler();
+	ASSERT_fatal(0, ASSERT_MALLOC_FAILED, 0);
 } // vApplicationMallocFailedHook
 
 

@@ -29,7 +29,7 @@
  */
 
 #ifdef DEBUG
-// DEBUG: save some space and use only 128 chars
+// DEBUG: save some space and use only 1 char
 const char font_12x16[1][24]={
 #else
 const char font_12x16[256][24]={

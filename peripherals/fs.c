@@ -51,12 +51,13 @@
 #include "ff.h"
 #include "rtc.h"
 #include "block.h"
+#include "assert.h"
 
 
 // Defines
 // *******
 #define LINE_LENGTH				256
-#define	RAM_SHARED				(0x20038000 + 0x1000)
+#define	RAM_SHARED				(0x20038000 + 0x1000)	// 4 KiB used by fd
 #define	SCRATCH_SIZE			0x0400					// 1 KiB scratch
 
 // Private typedefs
@@ -115,9 +116,7 @@ void FS_init(void) {
 	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
 //	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
-	if (FS_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
 
 	/* Gives a work area to the flash drive */
 	f_mount(&FatFs_FD, "0:", 0);

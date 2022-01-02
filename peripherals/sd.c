@@ -39,6 +39,7 @@
 #include "main.h"
 #include "sd_spi.h"
 #include "sd.h"
+#include "assert.h"
 
 
 // Defines
@@ -221,14 +222,10 @@ uint8_t scratch_block[SD_BLOCK_SIZE];
  */
 void SD_init(void) {
 	SD_MutexID = osMutexNew(&SD_MutexAttr);
-	if (SD_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(SD_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
 
 	SD_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (SD_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(SD_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, 0);
 }
 
 

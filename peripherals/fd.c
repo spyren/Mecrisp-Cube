@@ -41,12 +41,13 @@
 #include "fd.h"
 #include "sd.h"
 #include "flash.h"
+#include "assert.h"
 
 
 // Defines
 // *******
 #define FLASH_DUMMY_BYTE		0xFF
-#define	RAM_SHARED				0x20038000
+#define	RAM_SHARED				0x20038000	// SRAM2b is only used for Thread, 15 KiB
 
 
 // Private function prototypes
@@ -95,9 +96,7 @@ void FD_init(void) {
 //	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
 	*scratch_page = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
-	if (FD_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
 }
 
 

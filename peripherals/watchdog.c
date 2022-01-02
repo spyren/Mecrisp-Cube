@@ -72,8 +72,7 @@ extern WWDG_HandleTypeDef hwwdg;
 static osThreadId_t WATCHDOG_ThreadId;
 static const osThreadAttr_t WATCHDOG_ThreadAttr = {
 		.name = "WATCHDOG_Thread",
-//		.priority = (osPriority_t) osPriorityIdle + 1, // just above IDLE
-		.priority = (osPriority_t) osPriorityLow,
+		.priority = (osPriority_t) osPriorityIdle + 1, // just above IDLE
 		.stack_size = 128 * 6
 };
 
