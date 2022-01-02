@@ -96,7 +96,7 @@ void FD_init(void) {
 //	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
 	*scratch_page = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
-	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 }
 
 

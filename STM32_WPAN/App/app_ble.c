@@ -236,7 +236,7 @@ uint8_t  manuf_data[14] = {
 
 /* USER CODE BEGIN PV */
 
-static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
+//static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
 
@@ -280,7 +280,7 @@ static void AdvUpdateProcess(void *argument);
 static void Adv_Update( void );
 
 /* USER CODE BEGIN PFP */
-static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength);
+//static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength);
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -963,17 +963,17 @@ static void HciUserEvtProcess(void *argument)
 }
 
 /* USER CODE BEGIN FD_SPECIFIC_FUNCTIONS */
-static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength) {
-	int8_t i;
-
-	for(i = UUIDLength-1; i >= 0; i--) {
-		BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
-				servUUID[i];
-		BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
-	}
-
-	return;
-}
+//static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength) {
+//	int8_t i;
+//
+//	for(i = UUIDLength-1; i >= 0; i--) {
+//		BleApplicationContext.BleApplicationContext_legacy.advtServUUID[BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen] =
+//				servUUID[i];
+//		BleApplicationContext.BleApplicationContext_legacy.advtServUUIDlen++;
+//	}
+//
+//	return;
+//}
 
 /* USER CODE END FD_SPECIFIC_FUNCTIONS */
 /*************************************************************

@@ -116,7 +116,7 @@ void FS_init(void) {
 	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
 //	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
-	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	/* Gives a work area to the flash drive */
 	f_mount(&FatFs_FD, "0:", 0);
@@ -484,7 +484,7 @@ uint64_t FS_ls(uint64_t forth_stack) {
 				snprintf(line, sizeof(line), "%-23s ", fno.fname);
 				if ( ( (fno.fattrib & AM_HID) != AM_HID) || a_flag) {
 					if ( (++column) >= 4) {
-						strncat(line, "\n", sizeof(line));
+						strncat(line, "\n", sizeof(line)-1);
 						column = 0;
 					}
 				}
@@ -1050,9 +1050,9 @@ int count_words(const char *s) {
 	int i, w;
 
 	for (i = 0, w = 0; i < strlen(s); i++) {
-		if (!isspace(*(s+i))) {
+		if (!isspace ((int) *(s+i))) {
 			w++;
-			while (!isspace(*(s+i)) && *(s+i) != '\0') {
+			while (!isspace ((int) *(s+i)) && *(s+i) != '\0') {
 				i++;
 			}
 		}
@@ -1504,13 +1504,13 @@ uint64_t FS_dd(uint64_t forth_stack) {
 				// copy drive to file
 				block = 0;
 				for (block=0; block<blocks; block++) {
-					status = FD_ReadBlocks(&BLOCK_Buffers[0].Data, block, 2);
+					status = FD_ReadBlocks(&BLOCK_Buffers[0].Data[0], block, 2);
 					if (status != SD_OK) {
 						strcpy(path, "Read error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &wr_count);
+					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data[0], BLOCK_BUFFER_SIZE, &wr_count);
 					if (fr != FR_OK) {
 						strcpy(path, "Write error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
@@ -1539,7 +1539,7 @@ uint64_t FS_dd(uint64_t forth_stack) {
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					status = FD_WriteBlocks(&BLOCK_Buffers[0].Data, block, 2);
+					status = FD_WriteBlocks(&BLOCK_Buffers[0].Data[0], block, 2);
 					block += 2;
 					if (status != SD_OK) {
 						strcpy(path, "Write error");
@@ -1635,7 +1635,7 @@ int FS_f_error(FIL* fp) {
  */
 int FS_getc(FIL* fp) {
 	int buffer;
-	uint32_t count;
+	unsigned int count;
 
 	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
 		return -1;

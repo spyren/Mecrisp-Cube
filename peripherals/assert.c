@@ -136,6 +136,7 @@ int ASSERT_getParam(void) {
 	return RTC_Backup.assert_param;
 }
 
+
 // Private Functions
 // *****************
 

@@ -81,10 +81,10 @@ extern RTC_HandleTypeDef hrtc;
  */
 void RTC_init(void) {
 	RTC_MutexID = osMutexNew(&RTC_MutexAttr);
-	ASSERT_fatal(RTC_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(RTC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	RTC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(RTC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, 0);
+	ASSERT_fatal(RTC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	/* RTC WakeUpTimer Interrupt Configuration: EXTI configuration */
 	__HAL_RTC_WAKEUPTIMER_EXTI_ENABLE_IT();
@@ -178,7 +178,7 @@ int RTC_setTime(uint32_t timestamp){
 uint64_t RTC_typeTime(uint64_t forth_stack) {
 	RTC_TimeTypeDef sTime;
 	RTC_DateTypeDef sDate;
-	char line[22];
+	char line[25];
 
 	uint64_t stack;
 	stack = forth_stack;

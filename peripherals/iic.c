@@ -83,10 +83,10 @@ static uint16_t DevAdr;
  */
 void IIC_init(void) {
 	IIC_MutexID = osMutexNew(&IIC_MutexAttr);
-	ASSERT_fatal(IIC_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(IIC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	II2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(II2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, 0);
+	ASSERT_fatal(II2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 

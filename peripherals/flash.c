@@ -83,7 +83,7 @@ static uint32_t os_state;
  */
 void FLASH_init(void) {
 	FLASH_MutexID = osMutexNew(&FLASH_MutexAttr);
-	ASSERT_fatal(FLASH_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(FLASH_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	EraseInitStruct.TypeErase   = FLASH_TYPEERASE_PAGES;
 	EraseInitStruct.NbPages     = 1;

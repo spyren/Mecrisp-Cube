@@ -84,10 +84,10 @@ static volatile uint8_t SpiError = FALSE;
  */
 void SDSPI_init(void) {
 	SDSPI_MutexID = osMutexNew(&SDSPI_MutexAttr);
-	ASSERT_fatal(SDSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(SDSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	SDSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(SDSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, 0);
+	ASSERT_fatal(SDSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 /**

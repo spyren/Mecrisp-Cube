@@ -94,18 +94,18 @@ void CDC_init(void) {
 	// Create the queue(s)
 	// creation of TxQueue
 	CDC_TxQueueId = osMessageQueueNew(200, sizeof(uint8_t), &cdc_TxQueue_attributes);
-	ASSERT_fatal(CDC_TxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
+	ASSERT_fatal(CDC_TxQueueId != NULL, ASSERT_QUEUE_CREATION, __get_PC());
 	// creation of RxQueue
 	CDC_RxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &cdc_RxQueue_attributes);
-	ASSERT_fatal(CDC_RxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
+	ASSERT_fatal(CDC_RxQueueId != NULL, ASSERT_QUEUE_CREATION, __get_PC());
 
 	// Create Event Flags
 	CDC_EvtFlagsID = osEventFlagsNew(NULL);
-	ASSERT_fatal(CDC_EvtFlagsID != NULL, ASSERT_EVENT_FLAGS_CREATION, 0);
+	ASSERT_fatal(CDC_EvtFlagsID != NULL, ASSERT_EVENT_FLAGS_CREATION, __get_PC());
 
 	// creation of CDC_Thread
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
-	ASSERT_fatal(CDC_ThreadID != NULL, ASSERT_THREAD_CREATION, 0);
+	ASSERT_fatal(CDC_ThreadID != NULL, ASSERT_THREAD_CREATION, __get_PC());
 
 	MX_USB_Device_Init();
 

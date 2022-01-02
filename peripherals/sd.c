@@ -222,10 +222,10 @@ uint8_t scratch_block[SD_BLOCK_SIZE];
  */
 void SD_init(void) {
 	SD_MutexID = osMutexNew(&SD_MutexAttr);
-	ASSERT_fatal(SD_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(SD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	SD_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(SD_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, 0);
+	ASSERT_fatal(SD_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 

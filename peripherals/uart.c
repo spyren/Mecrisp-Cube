@@ -122,22 +122,22 @@ void UART_init(void) {
 	// creation of TxQueue
 	UART_TxQueueId = osMessageQueueNew(UART_TX_BUFFER_LENGTH, sizeof(uint8_t),
 			&uart_TxQueue_attributes);
-	ASSERT_fatal(UART_TxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
+	ASSERT_fatal(UART_TxQueueId != NULL, ASSERT_QUEUE_CREATION, __get_PC());
 	// creation of RxQueue
 	UART_RxQueueId = osMessageQueueNew(UART_RX_BUFFER_LENGTH, sizeof(uint8_t),
 			&uart_RxQueue_attributes);
-	ASSERT_fatal(UART_RxQueueId != NULL, ASSERT_QUEUE_CREATION, 0);
+	ASSERT_fatal(UART_RxQueueId != NULL, ASSERT_QUEUE_CREATION, __get_PC());
 
 	UART_MutexID = osMutexNew(&UART_MutexAttr);
-	ASSERT_fatal(UART_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(UART_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	// creation of UART_TxThread
 	UART_TxThreadId = osThreadNew(UART_TxThread, NULL, &UART_TxThreadAttr);
-	ASSERT_fatal(UART_TxThreadId != NULL, ASSERT_THREAD_CREATION, 0);
+	ASSERT_fatal(UART_TxThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
 
 	// creation of UART_RxThread
 	UART_RxThreadId = osThreadNew(UART_RxThread, NULL, &UART_RxThreadAttr);
-	ASSERT_fatal(UART_RxThreadId != NULL, ASSERT_THREAD_CREATION, 0);
+	ASSERT_fatal(UART_RxThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
 }
 
 /**

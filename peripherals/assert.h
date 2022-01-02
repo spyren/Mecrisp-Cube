@@ -66,6 +66,21 @@ int ASSERT_getParam(void);
 
 /**
  *  @brief
+ *      Get program counter value
+ *
+ *  @return
+ *      PC
+ */
+__attribute__( ( always_inline ) ) static inline uint32_t __get_PC(void)
+{
+  register uint32_t result;
+
+  __asm volatile ("mov %0, pc\n" : "=r" (result) );
+  return(result);
+}
+
+/**
+ *  @brief
  *      Abort if cond is false and assertion is activated, log n and u after restart
  *
  *  @param[in]

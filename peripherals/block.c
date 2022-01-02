@@ -94,7 +94,7 @@ extern uint32_t DriveNumber;
  */
 void BLOCK_init(void) {
 	BLOCK_MutexID = osMutexNew(&BLOCK_MutexAttr);
-	ASSERT_fatal(BLOCK_MutexID != NULL, ASSERT_MUTEX_CREATION, 0);
+	ASSERT_fatal(BLOCK_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	BLOCK_emptyBuffers();
 }
