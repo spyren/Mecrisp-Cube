@@ -115,6 +115,7 @@
 #include "app_fatfs.h"
 #include "fs.h"
 #include "clock.h"
+#include "otp.h"
 
 /* USER CODE END Includes */
 
@@ -146,6 +147,7 @@ void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 static void Reset_IPCC( void );
 static void Init_Exti( void );
+static void Config_HSE(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -168,6 +170,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  Config_HSE();
+
   Reset_IPCC();
 
   /* activate divide by zero trap (usage fault) */
@@ -371,6 +375,22 @@ static void Init_Exti( void )
   /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
   LL_EXTI_DisableIT_0_31(~0);
   LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
+
+  return;
+}
+
+static void Config_HSE(void)
+{
+    OTP_ID0_t * p_otp;
+
+  /**
+   * Read HSE_Tuning from OTP
+   */
+  p_otp = (OTP_ID0_t *) OTP_Read(0);
+  if (p_otp)
+  {
+    LL_RCC_HSE_SetCapacitorTuning(p_otp->hse_tuning);
+  }
 
   return;
 }
