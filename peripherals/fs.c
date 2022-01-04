@@ -58,7 +58,7 @@
 // *******
 #define LINE_LENGTH				256
 #define	RAM_SHARED				(0x20038000 + 0x1000)	// 4 KiB used by fd
-#define	SCRATCH_SIZE			0x0400					// 1 KiB scratch
+#define	SCRATCH_SIZE			0x1000					// 4 KiB scratch
 
 // Private typedefs
 // ****************
@@ -89,7 +89,7 @@ static osMutexId_t FS_MutexID;
 static const osMutexAttr_t FS_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
-		NULL,				// memory for control block
+		NULL,				// memory for control
 		0U					// size for control block
 };
 
@@ -117,6 +117,7 @@ void FS_init(void) {
 //	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+
 
 	/* Gives a work area to the flash drive */
 	f_mount(&FatFs_FD, "0:", 0);
@@ -904,7 +905,7 @@ uint64_t FS_cp(uint64_t forth_stack) {
 			if (fr == FR_OK) {
 				// copy the file
 				while (!f_eof(&fil_src)) {
-					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &rd_count);
+					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, SCRATCH_SIZE, &rd_count);
 					if (fr != FR_OK) {
 						strcpy(path, "Read error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
@@ -1464,7 +1465,7 @@ uint64_t FS_dd(uint64_t forth_stack) {
 	int param = 0;
 	FIL fil_src;	/* File object */
 	FIL fil_dest;	/* File object */
-	int blocks;
+	int blocks_1k;
 	int block;
 	uint8_t status;
 
@@ -1474,7 +1475,7 @@ uint64_t FS_dd(uint64_t forth_stack) {
 	stack = FS_cr(stack);
 
 	FD_getSize();
-	blocks = FD_getBlocks();
+	blocks_1k = FD_getBlocks();
 	while (TRUE) {
 		// get tokens till end of line
 		stack = FS_token(stack, &str, &count);
@@ -1503,20 +1504,24 @@ uint64_t FS_dd(uint64_t forth_stack) {
 			if (fr == FR_OK) {
 				// copy drive to file
 				block = 0;
-				for (block=0; block<blocks; block++) {
-					status = FD_ReadBlocks(&BLOCK_Buffers[0].Data[0], block, 2);
+				for (block=0; block<(blocks_1k*2); block+=8) {
+					status = FD_ReadBlocks(mkfs_scratch, block, 8);
 					if (status != SD_OK) {
-						strcpy(path, "Read error");
+						strcpy(path, "\nRead error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data[0], BLOCK_BUFFER_SIZE, &wr_count);
+					fr = f_write(&fil_dest, mkfs_scratch, SCRATCH_SIZE, &wr_count);
 					if (fr != FR_OK) {
-						strcpy(path, "Write error");
+						strcpy(path, "\nWrite error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
+					sprintf(path, "%i KiB written \r", (block+8)/2);
+					stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				}
+				strcpy(path, "\n");
+				stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				f_close(&fil_dest);
 			} else {
 				// open destination failed
@@ -1533,20 +1538,32 @@ uint64_t FS_dd(uint64_t forth_stack) {
 				// copy file to drive
 				block = 0;
 				while (!f_eof(&fil_src)) {
-					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &rd_count);
+					fr = f_read(&fil_src, mkfs_scratch, SCRATCH_SIZE, &rd_count);
 					if (fr != FR_OK) {
-						strcpy(path, "Read error");
+						strcpy(path, "\nRead error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					status = FD_WriteBlocks(&BLOCK_Buffers[0].Data[0], block, 2);
-					block += 2;
+					if (rd_count < SCRATCH_SIZE) {
+						// not enough read
+						break;
+					}
+					if (block >= (blocks_1k*2)) {
+						// no more blocks on destination
+						break;
+					}
+					status = FD_WriteBlocks(mkfs_scratch, block, 8);
 					if (status != SD_OK) {
-						strcpy(path, "Write error");
+						strcpy(path, "\nWrite error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
+					block += 8;
+					sprintf(path, "%i KiB written \r", block/2);
+					stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				}
+				strcpy(path, "\n");
+				stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				f_close(&fil_src);
 			} else {
 				// open source failed

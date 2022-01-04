@@ -18,8 +18,9 @@
 #define FD_FLASH_RECORD		8		// double word
 
 #define FD_START_ADDRESS	0x08060000
-#define FD_END_ADDRESS		0x080BFFFF
+#define FD_END_ADDRESS		0x080C0000
 
+#define FD_BLOCKS			((FD_END_ADDRESS - FD_START_ADDRESS) / FD_BLOCK_SIZE)
 
 void    FD_init(void);
 void    FD_getSize(void);

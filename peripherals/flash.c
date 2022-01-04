@@ -110,7 +110,7 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 		uint64_t doubleword;
 	} data;
 
-	if (Address < 0x08040000 || Address > 0x080C0000) {
+	if (Address < 0x08040000 || Address >= 0x080C0000) {
 		Error_Handler();
 		return -1;
 	}
@@ -131,14 +131,16 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	}
 	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 				data.doubleword);
+
+	release_flash(FALSE);
+
+	osMutexRelease(FLASH_MutexID);
+
 	if (return_value != HAL_OK) {
 		return_value = HAL_ERROR;
 		Error_Handler();
 	}
 
-	release_flash(FALSE);
-
-	osMutexRelease(FLASH_MutexID);
 	return return_value;
 }
 

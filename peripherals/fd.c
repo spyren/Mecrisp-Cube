@@ -107,7 +107,7 @@ void FD_init(void) {
  *      None
  */
 void FD_getSize(void) {
-	FD_size = ((FD_END_ADDRESS + 1) - FD_START_ADDRESS) / 1024;
+	FD_size = (FD_END_ADDRESS - FD_START_ADDRESS) / 1024;
 }
 
 /**
@@ -138,7 +138,7 @@ int FD_getBlocks(void) {
 uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 
-	if (FD_START_ADDRESS + (ReadAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
+	if (FD_START_ADDRESS + (ReadAddr+NumOfBlocks)*FD_BLOCK_SIZE <= FD_END_ADDRESS) {
 		// valid blocks
 		memcpy(pData, (uint8_t *) FD_START_ADDRESS + ReadAddr*FD_BLOCK_SIZE,
 				NumOfBlocks*FD_BLOCK_SIZE);
@@ -173,7 +173,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_PAGE -1));
 
-	if (FD_START_ADDRESS + (WriteAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
+	if (FD_START_ADDRESS + (WriteAddr+NumOfBlocks)*FD_BLOCK_SIZE <= FD_END_ADDRESS) {
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
@@ -213,8 +213,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 					base_flash_addr + i*FD_PAGE_SIZE,	// page base address flash dest
 					block_field)						// valid blocks bitfield
 					!= SD_OK) {
-				break;
 				retr = SD_ERROR;
+				break;
 			}
 		}
 
