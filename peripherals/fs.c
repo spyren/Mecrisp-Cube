@@ -1145,9 +1145,20 @@ uint64_t FS_df(uint64_t forth_stack) {
 	stack = forth_stack;
 
 	stack = FS_cr(stack);
-	fr = f_getfree("", &nclst, &fatfs);  /* Get current directory path */
+	fr = f_getfree("0:", &nclst, &fatfs);  /* Get current directory path */
 	if (fr == FR_OK) {
-		snprintf(line, sizeof(line), "%lu KiB (%lu SD-Blocks)", nclst/2, nclst);
+		snprintf(line, sizeof(line), "0: %lu KiB (%lu clusters) total %lu KiB\n",
+				nclst * (fatfs->csize)/2, nclst, (fatfs->n_fatent - 2) * (fatfs->csize)/2);
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	} else {
+		strcpy(line, "Err: no volume");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	fr = f_getfree("1:", &nclst, &fatfs);  /* Get current directory path */
+	if (fr == FR_OK) {
+		snprintf(line, sizeof(line), "1: %lu KiB (%lu clusters) total %lu KiB",
+				nclst * (fatfs->csize)/2, nclst, (fatfs->n_fatent - 2) * (fatfs->csize)/2);
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	} else {
 		strcpy(line, "Err: no volume");
