@@ -102,8 +102,6 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 	SDSPI_init();
-	SD_init();
-	FD_init();
 	BLOCK_init();
 	FS_init();
 	VI_init();
@@ -150,7 +148,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
 /* USER CODE BEGIN MainThread */
-//	SD_getSize();
+	SD_getSize();
 	OLED_init();
 	PLEX_init();
 	ASSERT_init();

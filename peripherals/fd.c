@@ -47,7 +47,7 @@
 // Defines
 // *******
 #define FLASH_DUMMY_BYTE		0xFF
-#define	RAM_SHARED				0x20038000	// SRAM2b is only used for Thread, 15 KiB
+#define	RAM_SHARED				SRAM2B_BASE	// SRAM2b is only used for Thread, 15 KiB
 
 
 // Private function prototypes

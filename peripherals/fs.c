@@ -57,7 +57,7 @@
 // Defines
 // *******
 #define LINE_LENGTH				256
-#define	RAM_SHARED				(0x20038000 + 0x1000)	// 4 KiB used by fd
+#define	RAM_SHARED				(SRAM2B_BASE + 0x1000)	// 4 KiB used by fd
 #define	SCRATCH_SIZE			0x1000					// 4 KiB scratch
 
 // Private typedefs

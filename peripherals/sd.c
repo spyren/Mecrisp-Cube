@@ -179,16 +179,6 @@ static uint8_t SD_IO_WriteByte(uint8_t Data);
 // RTOS resources
 // **************
 
-static osMutexId_t SD_MutexID;
-static const osMutexAttr_t SD_MutexAttr = {
-		NULL,				// no name required
-		osMutexPrioInherit,	// attr_bits
-		NULL,				// memory for control block
-		0U					// size for control block
-};
-
-static osSemaphoreId_t SD_SemaphoreID;
-
 
 // Hardware resources
 // ******************
@@ -221,11 +211,6 @@ uint8_t scratch_block[SD_BLOCK_SIZE];
  *      None
  */
 void SD_init(void) {
-	SD_MutexID = osMutexNew(&SD_MutexAttr);
-	ASSERT_fatal(SD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
-
-	SD_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(SD_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 
