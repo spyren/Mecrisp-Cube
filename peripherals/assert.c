@@ -63,6 +63,33 @@
 // *****************
 static int assert_occurred = FALSE;
 
+static const char* const assert_msg[] = {
+		"", 								// 0
+		"ASSERT_HARD_FAULT",				// 1
+		"ASSERT_MEM_MANAGE_FAULT",			// 2
+		"ASSERT_BUS_FAULT",					// 3
+		"ASSERT_USAGE_FAULT",				// 4
+
+		"ASSERT_CPU2_HARD_FAULT",			// 5
+
+		"ASSERT_FORTH_UNEXPECTED_EXIT",		// 6
+		"ASSERT_STACK_OVERFLOW",			// 7
+		"ASSERT_MALLOC_FAILED",				// 8
+		"ASSERT_MUTEX_CREATION",			// 9
+		"ASSERT_SEMAPHORE_CREATION",		// 10
+		"ASSERT_QUEUE_CREATION",			// 11
+		"ASSERT_THREAD_CREATION",			// 12
+		"ASSERT_EVENT_FLAGS_CREATION",		// 13
+
+		"ASSERT_CDC_SIGINT",				// 14
+		"ASSERT_UART_SIGINT",				// 15
+		"ASSERT_UART_ERROR_CALLBACK",		// 16
+		"ASSERT_UART_FIFO",					// 17
+
+		"ASSERT_FLASH_UNLOCK",				// 18
+		"ASSERT_FLASH_LOCK"					// 19
+};
+
 
 // Public Functions
 // ****************
@@ -134,6 +161,18 @@ int ASSERT_getId(void) {
  */
 int ASSERT_getParam(void) {
 	return RTC_Backup.assert_param;
+}
+
+/**
+ *  @brief
+ *      Get assert message
+ *
+ *  @return
+ *      assert param
+ *
+ */
+char* ASSERT_getMsg(int index) {
+	return  (char*) assert_msg[index];
 }
 
 

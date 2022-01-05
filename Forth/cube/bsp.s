@@ -653,12 +653,14 @@ get_assert_adr:
 	Wortbirne Flag_visible, ".assert"
 print_assert:
 	@ ( u --  )      Print assert message
-// int ASSERT_getCount(void);
+// char* ASSERT_getMsg(int index);
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	pushdatos
-	bl		ASSERT_getCount
-	movs	tos, r0			// count
+	movs	r0, tos			// u
+	bl		ASSERT_getMsg
+	movs	tos, r0			// string
+	bl		fs_strlen
+	bl		stype
 	pop		{pc}
 
 

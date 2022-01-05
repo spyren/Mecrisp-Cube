@@ -63,6 +63,7 @@ int ASSERT_occurred(void);
 int ASSERT_getCount(void);
 int ASSERT_getId(void);
 int ASSERT_getParam(void);
+char* ASSERT_getMsg(int index);
 
 /**
  *  @brief
