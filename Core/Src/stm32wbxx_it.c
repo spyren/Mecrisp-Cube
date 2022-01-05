@@ -23,6 +23,7 @@
 #include "stm32wbxx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "assert.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,7 +62,6 @@ extern ADC_HandleTypeDef hadc1;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern I2C_HandleTypeDef hi2c1;
-extern IPCC_HandleTypeDef hipcc;
 extern RTC_HandleTypeDef hrtc;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
@@ -71,7 +71,9 @@ extern TIM_HandleTypeDef htim2;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
+extern WWDG_HandleTypeDef hwwdg;
 extern TIM_HandleTypeDef htim17;
+
 
 /* USER CODE BEGIN EV */
 
@@ -117,6 +119,7 @@ void HardFault_Handler(void)
 */
 
 //	BSP_setRgbLED(0xFF0000); // Set RGB red LED to 100 %
+	ASSERT_fatal(0, ASSERT_HARD_FAULT, SCB->CFSR);
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -131,6 +134,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_MEM_MANAGE_FAULT, SCB->CFSR);
 
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
@@ -146,6 +150,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_BUS_FAULT, SCB->CFSR);
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
@@ -161,6 +166,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_USAGE_FAULT, SCB->CFSR);
 
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
@@ -189,6 +195,20 @@ void DebugMon_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32wbxx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles Window watchdog interrupt.
+  */
+void WWDG_IRQHandler(void)
+{
+  /* USER CODE BEGIN WWDG_IRQn 0 */
+
+  /* USER CODE END WWDG_IRQn 0 */
+  HAL_WWDG_IRQHandler(&hwwdg);
+  /* USER CODE BEGIN WWDG_IRQn 1 */
+
+  /* USER CODE END WWDG_IRQn 1 */
+}
 
 /**
   * @brief This function handles Flash global interrupt.

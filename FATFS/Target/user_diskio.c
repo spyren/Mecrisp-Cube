@@ -110,7 +110,7 @@ DSTATUS USER_SD_initialize (
 {
   /* USER CODE BEGIN INIT */
 	Stat = STA_NOINIT;
-//	SD_init();
+	SD_init();
 	if (SD_getBlocks() == 0) {
 		// no SD card
 		Stat = STA_NODISK;
@@ -387,7 +387,7 @@ DRESULT USER_FD_ioctl (
 
 		/* Get number of sectors on the disk (DWORD) */
 	case GET_SECTOR_COUNT :
-		*(DWORD*)buff = ((FD_END_ADDRESS + 1) - FD_START_ADDRESS) / FD_BLOCK_SIZE;
+		*(DWORD*)buff = (FD_END_ADDRESS - FD_START_ADDRESS) / FD_BLOCK_SIZE;
 		res = RES_OK;
 		break;
 

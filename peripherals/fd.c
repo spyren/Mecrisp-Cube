@@ -48,10 +48,12 @@
 #include "fd.h"
 #include "sd.h"
 #include "sd_spi.h"
-
+#include "assert.h"
 
 // Defines
 // *******
+#define	RAM_SHARED			SRAM2B_BASE	// SRAM2b is only used for Thread, 15 KiB
+
 #define FLASH_DUMMY_BYTE	0xFF
 
 #define W25Q128_PAGES		(65536)
@@ -118,14 +120,13 @@ static uint8_t *scratch_sector; 	// protected by FD_MutexID
  */
 void FD_init(void) {
 //	SDSPI_init();
-	scratch_sector = (uint8_t *) RAM_SHARED_SECTOR;
+	scratch_sector = (uint8_t *) RAM_SHARED;
 //	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
-	if (FD_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 	FD_getSize();
+	FD_reset();
 }
 
 /**

@@ -19,7 +19,7 @@
 
 // 16 MiB
 #define FD_START_ADDRESS	0x00000000
-#define FD_END_ADDRESS		0x01FFFFFF
+#define FD_END_ADDRESS		0x02000000
 
 void    FD_init(void);
 void 	FD_reset(void);

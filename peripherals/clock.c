@@ -38,6 +38,7 @@
 #include "main.h"
 #include "fs.h"
 #include "clock.h"
+#include "assert.h"
 
 #define DATE_2000_01_01 (946684800u)
 #define DATE_2099_12_31 (4102358400u)
@@ -80,14 +81,10 @@ extern RTC_HandleTypeDef hrtc;
  */
 void RTC_init(void) {
 	RTC_MutexID = osMutexNew(&RTC_MutexAttr);
-	if (RTC_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(RTC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	RTC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (RTC_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(RTC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	/* RTC WakeUpTimer Interrupt Configuration: EXTI configuration */
 	__HAL_RTC_WAKEUPTIMER_EXTI_ENABLE_IT();

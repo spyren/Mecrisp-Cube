@@ -42,6 +42,7 @@
 #include "dbg_trace.h"
 #include "ble.h"
 #include "crs_stm.h"
+#include "assert.h"
 
 
 // Rx/Tx Buffer Length
@@ -65,7 +66,7 @@ static void CRS_Thread(void *argument);
 // Definitions for CRS thread
 osThreadId_t CRS_ThreadId;
 static const osThreadAttr_t crs_ThreadAttr = {
-		.name = "CRS_Thread",
+		.name = "BLE_CRS",
 		.priority = (osPriority_t) osPriorityHigh,
 		.stack_size = 128 * 5
 };
@@ -241,6 +242,7 @@ void CRSAPP_Notification(CRSAPP_Notification_evt_t *pNotification) {
 
 		for (i=0; i<pNotification->DataTransfered.Length; i++) {
 			buffer = pNotification->DataTransfered.pPayload[i];
+			ASSERT_nonfatal(buffer != 0x03, ASSERT_CRS_SIGINT, 0) // ^C character abort
 			status = osMessageQueuePut(CRS_RxQueueId, &buffer, 0, 0);
 			if (status != osOK) {
 				// can't put char into queue

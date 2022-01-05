@@ -133,20 +133,16 @@
 #define CFG_USE_SMPS    1
 
 /* USER CODE BEGIN Generic_Parameters */
+
 #define MECRISP_CUBE_TAG "1.4.4"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32WB Feather, 63/384 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32WB Feather, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
-// The SRAM2b is not part of the linker file because it is all secure for
-// any FW CPU2 supporting the Thread protocol. For BLE only applications,
-// the linker file may be updated with a new section to map RW data into
-// the SRAM2B from SRAM2B_BASE up to the SNBRSA address.
-// 16 KiB are shared
-#define	RAM_SHARED_B				0x20038000
-#define	RAM_SHARED_SECTOR			RAM_SHARED_B
-#define	RAM_SHARED_SECTOR_SIZE		0x1000
-#define	RAM_SHARED_FS				(RAM_SHARED_SECTOR + RAM_SHARED_SECTOR_SIZE)
-#define	RAM_SHARED_FS_SIZE			0x1000
+/* if asserts are not required uncomment next line */
+#define CFG_ASSERT_ON
+
+/* if no logs are required uncomment next line */
+#define CFG_LOG_MSG  "0:/var/log/messages"
 
 #undef CFG_GAP_DEVICE_NAME
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
@@ -553,37 +549,37 @@ typedef enum
 /******************************************************************************
  * FreeRTOS
  ******************************************************************************/
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
+#define CFG_SHCI_USER_EVT_PROCESS_NAME        "BLE_SHCI_user"
 #define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
-#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityAboveNormal
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 8)
+#define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (196 * 8)
 
-#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
+#define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI_user"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
 #define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
-#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityAboveNormal
+#define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
 #define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
 
-#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
+#define CFG_ADV_UPDATE_PROCESS_NAME           "BLE_ADV_update"
 #define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
 #define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
-#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityAboveNormal
-#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 6)
+#define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
+#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 8)
 
-#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
+#define CFG_HRS_PROCESS_NAME                  "BLE_HRS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
 #define CFG_HRS_PROCESS_CB_MEM                (0)
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
-#define CFG_HRS_PROCESS_PRIORITY              osPriorityAboveNormal
-#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
+#define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
+#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 8)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */

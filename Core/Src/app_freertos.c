@@ -42,9 +42,10 @@
 #include "shci.h"
 #include "clock.h"
 #include "iic.h"
-#include "bsp.h"
 #include "oled.h"
 #include "plex.h"
+#include "watchdog.h"
+#include "assert.h"
 
 /* USER CODE END Includes */
 
@@ -67,12 +68,12 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for Main */
-osThreadId_t MainHandle;
-const osThreadAttr_t Main_attributes = {
-  .name = "FORTH_ConThread",
+/* Definitions for FORTH_ConThread */
+osThreadId_t FORTH_ConThreadHandle;
+const osThreadAttr_t FORTH_ConThread_attributes = {
+  .name = "FORTH_Console",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 16
+  .stack_size = 128 * 30
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,6 +93,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
 	APPE_Init();
@@ -100,8 +102,6 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 	SDSPI_init();
-	SD_init();
-	FD_init();
 	BLOCK_init();
 	FS_init();
 	VI_init();
@@ -125,8 +125,8 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of Main */
-  MainHandle = osThreadNew(MainThread, NULL, &Main_attributes);
+  /* creation of FORTH_ConThread */
+  FORTH_ConThreadHandle = osThreadNew(MainThread, NULL, &FORTH_ConThread_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -147,26 +147,29 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-  /* USER CODE BEGIN MainThread */
+/* USER CODE BEGIN MainThread */
+	FD_getSize();
 	SD_getSize();
-	FD_reset();
 	OLED_init();
 	PLEX_init();
+	ASSERT_init();
 
-	osDelay(200);
+	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
-	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
+		// CPU2 hardfault
+//		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
+//		BSP_setLED3(TRUE);
+	} else {
+		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+		BSP_setLED1(FALSE); // switch off power on LED
+	}
 
-	BSP_setLED1(FALSE); // switch off power on LED
 	Forth();
 
-	/* Infinite loop */
-	for(;;)
-	{
-		Error_Handler();
-		osDelay(1);
-	}
-  /* USER CODE END MainThread */
+	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0)
+
+/* USER CODE END MainThread */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -41,6 +41,7 @@
 #include "main.h"
 #include "i2c.h"
 #include "iic.h"
+#include "assert.h"
 
 
 // Private function prototypes
@@ -82,15 +83,10 @@ static uint16_t DevAdr;
  */
 void IIC_init(void) {
 	IIC_MutexID = osMutexNew(&IIC_MutexAttr);
-	if (IIC_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(IIC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	II2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (II2_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-
+	ASSERT_fatal(II2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 
@@ -107,19 +103,18 @@ void IIC_setDevice(uint16_t dev) {
 
 /**
  *  @brief
- *		Read a message from the IIC Rx into a buffer. Blocking until message is
+ *		Reads a char from the IIC Rx (serial in). Blocking until char is
  *      ready.
  *  @return
  *      Return the character read as an unsigned char cast to an int or EOF on
  *      error.
  */
 int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize) {
-	HAL_StatusTypeDef status;
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
+	IIC_Status = 0;
 	// get the Message
-	status = HAL_I2C_Master_Receive_DMA(&hi2c1, DevAdr, RxBuffer, RxSize);
-	if (status == HAL_ERROR) {
+	if (HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, RxBuffer, RxSize) == HAL_ERROR) {
 		// can't get Message
 		Error_Handler();
 	}
@@ -127,7 +122,7 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize) {
 	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
 	osMutexRelease(IIC_MutexID);
 
-	return (int) status;
+	return IIC_Status;
 }
 
 
@@ -162,12 +157,11 @@ int IIC_ready(void) {
  *      Return EOF on error, 0 on success.
  */
 int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize) {
-	HAL_StatusTypeDef status;
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
-	status = HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize);
+	IIC_Status = 0;
 	// send the Message
-	if (status != HAL_OK) {
+	if (HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize) == HAL_ERROR) {
 		// can't send message
 		Error_Handler();
 	}
@@ -175,7 +169,7 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize) {
 	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
 	osMutexRelease(IIC_MutexID);
 
-	return (int) status;
+	return IIC_Status;
 }
 
 
@@ -191,20 +185,18 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize) {
  *      Return EOF on error, 0 on success.
  */
 int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize) {
-	HAL_StatusTypeDef status;
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
-	status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize, I2C_FIRST_FRAME);
+	IIC_Status = 0;
 	// send the Message
-	if (status != HAL_OK) {
+	if (HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize, I2C_FIRST_FRAME) == HAL_ERROR) {
 		// can't send message
 		Error_Handler();
 	}
 	// blocked till message is sent
 	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
 	// get the Message
-	status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, DevAdr, RxBuffer, RxSize, I2C_LAST_FRAME);
-	if (status != HAL_OK) {
+	if (HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, DevAdr, RxBuffer, RxSize, I2C_LAST_FRAME) == HAL_ERROR) {
 		// can't get Message
 		Error_Handler();
 	}
@@ -212,7 +204,7 @@ int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uin
 	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
 	osMutexRelease(IIC_MutexID);
 
-	return (int) status;
+	return IIC_Status;
 }
 
 

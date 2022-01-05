@@ -40,7 +40,7 @@ const struct UTIL_LPM_Driver_s UTIL_PowerDriver =
 };
 
 /* Private function prototypes -----------------------------------------------*/
-static void Switch_On_HSI( void );
+
 /* USER CODE BEGIN Private_Function_Prototypes */
 
 /* USER CODE END Private_Function_Prototypes */
@@ -143,20 +143,6 @@ void PWR_ExitSleepMode( void )
  * LOCAL FUNCTIONS
  *
  *************************************************************/
-/**
-  * @brief Switch the system clock on HSI
-  * @param none
-  * @retval none
-  */
-__attribute__((unused))
-static void Switch_On_HSI( void )
-{
-  LL_RCC_HSI_Enable( );
-  while(!LL_RCC_HSI_IsReady( ));
-  LL_RCC_SetSysClkSource( LL_RCC_SYS_CLKSOURCE_HSI );
-  LL_RCC_SetSMPSClockSource(LL_RCC_SMPS_CLKSOURCE_HSI);
-  while (LL_RCC_GetSysClkSource( ) != LL_RCC_SYS_CLKSOURCE_STATUS_HSI);
-}
 
 /* USER CODE BEGIN Private_Functions */
 

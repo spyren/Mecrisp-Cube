@@ -56,8 +56,8 @@
  *       22 KiB secure RAM for CPU2
  *
  *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
- *       16 KiB shared between CPU1 and CPU2 -> used for some buffers
- *       16 KiB secure RAM for CPU2
+ *       15 KiB shared between CPU1 and CPU2 -> used for some buffers
+ *       17 KiB secure RAM for CPU2
  *
  *
  *  @file
@@ -92,7 +92,6 @@
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
-#include "ipcc.h"
 #include "rf.h"
 #include "rtc.h"
 #include "spi.h"
@@ -103,6 +102,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "otp.h"
 #include "app_common.h"
 #include "uart.h"
 #include "flash.h"
@@ -145,6 +145,7 @@ void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 static void Reset_IPCC( void );
 static void Init_Exti( void );
+static void Config_HSE(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -167,14 +168,21 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  Config_HSE();
+
   Reset_IPCC();
+
+  /* activate divide by zero trap (usage fault) */
+  SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
+  /* enable Usage-/Bus-/MPU Fault */
+  SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk
+             |  SCB_SHCSR_BUSFAULTENA_Msk
+             |  SCB_SHCSR_MEMFAULTENA_Msk;
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
-
-  /* IPCC initialisation */
-   MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
   Init_Exti(); /**< Configure the system Power Mode */
@@ -314,15 +322,12 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	Error_Handler();
-	for(;;) {
-		;
-	}
+	ASSERT_fatal(0, ASSERT_STACK_OVERFLOW, (uint32_t) pcTaskName);
 }
 
 
 void vApplicationMallocFailedHook(void) {
-	Error_Handler();
+	ASSERT_fatal(0, ASSERT_MALLOC_FAILED, 0);
 } // vApplicationMallocFailedHook
 
 
@@ -368,6 +373,23 @@ static void Init_Exti( void )
   /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
   LL_EXTI_DisableIT_0_31(~0);
   LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
+
+  return;
+}
+
+static void Config_HSE(void)
+{
+    OTP_ID0_t * p_otp;
+
+  /**
+   * Read HSE_Tuning from OTP
+   */
+  p_otp = (OTP_ID0_t *) OTP_Read(0);
+  if (p_otp) {
+    LL_RCC_HSE_SetCapacitorTuning(p_otp->hse_tuning);
+  } else {
+	    LL_RCC_HSE_SetCapacitorTuning(22);
+  }
 
   return;
 }

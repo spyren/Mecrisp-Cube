@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Serial Peripheral Interface (SPI) for SD.
+ *      Serial Peripheral Interface (SPI) for SD and FD.
  *
  *  @file
  *      sd_spi.c
@@ -36,6 +36,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "sd_spi.h"
+#include "assert.h"
 
 
 
@@ -83,14 +84,10 @@ static volatile uint8_t SpiError = FALSE;
  */
 void SDSPI_init(void) {
 	SDSPI_MutexID = osMutexNew(&SDSPI_MutexAttr);
-	if (SDSPI_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(SDSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	SDSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (SDSPI_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(SDSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 /**
