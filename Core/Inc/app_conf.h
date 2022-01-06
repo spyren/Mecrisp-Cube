@@ -45,9 +45,14 @@
 
 
 /* USER CODE BEGIN Generic_Parameters */
+
 #define MECRISP_CUBE_TAG "1.4.4"
 #define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32F405, 31/768 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
+
+/* if no logs are required uncomment next line */
+#define CFG_LOG_MSG  "0:/var/log/messages"
+
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */
