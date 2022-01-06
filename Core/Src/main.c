@@ -153,6 +153,13 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  /* activate divide by zero trap (usage fault) */
+  SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
+  /* enable Usage-/Bus-/MPU Fault */
+  SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk
+             |  SCB_SHCSR_BUSFAULTENA_Msk
+             |  SCB_SHCSR_MEMFAULTENA_Msk;
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
