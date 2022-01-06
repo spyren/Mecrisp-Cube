@@ -610,4 +610,4 @@ VP_WWDG_VS_WWDG.Signal=WWDG_VS_WWDG
 WWDG.EWIMode=WWDG_EWI_ENABLE
 WWDG.IPParameters=EWIMode
 board=custom
-isbadioc=true
+isbadioc=false
