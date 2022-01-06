@@ -37,7 +37,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "ext_spi.h"
-
+#include "assert.h"
 
 
 // Private function prototypes
@@ -84,14 +84,10 @@ extern DMA_HandleTypeDef hdma_spi2_tx;
  */
 void EXTSPI_init(void) {
 	EXTSPI_MutexID = osMutexNew(&EXTSPI_MutexAttr);
-	if (EXTSPI_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(EXTSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	EXTSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTSPI_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(EXTSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 /**

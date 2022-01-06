@@ -38,7 +38,7 @@
 #include "main.h"
 #include "fd_spi.h"
 #include "ext_spi.h"
-
+#include "assert.h"
 
 
 // Private function prototypes
@@ -86,14 +86,10 @@ static volatile uint8_t SpiError = FALSE;
  */
 void FDSPI_init(void) {
 	FDSPI_MutexID = osMutexNew(&FDSPI_MutexAttr);
-	if (FDSPI_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FDSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	FDSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (FDSPI_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FDSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 /**

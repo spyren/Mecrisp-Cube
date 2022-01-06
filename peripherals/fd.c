@@ -48,6 +48,7 @@
 #include "fd.h"
 #include "sd.h"
 #include "fd_spi.h"
+#include "assert.h"
 
 
 // Defines
@@ -123,9 +124,7 @@ void FD_init(void) {
 	scratch_sector = pvPortMalloc(W25Q16_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
-	if (FD_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 }
 
 

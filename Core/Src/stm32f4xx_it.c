@@ -23,6 +23,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "assert.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,6 +71,7 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim6;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern DMA_HandleTypeDef hdma_usart3_tx;
 extern UART_HandleTypeDef huart3;
@@ -97,23 +99,20 @@ void NMI_Handler(void)
   /* USER CODE END NonMaskableInt_IRQn 1 */
 }
 
-
-///**
-//  * @brief This function handles Hard fault interrupt.
-//  */
-//void HardFault_Handler(void)
-//{
-//  /* USER CODE BEGIN HardFault_IRQn 0 */
-//	  /* USER CODE BEGIN HardFault_IRQn 0 */
-//
-//  /* USER CODE END HardFault_IRQn 0 */
-//  while (1)
-//  {
-//    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-//    /* USER CODE END W1_HardFault_IRQn 0 */
-//  }
-//}
-
+/**
+  * @brief This function handles Hard fault interrupt.
+  */
+void HardFault_Handler(void)
+{
+  /* USER CODE BEGIN HardFault_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_HARD_FAULT, SCB->CFSR);
+  /* USER CODE END HardFault_IRQn 0 */
+  while (1)
+  {
+    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+    /* USER CODE END W1_HardFault_IRQn 0 */
+  }
+}
 
 /**
   * @brief This function handles Memory management fault.
@@ -121,6 +120,7 @@ void NMI_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_MEM_MANAGE_FAULT, SCB->CFSR);
 
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
@@ -136,6 +136,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_BUS_FAULT, SCB->CFSR);
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
@@ -151,6 +152,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
+	ASSERT_fatal(0, ASSERT_USAGE_FAULT, SCB->CFSR);
 
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
@@ -192,20 +194,6 @@ void FLASH_IRQHandler(void)
   /* USER CODE BEGIN FLASH_IRQn 1 */
 
   /* USER CODE END FLASH_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line1 interrupt.
-  */
-void EXTI1_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI1_IRQn 0 */
-
-  /* USER CODE END EXTI1_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
-  /* USER CODE BEGIN EXTI1_IRQn 1 */
-
-  /* USER CODE END EXTI1_IRQn 1 */
 }
 
 /**
@@ -433,6 +421,20 @@ void SDIO_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM6 global interrupt, DAC1 and DAC2 underrun error interrupts.
+  */
+void TIM6_DAC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM6_DAC_IRQn 0 */
+
+  /* USER CODE END TIM6_DAC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim6);
+  /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
+
+  /* USER CODE END TIM6_DAC_IRQn 1 */
+}
+
+/**
   * @brief This function handles DMA2 stream0 global interrupt.
   */
 void DMA2_Stream0_IRQHandler(void)
@@ -503,58 +505,56 @@ void DMA2_Stream6_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-///*
 
-/* The prototype shows it is a naked function - in effect this is just an
-assembly function. */
-void HardFault_Handler( void ) __attribute__( ( naked ) );
-
-/* The fault handler implementation calls a function called
-prvGetRegistersFromStack(). */
-void HardFault_Handler(void)
-{
-    __asm volatile
-    (
-        " tst lr, #4                                                \n"
-        " ite eq                                                    \n"
-        " mrseq r0, msp                                             \n"
-        " mrsne r0, psp                                             \n"
-        " ldr r1, [r0, #24]                                         \n"
-        " ldr r2, handler2_address_const                            \n"
-        " bx r2                                                     \n"
-        " handler2_address_const: .word prvGetRegistersFromStack    \n"
-    );
-}
-
-void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )
-{
-// These are volatile to try and prevent the compiler/linker optimising them
-//away as the variables never actually get used.  If the debugger won't show the
-//values of the variables, make them global my moving their declaration outside
-//of this function.
-volatile uint32_t r0;
-volatile uint32_t r1;
-volatile uint32_t r2;
-volatile uint32_t r3;
-volatile uint32_t r12;
-volatile uint32_t lr; // Link register.
-volatile uint32_t pc; // Program counter.
-volatile uint32_t psr;// Program status register.
-
-    r0 = pulFaultStackAddress[ 0 ];
-    r1 = pulFaultStackAddress[ 1 ];
-    r2 = pulFaultStackAddress[ 2 ];
-    r3 = pulFaultStackAddress[ 3 ];
-
-    r12 = pulFaultStackAddress[ 4 ];
-    lr = pulFaultStackAddress[ 5 ];
-    pc = pulFaultStackAddress[ 6 ];
-    psr = pulFaultStackAddress[ 7 ];
-
-    // When the following line is hit, the variables contain the register values.
-    for( ;; );
-}
-//*/
+///* The prototype shows it is a naked function - in effect this is just an
+//assembly function. */
+//void HardFault_Handler( void ) __attribute__( ( naked ) );
+//
+///* The fault handler implementation calls a function called
+//prvGetRegistersFromStack(). */
+//void HardFault_Handler(void)
+//{
+//    __asm volatile
+//    (
+//        " tst lr, #4                                                \n"
+//        " ite eq                                                    \n"
+//        " mrseq r0, msp                                             \n"
+//        " mrsne r0, psp                                             \n"
+//        " ldr r1, [r0, #24]                                         \n"
+//        " ldr r2, handler2_address_const                            \n"
+//        " bx r2                                                     \n"
+//        " handler2_address_const: .word prvGetRegistersFromStack    \n"
+//    );
+//}
+//
+//void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )
+//{
+//// These are volatile to try and prevent the compiler/linker optimising them
+////away as the variables never actually get used.  If the debugger won't show the
+////values of the variables, make them global my moving their declaration outside
+////of this function.
+//volatile uint32_t r0;
+//volatile uint32_t r1;
+//volatile uint32_t r2;
+//volatile uint32_t r3;
+//volatile uint32_t r12;
+//volatile uint32_t lr; // Link register.
+//volatile uint32_t pc; // Program counter.
+//volatile uint32_t psr;// Program status register.
+//
+//    r0 = pulFaultStackAddress[ 0 ];
+//    r1 = pulFaultStackAddress[ 1 ];
+//    r2 = pulFaultStackAddress[ 2 ];
+//    r3 = pulFaultStackAddress[ 3 ];
+//
+//    r12 = pulFaultStackAddress[ 4 ];
+//    lr = pulFaultStackAddress[ 5 ];
+//    pc = pulFaultStackAddress[ 6 ];
+//    psr = pulFaultStackAddress[ 7 ];
+//
+//    // When the following line is hit, the variables contain the register values.
+//    for( ;; );
+//}
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

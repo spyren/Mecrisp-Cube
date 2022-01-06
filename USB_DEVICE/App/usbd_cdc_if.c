@@ -22,6 +22,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 
+
 /* USER CODE BEGIN INCLUDE */
 #include "app_common.h"
 #include "cmsis_os.h"

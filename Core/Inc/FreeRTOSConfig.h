@@ -154,7 +154,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 header file. */
 /* USER CODE BEGIN 1 */
 #include "assert.h"
-#define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC);}
+#define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC());}
 
 // for the user area variables (Forth tasks)
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS	1

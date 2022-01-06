@@ -40,6 +40,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "flash.h"
+#include "assert.h"
 
 #define PROCESS_ID	11
 
@@ -78,9 +79,7 @@ static FLASH_EraseInitTypeDef EraseInitStruct;
  */
 void FLASH_init(void) {
 	FLASH_MutexID = osMutexNew(&FLASH_MutexAttr);
-	if (FLASH_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FLASH_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	EraseInitStruct.TypeErase    = FLASH_TYPEERASE_SECTORS;
 	EraseInitStruct.NbSectors    = 1;
@@ -104,7 +103,7 @@ void FLASH_init(void) {
 int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	int return_value;
 
-	if (Address < 0x08040000 || Address > 0x080C0000) {
+	if (Address < 0x08040000 || Address >= 0x080C0000) {
 		Error_Handler();
 		return -1;
 	}

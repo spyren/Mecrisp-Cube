@@ -79,7 +79,7 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "dma.h"
-//#include "fatfs.h"
+#include "fatfs.h"
 #include "i2c.h"
 #include "rtc.h"
 #include "sdio.h"
@@ -87,6 +87,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
+#include "wwdg.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -174,16 +175,17 @@ int main(void)
   MX_ADC1_Init();
 //  MX_SDIO_SD_Init();
   MX_SPI1_Init();
-  MX_SPI2_Init();
   MX_RTC_Init();
   MX_FATFS_Init();
-  MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
-  MX_TIM6_Init();
   MX_I2C1_Init();
+  MX_TIM1_Init();
+  MX_SPI2_Init();
   MX_USART3_UART_Init();
+  MX_TIM6_Init();
+  MX_WWDG_Init();
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1

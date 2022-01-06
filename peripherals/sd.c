@@ -103,20 +103,13 @@ extern SD_HandleTypeDef hsd;
  */
 void SD_init(void) {
 	SD_MutexID = osMutexNew(&SD_MutexAttr);
-	if (SD_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(SD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	SD_RxSemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (SD_RxSemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(SD_RxSemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	SD_TxSemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (SD_TxSemaphoreID == NULL) {
-		Error_Handler();
-	}
-
+	ASSERT_fatal(SD_TxSemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	/* uSD device interface configuration */
 	hsd.Instance = SDIO;
