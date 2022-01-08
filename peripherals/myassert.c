@@ -44,7 +44,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "clock.h"
-#include "assert.h"
+#include "myassert.h"
 
 // Private function prototypes
 // ***************************

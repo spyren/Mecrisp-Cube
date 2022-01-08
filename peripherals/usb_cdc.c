@@ -39,7 +39,7 @@
 #include "usb_cdc.h"
 #include "usbd_cdc_if.h"
 #include "usb_device.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 #define CDC_TX_SENT	0x01
@@ -107,9 +107,7 @@ void CDC_init(void) {
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
 	ASSERT_fatal(CDC_ThreadID != NULL, ASSERT_THREAD_CREATION, __get_PC());
 
-	MX_USB_Device_Init();
-
-
+	MX_USB_DEVICE_Init();
 }
 
 

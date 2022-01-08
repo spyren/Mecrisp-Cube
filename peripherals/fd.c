@@ -48,7 +48,7 @@
 #include "fd.h"
 #include "sd.h"
 #include "fd_spi.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 // Defines

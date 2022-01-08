@@ -53,6 +53,9 @@
 /* if no logs are required uncomment next line */
 #define CFG_LOG_MSG  "0:/var/log/messages"
 
+/* if asserts are not required uncomment next line */
+#define CFG_ASSERT_ON
+
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */

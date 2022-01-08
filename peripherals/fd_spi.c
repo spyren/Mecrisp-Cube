@@ -38,7 +38,7 @@
 #include "main.h"
 #include "fd_spi.h"
 #include "ext_spi.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 // Private function prototypes

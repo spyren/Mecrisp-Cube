@@ -44,9 +44,6 @@
  *              1 KiB CDC
  *              1 KiB CRS
  *              1 KiB HRS
- *              1 KiB HCI_USER_EVT
- *              1 KiB ADV_UPDATE
- *              1 KiB SHCI_USER_EVT
  *
  *
  *  @file
@@ -79,7 +76,7 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "dma.h"
-#include "fatfs.h"
+//#include "fatfs.h"
 #include "i2c.h"
 #include "rtc.h"
 #include "sdio.h"
@@ -151,7 +148,6 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
 
   /* USER CODE BEGIN Init */
   /* activate divide by zero trap (usage fault) */
@@ -160,6 +156,7 @@ int main(void)
   SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk
              |  SCB_SHCSR_BUSFAULTENA_Msk
              |  SCB_SHCSR_MEMFAULTENA_Msk;
+  HAL_Init();
 
   /* USER CODE END Init */
 

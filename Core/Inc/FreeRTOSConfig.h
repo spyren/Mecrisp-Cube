@@ -68,7 +68,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 56 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)192)
-#define configTOTAL_HEAP_SIZE                    ((size_t)81920)
+#define configTOTAL_HEAP_SIZE                    ((size_t)40*1024)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
 #define configUSE_16_BIT_TICKS                   0
@@ -156,7 +156,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
-#include "assert.h"
+#include "myassert.h"
 #define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC());}
 
 // for the user area variables (Forth tasks)

@@ -8,6 +8,8 @@
 #ifndef INC_CLOCK_H_
 #define INC_CLOCK_H_
 
+#include "stm32f4xx.h"
+
 #define RTC_MAGIC_COOKIE	(0xa5a5a5a5)
 
 // Type Definitions

@@ -42,7 +42,7 @@
 #include "main.h"
 #include "i2c.h"
 #include "iic.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 // Private function prototypes

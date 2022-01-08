@@ -23,7 +23,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "assert.h"
+#include "myassert.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -136,7 +136,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
-	ASSERT_fatal(0, ASSERT_BUS_FAULT, SCB->CFSR);
+	ASSERT_fatal(0, ASSERT_BUS_FAULT, SCB->BFAR);
 
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
