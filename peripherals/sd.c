@@ -38,6 +38,7 @@
 #include "main.h"
 #include "stm32f4xx_hal_sd.h"
 #include "sd.h"
+#include "myassert.h"
 
 
 // Defines
@@ -111,13 +112,7 @@ void SD_init(void) {
 	SD_TxSemaphoreID = osSemaphoreNew(1, 0, NULL);
 	ASSERT_fatal(SD_TxSemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
-	/* uSD device interface configuration */
-	hsd.Instance = SDIO;
-
-	/* HAL SD initialization */
-	if(HAL_SD_Init(&hsd) != HAL_OK) {
-		Error_Handler();
-	}
+//	MX_SDIO_SD_Init();
 }
 
 

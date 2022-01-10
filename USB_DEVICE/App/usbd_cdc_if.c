@@ -28,6 +28,7 @@
 #include "main.h"
 #include "usb_cdc.h"
 #include "bsp.h"
+#include "myassert.h"
 
 // function prototypes
 void cdc_terminal(void);
@@ -305,6 +306,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 	int i;
 	// write the Buf into the Rx queue
 	for (i=0; i<*Len; i++) {
+		ASSERT_nonfatal(*(Buf+i) != 0x03, ASSERT_CDC_SIGINT, 0); // ^C character abort
 		if (osMessageQueuePut(CDC_RxQueueId, Buf+i, 0, 0) != osOK) {
 			// can't put char into queue
 			Error_Handler();

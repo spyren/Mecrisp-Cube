@@ -9,10 +9,10 @@
  *		the watchdog and the watchdog will bite after the timeout.
  *
  *		(+) WWDG clock (Hz) = PCLK1 / (4096 * Prescaler)
- *   	clock = 32'000'000 / (4096 * 64) = 122 Hz
+ *   	clock = 21'000'000 / (4096 * 8) = 641 Hz
  *   	(+) WWDG timeout (mS) = 1000 * (T[5;0] + 1) / WWDG clock (Hz)
- *   	timeout = 1000 * 64 / 122 = 524 ms
- *   	window  = 400 ms = 48
+ *   	timeout = 1000 * 64 / 641 = 99.9 ms
+ *   	window  = 50 ms = 32
  *
  *   	RTC registers are used for accounting the watchdog bites.
  *
@@ -171,8 +171,8 @@ static void WATCHDOG_Thread(void *argument) {
 	MX_WWDG_Init();
 	// Infinite loop
 	for(;;) {
-		// wait 450 ms
-		osDelay(450);
+		// wait 75 ms
+		osDelay(75);
 		HAL_WWDG_Refresh(&hwwdg); // feed the watchdog
 	}
 }

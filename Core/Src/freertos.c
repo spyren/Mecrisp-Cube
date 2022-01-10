@@ -43,6 +43,7 @@
 #include "iic.h"
 #include "oled.h"
 #include "plex.h"
+#include "myassert.h"
 
 /* USER CODE END Includes */
 
@@ -189,6 +190,7 @@ void MainThread(void *argument)
 //	SD_getSize();
 	OLED_init();
 	PLEX_init();
+	ASSERT_init();
 
 	Forth();
   /* Infinite loop */

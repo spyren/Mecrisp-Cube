@@ -170,7 +170,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_DMA_Init();
   MX_ADC1_Init();
-//  MX_SDIO_SD_Init();
+  MX_SDIO_SD_Init();
   MX_SPI1_Init();
   MX_RTC_Init();
   MX_FATFS_Init();
@@ -182,7 +182,7 @@ int main(void)
   MX_SPI2_Init();
   MX_USART3_UART_Init();
   MX_TIM6_Init();
-  MX_WWDG_Init();
+//  MX_WWDG_Init();
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
