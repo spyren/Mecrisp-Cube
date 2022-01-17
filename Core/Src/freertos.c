@@ -70,7 +70,7 @@
 osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
   .name = "ForthTerm",
-  .stack_size = 512 * 4,
+  .stack_size = 128 * 20,
   .priority = (osPriority_t) osPriorityNormal,
 };
 

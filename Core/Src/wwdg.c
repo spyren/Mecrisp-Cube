@@ -37,6 +37,7 @@ void MX_WWDG_Init(void)
   /* USER CODE BEGIN WWDG_Init 1 */
 
   /* USER CODE END WWDG_Init 1 */
+	hwwdg.Instance = WWDG;
 	hwwdg.Init.Prescaler = WWDG_PRESCALER_8;
 	hwwdg.Init.Window =  63+64-32;
 	hwwdg.Init.Counter = 63+64;
@@ -61,6 +62,10 @@ void HAL_WWDG_MspInit(WWDG_HandleTypeDef* wwdgHandle)
   /* USER CODE END WWDG_MspInit 0 */
     /* WWDG clock enable */
     __HAL_RCC_WWDG_CLK_ENABLE();
+    /* WWDG interrupt Init */
+
+    HAL_NVIC_SetPriority(WWDG_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(WWDG_IRQn);
   /* USER CODE BEGIN WWDG_MspInit 1 */
 
   /* USER CODE END WWDG_MspInit 1 */

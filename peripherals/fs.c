@@ -112,8 +112,10 @@ uint8_t 	*mkfs_scratch;
  *      None
  */
 void FS_init(void) {
-	// use CCM for text buffer, 50 KiB already used by vi
-    mkfs_scratch = (uint8_t *) (0x10000000 + 50*1024); // 4 KiB scratch area for mkfs
+	// use CCM for text buffer, 50 KiB already used by vi -> CCM no DMA allowed
+//    mkfs_scratch = (uint8_t *) (0x10000000 + 50*1024); // 4 KiB scratch area for mkfs
+	// reuse block buffer, either block fs or FAT fs
+	mkfs_scratch = (uint8_t *) &BLOCK_Buffers[0];
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
