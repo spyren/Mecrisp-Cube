@@ -16,6 +16,10 @@ machine (STM32 Nucleo board) for development and testing purposes.
     new ideas and to quickly create prototypes with any STM32 MCU. 
     The STM32 Nucleo boards integrate an ST-Link debugger/programmer, 
     so there is no need for a separate probe.
+  * [STM32WB5MM-DK Discovery Kit](https://www.st.com/en/evaluation-tools/stm32wb5mm-dk.html) - 
+    complete demonstration and development platform for the STMicroelectronics STM32W5MMG module.
+  * [STM32WB Feather Development Board](https://www.reclaimerlabs.com/stm32wb-feather) - 
+    The STM32WB Feather Board is a development board based on the Adafruit Feather standard with the STM32WB Bluetooth SoC at its core. This board specifically uses the STM32WBCGU6. It includes all the basic functionality you need to get up and running quickly. 
   * [STM32F405 Adafruit Feather Express Board](https://www.adafruit.com/product/4382) - 
     ST takes flight in this Feather board. The new STM32F405 Feather that we (Adafruit) designed runs CircuitPython (and _Forth_) at a blistering 168MHz – our fastest CircuitPython board ever! We put a STEMMA QT / Qwiic port on the end, so you can really easily plug and play I2C sensors.
 * Terminal emulator application for PC, e.g.: 
@@ -31,6 +35,8 @@ Flash the Mecrisp-Cube [binary](Release/MecrispCube.bin) to the Nucleo Board.
 2. Copy [binary](Release/MecrispCube.bin) (`MecrispCube.bin`) to the USB mass 
    storage NODE_WB55RG. Or even better the [binary with tools and drive](sdcard/boot/MecrispCubeFS.bin).
 
+For other boards see https://github.com/spyren/Mecrisp-Cube/branches
+
 Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`) 
 and set the speed to 115200 baud. 
@@ -43,11 +49,12 @@ I set the putty terminal configuration to
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
-Mecrisp-Cube 1.4.3 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.10.0, USB-CDC, BLE Stack 5.0 (C) 2020 STMicroelectronics
-  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.2.1 (C) 2017 Amazon.com
+Mecrisp-Cube 1.4.4 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch
+  * Firmware Package STM32Cube FW_WB V1.11.0, USB-CDC, BLE Stack 5.0 (C) 2021 STMicroelectronics
+  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
   * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+
 
 include 0:/etc/rc.local
 23 5 / .[CR] 4  ok.
