@@ -69,7 +69,7 @@
 /* Definitions for Main */
 osThreadId_t MainHandle;
 const osThreadAttr_t Main_attributes = {
-  .name = "ForthTerm",
+  .name = "FORTH_Console",
   .stack_size = 128 * 20,
   .priority = (osPriority_t) osPriorityNormal,
 };
