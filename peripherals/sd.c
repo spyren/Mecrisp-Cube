@@ -89,7 +89,7 @@ uint16_t flag_SDHC = 0;
 
 int sd_size = 0; // number of blocks
 
-uint8_t scratch_block[SD_BLOCK_SIZE];
+//uint8_t scratch_block[SD_BLOCK_SIZE];
 
 extern SD_HandleTypeDef hsd;
 

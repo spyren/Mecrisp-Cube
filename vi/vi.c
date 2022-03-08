@@ -117,6 +117,7 @@ static const char vi_Version[] =
 
 #define TEXT_SIZE		(40 * 1024)
 #define MAX_INPUT_LEN	256
+#define SCRATCH_SIZE	1024
 
 // Misc. non-Ascii keys that report an escape sequence
 #define VI_K_UP			128	// cursor key Up
@@ -202,6 +203,7 @@ static char last_forward_char;			// last char searched for with 'f'
 static char *cfn;						// previous, current, and next file name
 static char *text, *end, *textend;		// pointers to the user data in memory
 static char *screen;					// pointer to the virtual screen buffer
+static char *scratch;					// scvratch buffer for DMA operations
 static int screensize;					//            and its size
 static char *screenbegin;				// index into text[], of top line on the screen
 static char *dot;						// where all the action takes place
@@ -342,10 +344,8 @@ static char *swap_context(char *);		// goto new context for '' command
 // ****************
 
 void VI_init(void) {
-//	text = pvPortMalloc(TEXT_SIZE+100); // some savety margin
-//	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS + 8);
 	// use CCM for text buffer
-	text = (char *)0x10000100;		// do not start at 0x10000000 because there are memory access below text
+	text = (char *)0x10000100;		// do not start at 0x10000000 because there are memory access below text,
 	screen = text + TEXT_SIZE+100;	// screen 128 x 40 = 5120 Bytes
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user
@@ -360,6 +360,8 @@ void VI_init(void) {
 	memset(argbuf, 0, MAX_INPUT_LEN);
 	readbuffer = pvPortMalloc(MAX_INPUT_LEN);
 	memset(readbuffer, 0, MAX_INPUT_LEN);
+	scratch = pvPortMalloc(SCRATCH_SIZE); // CCM cant't be used for DMA, we need a scratch buffer for file write
+	memset(scratch, 0, SCRATCH_SIZE);
 
 	rows = 24;
 	columns = 80;
@@ -3349,13 +3351,17 @@ static int file_write(char * fn, char * first, char * last)
 	FRESULT fr;     /* FatFs return code */
 	FIL fil;        /* File object */
 	int cnt;
+	int blocks;
+	int remain;
+	int i;
+
 	UINT charcnt;
 
 	if (fn == 0) {
 		psbs("No current filename");
 		return (-1);
 	}
-	charcnt = 0;
+	charcnt = 1;
 	// FIXIT- use the correct umask()
 
 	fr = f_open(&fil, fn, FA_CREATE_ALWAYS | FA_WRITE);
@@ -3363,13 +3369,34 @@ static int file_write(char * fn, char * first, char * last)
 		return (-1);
 	}
 	cnt = last - first + 1;
-	fr = f_write(&fil, first, cnt, &charcnt);
-	if (charcnt == cnt && fr == FR_OK) {
-		// good write
-		//file_modified= FALSE; // the file has not been modified
-	} else {
-		charcnt = 0;
+
+	// divide in blocks because of DMA
+	blocks = cnt / SCRATCH_SIZE;
+	remain = cnt % SCRATCH_SIZE;
+
+	for (i=0; i<blocks; i++) {
+		memcpy(scratch, first+i*SCRATCH_SIZE, SCRATCH_SIZE);
+		fr = f_write(&fil, scratch, SCRATCH_SIZE, &charcnt);
+		if (charcnt == SCRATCH_SIZE && fr == FR_OK) {
+			// good write
+			//file_modified= FALSE; // the file has not been modified
+		} else {
+			charcnt = 0;
+			break;
+		}
 	}
+
+	if ((remain > 0) && (charcnt > 0)) {
+		memcpy(scratch, first+blocks*SCRATCH_SIZE, remain);
+		fr = f_write(&fil, scratch, remain, &charcnt);
+		if (charcnt == remain && fr == FR_OK) {
+			// good write
+			//file_modified= FALSE; // the file has not been modified
+		} else {
+			charcnt = 0;
+		}
+	}
+
 	f_close(&fil);
 	return (charcnt);
 }
