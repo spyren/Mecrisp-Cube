@@ -229,7 +229,7 @@ uint64_t FS_coredump(uint64_t forth_stack, uint8_t *str, int count) {
 
 	if (a_flag) {
 		// dump everything
-		size = 768 * 1024; // 768 KiB
+		size = 1024 * 1024; // 1024 KiB
 	} else {
 		// get the end of the flash dictionary
 		size = ((uint32_t) ZweitDictionaryPointer ) - 0x08000000;
