@@ -1,22 +1,34 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
-  * @file    user_diskio.c
-  * @brief   This file includes a diskio driver skeleton to be completed by the user.
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
-  *
-  ******************************************************************************
-  */
- /* USER CODE END Header */
+ *  @brief
+ *      Diskio driver for Serial Flash drive (drive 0:, details see fd.c)
+ *      and Secure Digital Memory Card (drive 1:, details see sd.c).b
+ *
+ *  @file
+ *      user_diskio.c
+ *  @author
+ *      Peter Schmid, peter@spyr.ch
+ *  @date
+ *      2020-10-27
+ *  @remark
+ *      Language: C, STM32CubeIDE GCC
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This project Mecrsip-Cube is free software: you can redistribute it
+ *      and/or modify it under the terms of the GNU General Public License
+ *      as published by the Free Software Foundation, either version 3 of
+ *      the License, or (at your option) any later version.
+ *
+ *      Mecrsip-Cube is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *      General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
+ */
+/* USER CODE END Header */
 
 #ifdef USE_OBSOLETE_USER_CODE_SECTION_0
 /*
@@ -271,7 +283,7 @@ DSTATUS USER_FD_initialize (
   /* USER CODE BEGIN INIT */
 	Stat = STA_NOINIT;
 	// flash drive
-	FD_init();
+//	FD_init();	// already initialized in freertos-c
 	if (FD_getBlocks() == 0) {
 		// no flash
 		Stat = STA_NODISK;

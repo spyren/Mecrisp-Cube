@@ -55,9 +55,6 @@
 // *******
 #define FLASH_DUMMY_BYTE	0xFF
 
-// use CCM for scratch sector buffer
-#define	CCM_RAM				(0x10000000 + 50 * 1024)
-
 #define W25Q16_PAGES		(8192)
 #define W25Q16_SECTORS		(8192/16)
 
@@ -119,7 +116,6 @@ static uint8_t *scratch_sector; 	// protected by FD_MutexID
  *      None
  */
 void FD_init(void) {
-//	scratch_sector = (uint8_t *) CCM_RAM;
 	FDSPI_init();
 	scratch_sector = pvPortMalloc(W25Q16_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
@@ -211,16 +207,16 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	int i;
 	uint8_t block_field; // bit0 block0, bit1 block1 ..
 
-	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_PAGE -1));
+	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_SECTOR -1));
 
 	if ((NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
 
-		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_PAGE;
-		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_PAGE;
-		int sectors = NumOfBlocks / FD_BLOCKS_PER_PAGE;
+		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_SECTOR;
+		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_SECTOR;
+		int sectors = NumOfBlocks / FD_BLOCKS_PER_SECTOR;
 		if (FirstBoundary + LastBoundary > 0) {
 			sectors++;
 		}
@@ -233,7 +229,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 				if (LastBoundary == 0) {
 					block_field = 0xFF << FirstBoundary;
 				} else {
-					block_field = (0xFF << FirstBoundary) & (0xFF >> (FD_BLOCKS_PER_PAGE - LastBoundary));
+					block_field = (0xFF << FirstBoundary) & (0xFF >> (FD_BLOCKS_PER_SECTOR - LastBoundary));
 				}
 			} else if (i==0) {
 				// first sector
@@ -249,8 +245,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 				block_field = 0xFF;
 			}
 			if (flash_sector(
-					pData +  i*FD_PAGE_SIZE, 			// address data source (contiguous)
-					base_flash_addr + i*FD_PAGE_SIZE,	// sector base address flash dest
+					pData +  i*FD_SECTOR_SIZE, 			// address data source (contiguous)
+					base_flash_addr + i*FD_SECTOR_SIZE,	// sector base address flash dest
 					block_field)						// valid blocks bitfield
 					!= SD_OK) {
 				break;
@@ -339,12 +335,12 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 	FDSPI_Write((flash_addr & 0xFF0000) >> 16);
 	FDSPI_Write((flash_addr & 0x00FF00) >> 8);
 	FDSPI_Write((flash_addr & 0x0000FF));
-	FDSPI_WriteReadData(scratch_sector, scratch_sector, FD_PAGE_SIZE);
+	FDSPI_WriteReadData(scratch_sector, scratch_sector, FD_SECTOR_SIZE);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 	// are the blocks in the sector already erased?
 	byte_p = (uint8_t *) scratch_sector;
-	for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+	for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 		if (block_field & (1 << i)) {
 			// block belongs to sector
 			for (j=0; j<FD_BLOCK_SIZE; j++) {
@@ -362,7 +358,7 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 
 	// copy the blocks to the scratch buffer
 	byte_p = pData;
-	for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+	for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 		if (block_field & (1 << i)) {
 			// block belongs to sector -> copy
 			memcpy(scratch_sector+i*FD_BLOCK_SIZE, byte_p, FD_BLOCK_SIZE);
@@ -374,7 +370,7 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 		// flash already erased
 
 		// flash the blocks
-		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 			if (block_field & (1 << i)) {
 				// block belongs to sector -> program
 				flash_block(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE);
@@ -387,7 +383,7 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 		erase_sector(flash_addr);
 
 		// flash the sector (all blocks)
-		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 			flash_block(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE);
 		}
 	}
@@ -427,7 +423,6 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 		// Page Program Time tPP typ. 0.4, max. 3ms
-		osDelay(3);
 		for (j=0; i<5; j++) {
 			// wait till busy reset, timeout 5 ms
 			HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
@@ -435,10 +430,14 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 			FDSPI_WriteReadData(&status, &status, 1);
 			HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 			if (! (status & 0x01)) {
-				// busy reset
+				// busy reset -> programming finished
 				break;
 			}
 			osDelay(1);
+		}
+		if (status & 0x01) {
+			// timeout -> still busy
+			Error_Handler();
 		}
 	}
 }
@@ -468,18 +467,22 @@ static void erase_sector(uint32_t flash_addr) {
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 	// Sector Erase Time (4KB) typ. 45 ms, max. 400 ms
-	for (i=0; i<10; i++) {
-		// wait till busy reset, timeout 500 ms
+	for (i=0; i<20; i++) {
+		// wait till busy reset, timeout 1000 ms
 		osDelay(50);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(RDSR_CMD);
 		FDSPI_WriteReadData(&status, &status, 1);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 		if (! (status & 0x01)) {
-			// busy reset
+			// busy reset -> finished
 			break;
 		}
 
+	}
+	if (status & 0x01) {
+		// timeout -> still busy
+		Error_Handler();
 	}
 
 }
