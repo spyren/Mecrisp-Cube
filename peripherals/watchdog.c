@@ -71,7 +71,7 @@ extern WWDG_HandleTypeDef hwwdg;
 // Definitions for WATCHDOG thread
 static osThreadId_t WATCHDOG_ThreadId;
 static const osThreadAttr_t WATCHDOG_ThreadAttr = {
-		.name = "WATCHDOG_Thread",
+		.name = "WATCHDOG_feed",
 		.priority = (osPriority_t) osPriorityIdle + 1, // just above IDLE
 		.stack_size = 128 * 6
 };

@@ -87,7 +87,9 @@ static const char* const assert_msg[] = {
 		"ASSERT_UART_FIFO",					// 17
 
 		"ASSERT_FLASH_UNLOCK",				// 18
-		"ASSERT_FLASH_LOCK"					// 19
+		"ASSERT_FLASH_LOCK",				// 19
+
+		"ASSERT_FREERTOS"					// 20
 };
 
 

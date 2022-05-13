@@ -905,13 +905,13 @@ uint64_t FS_cp(uint64_t forth_stack) {
 			if (fr == FR_OK) {
 				// copy the file
 				while (!f_eof(&fil_src)) {
-					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, SCRATCH_SIZE, &rd_count);
+					fr = f_read(&fil_src, mkfs_scratch, SCRATCH_SIZE, &rd_count);
 					if (fr != FR_OK) {
 						strcpy(path, "Read error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data, rd_count, &wr_count);
+					fr = f_write(&fil_dest, mkfs_scratch, rd_count, &wr_count);
 					if (fr != FR_OK || rd_count != wr_count) {
 						strcpy(path, "Write error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
@@ -1151,7 +1151,7 @@ uint64_t FS_df(uint64_t forth_stack) {
 				nclst * (fatfs->csize)/2, nclst, (fatfs->n_fatent - 2) * (fatfs->csize)/2);
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	} else {
-		strcpy(line, "Err: no volume");
+		strcpy(line, "Err: no volume\n");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
 

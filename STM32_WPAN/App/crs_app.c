@@ -65,7 +65,7 @@ static void CRS_Thread(void *argument);
 // Definitions for CRS thread
 osThreadId_t CRS_ThreadId;
 static const osThreadAttr_t crs_ThreadAttr = {
-		.name = "CRS_Thread",
+		.name = "BLE_CRS",
 		.priority = (osPriority_t) osPriorityHigh,
 		.stack_size = 512 * 2
 };

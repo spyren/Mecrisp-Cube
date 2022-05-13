@@ -58,6 +58,8 @@
 #define ASSERT_FLASH_UNLOCK				18
 #define ASSERT_FLASH_LOCK				19
 
+#define ASSERT_FREERTOS					20
+
 void ASSERT_init(void);
 int ASSERT_occurred(void);
 int ASSERT_getCount(void);

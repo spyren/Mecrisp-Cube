@@ -58,7 +58,7 @@ static void cdc_thread(void *argument);
 // Definitions for CDC thread
 osThreadId_t CDC_ThreadID;
 const osThreadAttr_t cdc_thread_attributes = {
-		.name = "CDC_Thread",
+		.name = "USB_CDC",
 		.priority = (osPriority_t) osPriorityHigh,
 		.stack_size = 512*2
 };
