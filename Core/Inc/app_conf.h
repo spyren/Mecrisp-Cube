@@ -607,6 +607,14 @@ typedef enum
 
 #define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
 
+/******************************************************************************
+ * Display modules
+ ******************************************************************************/
+#define	OLED					0
+#define MIP						1
+#define PLEX					1
+#define EINK					0
+
 #endif /*APP_CONF_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

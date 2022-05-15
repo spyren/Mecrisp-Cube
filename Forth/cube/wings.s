@@ -182,11 +182,14 @@ bit_loop2:
 	pop		{r4-r8, pc}
 
 
+// PLEX words only if needed
+.if PLEX == 1
+
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "plex-emit"
 plex_emit:
         @ ( c -- ) Emit one character
-// void OLED_sendChar(char ch)
+// void PLEX_sendChar(char ch)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r0, tos
@@ -210,7 +213,7 @@ plex_qemit:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "plexpos!"
 plex_get_pos:
-        @ ( x -- ) Set OLED position
+        @ ( x -- ) Set PLEX position
 // void PLEX_setPos(uint8_t x)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -223,7 +226,7 @@ plex_get_pos:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "plexpos@"
 plex_set_pos:
-        @ (  -- x ) Get OLED position
+        @ (  -- x ) Get PLEX position
 // void PLEX_getPos(uint8_t x)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -262,7 +265,7 @@ plexclr:
         Wortbirne Flag_visible, "plexfont"
 plexfont:
         @ ( u -- ) select font for the Plex
-// void PLEX_setFont(OLED_FontT font);
+// void PLEX_setFont(PLEX_FontT font);
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r0, tos		// font
@@ -396,4 +399,6 @@ get_plexdisplay:
 	pushdatos
 	movs	tos, r0		// frame
 	pop		{pc}
+
+.endif
 

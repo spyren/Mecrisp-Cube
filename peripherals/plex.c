@@ -47,6 +47,8 @@
 #include "font8x8.h"
 #include "oled.h"
 
+#if PLEX == 1
+
 // Macros
 // ******
 #define  membersof(x) (sizeof(x) / sizeof(x[0]))
@@ -583,4 +585,4 @@ static void sendChar8x8(int ch) {
 	}
 }
 
-
+#endif // PLEX == 1

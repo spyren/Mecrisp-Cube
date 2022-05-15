@@ -42,10 +42,16 @@
 #include "shci.h"
 #include "clock.h"
 #include "iic.h"
-#include "oled.h"
 #include "plex.h"
 #include "watchdog.h"
 #include "assert.h"
+#if OLED == 1
+#include "oled.h"
+#endif
+#if MIP == 1
+#include "mip.h"
+#endif
+
 
 /* USER CODE END Includes */
 
@@ -149,8 +155,16 @@ void MainThread(void *argument)
 {
 /* USER CODE BEGIN MainThread */
 	SD_getSize();
+#if OLED == 1
 	OLED_init();
+#endif
+#if MIP == 1
+	MIP_init();
+#endif
+#if PLEX == 1
 	PLEX_init();
+#endif
+
 	ASSERT_init();
 
 	osDelay(10);

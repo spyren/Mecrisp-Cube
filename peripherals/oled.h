@@ -93,5 +93,4 @@ int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 int OLED_readStatus(void);
 
-
 #endif /* INC_OLED_H_ */

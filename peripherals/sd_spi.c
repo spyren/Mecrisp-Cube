@@ -37,7 +37,7 @@
 #include "main.h"
 #include "sd_spi.h"
 #include "assert.h"
-
+#include "stm32wbxx_ll_spi.h"
 
 
 // Private function prototypes
@@ -90,6 +90,7 @@ void SDSPI_init(void) {
 	ASSERT_fatal(SDSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
+
 /**
   * @brief
   *     SPI Write byte(s) to device
@@ -122,6 +123,52 @@ void SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataL
 	} else {
 		Error_Handler();
 	}
+
+	osMutexRelease(SDSPI_MutexID);
+}
+
+/**
+  * @brief
+  *     SPI Write byte(s) to MIP device
+  *
+  *     Using DMA. RTOS blocking till finished.
+  *
+  *     Data is clocked on the rising edge of SCLK, Mode 0
+  *  	SPI_POLARITY_LOW, SPI_PHASE_1EDGE
+  *  	serial chip select (SCS) is high active
+  * @param[in]
+  *     DataPointer to data buffer to write
+  * @param[in]
+  *     DataLength: number of bytes to write
+  * @retval
+  *     None
+  */
+void SDSPI_WriteMIP(const uint8_t *Data, uint16_t DataLength) {
+	HAL_StatusTypeDef hal_status = HAL_OK;
+	osStatus_t os_status = osOK;
+
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(SDSPI_MutexID, osWaitForever);
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
+//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+
+	SpiError = FALSE;
+	hal_status = HAL_SPI_Transmit_DMA(&hspi1, Data, DataLength);
+	if (hal_status == HAL_OK) {
+		// blocked till read/write is finished
+		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
+		if (SpiError || (os_status != osOK)) {
+			Error_Handler();
+		}
+	} else {
+		Error_Handler();
+	}
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
+//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
 
 	osMutexRelease(SDSPI_MutexID);
 }

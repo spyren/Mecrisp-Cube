@@ -216,6 +216,8 @@ set_stopbits:
 	pop		{pc}
 
 
+// OLED words only if needed
+.if OLED == 1
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "oled-emit"
 oled_emit:
@@ -307,6 +309,129 @@ oledfont:
 	drop
 	bl		OLED_setFont
 	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "oled-test" // (  -- )
+  // writes every 100 ms a character to the OLED
+  // for testing the redirection (hooks)
+@ -----------------------------------------------------------------------------
+	bl		hook_emit		// redirect emit to OLED
+	ldr		r0, =oled_emit
+	str		r0, [tos]
+	drop
+1:
+	ldr		r0, =32			// ASCCI starts at 32 ' '
+	ldr		r1, =128-32		// count
+2:
+	movs	tos, r0
+	pushdatos
+	bl		emit
+	push	{r0-r1}
+	ldr		r0, =100
+	bl		osDelay			// wait 100ms
+	pop		{r0-r1}
+	add		r0, r0, #1
+	subs	r1, r1, #1
+	bne		2b
+	b		1b
+
+.endif  // OLED == 1
+
+// MIP words only if needed
+.if MIP == 1
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mip-emit"
+mip_emit:
+        @ ( c -- ) Emit one character
+// void MIP_sendChar(char ch)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		MIP_putc
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mip-emit?"
+smip_qemit:
+        @ ( -- ? ) Ready to send a character ?
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		MIP_Ready
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mippos!"
+mip_get_pos:
+        @ ( x y -- ) Set MIP position
+// void MIP_setPos(uint8_t x, uint8_t y)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r1, tos		// y
+	drop
+	movs	r0, tos		// x
+	drop
+	bl		MIP_setPos
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mippos@"
+mip_set_pos:
+        @ (  -- x y ) Get MIP position
+// void MIP_getPos(uint8_t x, uint8_t y)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		MIP_getPosX
+	movs	tos, r0		// x
+	pushdatos
+	bl		MIP_getPosY
+	movs	tos, r0		// y
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mipcmd"
+mipcmd:
+        @ ( c-addr -- ) send command to MIP
+// void MIP_sendCommand(static uint8_t *command, size)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// command
+	drop
+	bl		MIP_sendCommand
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mipclr"
+mipclr:
+        @ ( --  ) Clears the MIP display
+// void MIP_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		MIP_clear
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "mipfont"
+mipfont:
+        @ ( u -- ) select font for the MIP
+// void MIP_setFont(MIP_FontT font);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// font
+	drop
+	bl		MIP_setFont
+	pop		{pc}
+
+.endif // MIP == 1
 
 
 // C Interface to some Forth Words
