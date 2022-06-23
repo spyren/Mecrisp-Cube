@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Serial Peripheral Interface (SPI) for the serial flash.
+ *      Quad Serial Peripheral Interface (QSPI) for the serial flash.
  *
  *		The spi1 interface is used for the serial flash.
  *  @file

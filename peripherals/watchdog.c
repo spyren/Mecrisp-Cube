@@ -168,7 +168,7 @@ int WATCHDOG_adr(void) {
   * 	None
   */
 static void WATCHDOG_Thread(void *argument) {
-	MX_WWDG_Init();
+	MX_WWDG1_Init();
 	// Infinite loop
 	for(;;) {
 		// wait 75 ms

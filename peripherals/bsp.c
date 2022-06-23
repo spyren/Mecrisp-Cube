@@ -162,7 +162,7 @@ void BSP_init(void) {
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_4;
 	sConfig.Rank = 1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+	sConfig.SamplingTime = ADC_SAMPLETIME_8CYCLES_5;
 	sConfig.Offset = 0;
 	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
 		Error_Handler();
@@ -340,7 +340,7 @@ static const PortPin_t PortPin_a[23] = {
 		{ A3_GPIO_Port, A3_Pin } ,
 		{ A4_GPIO_Port, A4_Pin } ,
 		{ A5_GPIO_Port, A5_Pin } ,
-		{ A6_GPIO_Port, A6_Pin } ,
+//		{ A6_GPIO_Port, A6_Pin } ,
 };
 
 /**

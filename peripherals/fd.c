@@ -167,13 +167,13 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 		// valid blocks
 		osMutexAcquire(FD_MutexID, osWaitForever);
 
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(READ_CMD);
 		FDSPI_Write((adr & 0xFF0000) >> 16);
 		FDSPI_Write((adr & 0x00FF00) >> 8);
 		FDSPI_Write((adr & 0x0000FF));
 		FDSPI_WriteReadData(pData, pData, NumOfBlocks * FD_BLOCK_SIZE);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
 		osMutexRelease(FD_MutexID);
 
@@ -277,22 +277,22 @@ uint8_t FD_eraseDrive(void) {
 	uint8_t status;
 
 	osMutexAcquire(FD_MutexID, osWaitForever);
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 	FDSPI_Write(WREN_CMD);
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 	FDSPI_Write(CE_CMD);
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
 	// Chip Erase Time (2 MiB) typ. 5 s, max. 25 s
 	for (i=0; i<25; i++) {
 		// wait till busy reset, timeout 25 s
 		osDelay(1000);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(RDSR_CMD);
 		FDSPI_WriteReadData(&status, &status, 1);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 		if (! (status & 0x01)) {
 			// busy reset
 			retr = SD_OK;
@@ -330,13 +330,13 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 	uint8_t erased = TRUE;
 
 	// read out 4 KiB serial flash sector into scratch_sector
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 	FDSPI_Write(READ_CMD);
 	FDSPI_Write((flash_addr & 0xFF0000) >> 16);
 	FDSPI_Write((flash_addr & 0x00FF00) >> 8);
 	FDSPI_Write((flash_addr & 0x0000FF));
 	FDSPI_WriteReadData(scratch_sector, scratch_sector, FD_SECTOR_SIZE);
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
 	// are the blocks in the sector already erased?
 	byte_p = (uint8_t *) scratch_sector;
@@ -409,26 +409,26 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 
 	// 2 pages
 	for (i=0; i<2; i++) {
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(WREN_CMD);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(WRITE_CMD);
 		adr = flash_addr+i*256;
 		FDSPI_Write((adr & 0xFF0000) >> 16);
 		FDSPI_Write((adr & 0x00FF00) >> 8);
 		FDSPI_Write((adr & 0x0000FF));
 		FDSPI_WriteReadData(pData+i*256, pData+i*256, W25Q16_PAGE_SIZE);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
 		// Page Program Time tPP typ. 0.4, max. 3ms
 		for (j=0; i<5; j++) {
 			// wait till busy reset, timeout 5 ms
-			HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 			FDSPI_Write(RDSR_CMD);
 			FDSPI_WriteReadData(&status, &status, 1);
-			HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 			if (! (status & 0x01)) {
 				// busy reset -> programming finished
 				break;
@@ -455,25 +455,25 @@ static void erase_sector(uint32_t flash_addr) {
 	uint8_t status;
 	uint8_t i;
 
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 	FDSPI_Write(WREN_CMD);
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 	FDSPI_Write(SE_CMD);
 	FDSPI_Write((flash_addr & 0xFF0000) >> 16);
 	FDSPI_Write((flash_addr & 0x00FF00) >> 8);
 	FDSPI_Write((flash_addr & 0x0000FF));
-	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 
 	// Sector Erase Time (4KB) typ. 45 ms, max. 400 ms
 	for (i=0; i<20; i++) {
 		// wait till busy reset, timeout 1000 ms
 		osDelay(50);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_RESET);
 		FDSPI_Write(RDSR_CMD);
 		FDSPI_WriteReadData(&status, &status, 1);
-		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(QS_CS_GPIO_Port, QS_CS_Pin, GPIO_PIN_SET);
 		if (! (status & 0x01)) {
 			// busy reset -> finished
 			break;

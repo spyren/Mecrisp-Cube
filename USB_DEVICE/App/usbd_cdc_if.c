@@ -2,18 +2,17 @@
 /**
   ******************************************************************************
   * @file           : usbd_cdc_if.c
-  * @version        : v3.0_Cube
+  * @version        : v1.0_Cube
   * @brief          : Usb device for Virtual Com Port.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -23,16 +22,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "app_common.h"
-#include "cmsis_os.h"
-#include "main.h"
-#include "usb_cdc.h"
-#include "bsp.h"
-#include "myassert.h"
 
-// function prototypes
-void cdc_terminal(void);
-void uart_terminal(void);
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -72,10 +62,6 @@ void uart_terminal(void);
   */
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
-/* Define size for the receive and transmit buffer over CDC */
-/* It's up to user to redefine and/or remove those define */
-#define APP_RX_DATA_SIZE  2048
-#define APP_TX_DATA_SIZE  2048
 /* USER CODE END PRIVATE_DEFINES */
 
 /**
@@ -108,20 +94,7 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-USBD_CDC_LineCodingTypeDef LineCoding =
-{
-  115200, /* baud rate*/
-  0x00,   /* stop bits-1*/
-  0x00,   /* parity - none*/
-  0x08    /* nb. of bits 8*/
-};
-uint32_t BuffLength;
-uint32_t UserTxBufPtrIn;/* Increment this pointer or roll it back to
-                               start address when data are received over USART */
-uint32_t UserTxBufPtrOut; /* Increment this pointer or roll it back to
-                                 start address when data are sent over USB */
 
-__IO uint32_t uwPrescalerValue;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -182,8 +155,6 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
-  BSP_setNeoPixel(0x000500); // set neopixel to green
-  osEventFlagsSet(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -195,7 +166,6 @@ static int8_t CDC_Init_FS(void)
 static int8_t CDC_DeInit_FS(void)
 {
   /* USER CODE BEGIN 4 */
-//  osEventFlagsClear(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 4 */
 }
@@ -250,22 +220,10 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
-        LineCoding.bitrate    = (uint32_t)(pbuf[0] | (pbuf[1] << 8) |\
-                                (pbuf[2] << 16) | (pbuf[3] << 24));
-        LineCoding.format     = pbuf[4];
-        LineCoding.paritytype = pbuf[5];
-        LineCoding.datatype   = pbuf[6];
 
     break;
 
     case CDC_GET_LINE_CODING:
-        pbuf[0] = (uint8_t)(LineCoding.bitrate);
-        pbuf[1] = (uint8_t)(LineCoding.bitrate >> 8);
-        pbuf[2] = (uint8_t)(LineCoding.bitrate >> 16);
-        pbuf[3] = (uint8_t)(LineCoding.bitrate >> 24);
-        pbuf[4] = LineCoding.format;
-        pbuf[5] = LineCoding.paritytype;
-        pbuf[6] = LineCoding.datatype;
 
     break;
 
@@ -303,16 +261,6 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-	int i;
-	// write the Buf into the Rx queue
-	for (i=0; i<*Len; i++) {
-		ASSERT_nonfatal(*(Buf+i) != 0x03, ASSERT_CDC_SIGINT, 0); // ^C character abort
-		if (osMessageQueuePut(CDC_RxQueueId, Buf+i, 0, 0) != osOK) {
-			// can't put char into queue
-			Error_Handler();
-		}
-	}
-
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   return (USBD_OK);
@@ -336,9 +284,6 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
   /* USER CODE BEGIN 7 */
   USBD_CDC_HandleTypeDef *hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
   if (hcdc->TxState != 0){
-	  // should never happen -> see
-	  // Middlewares/ST/STM32_UB_Device_Library/Class/CDC/Src/usbd_cdc.c
-	  Error_Handler();
     return USBD_BUSY;
   }
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, Buf, Len);

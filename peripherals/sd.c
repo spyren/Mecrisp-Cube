@@ -36,7 +36,7 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
-#include "stm32f4xx_hal_sd.h"
+#include "stm32h7xx_hal_sd.h"
 #include "sd.h"
 #include "myassert.h"
 

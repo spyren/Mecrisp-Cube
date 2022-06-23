@@ -7,13 +7,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -28,7 +27,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
+#include "stm32h7xx_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -58,67 +57,89 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define D8_Pin GPIO_PIN_0
-#define D8_GPIO_Port GPIOC
-#define D13_Pin GPIO_PIN_1
-#define D13_GPIO_Port GPIOC
-#define D12_Pin GPIO_PIN_2
-#define D12_GPIO_Port GPIOC
-#define D11_Pin GPIO_PIN_3
-#define D11_GPIO_Port GPIOC
-#define A6_Pin GPIO_PIN_3
-#define A6_GPIO_Port GPIOA
-#define A0_Pin GPIO_PIN_4
-#define A0_GPIO_Port GPIOA
-#define A1_Pin GPIO_PIN_5
-#define A1_GPIO_Port GPIOA
-#define A2_Pin GPIO_PIN_6
-#define A2_GPIO_Port GPIOA
-#define A3_Pin GPIO_PIN_7
-#define A3_GPIO_Port GPIOA
-#define A4_Pin GPIO_PIN_4
-#define A4_GPIO_Port GPIOC
-#define A5_Pin GPIO_PIN_5
-#define A5_GPIO_Port GPIOC
-#define D1_Pin GPIO_PIN_10
-#define D1_GPIO_Port GPIOB
-#define D0_Pin GPIO_PIN_11
-#define D0_GPIO_Port GPIOB
-#define SCK_Pin GPIO_PIN_13
-#define SCK_GPIO_Port GPIOB
-#define MISO_Pin GPIO_PIN_14
-#define MISO_GPIO_Port GPIOB
-#define MOSI_Pin GPIO_PIN_15
-#define MOSI_GPIO_Port GPIOB
-#define D6_Pin GPIO_PIN_6
-#define D6_GPIO_Port GPIOC
-#define D5_Pin GPIO_PIN_7
-#define D5_GPIO_Port GPIOC
-#define FLASH_CS_Pin GPIO_PIN_15
-#define FLASH_CS_GPIO_Port GPIOA
-#define FLASH_SCK_Pin GPIO_PIN_3
-#define FLASH_SCK_GPIO_Port GPIOB
-#define FLASH_MISO_Pin GPIO_PIN_4
-#define FLASH_MISO_GPIO_Port GPIOB
-#define FLASH_MOSI_Pin GPIO_PIN_5
-#define FLASH_MOSI_GPIO_Port GPIOB
-#define D15_Pin GPIO_PIN_6
-#define D15_GPIO_Port GPIOB
-#define D14_Pin GPIO_PIN_7
-#define D14_GPIO_Port GPIOB
-#define D9_Pin GPIO_PIN_8
-#define D9_GPIO_Port GPIOB
-#define D10_Pin GPIO_PIN_9
-#define D10_GPIO_Port GPIOB
-/* USER CODE BEGIN Private defines */
-#define D2_Pin SCK_Pin
-#define D2_GPIO_Port SCK_GPIO_Port
-#define D3_Pin MISO_Pin
-#define D3_GPIO_Port MISO_GPIO_Port
-#define D4_Pin MOSI_Pin
-#define D4_GPIO_Port MOSI_GPIO_Port
+#define QS_D2_Pin GPIO_PIN_2
+#define QS_D2_GPIO_Port GPIOE
 #define D7_Pin GPIO_PIN_13
 #define D7_GPIO_Port GPIOC
+#define D8_Pin GPIO_PIN_3
+#define D8_GPIO_Port GPIOF
+#define A5_Pin GPIO_PIN_10
+#define A5_GPIO_Port GPIOF
+#define A1_Pin GPIO_PIN_0
+#define A1_GPIO_Port GPIOC
+#define A4_Pin GPIO_PIN_2
+#define A4_GPIO_Port GPIOC
+#define A2_Pin GPIO_PIN_3
+#define A2_GPIO_Port GPIOC
+#define A0_Pin GPIO_PIN_3
+#define A0_GPIO_Port GPIOA
+#define D13_Pin GPIO_PIN_5
+#define D13_GPIO_Port GPIOA
+#define D12_Pin GPIO_PIN_6
+#define D12_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_0
+#define LED1_GPIO_Port GPIOB
+#define A3_Pin GPIO_PIN_1
+#define A3_GPIO_Port GPIOB
+#define QS_CLK_Pin GPIO_PIN_2
+#define QS_CLK_GPIO_Port GPIOB
+#define D6_Pin GPIO_PIN_9
+#define D6_GPIO_Port GPIOE
+#define D5_Pin GPIO_PIN_11
+#define D5_GPIO_Port GPIOE
+#define D3_Pin GPIO_PIN_13
+#define D3_GPIO_Port GPIOE
+#define D4_Pin GPIO_PIN_14
+#define D4_GPIO_Port GPIOE
+#define LED3_Pin GPIO_PIN_14
+#define LED3_GPIO_Port GPIOB
+#define STLINK_RX_Pin GPIO_PIN_8
+#define STLINK_RX_GPIO_Port GPIOD
+#define STLINK_TX_Pin GPIO_PIN_9
+#define STLINK_TX_GPIO_Port GPIOD
+#define USB_OTG_FS_PWR_EN_Pin GPIO_PIN_10
+#define USB_OTG_FS_PWR_EN_GPIO_Port GPIOD
+#define QS_D0_Pin GPIO_PIN_11
+#define QS_D0_GPIO_Port GPIOD
+#define QS_D1_Pin GPIO_PIN_12
+#define QS_D1_GPIO_Port GPIOD
+#define QS_D3_Pin GPIO_PIN_13
+#define QS_D3_GPIO_Port GPIOD
+#define D10_Pin GPIO_PIN_14
+#define D10_GPIO_Port GPIOD
+#define D9_Pin GPIO_PIN_15
+#define D9_GPIO_Port GPIOD
+#define QS_CS_Pin GPIO_PIN_6
+#define QS_CS_GPIO_Port GPIOG
+#define USB_OTG_FS_OVCR_Pin GPIO_PIN_7
+#define USB_OTG_FS_OVCR_GPIO_Port GPIOG
+#define SDIO_D0_Pin GPIO_PIN_8
+#define SDIO_D0_GPIO_Port GPIOC
+#define SDIO_D1_Pin GPIO_PIN_9
+#define SDIO_D1_GPIO_Port GPIOC
+#define SDIO_D2_Pin GPIO_PIN_10
+#define SDIO_D2_GPIO_Port GPIOC
+#define SDIOD3_Pin GPIO_PIN_11
+#define SDIOD3_GPIO_Port GPIOC
+#define SDIO_CLK_Pin GPIO_PIN_12
+#define SDIO_CLK_GPIO_Port GPIOC
+#define SDIO_CMD_Pin GPIO_PIN_2
+#define SDIO_CMD_GPIO_Port GPIOD
+#define D2_Pin GPIO_PIN_14
+#define D2_GPIO_Port GPIOG
+#define D11_Pin GPIO_PIN_5
+#define D11_GPIO_Port GPIOB
+#define D1_Pin GPIO_PIN_6
+#define D1_GPIO_Port GPIOB
+#define D0_Pin GPIO_PIN_7
+#define D0_GPIO_Port GPIOB
+#define D15_Pin GPIO_PIN_8
+#define D15_GPIO_Port GPIOB
+#define D14_Pin GPIO_PIN_9
+#define D14_GPIO_Port GPIOB
+#define LED2_Pin GPIO_PIN_1
+#define LED2_GPIO_Port GPIOE
+/* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 

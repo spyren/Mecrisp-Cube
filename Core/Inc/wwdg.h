@@ -27,18 +27,19 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "string.h"
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
-extern WWDG_HandleTypeDef hwwdg;
+extern WWDG_HandleTypeDef hwwdg1;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_WWDG_Init(void);
+void MX_WWDG1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 

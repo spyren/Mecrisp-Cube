@@ -3,9 +3,9 @@
  *      HAL Flash routines.
  *
  *      Program and erase are blocking (RTOS)!
- *      The STM32WB has only one flash bank and the access to the flash
+ *      The STM32H7 has two flash banks and the access to the flash bank
  *      during program/erase is not possible.
- *      Erase takes about 20 ms, program 2 ms.
+ *      Smallest Flash record is 32 Bytes.
  *  @file
  *      flash.c
  *  @author
@@ -83,24 +83,22 @@ void FLASH_init(void) {
 
 	EraseInitStruct.TypeErase    = FLASH_TYPEERASE_SECTORS;
 	EraseInitStruct.NbSectors    = 1;
-	EraseInitStruct.Banks        = FLASH_BANK_1;
+	EraseInitStruct.Banks        = FLASH_BANK_2;
 	EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
 }
 
 
 /**
  *  @brief
- *      Programs 8 bytes (doubleword) in the FLASH.
+ *      Programs 32 bytes (8 32bit-words) in the FLASH.
  *  @param[in]
  *      Address  first byte
  *  @param[in]
  *      word1
- *  @param[in]
- *      word2
  *  @return
  *      HAL Status
  */
-int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
+int FLASH_program32B(uint32_t Address, uint32_t* buffer) {
 	int return_value;
 
 	if (Address < 0x08040000 || Address >= 0x080C0000) {
@@ -115,16 +113,10 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 		Error_Handler();
 	}
 
-	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, word1);
+	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, Address, (uint32_t) buffer);
 	if (return_value != HAL_OK) {
 		return_value = HAL_ERROR;
 		Error_Handler();
-	} else {
-		return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address+4, word2);
-		if (return_value != HAL_OK) {
-			return_value = HAL_ERROR;
-			Error_Handler();
-		}
 	}
 
 	if (HAL_FLASH_Lock() == HAL_ERROR) {
@@ -138,24 +130,28 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 /**
  *  @brief
- *      Erases a page/sector (16/64/128 KiB) in the flash.
+ *      Erases a page/sector (128 KiB) in the flash. Only Bank 2 is used.
  *
- *      16 KiB sectors
- *		0x08000000  0x08003FFF  0
- *		0x08004000  0x08007FFF  1
- *		0x08008000  0x0800BFFF  2
- *		0x0800C000  0x0800FFFF  3
- *		64 KiB sector
- *		0x08010000  0x0801FFFF  4
- *		128 KiB sectors
- *		0x08020000  0x0803FFFF  5
- *		0x08040000  0x0805FFFF  6  here starts the flash dictionary
- *		0x08060000  0x0807FFFF  7
- *		0x08080000  0x0809FFFF  8
- *		0x080A0000  0x080BFFFF  9
- *		0x080C0000  0x080DFFFF  10
- *		0x080E0000  0x080FFFFF  11
+ *		128 KiB sectors            Bank
+ *		0x08000000  0x0801FFFF  0  1
+ *		0x08020000  0x0803FFFF  1  1
+ *		0x08040000  0x0805FFFF  2  1
+ *		0x08060000  0x0807FFFF  3  1
+ *		0x08080000  0x0809FFFF  4  1
+ *		0x080A0000  0x080BFFFF  5  1
+ *		0x080C0000  0x080DFFFF  6  1
+ *		0x080E0000  0x080FFFFF  7  1
+ *		0x08100000  0x0811FFFF  0  2
+ *		0x08120000  0x0813FFFF  1  2
+ *		0x08140000  0x0815FFFF  2  2
+ *		0x08160000  0x0817FFFF  3  2
+ *		0x08180000  0x0819FFFF  4  2
+ *		0x081A0000  0x081BFFFF  5  2
+ *		0x081C0000  0x081DFFFF  6  2
+ *		0x081E0000  0x081FFFFF  7  2
  *
+ *  @todo
+ *    use HAL_FLASHEx_Erase_IT
  *  @param[in]
  *      Address  first byte
  *  @return
@@ -170,32 +166,28 @@ int FLASH_erasePage(uint32_t Address) {
 
 	if (HAL_FLASH_Unlock() == HAL_ERROR) {
 		Error_Handler();
+		return_value = HAL_ERROR;
+		return return_value;
 	}
 
-	if ( (Address >= 0x08000000) && (Address <= 0x08003FFF) ) {
+	if (        (Address >= 0x08100000) && (Address <= 0x0811FFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_0;
-	} else if ( (Address >= 0x08004000) && (Address <= 0x08007FFF) ) {
+	} else if ( (Address >= 0x08120000) && (Address <= 0x0813FFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_1;
-	} else if ( (Address >= 0x08008000) && (Address <= 0x0800BFFF) ) {
+	} else if ( (Address >= 0x08140000) && (Address <= 0x0815FFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_2;
-	} else if ( (Address >= 0x0800C000) && (Address <= 0x0800FFFF) ) {
+	} else if ( (Address >= 0x08160000) && (Address <= 0x0817FFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_3;
-	} else if ( (Address >= 0x08010000) && (Address <= 0x0801FFFF) ) {
+	} else if ( (Address >= 0x08180000) && (Address <= 0x0819FFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_4;
-	} else if ( (Address >= 0x08020000) && (Address <= 0x0803FFFF) ) {
+	} else if ( (Address >= 0x081A0000) && (Address <= 0x081BFFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_5;
-	} else if ( (Address >= 0x08040000) && (Address <= 0x0805FFFF) ) {
+	} else if ( (Address >= 0x081C0000) && (Address <= 0x081DFFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_6;
-	} else if ( (Address >= 0x08060000) && (Address <= 0x0807FFFF) ) {
+	} else if ( (Address >= 0x081E0000) && (Address <= 0x081FFFFF) ) {
 		EraseInitStruct.Sector = FLASH_SECTOR_7;
-	} else if ( (Address >= 0x08080000) && (Address <= 0x08007FFF) ) {
-		EraseInitStruct.Sector = FLASH_SECTOR_8;
-	} else if ( (Address >= 0x080A0000) && (Address <= 0x080BFFFF) ) {
-		EraseInitStruct.Sector = FLASH_SECTOR_9;
-	} else if ( (Address >= 0x080C0000) && (Address <= 0x080DFFFF) ) {
-		EraseInitStruct.Sector = FLASH_SECTOR_10;
-	} else if ( (Address >= 0x080E0000) && (Address <= 0x080FFFFF) ) {
-		EraseInitStruct.Sector = FLASH_SECTOR_11;
+	} else {
+		// invalid address
 	}
 
 	return_value = HAL_FLASHEx_Erase(&EraseInitStruct, &PageError);
