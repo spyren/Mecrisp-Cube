@@ -43,9 +43,9 @@
 // Private function prototypes
 // ***************************
 
-// Global Variables
-// ****************
-volatile uint8_t EXTSPI_Error = FALSE;
+// Private Variables
+// *****************
+static volatile uint8_t EXTSPI_Error = FALSE;
 
 
 // RTOS resources
@@ -65,9 +65,9 @@ osSemaphoreId_t EXTSPI_SemaphoreID;
 // Hardware resources
 // ******************
 
-extern SPI_HandleTypeDef hspi2;
-extern DMA_HandleTypeDef hdma_spi2_rx;
-extern DMA_HandleTypeDef hdma_spi2_tx;
+extern SPI_HandleTypeDef hspi1;
+extern DMA_HandleTypeDef hdma_spi1_rx;
+extern DMA_HandleTypeDef hdma_spi1_tx;
 
 
 // Private Variables
@@ -112,7 +112,7 @@ void EXTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t Data
 	osMutexAcquire(EXTSPI_MutexID, osWaitForever);
 
 	EXTSPI_Error = FALSE;
-	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi2, (uint8_t*) DataIn, DataOut, DataLength);
+	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(EXTSPI_SemaphoreID, 1000);
@@ -146,7 +146,7 @@ void EXTSPI_Write(uint8_t Value) {
 	osMutexAcquire(EXTSPI_MutexID, osWaitForever);
 
 	EXTSPI_Error = FALSE;
-	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi2, (uint8_t*) &Value, &data, 1);
+	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) &Value, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(EXTSPI_SemaphoreID, 1000);
@@ -161,8 +161,31 @@ void EXTSPI_Write(uint8_t Value) {
 }
 
 
-
 // Callbacks
 // *********
 
-// the callbacks are handled by the fd_spi.c
+/**
+  * @brief  Tx and Rx Transfer completed callback.
+  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  *               the configuration information for SPI module.
+  * @retval None
+  */
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
+	if (hspi->Instance == hspi1.Instance) {
+		osSemaphoreRelease(EXTSPI_SemaphoreID);
+	}
+}
+
+
+/**
+  * @brief  SPI error callback.
+  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  *               the configuration information for SPI module.
+  * @retval None
+  */
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
+	if (hspi->Instance == hspi1.Instance) {
+		EXTSPI_Error = TRUE;
+		osSemaphoreRelease(EXTSPI_SemaphoreID);
+	}
+}
