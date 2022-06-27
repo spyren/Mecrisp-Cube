@@ -67,6 +67,7 @@ static const osMutexAttr_t FLASH_MutexAttr = {
 
 // Variable used for Erase procedure
 static FLASH_EraseInitTypeDef EraseInitStruct;
+static uint32_t flash_junk[8];
 
 // Public Functions
 // ****************
@@ -90,6 +91,52 @@ void FLASH_init(void) {
 
 /**
  *  @brief
+ *      Programs 8 bytes (doubleword) in the FLASH.
+ *      Minimal size for a flash junk is 32 bytes.
+ *  @param[in]
+ *      Address  first byte
+ *  @param[in]
+ *      word1
+ *  @param[in]
+ *      word2
+ *  @return
+ *      HAL Status
+ */
+int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
+	int return_value;
+
+
+	if (Address < 0x08100000 || Address >= 0x08200000) {
+		Error_Handler();
+		return -1;
+	}
+
+	// only one thread is allowed to use the flash
+	osMutexAcquire(FLASH_MutexID, osWaitForever);
+
+	memcpy(flash_junk, (void *) (Address & 0xFFFFFFE0), 32);
+	flash_junk[Address % 8] = word1;
+	flash_junk[(Address % 8)+1] = word2;
+
+	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, Address, flash_junk[0]);
+	if (return_value != HAL_OK) {
+		return_value = HAL_ERROR;
+		Error_Handler();
+	}
+
+	osMutexRelease(FLASH_MutexID);
+
+	if (return_value != HAL_OK) {
+		return_value = HAL_ERROR;
+		Error_Handler();
+	}
+
+	return return_value;
+}
+
+
+/**
+ *  @brief
  *      Programs 32 bytes (8 32bit-words) in the FLASH.
  *  @param[in]
  *      Address  first byte
@@ -101,7 +148,7 @@ void FLASH_init(void) {
 int FLASH_program32B(uint32_t Address, uint32_t* buffer) {
 	int return_value;
 
-	if (Address < 0x08040000 || Address >= 0x080C0000) {
+	if (Address < 0x08100000 || Address >= 0x08200000) {
 		Error_Handler();
 		return -1;
 	}

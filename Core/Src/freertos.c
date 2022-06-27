@@ -25,6 +25,29 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_common.h"
+#include "uart.h"
+#include "flash.h"
+#include "usb_cdc.h"
+#include "bsp.h"
+#include "sd.h"
+#include "fd_spi.h"
+#include "fd.h"
+#include "block.h"
+#include "fatfs.h"
+#include "fs.h"
+#include "vi.h"
+#include "clock.h"
+#include "iic.h"
+#include "plex.h"
+#include "watchdog.h"
+#include "myassert.h"
+#if OLED == 1
+#include "oled.h"
+#endif
+#if MIP == 1
+#include "mip.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -57,6 +80,7 @@ const osThreadAttr_t FORTH_ConThread_attributes = {
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+void Forth(void);
 
 /* USER CODE END FunctionPrototypes */
 
@@ -72,7 +96,19 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
+//	WATCHDOG_init();
+	BSP_init();
+	RTC_init();
+	UART_init();
+	IIC_init();
+	CDC_init();
+	FLASH_init();
+	FDSPI_init();
+//	FD_init();
+//	SD_init();
+	BLOCK_init();
+	FS_init();
+	VI_init();
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -117,6 +153,25 @@ void MainThread(void *argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN MainThread */
+	SD_getSize();
+#if OLED == 1
+	OLED_init();
+#endif
+#if MIP == 1
+	MIP_init();
+#endif
+#if PLEX == 1
+	PLEX_init();
+#endif
+
+	ASSERT_init();
+
+	osDelay(10);
+
+	Forth();
+
+	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0);
+
   /* Infinite loop */
   for(;;)
   {

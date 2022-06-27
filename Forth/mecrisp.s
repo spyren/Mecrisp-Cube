@@ -66,8 +66,8 @@
 .equ	CDC_TERMINAL, 		2
 .equ	CRS_TERMINAL,		3
 
-.equ	DEFAULT_TERMINAL, CDC_TERMINAL
-//.equ	DEFAULT_TERMINAL, UART_TERMINAL
+//.equ	DEFAULT_TERMINAL, CDC_TERMINAL
+.equ	DEFAULT_TERMINAL, UART_TERMINAL
 
 .equ	TERMINAL_AUTO,		1
 
@@ -84,26 +84,28 @@
 
 @ Konstanten für die Größe des Ram-Speichers
 
-// see stm32F405RGTX_FLASH.ld
+// see STM32H743ZITX_FLASH.ld
 /*
 MEMORY
 {
-  CCMRAM      (xrw)    : ORIGIN = 0x10000000,   LENGTH = 64K
-  RAM_FORTH   (xrw)    : ORIGIN = 0x20000000,   LENGTH = 32K
-  RAM         (xrw)    : ORIGIN = 0x20008000,   LENGTH = 96K
-  FLASH        (rx)    : ORIGIN = 0x08000000,   LENGTH = 256K
-  FLASH_FORTH  (rx)    : ORIGIN = 0x08040000,   LENGTH = 768K
+  FLASH (rx)     	: ORIGIN = 0x08000000, LENGTH = 1024K
+  FLASH_FORTH (rx)  : ORIGIN = 0x08100000, LENGTH = 1024K
+  DTCMRAM (xrw)  	: ORIGIN = 0x20000000, LENGTH = 128K
+  RAM_D1 (xrw)   	: ORIGIN = 0x24000000, LENGTH = 512K
+  RAM_D2 (xrw)   	: ORIGIN = 0x30000000, LENGTH = 288K
+  RAM_D3 (xrw)   	: ORIGIN = 0x38000000, LENGTH = 64K
+  ITCMRAM (xrw)  	: ORIGIN = 0x00000000, LENGTH = 64K
 }
 */
 
-.equ	RamAnfang,				0x20000000	@ Start of RAM
-.equ	RamEnde,				0x20008000	@ End   of RAM. (16 KiB RAM dictionary)
+.equ	RamAnfang,				0x30000000	@ Start of RAM, RAM_D2
+.equ	RamEnde,				0x30040000	@ End   of RAM. (256 KiB RAM dictionary)
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 
-.equ	Kernschutzadresse,		0x08040000	@ Mecrisp core never writes flash below this address.
-.equ	FlashDictionaryAnfang,	0x08040000	@ 256 KiB Flash reserved for core and C.
-.equ	FlashDictionaryEnde,	0x08100000	@ 768 KiB Flash available
+.equ	Kernschutzadresse,		0x08100000	@ Mecrisp core never writes flash below this address.
+.equ	FlashDictionaryAnfang,	0x08100000	@ 1024 KiB Flash reserved for core and C.
+.equ	FlashDictionaryEnde,	0x08200000	@ 1024 KiB Flash available (FLASH disctionary))
 .equ	Backlinkgrenze,			RamAnfang	@ Ab dem Ram-Start.
 
 

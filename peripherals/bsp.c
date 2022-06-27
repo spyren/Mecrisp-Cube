@@ -56,7 +56,7 @@
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube F4 V1.26.0, USB-CDC (C) 2021 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube H7 V1.10.0, USB-CDC (C) 2021 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
@@ -198,9 +198,9 @@ void BSP_setLED1(int state) {
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
 	if (state) {
-		HAL_GPIO_WritePin(D13_GPIO_Port, D13_Pin, GPIO_PIN_SET);
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
 	} else {
-		HAL_GPIO_WritePin(D13_GPIO_Port, D13_Pin, GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -220,7 +220,7 @@ int BSP_getLED1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (HAL_GPIO_ReadPin(D13_GPIO_Port, D13_Pin) == GPIO_PIN_SET) {
+	if (HAL_GPIO_ReadPin(LED1_GPIO_Port, LED1_Pin) == GPIO_PIN_SET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -231,6 +231,99 @@ int BSP_getLED1(void) {
 }
 
 
+/**
+ *  @brief
+ *	    Sets the LED2 (green).
+ *
+ *	@param[in]
+ *      state    FALSE for dark LED, TRUE for bright LED.
+ *  @return
+ *      none
+ *
+ */
+void BSP_setLED2(int state) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (state) {
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Gets the LED2 (green) state
+ *
+ *  @return
+ *      FALSE for dark LED, TRUE for bright LED.
+ */
+int BSP_getLED2(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(LED2_GPIO_Port, LED2_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+/**
+ *  @brief
+ *	    Sets the LED3 (red).
+ *
+ *	@param[in]
+ *      state    FALSE for dark LED, TRUE for bright LED.
+ *  @return
+ *      none
+ *
+ */
+void BSP_setLED3(int state) {
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (state) {
+		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Gets the LED3 (red) state
+ *
+ *  @return
+ *      FALSE for dark LED, TRUE for bright LED.
+ */
+int BSP_getLED3(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(LED3_GPIO_Port, LED3_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
 
 
 // Switches

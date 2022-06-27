@@ -2,6 +2,8 @@
  *  @brief
  *      Interface to the STM HAL flash functions.
  *
+ *		The STM32H74x has 2 MiB flash in 2 banks.
+ *		One page has 128 KiB, a sector has 32 bytes.
  *  @file
  *      flash-wb.s
  *  @author
@@ -45,23 +47,8 @@ eightflashstore: @ ( x1 x2 addr -- ) x1 contains LSB of those 64 bits.
 
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "flashpageerase" @ ( Addr -- )
-	@ Deletes one 4 KiB Flash page (sector!)
-	// there are only 12 sectors for 1024 KiB
-	// 16 KiB sectors
-	// 0x08000000  0x08003FFF  0
-	// 0x08004000  0x08007FFF  1
-	// 0x08008000  0x0800BFFF  2
-	// 0x0800C000  0x0800FFFF  3
-    // 64 KiB sector
-	// 0x08010000  0x0801FFFF  4
-    // 128 KiB sectors
-	// 0x08020000  0x0803FFFF  5
-	// 0x08040000  0x0805FFFF  6  here starts the flash dictionary
-	// 0x08060000  0x0807FFFF  7
-	// 0x08080000  0x0809FFFF  8
-	// 0x080A0000  0x080BFFFF  9
-	// 0x080C0000  0x080DFFFF  10
-	// 0x080E0000  0x080FFFFF  11
+	@ Deletes one 128 KiB Flash page (sector!)
+	// there are only 8 sectors for 1024 KiB
 flashpageerase:
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
@@ -77,7 +64,7 @@ flashpageerase:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "eraseflash" @ ( -- )
 	@ Löscht den gesamten Inhalt des Flashdictionaries.
-	// 6 sectors from 0x08040000
+	// 8 sectors from 0x08100000
 @ -----------------------------------------------------------------------------
 	ldr		r0, =FlashDictionaryAnfang
 eraseflash_intern:
