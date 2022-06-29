@@ -91,7 +91,7 @@ int sd_size = 0; // number of blocks
 
 //uint8_t scratch_block[SD_BLOCK_SIZE];
 
-extern SD_HandleTypeDef hsd;
+extern SD_HandleTypeDef hsd1;
 
 // Public Functions
 // ****************
@@ -152,7 +152,7 @@ int SD_getBlocks(void) {
 uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 	/* Get SD card Information */
 
-	if (HAL_SD_GetCardInfo(&hsd, &HalCardInfo) == HAL_OK) {
+	if (HAL_SD_GetCardInfo(&hsd1, &HalCardInfo) == HAL_OK) {
 	//	pCardInfo->Cid.ManufacturerID 			= HalCardInfo.CardType;		// card Type
 	//	pCardInfo->Csd 			= HalCardInfo.CardVersion;	// card version
 	//	pCardInfo->Csd 			= HalCardInfo.Class;		// class of the card class
@@ -193,7 +193,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 		// reset semaphore
 		osSemaphoreAcquire(SD_RxSemaphoreID, 0);
 	}
-	if (HAL_SD_ReadBlocks_DMA(&hsd, pData, ReadAddr, NumOfBlocks) == HAL_OK) {
+	if (HAL_SD_ReadBlocks_DMA(&hsd1, pData, ReadAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
 		os_status = osSemaphoreAcquire(SD_RxSemaphoreID, 5000);
 		if (SdError || (os_status != osOK)) {
@@ -235,14 +235,14 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 		// reset semaphore
 		osSemaphoreAcquire(SD_TxSemaphoreID, 0);
 	}
-	if (HAL_SD_WriteBlocks_DMA(&hsd, pData, WriteAddr, NumOfBlocks) == HAL_OK) {
+	if (HAL_SD_WriteBlocks_DMA(&hsd1, pData, WriteAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
 		os_status = osSemaphoreAcquire(SD_TxSemaphoreID, 5000);
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {
 			osDelay(10);
-			while ( HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_TRANSFER ) {
+			while ( HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER ) {
 				osDelay(5);
 			}
 			retr = SD_OK;
@@ -271,9 +271,9 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 
 	// only one thread is allowed to use the SD
 	osMutexAcquire(SD_MutexID, osWaitForever);
-	if (HAL_SD_Erase(&hsd, StartAddr, EndAddr) == HAL_OK) {
+	if (HAL_SD_Erase(&hsd1, StartAddr, EndAddr) == HAL_OK) {
 		osDelay(10);
-		while (HAL_SD_GetCardState(&hsd) != HAL_SD_CARD_TRANSFER ) {
+		while (HAL_SD_GetCardState(&hsd1) != HAL_SD_CARD_TRANSFER ) {
 			osDelay(5);
 		}
 		retr = SD_OK;
@@ -294,7 +294,7 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
   *            @arg  SD_TRANSFER_BUSY: Data transfer is acting
   */
 //uint8_t SD_GetCardState(void) {
-//  return((HAL_SD_GetCardState(&hsd) == HAL_SD_CARD_TRANSFER ) ? SD_OK : SD_ERROR);
+//  return((HAL_SD_GetCardState(&hsd1) == HAL_SD_CARD_TRANSFER ) ? SD_OK : SD_ERROR);
 //}
 
 

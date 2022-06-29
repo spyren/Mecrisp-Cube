@@ -173,7 +173,7 @@ static void WATCHDOG_Thread(void *argument) {
 	for(;;) {
 		// wait 75 ms
 		osDelay(75);
-		HAL_WWDG_Refresh(&hwwdg); // feed the watchdog
+		HAL_WWDG_Refresh(&hwwdg1); // feed the watchdog
 	}
 }
 

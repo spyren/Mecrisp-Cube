@@ -111,8 +111,6 @@ void Error_Handler(void);
 #define D9_GPIO_Port GPIOD
 #define QS_CS_Pin GPIO_PIN_6
 #define QS_CS_GPIO_Port GPIOG
-#define USB_OTG_FS_OVCR_Pin GPIO_PIN_7
-#define USB_OTG_FS_OVCR_GPIO_Port GPIOG
 #define SDIO_D0_Pin GPIO_PIN_8
 #define SDIO_D0_GPIO_Port GPIOC
 #define SDIO_D1_Pin GPIO_PIN_9

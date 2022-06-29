@@ -101,13 +101,8 @@ void MX_FREERTOS_Init(void) {
 	RTC_init();
 	UART_init();
 	IIC_init();
-	CDC_init();
+//	CDC_init();
 	FLASH_init();
-	FDSPI_init();
-//	FD_init();
-//	SD_init();
-	BLOCK_init();
-	FS_init();
 	VI_init();
   /* USER CODE END Init */
 
@@ -167,6 +162,11 @@ void MainThread(void *argument)
 	ASSERT_init();
 
 	osDelay(10);
+	FDSPI_init();
+//	FD_init();
+//	SD_init();
+	BLOCK_init();
+	FS_init();
 
 	Forth();
 
