@@ -70,7 +70,7 @@ neopixels:
 	void BSP_neopixelDataTx(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, uint32_t rgb);
 	                                      R0              R1        R2
 
-	Cycle = 1 / 168 MHz = 6 ns
+	Cycle = 1 / 480 MHz = 2.08 ns
 */
 .ltorg
 
