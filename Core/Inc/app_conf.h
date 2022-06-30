@@ -56,6 +56,8 @@
 /* if asserts are not required uncomment next line */
 #define CFG_ASSERT_ON
 
+#define OLED	1
+
 /* USER CODE END Generic_Parameters */
 
 /**< specific parameters */

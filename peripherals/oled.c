@@ -231,8 +231,8 @@ void OLED_init(void) {
 #else
 	OLED_puts("\r\n\r\n");
 #endif
-	OLED_puts("Forth for the STM32WB\r\n");
-	OLED_puts("(c)2021 peter@spyr.ch");
+	OLED_puts("Forth for the STM32H7\r\n");
+	OLED_puts("(c)2022 peter@spyr.ch");
 }
 
 

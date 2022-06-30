@@ -179,7 +179,7 @@ void BSP_init(void) {
 
 /**
  *  @brief
- *	    Sets the LED1 (blue).
+ *	    Sets the LED1 (green).
  *
  *	@param[in]
  *      state    FALSE for dark LED, TRUE for bright LED.
@@ -203,7 +203,7 @@ void BSP_setLED1(int state) {
 
 /**
  *  @brief
- *      Gets the LED1 (blue) state
+ *      Gets the LED1 (green) state
  *
  *  @return
  *      FALSE for dark LED, TRUE for bright LED.
@@ -227,7 +227,7 @@ int BSP_getLED1(void) {
 
 /**
  *  @brief
- *	    Sets the LED2 (green).
+ *	    Sets the LED2 (yellow).
  *
  *	@param[in]
  *      state    FALSE for dark LED, TRUE for bright LED.
@@ -251,7 +251,7 @@ void BSP_setLED2(int state) {
 
 /**
  *  @brief
- *      Gets the LED2 (green) state
+ *      Gets the LED2 (yellow) state
  *
  *  @return
  *      FALSE for dark LED, TRUE for bright LED.
@@ -595,13 +595,14 @@ static const PortPinMode_t DigitalPortPinMode_a[] = {
 	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 in pulldow
 	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 out pushpull
 	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 out opendrain
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF2_TIM4 } ,	// 5 pwm pushpull (same for TIM1)
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull (GPIO_AF2_TIM4 for TIM4)
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
 	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	// 8 I2C opendrain pullup
 	{ GPIO_MODE_AF_PP, 	   GPIO_PULLUP,   GPIO_AF7_USART3 } ,// 9 USART pullup
 	{ GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 } 				// 10 analog in
 };
+
 /**
  *  @brief
  *	    Sets the digital port pin mode (D0 .. D15).
@@ -627,6 +628,13 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
     GPIO_InitStruct.Pull = DigitalPortPinMode_a[mode].pull;
     GPIO_InitStruct.Alternate = DigitalPortPinMode_a[mode].alternate;
 //    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    if (mode == 5) {
+    	// PWM
+    	if (pin_number == 9 || pin_number == 10) {
+    		// TIM4
+    		GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
+    	}
+    }
     HAL_GPIO_Init(PortPin_a[pin_number].port, &GPIO_InitStruct);
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -686,7 +694,7 @@ void BSP_setPwmPin(int pin_number, int value) {
 
 /**
  *  @brief
- *	    Sets the PWM prescale for TIMER3 and TIMER4
+ *	    Sets the PWM prescale for TIMER1 and TIMER4
  *
  *	@param[in]
  *      value         42 kHz / prescale, default 42 -> PWM frequency 1 kHz

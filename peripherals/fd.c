@@ -365,7 +365,6 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
   *     FD status
   */
 static void flash_block(uint8_t *pData, uint32_t flash_addr) {
-	uint8_t status;
 	uint8_t i;
 	uint8_t j;
 	uint32_t adr = flash_addr + FD_START_ADDRESS;
@@ -378,10 +377,6 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 			FDSPI_writeData(pData+i*256, adr, W25Q16_PAGE_SIZE);
 			adr += W25Q16_PAGE_SIZE;
 			osDelay(1);
-		}
-		if (status & 0x01) {
-			// timeout -> still busy
-			Error_Handler();
 		}
 	}
 }
@@ -396,22 +391,5 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
   *     FD status
   */
 static void erase_sector(uint32_t flash_addr) {
-	uint8_t status;
-	uint8_t i;
-
-	// Sector Erase Time (4KB) typ. 45 ms, max. 400 ms
-	for (i=0; i<20; i++) {
-		// wait till busy reset, timeout 1000 ms
-		osDelay(50);
-		if (! (status & 0x01)) {
-			// busy reset -> finished
-			break;
-		}
-
-	}
-	if (status & 0x01) {
-		// timeout -> still busy
-		Error_Handler();
-	}
-
+	FDSPI_eraseBlock(flash_addr / W25Q16_SECTOR_SIZE);
 }
