@@ -74,10 +74,11 @@ neopixels:
 */
 .ltorg
 
-.equ	T0H,		48	// 0.3 us
-.equ	T1H,		120	// 0.8 us
-.equ	T0L,		108	// 0.8 us
-.equ	T1L,		36	// 0.3 us
+// be careful, timing depends on cache, pipeline, etc.
+.equ	T0H,		100	// 0.3 us (@ 60 MHz Timer 18 clocks)
+.equ	T1H,		280	// 0.8 us (@ 60 MHz Timer 48 clocks)
+.equ	T0L,		280	// 0.8 us
+.equ	T1L,		100	// 0.3 us
 
 //	Registers
 .equ	GPIO_BSRR,	0x18	// GPIOx->BSRR bit set/reset
@@ -98,13 +99,15 @@ BSP_neopixelDataTx:
 
 bit_loop:
 	lsls	r2, r2, #1			// get the next bit -> set the carry bit
-	ittee	cs
-	movcs	r4, #T1H
-	movcs	r5, #T1L
-	movcc	r4, #T0H
-	movcc	r5, #T0L
+	bcc		3f
+	mov		r4, #T1H
+	mov		r5, #T1L
+	b		4f
+3:
+	mov		r4, #T0H
+	mov		r5, #T0L
 
-
+4:
 	// set DOUT pin high
 	str		r1, [r0, #GPIO_BSRR]
 1:	subs	r4, r4, #1
@@ -155,12 +158,15 @@ pixel_loop:
 
 bit_loop2:
 	lsls	r7, r7, #1			// get the next bit -> set the carry bit
-	ittee	cs
-	movcs	r4, #T1H
-	movcs	r5, #T1L
-	movcc	r4, #T0H
-	movcc	r5, #T0L
+	bcc		3f
+	mov		r4, #T1H
+	mov		r5, #T1L
+	b		4f
+3:
+	mov		r4, #T0H
+	mov		r5, #T0L
 
+4:
 
 	// set DOUT pin high
 	str		r1, [r0, #GPIO_BSRR]

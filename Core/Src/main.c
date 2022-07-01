@@ -109,16 +109,16 @@ int main(void)
   MX_I2C1_Init();
   MX_SDMMC1_SD_Init();
   MX_TIM1_Init();
+  MX_TIM2_Init();
   MX_TIM4_Init();
   MX_FATFS_Init();
   MX_RTC_Init();
   MX_USART1_UART_Init();
-  MX_MDMA_Init();
-  MX_QUADSPI_Init();
   MX_USART3_UART_Init();
-//  MX_WWDG1_Init();
-  MX_TIM2_Init();
+  MX_MDMA_Init();
   MX_SPI1_Init();
+  MX_QUADSPI_Init();
+//  MX_WWDG1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */

@@ -2,7 +2,7 @@
  *  @brief
  *      Buffered serial communication.
  *
- *      Using interrupt for USART1 peripheral. Separate threads for transmitting
+ *      Using interrupt for USART3 peripheral (). Separate threads for transmitting
  *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion UART resource.
  *      CMSIS-RTOS queues as buffers.
  *      CR is end of line for Rx.

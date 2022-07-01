@@ -627,7 +627,11 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
     GPIO_InitStruct.Mode = DigitalPortPinMode_a[mode].mode;
     GPIO_InitStruct.Pull = DigitalPortPinMode_a[mode].pull;
     GPIO_InitStruct.Alternate = DigitalPortPinMode_a[mode].alternate;
-//    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+
+    if (pin_number == 8) {
+    	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    }
+
     if (mode == 5) {
     	// PWM
     	if (pin_number == 9 || pin_number == 10) {
@@ -697,7 +701,7 @@ void BSP_setPwmPin(int pin_number, int value) {
  *	    Sets the PWM prescale for TIMER1 and TIMER4
  *
  *	@param[in]
- *      value         42 kHz / prescale, default 42 -> PWM frequency 1 kHz
+ *      value         60 kHz / prescale, default 60 -> PWM frequency 1 kHz
  *  @return
  *      none
  *
@@ -720,7 +724,7 @@ void BSP_setPwmPrescale(uint16_t value) {
  *  @brief
  *	    Sets the input capture / output compare prescale for TIMER2.
  *
- *	    default 42 -> 42 MHz / 42 = 1 MHz, timer resolution 1 us
+ *	    default 60 -> 60 MHz / 60 = 1 MHz, timer resolution 1 us
  *	@param[in]
  *      prescale         divider
  *  @return
