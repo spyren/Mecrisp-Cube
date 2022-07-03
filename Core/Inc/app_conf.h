@@ -56,7 +56,13 @@
 /* if asserts are not required uncomment next line */
 #define CFG_ASSERT_ON
 
-#define OLED	1
+/******************************************************************************
+ * Display modules
+ ******************************************************************************/
+#define	OLED					1
+#define MIP						0
+#define PLEX					0
+#define EINK					0
 
 /* USER CODE END Generic_Parameters */
 

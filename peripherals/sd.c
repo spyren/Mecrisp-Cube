@@ -195,7 +195,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	}
 	if (HAL_SD_ReadBlocks_DMA(&hsd1, pData, ReadAddr, NumOfBlocks) == HAL_OK) {
 		// blocked till read is finished or timeout
-		os_status = osSemaphoreAcquire(SD_RxSemaphoreID, 5000);
+		os_status = osSemaphoreAcquire(SD_RxSemaphoreID, 100);
 		if (SdError || (os_status != osOK)) {
 			Error_Handler();
 		} else {

@@ -36,11 +36,20 @@ extern char USERPath[4]; /* USER logical drive path */
 extern FATFS USERFatFS; /* File system object for USER logical drive */
 extern FIL USERFile; /* File object for USER */
 
-void MX_FATFS_Init(void);
+int32_t MX_FATFS_Init(void);
+int32_t MX_FATFS_Process(void);
 
 /* USER CODE BEGIN Prototypes */
 
 /* USER CODE END Prototypes */
+
+/* Private defines -----------------------------------------------------------*/
+/* USER CODE BEGIN Private defines */
+#define APP_OK                      0
+#define APP_ERROR                  -1
+#define APP_SD_UNPLUGGED           -2
+/* USER CODE END Private defines */
+
 #ifdef __cplusplus
 }
 #endif
