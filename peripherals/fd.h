@@ -16,8 +16,8 @@
 #define FD_SECTOR_SIZE		0x1000	// 4 KiB sector (for erasing)
 #define FD_BLOCKS_PER_SECTOR	(FD_SECTOR_SIZE / FD_BLOCK_SIZE)
 
-#define FD_START_ADDRESS	0x09000000
-#define FD_END_ADDRESS		0x09200000
+#define FD_START_ADDRESS	0x0000000
+#define FD_END_ADDRESS		0x1000000
 
 
 void    FD_init(void);

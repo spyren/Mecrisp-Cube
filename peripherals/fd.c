@@ -2,16 +2,9 @@
  *  @brief
  *      Serial Flash drive block read and write.
  *
- *      The on-board 2 MiB Serial Flash W25Q16 is used for the flash drive.
+ *      An external board with 16 MiB Serial Flash W25Q128 is used for the flash drive.
  *      API similar to sd card.
  *
- *      From data sheet:
- *      The W25Q16JV array is organized into 8,192 programmable pages of 256-bytes each.
- *      Up to 256 bytes can be programmed at a time. Pages can be erased in groups of
- *      16 (4KB sector erase), groups of 128 (32KB block erase), groups of 256 (64KB
- *      block erase) or the entire chip (chip erase). The W25Q16JVhas 512 erasable
- *      sectors and 32 erasable blocks respectively. The small 4KB sectors allow for
- *      greater flexibility in applications that require data and parameter storage
  *  @file
  *      fd.c
  *  @author
@@ -49,27 +42,18 @@
 #include "sd.h"
 #include "fd_spi.h"
 #include "myassert.h"
+#include "n25q128a.h"
 
 
 // Defines
 // *******
 #define FLASH_DUMMY_BYTE	0xFF
 
-#define W25Q16_PAGES		(8192)
-#define W25Q16_SECTORS		(8192/16)
+#define W25Q128_PAGES		(N25Q128A_FLASH_SIZE/N25Q128A_PAGE_SIZE)
+#define W25Q128_SECTORS		(N25Q128A_FLASH_SIZE/N25Q128A_SUBSECTOR_SIZE)
 
-#define W25Q16_PAGE_SIZE	(256)
-#define W25Q16_SECTOR_SIZE	(256*16)
-
-// Serial Flash commands
-#define READ_CMD    (0x03)		// Read Data
-#define WRITE_CMD   (0x02)		// Page Program (max. 256 bytes)
-#define WREN_CMD    (0x06)		// Write Enable
-#define WRDI_CMD    (0x04)		// Write Disable
-#define RDSR_CMD    (0x05)		// Read Status Register 1
-#define WRSR_CMD    (0x01)		// Write Status Register 1
-#define SE_CMD 		(0x20)		// Sector Erase – erase one sector in memory array
-#define CE_CMD 		(0x60)		// Chip Erase
+#define W25Q128_PAGE_SIZE	(N25Q128A_PAGE_SIZE)
+#define W25Q128_SECTOR_SIZE	(N25Q128A_SUBSECTOR_SIZE)
 
 
 // Private function prototypes
@@ -117,7 +101,7 @@ static uint8_t *scratch_sector; 	// protected by FD_MutexID
  */
 void FD_init(void) {
 	FDSPI_init();
-	scratch_sector = pvPortMalloc(W25Q16_SECTOR_SIZE);
+	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
@@ -131,7 +115,7 @@ void FD_init(void) {
  *      None
  */
 void FD_getSize(void) {
-	FD_size = W25Q16_PAGES / 4;
+	FD_size = W25Q128_PAGES / 4;
 }
 
 /**
@@ -374,8 +358,8 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 		// Page Program Time tPP typ. 0.4, max. 3ms
 		for (j=0; i<5; j++) {
 			// wait till busy reset, timeout 5 ms
-			FDSPI_writeData(pData+i*256, adr, W25Q16_PAGE_SIZE);
-			adr += W25Q16_PAGE_SIZE;
+			FDSPI_writeData(pData+i*256, adr, W25Q128_PAGE_SIZE);
+			adr += W25Q128_PAGE_SIZE;
 			osDelay(1);
 		}
 	}
@@ -391,5 +375,5 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
   *     FD status
   */
 static void erase_sector(uint32_t flash_addr) {
-	FDSPI_eraseBlock(flash_addr / W25Q16_SECTOR_SIZE);
+	FDSPI_eraseBlock(flash_addr / W25Q128_SECTOR_SIZE);
 }

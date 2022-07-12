@@ -42,7 +42,7 @@ void MX_QUADSPI_Init(void)
   hqspi.Init.ClockPrescaler = 60; // ?? 1
   hqspi.Init.FifoThreshold = 4;
   hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_HALFCYCLE;
-  hqspi.Init.FlashSize = 23;
+  hqspi.Init.FlashSize = 23; // (24 bit for 16 MiB) -1
   hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_6_CYCLE;
   hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
   hqspi.Init.FlashID = QSPI_FLASH_ID_1;

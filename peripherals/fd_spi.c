@@ -3,10 +3,12 @@
  *      Quad Serial Peripheral Interface (QSPI) for the serial flash.
  *
  *		The hqspi interface is used for the serial NOR flash.
- *		External NOR Flash 16 Mb, e.g.:
+ *		External NOR Flash 16 MiB, e.g.:
  *		  - Winbond W25Q128JV
  *		  - Micron N25Q128A
  *		  - Cypress S25FL128S
+ *
+ *		MDMA functional mode. 24 bit address for 16 MiB
  *  @file
  *      fd_spi.c
  *  @author
@@ -150,7 +152,8 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
 
 	/* Initialize the program command */
 	s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	s_command.Instruction       = EXT_QUAD_IN_FAST_PROG_CMD;
+//	s_command.Instruction       = EXT_QUAD_IN_FAST_PROG_CMD;
+	s_command.Instruction       = QUAD_IN_FAST_PROG_CMD;
 	s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
@@ -237,12 +240,13 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 	/* Initialize the read command */
 	s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
 	s_command.Instruction       = QUAD_INOUT_FAST_READ_CMD;
+//	s_command.Instruction       = QUAD_INOUT_FAST_READ_4_BYTE_ADDR_CMD;
 	s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
 	s_command.Address           = ReadAddr;
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	s_command.DataMode          = QSPI_DATA_4_LINES;
-	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;
+	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD; // 6?
 	s_command.NbData            = Size;
 	s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
 	s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;

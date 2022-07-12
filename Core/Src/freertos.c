@@ -163,8 +163,8 @@ void MainThread(void *argument)
 
 	osDelay(10);
 	FDSPI_init();
-//	FD_init();
-//	SD_init();
+	FD_init();
+	SD_init();
 	BLOCK_init();
 	FS_init();
 
