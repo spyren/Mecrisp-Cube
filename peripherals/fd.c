@@ -280,10 +280,9 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 	int i, j;
 	uint8_t *byte_p;
 	uint8_t erased = TRUE;
-	uint32_t adr = flash_addr*FD_BLOCK_SIZE + FD_START_ADDRESS;
 
 	// read out 4 KiB serial flash sector into scratch_sector
-	FDSPI_readData(scratch_sector, adr, FD_SECTOR_SIZE);
+	FDSPI_readData(scratch_sector, flash_addr, FD_SECTOR_SIZE);
 
 	// are the blocks in the sector already erased?
 	byte_p = (uint8_t *) scratch_sector;
@@ -349,20 +348,8 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
   *     FD status
   */
 static void flash_block(uint8_t *pData, uint32_t flash_addr) {
-	uint8_t i;
-	uint8_t j;
-	uint32_t adr = flash_addr + FD_START_ADDRESS;
 
-	// 2 pages
-	for (i=0; i<2; i++) {
-		// Page Program Time tPP typ. 0.4, max. 3ms
-		for (j=0; i<5; j++) {
-			// wait till busy reset, timeout 5 ms
-			FDSPI_writeData(pData+i*256, adr, W25Q128_PAGE_SIZE);
-			adr += W25Q128_PAGE_SIZE;
-			osDelay(1);
-		}
-	}
+	FDSPI_writeData(pData, flash_addr, FD_BLOCK_SIZE);
 }
 
 

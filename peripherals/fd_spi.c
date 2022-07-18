@@ -47,6 +47,10 @@
 #include "n25q128a.h"
 #include "quadspi.h"
 
+#define N25Q128		0
+#define W25Q128		1
+
+#define DEVICE 		W25Q128
 
 // Private function prototypes
 // ***************************
@@ -154,7 +158,7 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
 	s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
 //	s_command.Instruction       = EXT_QUAD_IN_FAST_PROG_CMD;
 	s_command.Instruction       = QUAD_IN_FAST_PROG_CMD;
-	s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
+	s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	s_command.DataMode          = QSPI_DATA_4_LINES;
@@ -239,14 +243,18 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 
 	/* Initialize the read command */
 	s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	s_command.Instruction       = QUAD_INOUT_FAST_READ_CMD;
+	s_command.Instruction       = QUAD_OUT_FAST_READ_CMD;
 //	s_command.Instruction       = QUAD_INOUT_FAST_READ_4_BYTE_ADDR_CMD;
-	s_command.AddressMode       = QSPI_ADDRESS_4_LINES;
+	s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
 	s_command.Address           = ReadAddr;
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	s_command.DataMode          = QSPI_DATA_4_LINES;
-	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD; // 6?
+#if DEVICE == N25Q128
+	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;
+#elif DEVICE == W25Q128
+	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ; // 8 clocks
+#endif
 	s_command.NbData            = Size;
 	s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
 	s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
@@ -259,8 +267,10 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 		Error_Handler();
 	}
 
+#if DEVICE == N25Q128
 	/* Set S# timing for Read command */
 	MODIFY_REG(hqspi.Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_3_CYCLE);
+#endif
 
 	/* Reception of the data */
 	SpiError = FALSE;
@@ -275,8 +285,10 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 		Error_Handler();
 	}
 
+#if DEVICE == N25Q128
 	/* Restore S# timing for nonRead commands */
 	MODIFY_REG(hqspi.Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
+#endif
 
 	osMutexRelease(FDSPI_MutexID);
 	return HAL_OK;
@@ -294,8 +306,8 @@ int FDSPI_eraseChip(void) {
 	write_enable();
 
 	/* Erasing Sequence --------------------------------- */
-	s_command.Instruction = BULK_ERASE_CMD;
 	s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+	s_command.Instruction = BULK_ERASE_CMD;
 	s_command.AddressSize = QSPI_ADDRESS_24_BITS;
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
@@ -338,12 +350,12 @@ int FDSPI_eraseSector(uint32_t EraseStartAddress, uint32_t EraseEndAddress) {
 
     /* Erasing Sequence -------------------------------------------------- */
     s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    s_command.Instruction = SECTOR_ERASE_CMD;
     s_command.AddressSize = QSPI_ADDRESS_24_BITS;
     s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
     s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
     s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-    s_command.Instruction = SECTOR_ERASE_CMD;
     s_command.AddressMode = QSPI_ADDRESS_1_LINE;
 
     s_command.DataMode = QSPI_DATA_NONE;
@@ -434,12 +446,12 @@ static uint8_t reset_chip() {
 
     /* Erasing Sequence -------------------------------------------------- */
     s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    s_command.Instruction = RESET_ENABLE_CMD;
     s_command.AddressSize = QSPI_ADDRESS_24_BITS;
     s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
     s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
     s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-    s_command.Instruction = RESET_ENABLE_CMD;
     s_command.AddressMode = QSPI_ADDRESS_NONE;
     s_command.Address = 0;
     s_command.DataMode = QSPI_DATA_NONE;
@@ -460,12 +472,12 @@ static uint8_t reset_chip() {
     osDelay(1);
 
     s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    s_command.Instruction = RESET_MEMORY_CMD;
     s_command.AddressSize = QSPI_ADDRESS_24_BITS;
     s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
     s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
     s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-    s_command.Instruction = RESET_MEMORY_CMD;
     s_command.AddressMode = QSPI_ADDRESS_NONE;
     s_command.Address = 0;
     s_command.DataMode = QSPI_DATA_NONE;
@@ -489,6 +501,8 @@ static uint8_t reset_chip() {
 
 /*Enable quad mode and set dummy cycles count*/
 static uint8_t config_chip(void) {
+
+#if DEVICE == N25Q128
 	HAL_StatusTypeDef hal_status;
 	osStatus_t os_status;
     QSPI_CommandTypeDef s_command;
@@ -523,18 +537,20 @@ static uint8_t config_chip(void) {
 	} else {
 		Error_Handler();
 	}
+#endif
 
 	write_enable();
 
+#if DEVICE == N25Q128
     /*set dummy cycles*/
     MODIFY_REG(reg, 0xF0, (N25Q128A_DUMMY_CYCLES_READ_QUAD << POSITION_VAL(0xF0)));
 
     s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    s_command.Instruction = WRITE_VOL_CFG_REG_CMD;
     s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
     s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
     s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-    s_command.Instruction = WRITE_VOL_CFG_REG_CMD;
     s_command.AddressMode = QSPI_ADDRESS_NONE;
     s_command.DataMode = QSPI_DATA_1_LINE;
     s_command.DummyCycles = 0;
@@ -557,6 +573,7 @@ static uint8_t config_chip(void) {
 	} else {
 		Error_Handler();
 	}
+#endif
 
     return HAL_OK;
 }
