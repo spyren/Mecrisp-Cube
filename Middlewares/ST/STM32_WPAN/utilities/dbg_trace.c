@@ -4,18 +4,17 @@
   * @author  MCD Application Team
   * @brief   This file contains the Interface with BLE Drivers functions.
   ******************************************************************************
-   * @attention
+  * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics. 
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2018-2021 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the 
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
- */
+  */
 
 
 /* Includes ------------------------------------------------------------------*/
@@ -239,7 +238,6 @@ void DbgTraceInit( void )
 	return len;
 }
 
-
 #else
 /**
  * @brief __write: override the _write standard lib function to redirect printf to USART.
@@ -314,6 +312,35 @@ size_t DbgTraceWrite(int handle, const unsigned char * buf, size_t bufSize)
 
 #if   defined ( __CC_ARM )     /* Keil */
 
+/**
+  Called from assert() and prints a message on stderr and calls abort().
+
+  \param[in] expr  assert expression that was not TRUE
+  \param[in] file  source file of the assertion
+  \param[in] line  source line of the assertion
+*/
+__attribute__((weak,noreturn))
+void __aeabi_assert (const char *expr, const char *file, int line) {
+  char str[12], *p;
+
+  fputs("*** assertion failed: ", stderr);
+  fputs(expr, stderr);
+  fputs(", file ", stderr);
+  fputs(file, stderr);
+  fputs(", line ", stderr);
+
+  p = str + sizeof(str);
+  *--p = '\0';
+  *--p = '\n';
+  while (line > 0) {
+    *--p = '0' + (line % 10);
+    line /= 10;
+  }
+  fputs(p, stderr);
+
+  abort();
+}
+
 /* For KEIL re-implement our own version of fputc */
 int fputc(int ch, FILE *f)
 {
@@ -339,4 +366,4 @@ int fputc(int ch, FILE *f)
 /**
  * @}
  */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+

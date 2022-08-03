@@ -39,7 +39,7 @@
 #include "usb_cdc.h"
 #include "usbd_cdc_if.h"
 #include "usb_device.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 #define CDC_TX_SENT	0x01

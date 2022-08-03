@@ -42,7 +42,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "uart.h"
-#include "assert.h"
+#include "myassert.h"
 
 // Rx/Tx Buffer Length
 // *******************

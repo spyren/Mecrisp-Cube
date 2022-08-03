@@ -23,7 +23,7 @@
 #include "stm32wbxx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "assert.h"
+#include "myassert.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -68,12 +68,9 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
-extern DMA_HandleTypeDef hdma_usart1_rx;
-extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
 extern WWDG_HandleTypeDef hwwdg;
 extern TIM_HandleTypeDef htim17;
-
 
 /* USER CODE BEGIN EV */
 
@@ -222,34 +219,6 @@ void FLASH_IRQHandler(void)
   /* USER CODE BEGIN FLASH_IRQn 1 */
 
   /* USER CODE END FLASH_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA1 channel1 global interrupt.
-  */
-void DMA1_Channel1_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_rx);
-  /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA1 channel2 global interrupt.
-  */
-void DMA1_Channel2_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Channel2_IRQn 0 */
-
-  /* USER CODE END DMA1_Channel2_IRQn 0 */
-  HAL_DMA_IRQHandler(&hdma_usart1_tx);
-  /* USER CODE BEGIN DMA1_Channel2_IRQn 1 */
-
-  /* USER CODE END DMA1_Channel2_IRQn 1 */
 }
 
 /**
@@ -450,34 +419,6 @@ void RTC_Alarm_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles IPCC RX occupied interrupt.
-  */
-void IPCC_C1_RX_IRQHandler(void)
-{
-  /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
-
-  /* USER CODE END IPCC_C1_RX_IRQn 0 */
-  HAL_IPCC_RX_IRQHandler(&hipcc);
-  /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
-
-  /* USER CODE END IPCC_C1_RX_IRQn 1 */
-}
-
-/**
-  * @brief This function handles IPCC TX free interrupt.
-  */
-void IPCC_C1_TX_IRQHandler(void)
-{
-  /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
-
-  /* USER CODE END IPCC_C1_TX_IRQn 0 */
-  HAL_IPCC_TX_IRQHandler(&hipcc);
-  /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
-
-  /* USER CODE END IPCC_C1_TX_IRQn 1 */
-}
-
-/**
   * @brief This function handles HSEM global interrupt.
   */
 void HSEM_IRQHandler(void)
@@ -530,4 +471,3 @@ volatile uint32_t psr;// Program status register.
 */
 
 /* USER CODE END 1 */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

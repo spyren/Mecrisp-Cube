@@ -45,7 +45,7 @@
 #include "oled.h"
 #include "plex.h"
 #include "watchdog.h"
-#include "assert.h"
+#include "myassert.h"
 
 /* USER CODE END Includes */
 
@@ -71,7 +71,7 @@
 /* Definitions for FORTH_ConThread */
 osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
-  .name = "FORTH_Console",
+  .name = "FORTH_ConThread",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 128 * 30
 };
@@ -96,7 +96,7 @@ void MX_FREERTOS_Init(void) {
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
-	APPE_Init();
+//	APPE_Init();
 	UART_init();
 	IIC_init();
 	CDC_init();
@@ -147,7 +147,7 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-/* USER CODE BEGIN MainThread */
+  /* USER CODE BEGIN MainThread */
 	FD_getSize();
 	SD_getSize();
 	OLED_init();
@@ -169,7 +169,7 @@ void MainThread(void *argument)
 
 	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0)
 
-/* USER CODE END MainThread */
+  /* USER CODE END MainThread */
 }
 
 /* Private application code --------------------------------------------------*/
@@ -177,4 +177,3 @@ void MainThread(void *argument)
      
 /* USER CODE END Application */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

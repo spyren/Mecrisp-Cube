@@ -38,7 +38,7 @@
 #include "main.h"
 #include "fs.h"
 #include "clock.h"
-#include "assert.h"
+#include "myassert.h"
 
 #define DATE_2000_01_01 (946684800u)
 #define DATE_2099_12_31 (4102358400u)

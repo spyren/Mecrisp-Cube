@@ -41,7 +41,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "flash.h"
-#include "assert.h"
+#include "myassert.h"
 
 #define PROCESS_ID	11
 

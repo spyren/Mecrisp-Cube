@@ -20,8 +20,8 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __DIS_APP_H
-#define __DIS_APP_H
+#ifndef DIS_APP_H
+#define DIS_APP_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,8 +67,8 @@ extern "C" {
 #define DISAPP_MANUFACTURER_NAME              "spyr.ch"
 #define DISAPP_MODEL_NUMBER                   "Mecrisp-Cube"
 #define DISAPP_SERIAL_NUMBER                  "1"
-#define DISAPP_FIRMWARE_REVISION_NUMBER       "1.11.0"
-#define DISAPP_SOFTWARE_REVISION_NUMBER       "1.4.3"
+#define DISAPP_FIRMWARE_REVISION_NUMBER       "1.14.0"
+#define DISAPP_SOFTWARE_REVISION_NUMBER       "1.4.4"
 
 /* USER CODE END EM */
 
@@ -82,6 +82,4 @@ void DISAPP_Init(void);
 }
 #endif
 
-#endif /*__DIS_APP_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif /*DIS_APP_H */
