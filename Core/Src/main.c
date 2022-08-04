@@ -146,7 +146,7 @@ void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-static void Config_HSE(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -161,6 +161,7 @@ static void Config_HSE(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -171,7 +172,6 @@ int main(void)
   MX_APPE_Config();
 
   /* USER CODE BEGIN Init */
-  Config_HSE();
 
   /* activate divide by zero trap (usage fault) */
   SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
@@ -189,7 +189,6 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  Init_Exti(); /**< Configure the system Power Mode */
 
   /* USER CODE END SysInit */
 
@@ -225,7 +224,7 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();  /* Init code for STM32_WPAN */
-  MX_APPE_Init();
+//  MX_APPE_Init();
   /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 
@@ -346,23 +345,6 @@ void vApplicationMallocFailedHook(void) {
 	ASSERT_fatal(0, ASSERT_MALLOC_FAILED, 0);
 } // vApplicationMallocFailedHook
 
-
-static void Config_HSE(void)
-{
-    OTP_ID0_t * p_otp;
-
-  /**
-   * Read HSE_Tuning from OTP
-   */
-  p_otp = (OTP_ID0_t *) OTP_Read(0);
-  if (p_otp) {
-    LL_RCC_HSE_SetCapacitorTuning(p_otp->hse_tuning);
-  } else {
-	    LL_RCC_HSE_SetCapacitorTuning(22);
-  }
-
-  return;
-}
 
 /* USER CODE END 4 */
 

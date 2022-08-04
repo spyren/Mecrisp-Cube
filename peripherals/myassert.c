@@ -11,7 +11,7 @@
  *   	RTC registers are used for accounting the asserts occurred.
  *
  *  @file
- *      assert.c
+ *      myassert.c
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date

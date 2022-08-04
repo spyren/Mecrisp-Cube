@@ -72,7 +72,8 @@
 osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
   .name = "FORTH_ConThread",
-  .priority = (osPriority_t) osPriorityNormal,
+//  .priority = (osPriority_t) osPriorityNormal,
+  .priority = (osPriority_t) osPriorityHigh,
   .stack_size = 128 * 30
 };
 
@@ -96,7 +97,7 @@ void MX_FREERTOS_Init(void) {
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
-//	APPE_Init();
+	MX_APPE_Init();
 	UART_init();
 	IIC_init();
 	CDC_init();
@@ -158,7 +159,7 @@ void MainThread(void *argument)
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
-//		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
+		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 //		BSP_setLED3(TRUE);
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
