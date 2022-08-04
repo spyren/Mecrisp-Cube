@@ -97,7 +97,7 @@ void MX_FREERTOS_Init(void) {
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
-	MX_APPE_Init();
+//	MX_APPE_Init();
 	UART_init();
 	IIC_init();
 	CDC_init();
@@ -149,11 +149,11 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
+	ASSERT_init();
 	FD_getSize();
 	SD_getSize();
 	OLED_init();
 	PLEX_init();
-	ASSERT_init();
 
 	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
@@ -162,7 +162,7 @@ void MainThread(void *argument)
 		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 //		BSP_setLED3(TRUE);
 	} else {
-		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+//		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 		BSP_setLED1(FALSE); // switch off power on LED
 	}
 
