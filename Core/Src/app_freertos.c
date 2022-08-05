@@ -71,10 +71,9 @@
 /* Definitions for FORTH_ConThread */
 osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
-  .name = "FORTH_ConThread",
-//  .priority = (osPriority_t) osPriorityNormal,
-  .priority = (osPriority_t) osPriorityHigh,
-  .stack_size = 128 * 30
+  .name = "FORTH_Console",
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128 * 20
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -162,7 +161,7 @@ void MainThread(void *argument)
 		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 //		BSP_setLED3(TRUE);
 	} else {
-//		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 		BSP_setLED1(FALSE); // switch off power on LED
 	}
 

@@ -173,7 +173,7 @@ standard names. */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
 #define configCHECK_FOR_STACK_OVERFLOW           1
 #define configUSE_MALLOC_FAILED_HOOK             1
-#define configTIMER_SERVICE_TASK_NAME			"OS_tmr_svc"
+#define configTIMER_SERVICE_TASK_NAME			"TIMER_SVC"
 /* USER CODE END Defines */
 
 #endif /* FREERTOS_CONFIG_H */
