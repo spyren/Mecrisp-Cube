@@ -71,8 +71,8 @@
 
 .equ	TERMINAL_AUTO,		1
 
-.equ	OLED,				0
-.equ	MIP,				1
+.equ	OLED,				1
+.equ	MIP,				0
 .equ	PLEX,				1
 .equ	EINK,				0
 

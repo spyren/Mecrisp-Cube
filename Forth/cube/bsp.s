@@ -664,3 +664,28 @@ print_assert:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+    Wortbirne Flag_visible, "FusVersion"
+FusVersion:
+    @ ( -- u ) Get FUS version
+// int APP_BLE_getFusVersion(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		APP_BLE_getFusVersion
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+    Wortbirne Flag_visible, "StackVersion"
+StackVersion:
+    @ ( -- u ) Get Stack version
+// int APP_BLE_getStackVersion(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		APP_BLE_getStackVersion
+	movs	tos, r0
+	pop		{pc}
+
+
