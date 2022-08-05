@@ -154,7 +154,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
-#include "assert.h"
+#include "myassert.h"
 #define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC);}
 
 // for the user area variables (Forth tasks)

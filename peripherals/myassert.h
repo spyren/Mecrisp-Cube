@@ -2,7 +2,7 @@
  *  @brief
  *
  *  @file
- *      assert.h
+ *      myassert.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
@@ -28,8 +28,8 @@
 
 
 
-#ifndef INC_ASSERT_H_
-#define INC_ASSERT_H_
+#ifndef INC_MYASSERT_H_
+#define INC_MYASSERT_H_
 
 #include "app_conf.h"
 #include "clock.h"
@@ -59,6 +59,8 @@
 #define ASSERT_FLASH_LOCK				19
 
 #define ASSERT_FREERTOS					20
+
+#define ASSERT_CRS_SIGINT				21
 
 void ASSERT_init(void);
 int ASSERT_occurred(void);
@@ -129,4 +131,4 @@ __attribute__( ( always_inline ) ) static inline uint32_t __get_PC(void)
   }
 
 
-#endif /* INC_ASSERT_H_ */
+#endif /* INC_MYASSERT_H_ */

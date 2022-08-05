@@ -42,6 +42,7 @@
 #include "dbg_trace.h"
 #include "ble.h"
 #include "crs_stm.h"
+#include "myassert.h"
 
 
 // Rx/Tx Buffer Length
@@ -67,7 +68,7 @@ osThreadId_t CRS_ThreadId;
 static const osThreadAttr_t crs_ThreadAttr = {
 		.name = "BLE_CRS",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 512 * 2
+		.stack_size = 128 * 5
 };
 
 static osMutexId_t CRS_MutexID;
@@ -229,18 +230,20 @@ int CRSAPP_putkey(const char c) {
  *  @return
  *      none
  */
-void CRSAPP_Notification(CRSAPP_Notification_evt_t *pNotification) {
+// void CRSAPP_Notification(CRSAPP_Notification_evt_t *pNotification) {
+void CRS_STM_Notification(CRS_STM_Notification_evt_t *p_Notification) {
 	uint8_t buffer;
 	uint32_t i;
 	osStatus_t status;
 
-	switch(pNotification->CRS_Evt_Opcode) {
+	switch(p_Notification->CRS_Evt_Opcode) {
 	case CRS_WRITE_EVT:
-		APP_DBG_MSG("CRS_WRITE_EVT: Data received: %s \n", pNotification->DataTransfered.pPayload);
-		pNotification->DataTransfered.pPayload[pNotification->DataTransfered.Length] = '\0';
+		APP_DBG_MSG("CRS_WRITE_EVT: Data received: %s \n", p_Notification->DataTransfered.pPayload);
+		p_Notification->DataTransfered.pPayload[p_Notification->DataTransfered.Length] = '\0';
 
-		for (i=0; i<pNotification->DataTransfered.Length; i++) {
-			buffer = pNotification->DataTransfered.pPayload[i];
+		for (i=0; i<p_Notification->DataTransfered.Length; i++) {
+			buffer = p_Notification->DataTransfered.pPayload[i];
+			ASSERT_nonfatal(buffer != 0x03, ASSERT_CRS_SIGINT, 0) // ^C character abort
 			status = osMessageQueuePut(CRS_RxQueueId, &buffer, 0, 0);
 			if (status != osOK) {
 				// can't put char into queue
@@ -300,7 +303,7 @@ static void CRS_Thread(void *argument) {
 			tries = 0;
 			while (status != BLE_STATUS_SUCCESS) {
 				// not elegant but it works
-				status = CRSAPP_Update_Char(CRS_RX_CHAR_UUID, (uint8_t *)&buffer[0]);
+				status = CRS_STM_Update_Char(CRS_RX_CHAR_UUID, (uint8_t *)&buffer[0]);
 				if (status != BLE_STATUS_SUCCESS && tries++ > MAX_TRIES) {
 					Error_Handler();
 					break;
