@@ -185,7 +185,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
@@ -204,7 +204,6 @@ int main(void)
   MX_SPI1_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
-//  MX_GPIO_Init();
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
