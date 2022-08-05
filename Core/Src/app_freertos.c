@@ -97,7 +97,7 @@ void MX_FREERTOS_Init(void) {
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
-//	MX_APPE_Init();
+	MX_APPE_Init();
 	UART_init();
 	IIC_init();
 	CDC_init();
