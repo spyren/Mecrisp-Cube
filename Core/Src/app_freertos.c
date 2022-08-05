@@ -79,7 +79,7 @@ osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
   .name = "FORTH_Console",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 30
+  .stack_size = 128 * 20
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -153,7 +153,7 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-/* USER CODE BEGIN MainThread */
+  /* USER CODE BEGIN MainThread */
 	SD_getSize();
 #if OLED == 1
 	OLED_init();
@@ -181,7 +181,7 @@ void MainThread(void *argument)
 
 	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0)
 
-/* USER CODE END MainThread */
+  /* USER CODE END MainThread */
 }
 
 /* Private application code --------------------------------------------------*/
@@ -189,4 +189,3 @@ void MainThread(void *argument)
      
 /* USER CODE END Application */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
