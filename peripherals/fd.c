@@ -41,7 +41,7 @@
 #include "fd.h"
 #include "sd.h"
 #include "flash.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 // Defines

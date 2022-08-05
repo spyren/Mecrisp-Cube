@@ -36,8 +36,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "sd_spi.h"
-#include "assert.h"
-#include "stm32wbxx_ll_spi.h"
+#include "myassert.h"
 
 
 // Private function prototypes
