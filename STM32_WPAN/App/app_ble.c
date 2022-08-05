@@ -647,6 +647,20 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 }
 
 /* USER CODE BEGIN FD*/
+int APP_BLE_getFusVersion(void) {
+	WirelessFwInfo_t fwinfo;
+
+	SHCI_GetWirelessFwInfo(&fwinfo);
+	return ((fwinfo.FusVersionMajor<<16) + (fwinfo.FusVersionMinor<<8) + (fwinfo.FusVersionSub));
+}
+
+int APP_BLE_getStackVersion(void) {
+	WirelessFwInfo_t fwinfo;
+
+	SHCI_GetWirelessFwInfo(&fwinfo);
+	return ((fwinfo.VersionMajor<<16) + (fwinfo.VersionMinor<<8) + (fwinfo.VersionSub));
+}
+
 
 /* USER CODE END FD*/
 

@@ -73,6 +73,8 @@ void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 
 /* USER CODE BEGIN EF */
+int APP_BLE_getFusVersion(void);
+int APP_BLE_getStackVersion(void);
 
 /* USER CODE END EF */
 
