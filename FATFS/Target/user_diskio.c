@@ -39,6 +39,7 @@
 
 #include "sd.h"
 #include "fd.h"
+#include "bsp.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -160,9 +161,12 @@ DRESULT USER_SD_read (
   /* USER CODE BEGIN READ */
 	DRESULT res = RES_ERROR;
 	// SD drive
+	uint32_t old_pixel = BSP_getNeoPixel();
+	BSP_setNeoPixel(0x7f7f00); // set neopixel to yellow
 	if( SD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
+	BSP_setNeoPixel(old_pixel);
 	return res;
   /* USER CODE END READ */
 }
@@ -187,9 +191,12 @@ DRESULT USER_SD_write (
 	/* USER CODE HERE */
 	DRESULT res = RES_ERROR;
 	// SD drive
+	uint32_t old_pixel = BSP_getNeoPixel();
+	BSP_setNeoPixel(0x7f0000); // set neopixel to red
 	if (SD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
+	BSP_setNeoPixel(old_pixel);
 	return res;
   /* USER CODE END WRITE */
 }
@@ -314,9 +321,12 @@ DRESULT USER_FD_read (
   /* USER CODE BEGIN READ */
 	DRESULT res = RES_ERROR;
 	// flash drive
+	uint32_t old_pixel = BSP_getNeoPixel();
+	BSP_setNeoPixel(0x7f7f00); // set neopixel to yellow
 	if( FD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
+	BSP_setNeoPixel(old_pixel);
 	return res;
   /* USER CODE END READ */
 }
@@ -339,10 +349,13 @@ DRESULT USER_FD_write (
 {
   /* USER CODE BEGIN WRITE */
 	/* USER CODE HERE */
+	uint32_t old_pixel = BSP_getNeoPixel();
+	BSP_setNeoPixel(0x7f0000); // set neopixel to red
 	DRESULT res = RES_ERROR;
 	if (FD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
+	BSP_setNeoPixel(old_pixel);
 	return res;
   /* USER CODE END WRITE */
 }

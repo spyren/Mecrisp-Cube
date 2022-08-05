@@ -210,12 +210,7 @@ static void HRSAPP_Measurement(void)
 /* USER CODE BEGIN HRSAPP_Measurement */
 	uint32_t measurement;
 
-	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		// dongle doesn't have analog pin 0
-		measurement = 30 + BSP_getAnalogPin(2) / 20;
-	} else {
-		measurement = 30 + BSP_getAnalogPin(0) / 20;
-	}
+	measurement = 30 + BSP_getAnalogPin(0) / 20;
 
 	HRSAPP_Context.MeasurementvalueChar.MeasurementValue = measurement;
 #if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
@@ -256,5 +251,3 @@ static void HrMeas( void )
 /* USER CODE BEGIN FD */
 
 /* USER CODE END FD */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

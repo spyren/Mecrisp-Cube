@@ -75,21 +75,21 @@ extern RTC_HandleTypeDef hrtc;
   * @retval Initialization result
   */
 int32_t MX_FATFS_Init(void) {
-	/*## FatFS: Link the disk I/O driver(s)  ###########################*/
+  /*## FatFS: Link the disk I/O driver(s)  ###########################*/
 
 	// init flash drive (0:)
 	if (FATFS_LinkDriver(&USER_FD_Driver, USERPathFD) != 0) {
-		return APP_ERROR;
-	}
+    return APP_ERROR;
+  }
 
 	// init SD drive (1:)
 	if (FATFS_LinkDriver(&USER_SD_Driver, USERPathSD) != 0) {
 		return APP_ERROR;
 	} else {
-		Appli_state = APPLICATION_INIT;
-		return APP_OK;
-	}
-	/* USER CODE END FATFS_Init */
+    Appli_state = APPLICATION_INIT;
+    return APP_OK;
+  }
+  /* USER CODE END FATFS_Init */
 }
 
 /**
@@ -98,11 +98,11 @@ int32_t MX_FATFS_Init(void) {
   * @retval Process result
   */
 int32_t MX_FATFS_Process(void) {
-	/* USER CODE BEGIN FATFS_Process */
+  /* USER CODE BEGIN FATFS_Process */
 	int32_t process_res = APP_OK;
 
 	return process_res;
-	/* USER CODE END FATFS_Process */
+  /* USER CODE END FATFS_Process */
 }
 
 /**
@@ -137,5 +137,3 @@ DWORD get_fattime(void)
 /* USER CODE BEGIN Application */
      
 /* USER CODE END Application */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

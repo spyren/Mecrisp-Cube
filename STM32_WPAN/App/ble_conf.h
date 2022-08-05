@@ -32,7 +32,7 @@
  *
  ******************************************************************************/
 
- /**
+/**
  * This setting shall be set to '1' if the device needs to support the Peripheral Role
  * In the MS configuration, both BLE_CFG_PERIPHERAL and BLE_CFG_CENTRAL shall be set to '1'
  */
@@ -103,4 +103,3 @@
 #define BLE_CFG_OTA_REBOOT_CHAR         0/**< REBOOT OTA MODE CHARACTERISTIC */
 
 #endif /*BLE_CONF_H */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -28,7 +28,7 @@
 #include "main.h"
 #include "usb_cdc.h"
 #include "bsp.h"
-#include "assert.h"
+#include "myassert.h"
 
 // function prototypes
 void cdc_terminal(void);
@@ -182,7 +182,7 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
-  BSP_setLED2(TRUE);
+  BSP_setNeoPixel(BSP_getNeoPixel() | 0x002000); // set green RGB LED to 10 %
   osEventFlagsSet(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 3 */
@@ -306,7 +306,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 	int i;
 	// write the Buf into the Rx queue
 	for (i=0; i<*Len; i++) {
-		ASSERT_nonfatal(*(Buf+i) != 0x03, ASSERT_CDC_SIGINT, 0); // ^C character abort
+		ASSERT_nonfatal(*(Buf+i) != 0x03, ASSERT_CDC_SIGINT, 0) // ^C character abort
 		if (osMessageQueuePut(CDC_RxQueueId, Buf+i, 0, 0) != osOK) {
 			// can't put char into queue
 			Error_Handler();
@@ -349,7 +349,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 
 /**
   * @brief  CDC_TransmitCplt_FS
-  *         Data transmited callback
+  *         Data transmitted callback
   *
   *         @note
   *         This function is IN transfer complete callback used to inform user that
@@ -381,5 +381,3 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 /**
   * @}
   */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
