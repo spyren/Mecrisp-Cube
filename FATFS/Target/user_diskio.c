@@ -110,7 +110,7 @@ DSTATUS USER_SD_initialize (
 {
   /* USER CODE BEGIN INIT */
 	Stat = STA_NOINIT;
-	SD_init();
+//	SD_init();
 	if (SD_getBlocks() == 0) {
 		// no SD card
 		Stat = STA_NODISK;
@@ -271,7 +271,7 @@ DSTATUS USER_FD_initialize (
   /* USER CODE BEGIN INIT */
 	Stat = STA_NOINIT;
 	// flash drive
-	FD_init();
+//	FD_init();
 	if (FD_getBlocks() == 0) {
 		// no flash
 		Stat = STA_NODISK;

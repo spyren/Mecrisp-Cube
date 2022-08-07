@@ -101,6 +101,8 @@ void MX_FREERTOS_Init(void) {
 	IIC_init();
 	CDC_init();
 	FLASH_init();
+	SD_init();
+	FD_init();
 	SDSPI_init();
 	BLOCK_init();
 	FS_init();
