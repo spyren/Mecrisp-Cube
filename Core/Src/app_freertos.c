@@ -42,10 +42,19 @@
 #include "shci.h"
 #include "clock.h"
 #include "iic.h"
-#include "oled.h"
 #include "plex.h"
 #include "watchdog.h"
 #include "myassert.h"
+#if OLED == 1
+#include "oled.h"
+#endif
+#if MIP == 1
+#include "mip.h"
+#endif
+#if EPD == 1
+#include "epd.h"
+#endif
+
 
 /* USER CODE END Includes */
 
@@ -153,15 +162,25 @@ void MainThread(void *argument)
 	ASSERT_init();
 	FD_getSize();
 	SD_getSize();
+#if OLED == 1
 	OLED_init();
+#endif
+#if MIP == 1
+	MIP_init();
+#endif
+#if PLEX == 1
 	PLEX_init();
+#endif
+#if EPD == 1
+	EPD_init();
+#endif
 
 	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
-		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 //		BSP_setLED3(TRUE);
+		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 		BSP_setLED1(FALSE); // switch off power on LED

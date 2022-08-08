@@ -678,10 +678,10 @@ typedef enum
 /******************************************************************************
  * Display modules
  ******************************************************************************/
-#define	OLED					0
-#define MIP						1
+#define	OLED					1
+#define MIP						0
 #define PLEX					1
-#define EINK					0
+#define EPD						0
 
 #endif /*APP_CONF_H */
 

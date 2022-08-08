@@ -89,7 +89,9 @@ static const char* const assert_msg[] = {
 		"ASSERT_FLASH_UNLOCK",				// 18
 		"ASSERT_FLASH_LOCK",				// 19
 
-		"ASSERT_FREERTOS"					// 20
+		"ASSERT_FREERTOS",					// 20
+
+		"ASSERT_CRS_SIGINT"                 // 21
 };
 
 
