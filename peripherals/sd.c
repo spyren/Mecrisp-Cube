@@ -39,7 +39,7 @@
 #include "main.h"
 #include "sd_spi.h"
 #include "sd.h"
-#include "assert.h"
+#include "myassert.h"
 
 
 // Defines

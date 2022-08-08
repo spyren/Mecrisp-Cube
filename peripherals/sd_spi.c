@@ -126,6 +126,7 @@ void SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataL
 	osMutexRelease(SDSPI_MutexID);
 }
 
+#if MIP == 1
 /**
   * @brief
   *     SPI Write byte(s) to MIP device
@@ -149,8 +150,8 @@ void SDSPI_WriteMIP(const uint8_t *Data, uint16_t DataLength) {
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(SDSPI_MutexID, osWaitForever);
 
-//	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
-//	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
 
 	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
 
@@ -166,14 +167,14 @@ void SDSPI_WriteMIP(const uint8_t *Data, uint16_t DataLength) {
 		Error_Handler();
 	}
 
-//	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
-//	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
 
 	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
 
 	osMutexRelease(SDSPI_MutexID);
 }
-
+#endif
 
 /**
   * @brief

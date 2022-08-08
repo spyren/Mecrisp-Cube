@@ -51,6 +51,9 @@
 #if MIP == 1
 #include "mip.h"
 #endif
+#if EPD == 1
+#include "epd.h"
+#endif
 
 
 /* USER CODE END Includes */
@@ -157,6 +160,7 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
 	ASSERT_init();
+	FD_getSize();
 	SD_getSize();
 #if OLED == 1
 	OLED_init();
@@ -167,6 +171,9 @@ void MainThread(void *argument)
 #if PLEX == 1
 	PLEX_init();
 #endif
+#if EPD == 1
+	EPD_init();
+#endif
 
 	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
@@ -176,6 +183,7 @@ void MainThread(void *argument)
 		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+		BSP_setLED1(FALSE); // switch off power on LED
 	}
 
 	Forth();
