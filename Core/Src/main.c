@@ -57,7 +57,7 @@
  *
  *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
  *       15 KiB shared between CPU1 and CPU2 -> used for some buffers
- *       17 KiB secure RAM for CPU2
+ *       17 KiB secure RAM for CPU2 (Start 0x2003bc00)
  *
  *
  *  @file

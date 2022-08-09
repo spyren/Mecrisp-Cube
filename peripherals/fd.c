@@ -119,8 +119,8 @@ static uint8_t *scratch_sector; 	// protected by FD_MutexID
  *      None
  */
 void FD_init(void) {
-//	scratch_sector = (uint8_t *) RAM_SHARED;
-	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
+	scratch_sector = (uint8_t *) RAM_SHARED;
+//	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
 	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
