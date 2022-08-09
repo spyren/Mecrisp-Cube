@@ -2,10 +2,11 @@
  *  @brief
  *      Serial Peripheral Interface (SPI) for SD, serial FD, MIP, and EPD
  *
- *		Default is SD.
- *		SD is using 2EDGE (CPHA=1) and polarity high (CPOL=1), MODE3
+ *		Default is SD. SD is using 2EDGE (CPHA=1) and polarity high (CPOL=1), MODE3
+ *		The application is responsible for chip select and mode. To protect
+ *		for race condition use the RTSPI_MutexID.
  *  @file
- *      sd_spi.c
+ *      rt_spi.c
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
@@ -37,16 +38,8 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
-#include "stm32wbxx_ll_spi.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 #include "myassert.h"
-#if MIP == 1
-#include "mip.h"
-#endif
-#if EPD == 1
-#include "epd.h"
-#endif
-
 
 
 // Private function prototypes
@@ -55,18 +48,19 @@
 // Global Variables
 // ****************
 
+osMutexId_t RTSPI_MutexID;
+
 // RTOS resources
 // **************
 
-static osMutexId_t SDSPI_MutexID;
-static const osMutexAttr_t SDSPI_MutexAttr = {
+static const osMutexAttr_t RTSPI_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
 		NULL,				// memory for control block
 		0U					// size for control block
 };
 
-static osSemaphoreId_t SDSPI_SemaphoreID;
+static osSemaphoreId_t RTSPI_SemaphoreID;
 
 
 // Hardware resources
@@ -87,22 +81,22 @@ static volatile uint8_t SpiError = FALSE;
 
 /**
  *  @brief
- *      Initializes the SDSPI.
+ *      Initializes the RTSPI.
  *  @return
  *      None
  */
-void SDSPI_init(void) {
-	SDSPI_MutexID = osMutexNew(&SDSPI_MutexAttr);
-	ASSERT_fatal(SDSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+void RTSPI_init(void) {
+	RTSPI_MutexID = osMutexNew(&RTSPI_MutexAttr);
+	ASSERT_fatal(RTSPI_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
-	SDSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(SDSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+	RTSPI_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	ASSERT_fatal(RTSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 
 /**
   * @brief
-  *     SPI Write byte(s) to device
+  *     SPI write byte(s) to and read from device
   *
   *     Using DMA. RTOS blocking till finished.
   * @param[in]
@@ -114,26 +108,81 @@ void SDSPI_init(void) {
   * @retval
   *     None
   */
-void SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
+void RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
-
-	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
 
 	SpiError = FALSE;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
+		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
 		if (SpiError || (os_status != osOK)) {
 			Error_Handler();
 		}
 	} else {
 		Error_Handler();
 	}
+}
 
-	osMutexRelease(SDSPI_MutexID);
+
+/**
+  * @brief
+  *     SPI write byte(s) to device
+  *
+  *     Using DMA. RTOS blocking till finished.
+  * @param[in]
+  *     Data: Pointer to data buffer to write
+  * @param[in]
+  *     DataLength: number of bytes to write
+  * @retval
+  *     None
+  */
+void RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
+	HAL_StatusTypeDef hal_status = HAL_OK;
+	osStatus_t os_status = osOK;
+
+	SpiError = FALSE;
+	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
+	if (hal_status == HAL_OK) {
+		// blocked till read/write is finished
+		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
+		if (SpiError || (os_status != osOK)) {
+			Error_Handler();
+		}
+	} else {
+		Error_Handler();
+	}
+}
+
+
+/**
+  * @brief
+  *     SPI read byte(s) from device
+  *
+  *     Using DMA. RTOS blocking till finished.
+  * @param[in]
+  *     Data: Pointer to data buffer to write
+  * @param[in]
+  *     DataLength: number of bytes to write
+  * @retval
+  *     None
+  */
+void RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
+	HAL_StatusTypeDef hal_status = HAL_OK;
+	osStatus_t os_status = osOK;
+
+	SpiError = FALSE;
+	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
+	if (hal_status == HAL_OK) {
+		// blocked till read/write is finished
+		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
+		if (SpiError || (os_status != osOK)) {
+			Error_Handler();
+		}
+	} else {
+		Error_Handler();
+	}
 }
 
 
@@ -147,20 +196,16 @@ void SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataL
   * @retval
   *     None
   */
-void SDSPI_Write(uint8_t Value) {
+void RTSPI_Write(uint8_t Value) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 	uint8_t data = Value;
 
-	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
-
 	SpiError = FALSE;
-//	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) &Value, &data, 1);
 	hal_status = HAL_SPI_Transmit_DMA(&hspi1, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
+		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
 		if (SpiError || (os_status != osOK)) {
 			Error_Handler();
 		}
@@ -168,117 +213,7 @@ void SDSPI_Write(uint8_t Value) {
 		Error_Handler();
 	}
 
-	osMutexRelease(SDSPI_MutexID);
 }
-
-
-#if MIP == 1
-/**
-  * @brief
-  *     SPI Write byte(s) to MIP device
-  *
-  *     Using DMA. RTOS blocking till finished.
-  *
-  *     Data is clocked on the rising edge of SCLK, Mode 0
-  *  	SPI_POLARITY_LOW, SPI_PHASE_1EDGE
-  *  	serial chip select (SCS) is high active
-  * @param[in]
-  *     DataPointer to data buffer to write
-  * @param[in]
-  *     DataLength: number of bytes to write
-  * @retval
-  *     None
-  */
-void SDSPI_WriteMIP(uint8_t *Data, uint16_t DataLength) {
-	HAL_StatusTypeDef hal_status = HAL_OK;
-	osStatus_t os_status = osOK;
-
-	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
-
-	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
-	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
-	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
-
-	// chip select
-	HAL_GPIO_WritePin(MIP_SCS_GPIO_Port, MIP_SCS_Pin, GPIO_PIN_SET);
-
-	SpiError = FALSE;
-	hal_status = HAL_SPI_Transmit_DMA(&hspi1, Data, DataLength);
-	if (hal_status == HAL_OK) {
-		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
-		}
-	} else {
-		Error_Handler();
-	}
-
-	// chip deselect
-	HAL_GPIO_WritePin(MIP_SCS_GPIO_Port, MIP_SCS_Pin, GPIO_PIN_RESET);
-
-	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
-	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
-	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
-
-	osMutexRelease(SDSPI_MutexID);
-}
-#endif
-
-
-#if EPD == 1
-/**
-  * @brief
-  *     EPD Write byte(s) to EPD device
-  *
-  *     Using DMA. RTOS blocking till finished.
-  *
-  *     Data is clocked on the rising edge of SCLK, Mode 0
-  *  	SPI_POLARITY_LOW, SPI_PHASE_1EDGE
-  *  	serial chip select (ECS) is low active
-  * @param[in]
-  *     DataPointer to data buffer to write
-  * @param[in]
-  *     DataLength: number of bytes to write
-  * @retval
-  *     None
-  */
-void SDSPI_WriteEPD(uint8_t *Data, uint16_t DataLength) {
-	HAL_StatusTypeDef hal_status = HAL_OK;
-	osStatus_t os_status = osOK;
-
-	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
-
-	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
-	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
-	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
-
-	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_RESET); 	// chip select
-
-	SpiError = FALSE;
-	hal_status = HAL_SPI_Transmit_DMA(&hspi1, Data, DataLength);
-	if (hal_status == HAL_OK) {
-		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(SDSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
-		}
-	} else {
-		Error_Handler();
-	}
-
-	// chip deselect
-	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
-
-	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
-	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
-	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
-
-	osMutexRelease(SDSPI_MutexID);
-}
-#endif
 
 
 // Callbacks
@@ -294,7 +229,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hspi);
 
-	osSemaphoreRelease(SDSPI_SemaphoreID);
+	osSemaphoreRelease(RTSPI_SemaphoreID);
 }
 
 
@@ -308,7 +243,7 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
 
-  osSemaphoreRelease(SDSPI_SemaphoreID);
+  osSemaphoreRelease(RTSPI_SemaphoreID);
 }
 
 
@@ -323,6 +258,6 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
 	UNUSED(hspi);
 
 	SpiError = TRUE;
-	osSemaphoreRelease(SDSPI_SemaphoreID);
+	osSemaphoreRelease(RTSPI_SemaphoreID);
 }
 

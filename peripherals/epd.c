@@ -59,7 +59,8 @@
 #include "app_common.h"
 #include "main.h"
 #include "epd.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
+#include "stm32wbxx_ll_spi.h"
 #include "font6x8.h"
 #include "font8x8.h"
 #include "font8x14.h"
@@ -291,9 +292,27 @@ void EPD_sendCommand(const uint8_t *command) {
 		return;
 	}
 
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
+	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_RESET); 	// chip select
+
 	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);		// command
 	memcpy(buf, &command[1], command[0]);
-	SDSPI_WriteEPD(buf, command[0]);
+	RTSPI_WriteData(buf, command[0]);
+
+	// chip deselect
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
+	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+
+	osMutexRelease(RTSPI_MutexID);
 }
 
 

@@ -49,7 +49,6 @@
 #include "app_common.h"
 #include "main.h"
 #include "bsp.h"
-#include "sd_spi.h"
 
 // Private function prototypes
 // ***************************

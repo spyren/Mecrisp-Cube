@@ -32,7 +32,7 @@
 #include "flash.h"
 #include "usb_cdc.h"
 #include "bsp.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 #include "sd.h"
 #include "fd.h"
 #include "block.h"
@@ -110,7 +110,7 @@ void MX_FREERTOS_Init(void) {
 	IIC_init();
 	CDC_init();
 	FLASH_init();
-	SDSPI_init();
+	RTSPI_init();
 	BLOCK_init();
 	VI_init();
 

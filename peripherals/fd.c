@@ -47,7 +47,7 @@
 #include "main.h"
 #include "fd.h"
 #include "sd.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 #include "myassert.h"
 
 // Defines
@@ -138,10 +138,10 @@ void FD_reset(void) {
 	// reset chip
 	osMutexAcquire(FD_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(EN_RES_CMD);
+	RTSPI_Write(EN_RES_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(RESET_CMD);
+	RTSPI_Write(RESET_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 	osMutexRelease(FD_MutexID);
 }
@@ -191,11 +191,11 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 		osMutexAcquire(FD_MutexID, osWaitForever);
 
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-		SDSPI_Write(READ_CMD);
-		SDSPI_Write((adr & 0xFF0000) >> 16);
-		SDSPI_Write((adr & 0x00FF00) >> 8);
-		SDSPI_Write((adr & 0x0000FF));
-		SDSPI_WriteReadData(pData, pData, NumOfBlocks * FD_BLOCK_SIZE);
+		RTSPI_Write(READ_CMD);
+		RTSPI_Write((adr & 0xFF0000) >> 16);
+		RTSPI_Write((adr & 0x00FF00) >> 8);
+		RTSPI_Write((adr & 0x0000FF));
+		RTSPI_WriteReadData(pData, pData, NumOfBlocks * FD_BLOCK_SIZE);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 		osMutexRelease(FD_MutexID);
@@ -301,11 +301,11 @@ uint8_t FD_eraseDrive(void) {
 
 	osMutexAcquire(FD_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(WREN_CMD);
+	RTSPI_Write(WREN_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(CE_CMD);
+	RTSPI_Write(CE_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 	// Chip Erase Time (2 MiB) typ. 5 s, max. 25 s
@@ -313,8 +313,8 @@ uint8_t FD_eraseDrive(void) {
 		// wait till busy reset, timeout 25 s
 		osDelay(1000);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-		SDSPI_Write(RDSR_CMD);
-		SDSPI_WriteReadData(&status, &status, 1);
+		RTSPI_Write(RDSR_CMD);
+		RTSPI_WriteReadData(&status, &status, 1);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 		if (! (status & 0x01)) {
 			// busy reset
@@ -353,13 +353,15 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 	uint8_t erased = TRUE;
 
 	// read out 4 KiB serial flash sector into scratch_sector
+	osMutexAcquire(RTSPI_MutexID, osWaitForever); 	// only one thread is allowed to use the SPI
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(READ_CMD);
-	SDSPI_Write((flash_addr & 0xFF0000) >> 16);
-	SDSPI_Write((flash_addr & 0x00FF00) >> 8);
-	SDSPI_Write((flash_addr & 0x0000FF));
-	SDSPI_WriteReadData(scratch_sector, scratch_sector, FD_PAGE_SIZE);
+	RTSPI_Write(READ_CMD);
+	RTSPI_Write((flash_addr & 0xFF0000) >> 16);
+	RTSPI_Write((flash_addr & 0x00FF00) >> 8);
+	RTSPI_Write((flash_addr & 0x0000FF));
+	RTSPI_WriteReadData(scratch_sector, scratch_sector, FD_PAGE_SIZE);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
 
 	// are the blocks in the sector already erased?
 	byte_p = (uint8_t *) scratch_sector;
@@ -430,19 +432,23 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 	uint8_t j;
 	uint32_t adr;
 
+ 	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
 	// 2 pages
 	for (i=0; i<2; i++) {
+
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-		SDSPI_Write(WREN_CMD);
+		RTSPI_Write(WREN_CMD);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-		SDSPI_Write(WRITE_CMD);
+		RTSPI_Write(WRITE_CMD);
 		adr = flash_addr+i*256;
-		SDSPI_Write((adr & 0xFF0000) >> 16);
-		SDSPI_Write((adr & 0x00FF00) >> 8);
-		SDSPI_Write((adr & 0x0000FF));
-		SDSPI_WriteReadData(pData+i*256, pData+i*256, W25Q128_PAGE_SIZE);
+		RTSPI_Write((adr & 0xFF0000) >> 16);
+		RTSPI_Write((adr & 0x00FF00) >> 8);
+		RTSPI_Write((adr & 0x0000FF));
+		RTSPI_WriteReadData(pData+i*256, pData+i*256, W25Q128_PAGE_SIZE);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 		// Page Program Time tPP typ. 0.4, max. 3ms
@@ -450,8 +456,8 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 		for (j=0; i<5; j++) {
 			// wait till busy reset, timeout 5 ms
 			HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-			SDSPI_Write(RDSR_CMD);
-			SDSPI_WriteReadData(&status, &status, 1);
+			RTSPI_Write(RDSR_CMD);
+			RTSPI_WriteReadData(&status, &status, 1);
 			HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 			if (! (status & 0x01)) {
 				// busy reset
@@ -460,6 +466,8 @@ static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 			osDelay(1);
 		}
 	}
+
+	osMutexRelease(RTSPI_MutexID);
 }
 
 
@@ -475,15 +483,18 @@ static void erase_sector(uint32_t flash_addr) {
 	uint8_t status;
 	uint8_t i;
 
+ 	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(WREN_CMD);
+	RTSPI_Write(WREN_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-	SDSPI_Write(SE_CMD);
-	SDSPI_Write((flash_addr & 0xFF0000) >> 16);
-	SDSPI_Write((flash_addr & 0x00FF00) >> 8);
-	SDSPI_Write((flash_addr & 0x0000FF));
+	RTSPI_Write(SE_CMD);
+	RTSPI_Write((flash_addr & 0xFF0000) >> 16);
+	RTSPI_Write((flash_addr & 0x00FF00) >> 8);
+	RTSPI_Write((flash_addr & 0x0000FF));
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
 	// Sector Erase Time (4KB) typ. 45 ms, max. 400 ms
@@ -491,8 +502,8 @@ static void erase_sector(uint32_t flash_addr) {
 		// wait till busy reset, timeout 500 ms
 		osDelay(50);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
-		SDSPI_Write(RDSR_CMD);
-		SDSPI_WriteReadData(&status, &status, 1);
+		RTSPI_Write(RDSR_CMD);
+		RTSPI_WriteReadData(&status, &status, 1);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 		if (! (status & 0x01)) {
 			// busy reset
@@ -501,4 +512,5 @@ static void erase_sector(uint32_t flash_addr) {
 
 	}
 
+	osMutexRelease(RTSPI_MutexID);
 }
