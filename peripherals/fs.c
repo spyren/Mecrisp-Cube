@@ -113,8 +113,8 @@ uint8_t 	*mkfs_scratch;
  *      None
  */
 void FS_init(void) {
-	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
-//	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
+//	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
+	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 

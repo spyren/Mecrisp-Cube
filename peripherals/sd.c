@@ -210,6 +210,7 @@ uint8_t scratch_block[SD_BLOCK_SIZE];
  *      None
  */
 void SD_init(void) {
+	SD_getSize();
 }
 
 

@@ -110,11 +110,8 @@ void MX_FREERTOS_Init(void) {
 	IIC_init();
 	CDC_init();
 	FLASH_init();
-	SD_init();
-	FD_init();
 	SDSPI_init();
 	BLOCK_init();
-	FS_init();
 	VI_init();
 
   /* USER CODE END Init */
@@ -160,8 +157,9 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
 	ASSERT_init();
-	FD_getSize();
-	SD_getSize();
+	SD_init();
+	FD_init();
+	FS_init();
 #if OLED == 1
 	OLED_init();
 #endif
@@ -180,7 +178,7 @@ void MainThread(void *argument)
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
 //		BSP_setLED3(TRUE);
-		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
+//		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 		BSP_setLED1(FALSE); // switch off power on LED
