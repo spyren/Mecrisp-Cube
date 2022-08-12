@@ -234,14 +234,15 @@ void SD_getSize(void) {
 	if (SD_GoIdleState() != 0) {
 		// no SD Card found
 		sd_size = 0;
+		osMutexRelease(RTSPI_MutexID);
 	} else {
 		// get some card infos e.g. size
+		osMutexRelease(RTSPI_MutexID);
 		if (SD_GetCardInfo(&CardInfo) != SD_ERROR) {
 			sd_size = CardInfo.CardCapacity / 1024;
 		}
 	}
 
-	osMutexRelease(RTSPI_MutexID);
 }
 
 /**
@@ -267,9 +268,6 @@ int SD_getBlocks(void) {
   */
 uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 	uint8_t status;
-
-	// only one thread is allowed to use the SPI
-	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	status = SD_GetCSDRegister(&(pCardInfo->Csd));
 	status|= SD_GetCIDRegister(&(pCardInfo->Cid));

@@ -22,6 +22,7 @@
  *
  *  	The display RAM can not be read, therefore the display content is
  *  	mirrored in a frame buffer.
+ *  	White pixel is 1, black pixel is 0.
  *
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file
@@ -136,7 +137,7 @@ static uint8_t CurrentPosY = 0;
 static EPD_FontT CurrentFont = EPD_FONT6X8;
 
 typedef union {
-   uint8_t blob[(EPD_LINES) * EPD_X_RESOLUTION];
+   uint8_t blob[EPD_LINES * EPD_X_RESOLUTION];
    uint8_t rows[EPD_LINES][EPD_X_RESOLUTION];
 } display_buffer_t;
 
@@ -154,14 +155,17 @@ static display_buffer_t *display_buffer;
  *      None
  */
 void EPD_init(void) {
-	uint8_t buf[5];
+	uint8_t buf[6];
 	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
-	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);		// no chip select
+	// no chip select
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
 	GPIO_InitStruct.Pin = EPD_ECS_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(EPD_ECS_GPIO_Port, &GPIO_InitStruct);
 
+	// command
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
 	GPIO_InitStruct.Pin = EPD_DC_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(EPD_DC_GPIO_Port, &GPIO_InitStruct);
@@ -175,10 +179,12 @@ void EPD_init(void) {
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(EPD_RST_GPIO_Port, &GPIO_InitStruct);
 
-	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_RESET);		// activate reset
+	// activate reset
+	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_SET);
 
 	if (busy_wait()) {
+//	if (TRUE) {
 		// timeout -> no display connected
 		epdReady = FALSE;
 		return;
@@ -188,16 +194,18 @@ void EPD_init(void) {
 
 	display_buffer = pvPortMalloc(sizeof(display_buffer_t));
 
+	// SW Reset
 	buf[0] = 1;
 	buf[1] = SSD1680_SW_RESET;
 	EPD_sendCommand(buf);
+	busy_wait();
 	busy_wait();
 
 	// Set display size and driver output control
 	// 250-1
 	buf[0] = 4;
 	buf[1] = SSD1680_DRIVER_CONTROL;
-	buf[2] = 0xf9;
+	buf[2] = EPD_X_RESOLUTION - 1;
 	buf[3] = 0;
 	buf[4] = 0;
 	EPD_sendCommand(buf);
@@ -207,7 +215,23 @@ void EPD_init(void) {
 	// 3: Y increment, X increment, Adafruit
 	buf[0] = 2;
 	buf[1] = SSD1680_DATA_MODE;
-	buf[2] = 3;
+	buf[2] = 1;
+	EPD_sendCommand(buf);
+
+	// set RAM X address range
+	buf[0] = 3;
+	buf[1] = SSD1680_SET_RAMXPOS;
+	buf[2] = 0; 			// start
+	buf[3] = EPD_LINES-1;		// end
+	EPD_sendCommand(buf);
+
+	// set RAM Y address range
+	buf[0] = 5;
+	buf[1] = SSD1680_SET_RAMYPOS;
+	buf[2] = 0; 					// start lower
+	buf[3] = 0; 					// start higer
+	buf[4] = EPD_X_RESOLUTION - 1; 	// end lower
+	buf[5] = 0; 					// end higer
 	EPD_sendCommand(buf);
 
 	// border color
@@ -217,7 +241,7 @@ void EPD_init(void) {
 	// A [7:6] Select VBD option:             00 GS Transition
 	buf[0] = 2;
 	buf[1] = SSD1680_WRITE_BORDER;
-	buf[2] = 0x05;
+	buf[2] = 0x01;
 	EPD_sendCommand(buf);
 
 	// Vcom Voltage
@@ -244,22 +268,53 @@ void EPD_init(void) {
 	buf[4] = 0x32;
 	EPD_sendCommand(buf);
 
+	// RAM 0x26 bypass : enable
+	buf[0] = 3;
+	buf[1] = SSD1680_DISP_CTRL1;
+	buf[2] = 0x40;
+	buf[3] = 0x80;
+	EPD_sendCommand(buf);
+
+	// Load Waveform LUT
+	// Select internal temperature sensor
+	buf[0] = 2;
+	buf[1] = SSD1680_TEMP_CONTROL;
+	buf[2] = 0x80;
+	EPD_sendCommand(buf);
+	// Set Display update control: Enable clock, load TS value, load LUT from OTP and Clock off
+	buf[0] = 2;
+	buf[1] = SSD1680_DISP_CTRL2;
+	buf[2] = 0xb1;
+	EPD_sendCommand(buf);
+	// Master Activation: Run display update sequence which is defined by Command 0x22
+	buf[0] = 1;
+	buf[1] = SSD1680_MASTER_ACTIVATE;
+	EPD_sendCommand(buf);
+	busy_wait();
+
+	// Write always into RAM1 (B/W)
+	buf[0] = 1;
+	buf[1] = SSD1680_WRITE_RAM1;
+	EPD_sendCommand(buf);
+
 	// Set RAM X address counter
-	// 1
 	buf[0] = 2;
 	buf[1] = SSD1680_SET_RAMXCOUNT;
-	buf[2] = 1;
+	buf[2] = 0;
 	EPD_sendCommand(buf);
 
 	// Set RAM Y address counter
-	// 0
 	buf[0] = 3;
 	buf[1] = SSD1680_SET_RAMYCOUNT;
 	buf[2] = 0;
-	buf[2] = 0;
+	buf[3] = 0;
 	EPD_sendCommand(buf);
 
 	EPD_clear();
+	memset(display_buffer->blob, 0x0F, 128);
+	EPD_update();
+
+/*
 	EPD_setPos(0,0);
 	EPD_setFont(EPD_FONT8X8);
 	EPD_puts("Mecrisp-Cube");
@@ -272,6 +327,8 @@ void EPD_init(void) {
 #endif
 	EPD_puts("Forth for the STM32WB\r\n");
 	EPD_puts("(c)2022 peter@spyr.ch");
+	EPD_update();
+*/
 }
 
 
@@ -279,15 +336,13 @@ void EPD_init(void) {
  *  @brief
  *      Sends a command to the EPD controller
  *
- *      Max. length of a command is 4 bytes.
+ *      Max. length of a command is 255 bytes.
  *  @param[in]
  *  	First byte contains the length of the command.
  *  @return
  *      None
  */
 void EPD_sendCommand(const uint8_t *command) {
-	uint8_t buf[5];
-
 	if (!epdReady) {
 		return;
 	}
@@ -298,12 +353,19 @@ void EPD_sendCommand(const uint8_t *command) {
 	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
 	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
 	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+	// dummy write to synchronize the CLK
+	RTSPI_Write(0xff);
 
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);	// command
 	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_RESET); 	// chip select
+	RTSPI_Write(command[1]);
 
-	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);		// command
-	memcpy(buf, &command[1], command[0]);
-	RTSPI_WriteData(buf, command[0]);
+	if (command[0] > 1) {
+		// send parameters
+		HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_SET);	// data
+		RTSPI_WriteData(&command[2], command[0]-1);
+		HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET); // command
+	}
 
 	// chip deselect
 	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
@@ -311,6 +373,8 @@ void EPD_sendCommand(const uint8_t *command) {
 	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
 	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
 	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+	// dummy write to synchronize the CLK
+	RTSPI_Write(0xff);
 
 	osMutexRelease(RTSPI_MutexID);
 }
@@ -456,30 +520,14 @@ void EPD_setFont(EPD_FontT font) {
  *      none
  */
 void EPD_clear(void) {
-	uint8_t i;
-
 	if (!epdReady) {
 		return;
 	}
 
-	memset(display_buffer->blob, 0, sizeof(display_buffer->blob));
-	display_buffer->blob[0] =  0x40;  // write data
+	// fill with 0xff
+	memset(display_buffer->blob, 0xff, sizeof(display_buffer->blob));
 
-#ifdef EPD_PAGE_VERTICAL
-	for (i=0; i<(128/8); i++) {
-		EPD_setPos(i*8, 0);
-		IIC_setDevice(EPD_I2C_ADR);
-		IIC_putMessage(display_buffer->blob, 65);
-	}
-#else
-	for (i=0; i<EPD_LINES; i++) {
-		EPD_setPos(0, i);
-//		IIC_setDevice(EPD_I2C_ADR);
-//		IIC_putMessage(display_buffer->blob, 129);
-	}
-#endif
 	EPD_setPos(0, 0);
-	display_buffer->blob[0] =  0;
 }
 
 
@@ -490,47 +538,82 @@ void EPD_clear(void) {
  *      none
  */
 void EPD_update(void) {
-	int i;
-	int j;
-	int oldx = CurrentPosX;
-	int oldy = CurrentPosY;
-
-	uint8_t buf[9];
+	uint8_t buf[5];
 
 	if (!epdReady) {
 		return;
 	}
 
-	buf[0] = 0x40;
-	EPD_setPos(0, 0);
+	// Set RAM X address counter
+	buf[0] = 2;
+	buf[1] = SSD1680_SET_RAMXCOUNT;
+	buf[2] = 0;
+	EPD_sendCommand(buf);
 
-#ifdef EPD_PAGE_VERTICAL
-	for (i=0; i<EPD_LINES; i++) {
-		for (j=0; j<(EPD_X_RESOLUTION/8); j++) {
-			transpose_page(0, 1, buf);
-			EPD_setPos(j*8, i);
-		}
-	}
+	// Set RAM Y address counter
+	buf[0] = 3;
+	buf[1] = SSD1680_SET_RAMYCOUNT;
+	buf[2] = EPD_X_RESOLUTION - 2;
+	buf[3] = 0;
+	EPD_sendCommand(buf);
 
-#else
-	for (i=0; i<EPD_LINES; i++) {
-		for (j=0; j<(EPD_X_RESOLUTION/8); j++) {
-			memcpy(buf+1, &display_buffer->rows[i][j*8], 8);
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
-			EPD_setPos(j*8, i);
-//			IIC_setDevice(EPD_I2C_ADR);
-//			IIC_putMessage(buf, 9);
-		}
-	}
-#endif
-	EPD_setPos(oldx, oldy);
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
+	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+	// dummy write to synchronize the CLK
+	RTSPI_Write(0xff);
 
+	// command
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
+ 	// chip select
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_RESET);
+	RTSPI_Write(SSD1680_WRITE_RAM1);
+
+	// Data
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_SET);
+	// copy framebuffer to display
+	RTSPI_WriteData(display_buffer->blob, EPD_LINES * EPD_X_RESOLUTION);
+	// Command
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
+	busy_wait();
+
+	// chip deselect
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
+	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+	// dummy write to synchronize the CLK
+	RTSPI_Write(0xff);
+
+	osMutexRelease(RTSPI_MutexID);
+
+	// update display
+	buf[0] = 2;
+	buf[1] = SSD1680_DISP_CTRL2;
+	buf[2] = 0xf7;
+	EPD_sendCommand(buf);
+
+	// Master Activation
+	buf[0] = 1;
+	buf[1] = SSD1680_MASTER_ACTIVATE;
+	EPD_sendCommand(buf);
+	busy_wait();
 }
 
 
 // Private Functions
 // *****************
 
+/**
+ *  @brief
+ *      Wait for BUSY low or timeout
+ *  @return
+ *      TRUE busy or Timeout, FALSE busy low or Timeout without BUSY
+ */
 static int busy_wait(void) {
 	int timeout = EPD_BUSY_WAIT_MS;
 #if EPD_BUSY_PIN == 1
@@ -587,7 +670,7 @@ static void putGlyph6x8(int ch) {
 
 	// fill the buffer with 6 columns
 	for (i = 0; i < 6; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT6X8_getColumn(ch, i);
+		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT6X8_getColumn(ch, i);
 	}
 
 
@@ -626,7 +709,7 @@ static void putGlyph8x8(int ch) {
 
 	// fill the buffer with 8 columns
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT8X8_getColumn(ch, i);
+		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT8X8_getColumn(ch, i);
 	}
 
 #ifdef	EPD_PAGE_VERTICAL
@@ -664,8 +747,8 @@ static void putGlyph8x16(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT8X14_getUpperColumn(ch, i);
-		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = FONT8X14_getLowerColumn(ch, i);
+		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT8X14_getUpperColumn(ch, i);
+		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = ~FONT8X14_getLowerColumn(ch, i);
 	}
 
 
@@ -708,8 +791,8 @@ static void putGlyph12x16(int ch) {
 
 	// fill the buffer with 12 columns on 2 lines (pages)
 	for (i = 0; i < 12; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT12X16_getUpperColumn(ch, i);
-		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = FONT12X16_getLowerColumn(ch, i);
+		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT12X16_getUpperColumn(ch, i);
+		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = ~FONT12X16_getLowerColumn(ch, i);
 	}
 
 #ifdef	EPD_PAGE_VERTICAL
