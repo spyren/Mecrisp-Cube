@@ -28,6 +28,7 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
+#undef DEBUG
 
 #ifdef DEBUG
 // DEBUG: save some space and use only 1 char

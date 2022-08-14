@@ -17,12 +17,20 @@
  *  	  - DC pin: Data high, command low
  *
  *		Display
- *		  - Gates  0 .. 249, Y direction (column)
- *		  - Source 0 .. 121, X direction (page)
+ *		  - Gates  0 .. 249, Y direction
+ *		  - Source 0 .. 121, X direction
  *
  *  	The display RAM can not be read, therefore the display content is
  *  	mirrored in a frame buffer.
- *  	White pixel is 1, black pixel is 0.
+ *  	White pixel are 1s, black pixel are 0s.
+ *  	One byte display memory contains 8 pixels.
+ *  	Most significant bit is first pixel.
+ *
+ *  	Landscape
+ *  	 - resolution 250 * 122 -> 250 columns * 15 1/4 rows
+ *  	 - about 41 * 15 chars (8*6 chars)
+ *  	 - Gate, Columns, left 249
+ *  	 - Source, Rows, top 0
  *
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file
@@ -116,6 +124,7 @@ static int autowrap(int ch, int width, int row);
 static void transpose_page(int page, int upper, uint8_t *buf);
 #endif
 static void postwrap(int width, int row);
+uint8_t bitswap(uint8_t byte);
 
 // Global Variables
 // ****************
@@ -138,7 +147,7 @@ static EPD_FontT CurrentFont = EPD_FONT6X8;
 
 typedef union {
    uint8_t blob[EPD_LINES * EPD_X_RESOLUTION];
-   uint8_t rows[EPD_LINES][EPD_X_RESOLUTION];
+   uint8_t rows[EPD_X_RESOLUTION][EPD_LINES];
 } display_buffer_t;
 
 static display_buffer_t *display_buffer;
@@ -199,7 +208,6 @@ void EPD_init(void) {
 	buf[1] = SSD1680_SW_RESET;
 	EPD_sendCommand(buf);
 	busy_wait();
-	busy_wait();
 
 	// Set display size and driver output control
 	// 250-1
@@ -215,7 +223,7 @@ void EPD_init(void) {
 	// 3: Y increment, X increment, Adafruit
 	buf[0] = 2;
 	buf[1] = SSD1680_DATA_MODE;
-	buf[2] = 1;
+	buf[2] = 3;
 	EPD_sendCommand(buf);
 
 	// set RAM X address range
@@ -312,11 +320,11 @@ void EPD_init(void) {
 
 	EPD_clear();
 	memset(display_buffer->blob, 0x0F, 128);
-	EPD_update();
+//	EPD_update();
 
-/*
 	EPD_setPos(0,0);
 	EPD_setFont(EPD_FONT8X8);
+
 	EPD_puts("Mecrisp-Cube");
 	EPD_setFont(EPD_FONT6X8);
 	EPD_puts(MECRISP_CUBE_TAG);
@@ -327,8 +335,24 @@ void EPD_init(void) {
 #endif
 	EPD_puts("Forth for the STM32WB\r\n");
 	EPD_puts("(c)2022 peter@spyr.ch");
+
+	EPD_puts("\r\n\r\n");
+	EPD_setFont(EPD_FONT12X16);
+
+	EPD_puts("Mecrisp-Cube ");
+	EPD_puts(MECRISP_CUBE_TAG);
+	EPD_setFont(EPD_FONT8X16);
+#ifdef DEBUG
+	EPD_puts("\r\nDebug\r\n");
+#else
+	EPD_puts("\r\n\r\n");
+#endif
+	EPD_puts("Forth for the STM32WB\r\n");
+	EPD_puts("(c)2022 peter@spyr.ch");
+
+
 	EPD_update();
-*/
+
 }
 
 
@@ -553,7 +577,7 @@ void EPD_update(void) {
 	// Set RAM Y address counter
 	buf[0] = 3;
 	buf[1] = SSD1680_SET_RAMYCOUNT;
-	buf[2] = EPD_X_RESOLUTION - 2;
+	buf[2] = 0;
 	buf[3] = 0;
 	EPD_sendCommand(buf);
 
@@ -659,8 +683,6 @@ static int busy_wait(void) {
 static void putGlyph6x8(int ch) {
 #ifdef	EPD_PAGE_VERTICAL
 	uint8_t buf[9];
-#else
-//	uint8_t buf[7];
 #endif
 	uint8_t i;
 
@@ -670,7 +692,7 @@ static void putGlyph6x8(int ch) {
 
 	// fill the buffer with 6 columns
 	for (i = 0; i < 6; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT6X8_getColumn(ch, i);
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY] = ~bitswap(FONT6X8_getColumn(ch, i));
 	}
 
 
@@ -684,7 +706,6 @@ static void putGlyph6x8(int ch) {
 		transpose_page(1, 1, buf);
 	}
 
-#else
 #endif
 
 	postwrap(6, 1);
@@ -700,7 +721,9 @@ static void putGlyph6x8(int ch) {
  *      None
  */
 static void putGlyph8x8(int ch) {
+#ifdef	EPD_PAGE_VERTICAL
 //	uint8_t buf[9];
+#endif
 	uint8_t i;
 
 	if (autowrap(ch, 8, 1)) {
@@ -709,7 +732,7 @@ static void putGlyph8x8(int ch) {
 
 	// fill the buffer with 8 columns
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT8X8_getColumn(ch, i);
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY] = ~bitswap(FONT8X8_getColumn(ch, i));
 	}
 
 #ifdef	EPD_PAGE_VERTICAL
@@ -722,7 +745,6 @@ static void putGlyph8x8(int ch) {
 		transpose_page(1, 1, buf);
 	}
 
-#else
 #endif
 
 	postwrap(8, 1);
@@ -747,8 +769,8 @@ static void putGlyph8x16(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT8X14_getUpperColumn(ch, i);
-		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = ~FONT8X14_getLowerColumn(ch, i);
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X14_getUpperColumn(ch, i));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X14_getLowerColumn(ch, i));
 	}
 
 
@@ -791,8 +813,8 @@ static void putGlyph12x16(int ch) {
 
 	// fill the buffer with 12 columns on 2 lines (pages)
 	for (i = 0; i < 12; i++) {
-		display_buffer->rows[CurrentPosY][CurrentPosX+i] = ~FONT12X16_getUpperColumn(ch, i);
-		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = ~FONT12X16_getLowerColumn(ch, i);
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT12X16_getUpperColumn(ch, i));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT12X16_getLowerColumn(ch, i));
 	}
 
 #ifdef	EPD_PAGE_VERTICAL
@@ -932,6 +954,17 @@ static void postwrap(int width, int row) {
 		EPD_setPos(CurrentPosX, CurrentPosY);
 #endif
 	}
+}
+
+uint8_t bitswap(uint8_t byte) {
+	char i,out;
+
+	for(i=0;i<8;i++) {
+		out >>= 1;
+		out |= (byte & 0x80);
+		byte <<= 1;
+	}
+	return out;
 }
 
 
