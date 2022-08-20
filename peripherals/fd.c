@@ -92,8 +92,8 @@ static uint8_t *scratch_page; 	// protected by FD_MutexID
  *      None
  */
 void FD_init(void) {
-	scratch_page = (uint8_t *) RAM_SHARED;
-//	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
+//	scratch_page = (uint8_t *) RAM_SHARED;
+	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
 	*scratch_page = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());

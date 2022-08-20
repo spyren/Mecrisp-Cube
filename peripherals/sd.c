@@ -37,9 +37,8 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 #include "sd.h"
-#include "myassert.h"
 
 
 // Defines
@@ -211,6 +210,7 @@ uint8_t scratch_block[SD_BLOCK_SIZE];
  *      None
  */
 void SD_init(void) {
+	SD_getSize();
 }
 
 
@@ -221,6 +221,9 @@ void SD_init(void) {
  *      None
  */
 void SD_getSize(void) {
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
 	/* Configure IO functionalities for SD pin */
 	SD_IO_Init();
 
@@ -231,8 +234,10 @@ void SD_getSize(void) {
 	if (SD_GoIdleState() != 0) {
 		// no SD Card found
 		sd_size = 0;
+		osMutexRelease(RTSPI_MutexID);
 	} else {
 		// get some card infos e.g. size
+		osMutexRelease(RTSPI_MutexID);
 		if (SD_GetCardInfo(&CardInfo) != SD_ERROR) {
 			sd_size = CardInfo.CardCapacity / 1024;
 		}
@@ -266,6 +271,9 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 
 	status = SD_GetCSDRegister(&(pCardInfo->Csd));
 	status|= SD_GetCIDRegister(&(pCardInfo->Cid));
+
+	osMutexRelease(RTSPI_MutexID);
+
 	if(flag_SDHC == 1 )
 	{
 		pCardInfo->LogBlockSize = SD_BLOCK_SIZE;
@@ -308,6 +316,9 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
+
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
@@ -360,6 +371,8 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
+	osMutexRelease(RTSPI_MutexID);
+
 	/* Return the reponse */
 	return retr;
 }
@@ -384,6 +397,9 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	uint8_t retr = SD_ERROR;
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
+
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
@@ -440,6 +456,8 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
+	osMutexRelease(RTSPI_MutexID);
+
 	/* Return the reponse */
 	return retr;
 }
@@ -460,6 +478,9 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
 
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
 	/* Send CMD32 (Erase group start) and check if the SD acknowledged the erase command: R1 response (0x00: no errors) */
 	response = SD_SendCmd(SD_CMD_SD_ERASE_GRP_START, (StartAddr) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
 	SD_IO_CSState(1);
@@ -479,6 +500,8 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 		}
 	}
 
+	osMutexRelease(RTSPI_MutexID);
+
 	/* Return the reponse */
 	return retr;
 }
@@ -493,10 +516,15 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 uint8_t SD_GetCardState(void) {
 	SD_CmdAnswer_typedef retr;
 
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
 	/* Send CMD13 (SD_SEND_STATUS) to get SD status */
 	retr = SD_SendCmd(SD_CMD_SEND_STATUS, 0, 0xFF, SD_ANSWER_R2_EXPECTED);
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
+
+	osMutexRelease(RTSPI_MutexID);
 
 	/* Find SD status according to card state */
 	if(( retr.r1 == SD_R1_NO_ERROR) && ( retr.r2 == SD_R2_NO_ERROR)) {
@@ -1001,20 +1029,10 @@ static void SD_IO_Init(void) {
   *     None
   */
 static void SD_IO_CSState(uint8_t val) {
-	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		// QFN48 Package -> Dongle
-		if(val != 0) {
-			HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_RESET);
-		}
+	if(val != 0) {
+		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
 	} else {
-		// Nucleo Board
-		if(val != 0) {
-			HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
-		}
+		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
 	}
 }
 
@@ -1033,7 +1051,7 @@ static void SD_IO_CSState(uint8_t val) {
   */
 static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	/* Send the byte */
-	SDSPI_WriteReadData(DataIn, DataOut, DataLength);
+	RTSPI_WriteReadData(DataIn, DataOut, DataLength);
 }
 
 
@@ -1049,7 +1067,7 @@ static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	uint8_t tmp;
 
 	/* Send the byte */
-	SDSPI_WriteReadData(&Data,&tmp,1);
+	RTSPI_WriteReadData(&Data,&tmp,1);
 	return tmp;
 }
 

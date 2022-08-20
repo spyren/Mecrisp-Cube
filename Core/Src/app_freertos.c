@@ -32,7 +32,7 @@
 #include "flash.h"
 #include "usb_cdc.h"
 #include "bsp.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 #include "sd.h"
 #include "fd.h"
 #include "block.h"
@@ -102,19 +102,16 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	MX_APPE_Init();
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
-	MX_APPE_Init();
 	UART_init();
 	IIC_init();
 	CDC_init();
 	FLASH_init();
-	SD_init();
-	FD_init();
-	SDSPI_init();
+	RTSPI_init();
 	BLOCK_init();
-	FS_init();
 	VI_init();
 
   /* USER CODE END Init */
@@ -141,6 +138,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+//	MX_APPE_Init();
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -160,8 +158,9 @@ void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
 	ASSERT_init();
-	FD_getSize();
-	SD_getSize();
+	SD_init();
+	FD_init();
+	FS_init();
 #if OLED == 1
 	OLED_init();
 #endif
@@ -180,7 +179,7 @@ void MainThread(void *argument)
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
 		BSP_setLED3(TRUE);
-		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
+//		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 		BSP_setLED1(FALSE); // switch off power on LED

@@ -132,7 +132,7 @@
  * SMPS not used when Set to 0
  * SMPS used when Set to 1
  */
-#define CFG_USE_SMPS    0
+#define CFG_USE_SMPS    1
 
 /* USER CODE BEGIN Generic_Parameters */
 
@@ -681,7 +681,7 @@ typedef enum
 #define	OLED					1
 #define MIP						0
 #define PLEX					1
-#define EPD						0
+#define EPD						1
 
 #endif /*APP_CONF_H */
 
