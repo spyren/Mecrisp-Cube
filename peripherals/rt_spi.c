@@ -173,7 +173,7 @@ void RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
 	osStatus_t os_status = osOK;
 
 	SpiError = FALSE;
-	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
+	hal_status = HAL_SPI_Receive_DMA(&hspi1, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
@@ -240,6 +240,20 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
   * @retval None
   */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hspi);
+
+  osSemaphoreRelease(RTSPI_SemaphoreID);
+}
+
+
+/**
+  * @brief  Rx Transfer completed callback.
+  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
+  *               the configuration information for SPI module.
+  * @retval None
+  */
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
   /* Prevent unused argument(s) compilation warning */
   UNUSED(hspi);
 

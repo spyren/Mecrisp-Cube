@@ -50,6 +50,7 @@
 #define EPD_LANDSCAPE		0
 #define	EPD_PORTRAIT		1
 
+#if BOARD_TYPE == BOARD_TYPE_FEATHER
 #define EPD_ECS_Pin			D9_Pin			// EPD Chip Select
 #define EPD_ECS_GPIO_Port	D9_GPIO_Port
 #define EPD_DC_Pin			D11_Pin			// EPD Command/Control
@@ -58,6 +59,17 @@
 #define EPD_BUSY_GPIO_Port	D12_GPIO_Port
 #define EPD_RST_Pin			D13_Pin			// EPD Reset (optional)
 #define EPD_RST_GPIO_Port	D13_GPIO_Port
+#else
+// UNO or MKR
+#define EPD_ECS_Pin			D0_Pin			// EPD Chip Select
+#define EPD_ECS_GPIO_Port	D0_GPIO_Port
+#define EPD_DC_Pin			D1_Pin			// EPD Command/Control
+#define EPD_DC_GPIO_Port	D1_GPIO_Port
+#define EPD_BUSY_Pin		D2_Pin			// EPD Busy (optional)
+#define EPD_BUSY_GPIO_Port	D2_GPIO_Port
+#define EPD_RST_Pin			D3_Pin			// EPD Reset (optional)
+#define EPD_RST_GPIO_Port	D3_GPIO_Port
+#endif
 
 // configure your EPD type
 #define EPD_DISPLAY_TYPE	EPD_250X122		// EPD_168X144, EPD_400X240

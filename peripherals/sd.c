@@ -2,7 +2,7 @@
  *  @brief
  *      Secure Digital Memory Card block read and write.
  *
- *      SPI is used as interface.
+ *      SPI is used as interface. D10 is chip select.
  *      Based on stm32_adafruit_sd.c and sd_diskio.c
  *  @file
  *      sd.c
