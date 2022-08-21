@@ -957,7 +957,8 @@ static void postwrap(int width, int row) {
 }
 
 uint8_t bitswap(uint8_t byte) {
-	char i,out;
+	uint8_t i;
+	uint8_t out=0;
 
 	for(i=0;i<8;i++) {
 		out >>= 1;

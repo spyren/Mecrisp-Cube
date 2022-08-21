@@ -82,7 +82,7 @@ osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
   .name = "FORTH_Console",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 16
+  .stack_size = 128 * 20
 };
 
 /* Private function prototypes -----------------------------------------------*/
