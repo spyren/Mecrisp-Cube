@@ -68,7 +68,7 @@ osThreadId_t CRS_ThreadId;
 static const osThreadAttr_t crs_ThreadAttr = {
 		.name = "BLE_CRS",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 128 * 5
+		.stack_size = 128 * 8
 };
 
 static osMutexId_t CRS_MutexID;

@@ -40,10 +40,10 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, D7_Pin|D2_Pin|D4_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, D2_Pin|D4_Pin|D7_Pin|D8_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, D1_Pin|D0_Pin|D6_Pin|D3_Pin
+  HAL_GPIO_WritePin(GPIOA, D1_Pin|D0_Pin|D3_Pin
 		  |D5_Pin, GPIO_PIN_RESET);
 
 
@@ -65,8 +65,8 @@ void MX_GPIO_Init(void)
     HAL_GPIO_WritePin(GPIOA, D10_Pin, GPIO_PIN_SET);
   }
 
-  /*Configure GPIO pins : D7_Pin D2_Pin D4_Pin */
-  GPIO_InitStruct.Pin = D7_Pin|D2_Pin|D4_Pin;
+  /*Configure GPIO pins :  D2_Pin D4_Pin D7_Pin D8_Pin */
+  GPIO_InitStruct.Pin = D2_Pin|D4_Pin|D7_Pin|D8_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -114,13 +114,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : D8_Pin */
-  GPIO_InitStruct.Pin = D8_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
 
   if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
     // QFN48 Package -> Dongle
