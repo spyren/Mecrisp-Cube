@@ -566,8 +566,6 @@ void EPD_clear(void) {
  *      None
  */
 void EPD_writeColumn(uint8_t column) {
-	uint8_t buf[2];
-
 	if (autowrap(' ', 1, 1)) {
 		return ;
 	}
