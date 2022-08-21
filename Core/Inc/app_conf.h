@@ -650,7 +650,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (196 * 8)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 10)
 
 #define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
@@ -658,7 +658,7 @@ typedef enum
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
 #define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
 #define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
-#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
+#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 5)
 
 #define CFG_ADV_UPDATE_PROCESS_NAME           "BLE_ADV_UPDATE"
 #define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
@@ -666,7 +666,7 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
 #define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
-#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 8)
+#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 5)
 
 #define CFG_HRS_PROCESS_NAME                  "BLE_HRS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
@@ -674,7 +674,7 @@ typedef enum
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
 #define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
-#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 8)
+#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 5)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */
