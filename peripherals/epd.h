@@ -104,6 +104,7 @@ int EPD_putc(int c);
 int EPD_puts(const char *s);
 void EPD_setFont(EPD_FontT font);
 int EPD_readStatus(void);
-
+void EPD_writeColumn(uint8_t column);
+int EPD_readColumn(void);
 
 #endif /* INC_EPD_H_ */

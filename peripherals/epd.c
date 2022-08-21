@@ -557,6 +557,40 @@ void EPD_clear(void) {
 
 /**
  *  @brief
+ *      Write a column (8 pixels) to the current position
+ *
+ *      Increment the position.
+ *  @param[in]
+ *  	column
+ *  @return
+ *      None
+ */
+void EPD_writeColumn(uint8_t column) {
+	uint8_t buf[2];
+
+	if (autowrap(' ', 1, 1)) {
+		return ;
+	}
+
+	display_buffer->rows[CurrentPosX][CurrentPosY] = column;
+
+	postwrap(1, 1);
+}
+
+
+/**
+ *  @brief
+ *      Read a column (8 pixels) from the current position
+ *  @return
+ *      Column
+ */
+int EPD_readColumn(void) {
+	return display_buffer->rows[CurrentPosX][CurrentPosY];
+}
+
+
+/**
+ *  @brief
  *  	Update the EPD display
  *  @return
  *      none

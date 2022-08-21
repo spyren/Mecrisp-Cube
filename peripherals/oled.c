@@ -488,6 +488,47 @@ int OLED_readStatus(void) {
 }
 
 
+/**
+ *  @brief
+ *      Write a column (8 pixels) to the current position
+ *
+ *      Increment the position.
+ *  @param[in]
+ *  	column
+ *  @return
+ *      None
+ */
+void OLED_writeColumn(uint8_t column) {
+	uint8_t buf[2];
+
+	if (autowrap(' ', 1, 1)) {
+		return ;
+	}
+
+	display_buffer->rows[CurrentPosY][CurrentPosX] = column;
+
+	buf[0] = 0x40;  // write data
+	// copy into I2C array
+	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
+
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 2);
+
+	postwrap(1, 1);
+}
+
+
+/**
+ *  @brief
+ *      Read a column (8 pixels) from the current position
+ *  @return
+ *      Column
+ */
+int OLED_readColumn(void) {
+	return display_buffer->rows[CurrentPosY][CurrentPosX];
+}
+
+
 // Private Functions
 // *****************
 

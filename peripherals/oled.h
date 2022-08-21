@@ -92,5 +92,6 @@ int OLED_putc(int c);
 int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 int OLED_readStatus(void);
-
+void OLED_writeColumn(uint8_t column);
+int OLED_readColumn(void);
 #endif /* INC_OLED_H_ */

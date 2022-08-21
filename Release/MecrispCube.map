@@ -2596,6 +2596,8 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 ./peripherals/oled.o
  .text.OLED_update
                 0x0000000000000000       0x94 ./peripherals/oled.o
+ .text.OLED_writeColumn
+                0x0000000000000000       0x58 ./peripherals/oled.o
  .text          0x0000000000000000        0x0 ./peripherals/plex.o
  .data          0x0000000000000000        0x0 ./peripherals/plex.o
  .bss           0x0000000000000000        0x0 ./peripherals/plex.o

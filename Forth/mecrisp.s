@@ -74,7 +74,7 @@
 .equ	OLED,				1
 .equ	MIP,				0
 .equ	PLEX,				1
-.equ	EINK,				0
+.equ	EPD,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
