@@ -187,7 +187,7 @@ void MainThread(void *argument)
 
 	Forth();
 
-	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0)
+	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0);
 
   /* USER CODE END MainThread */
 }

@@ -51843,8 +51843,8 @@ Disassembly of section .text:
 
 0801e8ec <bitswap>:
  801e8ec:	4603      	mov	r3, r0
- 801e8ee:	2000      	movs	r0, #0
- 801e8f0:	2208      	movs	r2, #8
+ 801e8ee:	2208      	movs	r2, #8
+ 801e8f0:	2000      	movs	r0, #0
  801e8f2:	f023 017f 	bic.w	r1, r3, #127	; 0x7f
  801e8f6:	ea41 0050 	orr.w	r0, r1, r0, lsr #1
  801e8fa:	005b      	lsls	r3, r3, #1

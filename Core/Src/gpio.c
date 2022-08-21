@@ -55,6 +55,12 @@ void MX_GPIO_Init(void)
 
     // Output level for SPI CS is high
     HAL_GPIO_WritePin(DONGLE_SPI_CS_GPIO_Port, DONGLE_SPI_CS_Pin, GPIO_PIN_SET);
+    // Configure GPIO pins :  DONGLE_SPI_CS_Pin
+    GPIO_InitStruct.Pin = DONGLE_SPI_CS_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(DONGLE_SPI_CS_GPIO_Port, &GPIO_InitStruct);
   } else {
     // Nucleo Board
     /*Configure GPIO pin Output Level */
