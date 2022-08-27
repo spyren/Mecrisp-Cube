@@ -74,7 +74,7 @@
 .equ	OLED,				1
 .equ	MIP,				0
 .equ	PLEX,				1
-.equ	EPD,				1
+.equ	EPD,				0
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -495,12 +495,8 @@ Forth:
 
 	bl		BSP_getSwitch1
 	cmp		r0, #0
-	beq		1f
-	bl		crs_terminal		// button1 pressed on reset -> crs terminal
-1:	bl		BSP_getSwitch2
-	cmp		r0, #0
 	beq		2f
-	bl		uart_terminal		// button2 pressed on reset -> uart terminal
+	bl		crs_terminal		// button1 pressed on reset -> crs terminal
 2:
 	welcome " by Matthias Koch. "
 
@@ -526,9 +522,6 @@ Forth:
 	bl		fs_strlen
 	bl		stype
 
-	bl		BSP_getSwitch3		// button1 pressed on reset -> no include
-	cmp		r0, #0
-	bne		3f
     // include 0:/etc/rc.local
     pushdatos
    	ldr		tos, =rc_local

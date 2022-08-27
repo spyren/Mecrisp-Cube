@@ -229,9 +229,9 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts(MECRISP_CUBE_TAG);
 #ifdef DEBUG
-	OLED_puts("\r\nWB-Nucleo Debug\r\n");
+	OLED_puts("\r\nFirefly Debug\r\n");
 #else
-	OLED_puts("\r\nWB-Nucleo\r\n");
+	OLED_puts("\r\nFirefly\r\n");
 #endif
 	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2022 peter@spyr.ch");

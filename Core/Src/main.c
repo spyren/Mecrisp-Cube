@@ -381,7 +381,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	BSP_setLED3(TRUE);
+	BSP_setLED1(TRUE);
   /* USER CODE END Error_Handler_Debug */
 }
 

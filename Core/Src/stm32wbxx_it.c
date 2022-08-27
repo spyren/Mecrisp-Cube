@@ -118,9 +118,7 @@ void HardFault_Handler(void)
 */
 
 	// christmas tree
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 
 	ASSERT_fatal(0, ASSERT_HARD_FAULT, SCB->CFSR);
   /* USER CODE END HardFault_IRQn 0 */
@@ -223,7 +221,7 @@ void RTC_WKUP_IRQHandler(void)
   /* USER CODE BEGIN RTC_WKUP_IRQn 0 */
   HW_TS_RTC_Wakeup_Handler();
   /* USER CODE END RTC_WKUP_IRQn 0 */
-//  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
+  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
   /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
 
   /* USER CODE END RTC_WKUP_IRQn 1 */
@@ -241,20 +239,6 @@ void FLASH_IRQHandler(void)
   /* USER CODE BEGIN FLASH_IRQn 1 */
 
   /* USER CODE END FLASH_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line4 interrupt.
-  */
-void EXTI4_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI4_IRQn 0 */
-
-  /* USER CODE END EXTI4_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
-  /* USER CODE BEGIN EXTI4_IRQn 1 */
-
-  /* USER CODE END EXTI4_IRQn 1 */
 }
 
 /**
@@ -339,20 +323,6 @@ void USB_LP_IRQHandler(void)
   /* USER CODE BEGIN USB_LP_IRQn 1 */
 
   /* USER CODE END USB_LP_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /**
@@ -441,21 +411,6 @@ void USART1_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles EXTI line[15:10] interrupts.
-  */
-void EXTI15_10_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-
-  /* USER CODE END EXTI15_10_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
-  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
-
-  /* USER CODE END EXTI15_10_IRQn 1 */
-}
-
-/**
   * @brief This function handles RTC A and B alarm interrupt through EXTI line 17.
   */
 void RTC_Alarm_IRQHandler(void)
@@ -477,7 +432,7 @@ void IPCC_C1_RX_IRQHandler(void)
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
    HW_IPCC_Rx_Handler(); 
   /* USER CODE END IPCC_C1_RX_IRQn 0 */
-//  HAL_IPCC_RX_IRQHandler(&hipcc);
+  HAL_IPCC_RX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
   /* USER CODE END IPCC_C1_RX_IRQn 1 */
 }
@@ -490,7 +445,7 @@ void IPCC_C1_TX_IRQHandler(void)
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
     HW_IPCC_Tx_Handler();
   /* USER CODE END IPCC_C1_TX_IRQn 0 */
-//  HAL_IPCC_TX_IRQHandler(&hipcc);
+  HAL_IPCC_TX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
 
   /* USER CODE END IPCC_C1_TX_IRQn 1 */
