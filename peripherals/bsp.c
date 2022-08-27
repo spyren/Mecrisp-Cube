@@ -1,13 +1,13 @@
 /**
  *  @brief
- *      Board Support Package for STM32WB Nucleo Board and Dongle.
+ *      Board Support Package for STM32WB Firefly.
  *
- *        - LEDs (LED1, LED2, LED3)
- *        - Switches (SW1, SW2, SW3; dongle: SW1)
- *        - Digital port pins D0 to D15 (Dongle: D0, D1, D6, D10, D11, D12, D13, D14, D15)
- *        - Analog port pins A0 to A5 (Dongle: A2, A3)
- *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2 (Dongle: D6)
- *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
+ *        - LEDs (LED1, blue)
+ *        - Switches (SW1)
+ *        - Digital port pins D0 to D15
+ *        - Analog port pins A0 to A4
+ *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2
+ *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory), D10 CS for SD
  *        - Timer Capture/Compare
  *        - NeoPixel D8
  *
@@ -196,20 +196,10 @@ void BSP_setLED1(int state) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		// QFN48 Package -> Dongle
-		if (state) {
-			HAL_GPIO_WritePin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin, GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin, GPIO_PIN_RESET);
-		}
+	if (state) {
+		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
 	} else {
-		// Nucleo Board
-		if (state) {
-			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_SET);
-		} else {
-			HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
-		}
+		HAL_GPIO_WritePin(LD1_GPIO_Port, LD1_Pin, GPIO_PIN_RESET);
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -229,20 +219,10 @@ int BSP_getLED1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		// QFN48 Package -> Dongle
-		if (HAL_GPIO_ReadPin(LD1_DONGLE_GPIO_Port, LD1_DONGLE_Pin) == GPIO_PIN_SET) {
-			return_value = -1;
-		} else {
-			return_value = FALSE;
-		}
+	if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
 	} else {
-		// Nucleo Board
-		if (HAL_GPIO_ReadPin(LD1_GPIO_Port, LD1_Pin) == GPIO_PIN_SET) {
-			return_value = -1;
-		} else {
-			return_value = FALSE;
-		}
+		return_value = FALSE;
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
@@ -269,20 +249,10 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		// QFN48 Package -> Dongle
-		if (HAL_GPIO_ReadPin(B1_DONGLE_GPIO_Port, B1_DONGLE_Pin) == GPIO_PIN_RESET) {
-			return_value = -1;
-		} else {
-			return_value = FALSE;
-		}
+	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
 	} else {
-		// Nucleo Board
-		if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET) {
-			return_value = -1;
-		} else {
-			return_value = FALSE;
-		}
+		return_value = FALSE;
 	}
 
 	osMutexRelease(DigitalPort_MutexID);
