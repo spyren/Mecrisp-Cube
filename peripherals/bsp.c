@@ -93,9 +93,11 @@ static osSemaphoreId_t ICOC_CH2_SemaphoreID;
 static osSemaphoreId_t ICOC_CH3_SemaphoreID;
 static osSemaphoreId_t ICOC_CH4_SemaphoreID;
 
+static osSemaphoreId_t EXTI_1_SemaphoreID;
+static osSemaphoreId_t EXTI_2_SemaphoreID;
+static osSemaphoreId_t EXTI_3_SemaphoreID;
 static osSemaphoreId_t EXTI_4_SemaphoreID;
 static osSemaphoreId_t EXTI_9_5_SemaphoreID;
-static osSemaphoreId_t EXTI_15_10_SemaphoreID;
 
 
 // Private Variables
@@ -150,16 +152,24 @@ void BSP_init(void) {
 		Error_Handler();
 	}
 
+	EXTI_1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_4_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	EXTI_2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_4_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	EXTI_3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_4_SemaphoreID == NULL) {
+		Error_Handler();
+	}
 	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	if (EXTI_4_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_9_5_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	if (EXTI_9_5_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-	EXTI_15_10_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_15_10_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 
@@ -511,10 +521,10 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 
 /**
  *  @brief
- *	    Sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000).
+ *	    Sets the digital output port pin (D0=0, D1=1, A4=20) to a PWM value (0..1000).
  *
  *	@param[in]
- *      pin_number    D3=3, D6=6, D9=9
+ *      pin_number    D0=0, D1=1, D4=20
  *	@param[in]
  *      value         0 to 1000
  *  @return
@@ -527,17 +537,17 @@ void BSP_setPwmPin(int pin_number, int value) {
 
 
 	switch (pin_number) {
-	case 3:
-		// D3 TIM1CH3
+	case 0:
+		// D0 TIM1CH3
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, value);
 		break;
-	case 6:
-		// D6 TIM1CH1
-		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, value);
-		break;
-	case 9:
-		// D9 TIM1CH2
+	case 1:
+		// D1 TIM1CH2
 		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
+		break;
+	case 20:
+		// A4 TIM1CH1
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, value);
 		break;
 	}
 
@@ -650,7 +660,7 @@ void BSP_stopPeriodICOC(void) {
  *  @brief
  *	    Sets the Output Compare mode
  *	@param[in]
- *	    pin_number
+ *	    pin_number D13=13 (TIM2CH1), A2=18 (TIM2CH3), A3=19 (TIM1CH4)
  *	@param[in]
  *      mode  0 frozen, 1 active level on match, 2 inactive level on match, 3 toggle on match
  *	          4 forced active, 5 forced inactive
@@ -662,14 +672,14 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
 	uint32_t ch;
 
 	switch (pin_number) {
-	case 0:
-		ch = TIM_CHANNEL_4;
+	case 13:
+		ch = TIM_CHANNEL_1;
 		break;
-	case 1:
+	case 18:
 		ch = TIM_CHANNEL_3;
 		break;
-	case 5:
-		ch = TIM_CHANNEL_1;
+	case 19:
+		ch = TIM_CHANNEL_4;
 		break;
 	default:
 		return;
@@ -711,7 +721,7 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
  *  @brief
  *	    Starts Output Compare
  *	@param[in]
- *	    pin_number
+ *	    pin_number D13=13 (TIM2CH1), A2=18 (TIM2CH3), A3=19 (TIM1CH4)
  *	@param[in]
  *	    pulse
  *  @return
@@ -719,20 +729,20 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
  */
 void BSP_startOC(int pin_number, uint32_t pulse) {
 	switch (pin_number) {
-	case 0:
-		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, 0);
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, pulse);
-		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_4);
+	case 13:
+		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, 0);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pulse);
+		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1);
 		break;
-	case 1:
+	case 18:
 		osSemaphoreAcquire(ICOC_CH3_SemaphoreID, 0);
 		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, pulse);
 		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_3);
 		break;
-	case 5:
-		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, 0);
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, pulse);
-		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_1);
+	case 19:
+		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, 0);
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_4, pulse);
+		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_4);
 		break;
 	}
 
@@ -743,20 +753,20 @@ void BSP_startOC(int pin_number, uint32_t pulse) {
  *  @brief
  *	    Stops Output Compare
  *	@param[in]
- *	    pin_number
+ *	    pin_number D13=13 (TIM2CH1), A2=18 (TIM2CH3), A3=19 (TIM1CH4)
  *  @return
  *      none
  */
 void BSP_stopOC(int pin_number) {
 	switch (pin_number) {
-	case 0:
-		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_4);
+	case 13:
+		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_1);
 		break;
-	case 1:
+	case 18:
 		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_3);
 		break;
-	case 5:
-		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_1);
+	case 19:
+		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_4);
 		break;
 	}
 }
@@ -833,20 +843,20 @@ uint32_t BSP_waitIC(uint32_t timeout) {
  *  @brief
  *      Waits for Output Compare.
  *	@param[in]
- *      pin_number  port pin 0 D0, 1 D1, or 5 D5
+ *	    pin_number D13=13 (TIM2CH1), A2=18 (TIM2CH3), A3=19 (TIM1CH4)
  *  @return
  *      none
  */
 void BSP_waitOC(int pin_number) {
 	switch (pin_number) {
-	case 0:
-		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, osWaitForever);
+	case 13:
+		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, osWaitForever);
 		break;
-	case 1:
+	case 18:
 		osSemaphoreAcquire(ICOC_CH3_SemaphoreID, osWaitForever);
 		break;
-	case 5:
-		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, osWaitForever);
+	case 19:
+		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, osWaitForever);
 		break;
 	}
 }
@@ -859,7 +869,7 @@ void BSP_waitOC(int pin_number) {
  *  @brief
  *	    Sets the EXTI port pin mode
  *	@param[in]
- *	    pin_number port pin 2 D2, 4 D4, 7 D7, 10 D10, D4 and D7 share the same EXTI line
+ *	    pin_number D2=2 (PB5), D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
  *	@param[in]
  *      mode  0 rising edge, 1 falling edge, 2 both edges, 3 none
  *  @return
@@ -876,17 +886,21 @@ void BSP_setModeEXTI(int pin_number, uint32_t mode) {
 		GPIO_InitStruct.Pin = D2_Pin;
 		port = D2_GPIO_Port;
 		break;
-	case 4:
-		GPIO_InitStruct.Pin = D4_Pin;
-		port = D4_GPIO_Port;
+	case 3:
+		GPIO_InitStruct.Pin = D3_Pin;
+		port = D3_GPIO_Port;
+		break;
+	case 5:
+		GPIO_InitStruct.Pin = D5_Pin;
+		port = D5_GPIO_Port;
+		break;
+	case 6:
+		GPIO_InitStruct.Pin = D6_Pin;
+		port = D6_GPIO_Port;
 		break;
 	case 7:
 		GPIO_InitStruct.Pin = D7_Pin;
 		port = D7_GPIO_Port;
-		break;
-	case 10:
-		GPIO_InitStruct.Pin = D10_Pin;
-		port = D10_GPIO_Port;
 		break;
 	default:
 		return;
@@ -917,7 +931,7 @@ void BSP_setModeEXTI(int pin_number, uint32_t mode) {
  *  @brief
  *      Waits for EXTI line (interrupt driven by port pin edge)
  *	@param[in]
- *      pin_number  port pin 2 D2, 4 D4, 7 D7, 10 D10
+ *	    pin_number D2=2 (PB5), D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
  *	@param[in]
  *      timeout  in ms
  *  @return
@@ -929,14 +943,17 @@ int BSP_waitEXTI(int pin_number, int32_t timeout) {
 	case 2:
 		status = osSemaphoreAcquire(EXTI_9_5_SemaphoreID, timeout);
 		break;
-	case 4:
-		status = osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
+	case 3:
+		status = osSemaphoreAcquire(EXTI_4_SemaphoreID, timeout);
+		break;
+	case 5:
+		status = osSemaphoreAcquire(EXTI_3_SemaphoreID, timeout);
+		break;
+	case 6:
+		status = osSemaphoreAcquire(EXTI_2_SemaphoreID, timeout);
 		break;
 	case 7:
-		status = osSemaphoreAcquire(EXTI_15_10_SemaphoreID, timeout);
-		break;
-	case 10:
-		status = osSemaphoreAcquire(EXTI_4_SemaphoreID, timeout);
+		status = osSemaphoreAcquire(EXTI_1_SemaphoreID, timeout);
 		break;
 	default:
 		return -1;
@@ -1051,18 +1068,23 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
   * @retval None
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	//    pin_number D2=2 (PB5), D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
 	switch (GPIO_Pin) {
-	case GPIO_PIN_4:  // D10
+	case GPIO_PIN_1:  // D7
+		osSemaphoreRelease(EXTI_1_SemaphoreID);
+		break;
+	case GPIO_PIN_2:  // D6
+		osSemaphoreRelease(EXTI_2_SemaphoreID);
+		break;
+	case GPIO_PIN_3:  // D5
+		osSemaphoreRelease(EXTI_3_SemaphoreID);
+		break;
+	case GPIO_PIN_4:  // D3
 		osSemaphoreRelease(EXTI_4_SemaphoreID);
 		break;
-	case GPIO_PIN_6:  // D2
+	case GPIO_PIN_5:  // D2
 		osSemaphoreRelease(EXTI_9_5_SemaphoreID);
 		break;
-	case GPIO_PIN_10: // D4
-		osSemaphoreRelease(EXTI_15_10_SemaphoreID);
-		break;
-	case GPIO_PIN_13: // D7
-		// already released with GPIO_PIN_10
 		break;
 
 	}
