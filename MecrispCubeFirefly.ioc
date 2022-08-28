@@ -583,4 +583,4 @@ WWDG.IPParameters=Prescaler,EWIMode
 WWDG.Prescaler=WWDG_PRESCALER_32
 board=P-NUCLEO-WB55-Nucleo
 boardIOC=true
-isbadioc=true
+isbadioc=false
