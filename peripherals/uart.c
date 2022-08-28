@@ -140,6 +140,19 @@ void UART_init(void) {
 	ASSERT_fatal(UART_RxThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
 }
 
+
+/**
+ *  @brief
+ *      De-initializes the UART.
+ *  @return
+ *      None
+ */
+void UART_deinit(void) {
+	osThreadTerminate(UART_TxThreadId);
+	osThreadTerminate(UART_RxThreadId);
+	HAL_UART_MspDeInit(&huart1);
+}
+
 /**
  *  @brief
  *      Resets the UART queues.

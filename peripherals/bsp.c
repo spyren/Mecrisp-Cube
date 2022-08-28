@@ -48,6 +48,9 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
+#include "i2c.h"
+#include "usart.h"
+#include "spi.h"
 #include "bsp.h"
 
 
@@ -270,7 +273,7 @@ typedef struct {
 	uint16_t pin;
 } PortPin_t;
 
-static const PortPin_t PortPin_a[16] = {
+static const PortPin_t PortPin_a[21] = {
 		{ D0_GPIO_Port, D0_Pin } ,
 		{ D1_GPIO_Port, D1_Pin } ,
 		{ D2_GPIO_Port, D2_Pin } ,
@@ -286,13 +289,19 @@ static const PortPin_t PortPin_a[16] = {
 		{ D12_GPIO_Port, D12_Pin } ,
 		{ D13_GPIO_Port, D13_Pin } ,
 		{ D14_GPIO_Port, D14_Pin } ,
-		{ D15_GPIO_Port, D15_Pin }
+		{ D15_GPIO_Port, D15_Pin } ,
+		{ A0_GPIO_Port, A0_Pin } ,
+		{ A1_GPIO_Port, A1_Pin } ,
+		{ A2_GPIO_Port, A2_Pin } ,
+		{ A3_GPIO_Port, A3_Pin } ,
+		{ A4_GPIO_Port, A4_Pin }
 };
 
 /**
  *  @brief
  *	    Sets the digital output port pins (D0 .. D15).
  *
+ *		The analog pins can also used as digital pins.
  *	@param[in]
  *      state    lower word sets the pins.
  *  @return
@@ -383,12 +392,12 @@ int BSP_getDigitalPin(int pin_number) {
 // analog port pins A0 to A5 (Arduino numbering)
 // *********************************************
 static const uint32_t AnalogPortPin_a[6] = {
-		ADC_CHANNEL_1, // A0 PC0
-		ADC_CHANNEL_2, // A1 PC1
-		ADC_CHANNEL_6, // A2 PA1
-		ADC_CHANNEL_5, // A3 PA0
-		ADC_CHANNEL_4, // A4 PC3
-		ADC_CHANNEL_3  // A5 PC2
+		ADC_CHANNEL_5,  // A0 PA0
+		ADC_CHANNEL_6,  // A1 PA1
+		ADC_CHANNEL_7,  // A2 PA2
+		ADC_CHANNEL_8,  // A3 PA3
+		ADC_CHANNEL_15, // A4 PA8
+		ADC_CHANNEL_3   // A5 -
 };
 
 /**
@@ -443,7 +452,8 @@ static const PortPinMode_t DigitalPortPinMode_a[] = {
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 }  	// 8 I2C opendrain pullup
+	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	// 8 I2C opendrain pullup
+	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   GPIO_AF7_USART1 }	// 9 USART1 pullup
 };
 /**
  *  @brief
@@ -464,6 +474,26 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// some pins have special (shared/stacked) functions
+	switch (pin_number) {
+	case 0:
+	case 1:
+		// UART: D0, D1
+		HAL_UART_MspDeInit(&huart1);
+		break;
+	case 11:
+	case 12:
+	case 13:
+		// SPI: D11, D12, and D13
+		HAL_SPI_MspDeInit(&hspi1);
+		break;
+	case 14:
+	case 15:
+		// I2C: D14, D15
+		HAL_I2C_MspDeInit(&hi2c1);
+		break;
+	}
 
     GPIO_InitStruct.Pin = PortPin_a[pin_number].pin;
     GPIO_InitStruct.Mode = DigitalPortPinMode_a[mode].mode;
