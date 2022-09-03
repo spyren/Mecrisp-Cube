@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Board Support Package for STM32WB Firefly.
+ *      Board Support Package for STM32WB Katydid.
  *
  *        - LEDs (LED1, blue)
  *        - Switches (SW1)
