@@ -66,8 +66,8 @@ void Error_Handler(void);
 #define B1_GPIO_Port GPIOH
 #define QSPI_IO1_Pin GPIO_PIN_8
 #define QSPI_IO1_GPIO_Port GPIOB
-#define QSPI_IO4_Pin GPIO_PIN_9
-#define QSPI_IO4_GPIO_Port GPIOB
+#define QSPI_IO0_Pin GPIO_PIN_9
+#define QSPI_IO0_GPIO_Port GPIOB
 #define D2_Pin GPIO_PIN_0
 #define D2_GPIO_Port GPIOA
 #define A1_Pin GPIO_PIN_1
