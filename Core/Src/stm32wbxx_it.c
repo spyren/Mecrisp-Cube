@@ -64,12 +64,16 @@ extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern I2C_HandleTypeDef hi2c1;
 extern IPCC_HandleTypeDef hipcc;
+extern DMA_HandleTypeDef hdma_quadspi;
+extern QSPI_HandleTypeDef hqspi;
 extern RTC_HandleTypeDef hrtc;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
+extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
 extern WWDG_HandleTypeDef hwwdg;
 extern TIM_HandleTypeDef htim17;
@@ -242,6 +246,20 @@ void FLASH_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles EXTI line2 interrupt.
+  */
+void EXTI2_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI2_IRQn 0 */
+
+  /* USER CODE END EXTI2_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
+  /* USER CODE BEGIN EXTI2_IRQn 1 */
+
+  /* USER CODE END EXTI2_IRQn 1 */
+}
+
+/**
   * @brief This function handles DMA1 channel1 global interrupt.
   */
 void DMA1_Channel1_IRQHandler(void)
@@ -295,6 +313,48 @@ void DMA1_Channel4_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
 
   /* USER CODE END DMA1_Channel4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel5 global interrupt.
+  */
+void DMA1_Channel5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel6 global interrupt.
+  */
+void DMA1_Channel6_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_tx);
+  /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel6_IRQn 1 */
+}
+
+/**
+  * @brief This function handles DMA1 channel7 global interrupt.
+  */
+void DMA1_Channel7_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel7_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_quadspi);
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel7_IRQn 1 */
 }
 
 /**
@@ -432,7 +492,7 @@ void IPCC_C1_RX_IRQHandler(void)
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
    HW_IPCC_Rx_Handler(); 
   /* USER CODE END IPCC_C1_RX_IRQn 0 */
-//  HAL_IPCC_RX_IRQHandler(&hipcc);
+  HAL_IPCC_RX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
   /* USER CODE END IPCC_C1_RX_IRQn 1 */
 }
@@ -445,7 +505,7 @@ void IPCC_C1_TX_IRQHandler(void)
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
     HW_IPCC_Tx_Handler();
   /* USER CODE END IPCC_C1_TX_IRQn 0 */
-//  HAL_IPCC_TX_IRQHandler(&hipcc);
+  HAL_IPCC_TX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
 
   /* USER CODE END IPCC_C1_TX_IRQn 1 */
@@ -466,73 +526,17 @@ void HSEM_IRQHandler(void)
 }
 
 /**
- * @brief This function handles EXTI line1 interrupt.
- */
-void EXTI1_IRQHandler(void)
-{
- /* USER CODE BEGIN EXTI1_IRQn 0 */
-
- /* USER CODE END EXTI1_IRQn 0 */
- HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
- /* USER CODE BEGIN EXTI1_IRQn 1 */
-
- /* USER CODE END EXTI1_IRQn 1 */
-}
-
-/**
- * @brief This function handles EXTI line2 interrupt.
- */
-void EXTI2_IRQHandler(void)
-{
- /* USER CODE BEGIN EXTI2_IRQn 0 */
-
- /* USER CODE END EXTI2_IRQn 0 */
- HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
- /* USER CODE BEGIN EXTI2_IRQn 1 */
-
- /* USER CODE END EXTI2_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line3 interrupt.
+  * @brief This function handles QUADSPI global interrupt.
   */
-void EXTI3_IRQHandler(void)
+void QUADSPI_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI3_IRQn 0 */
+  /* USER CODE BEGIN QUADSPI_IRQn 0 */
 
-  /* USER CODE END EXTI3_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
-  /* USER CODE BEGIN EXTI3_IRQn 1 */
+  /* USER CODE END QUADSPI_IRQn 0 */
+  HAL_QSPI_IRQHandler(&hqspi);
+  /* USER CODE BEGIN QUADSPI_IRQn 1 */
 
-  /* USER CODE END EXTI3_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line4 interrupt.
-  */
-void EXTI4_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI4_IRQn 0 */
-
-  /* USER CODE END EXTI4_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_4);
-  /* USER CODE BEGIN EXTI4_IRQn 1 */
-
-  /* USER CODE END EXTI4_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
+  /* USER CODE END QUADSPI_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

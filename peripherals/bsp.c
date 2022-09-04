@@ -290,10 +290,10 @@ static const PortPin_t PortPin_a[21] = {
 		{ D3_GPIO_Port, D3_Pin } ,
 		{ D4_GPIO_Port, D4_Pin } ,
 		{ D5_GPIO_Port, D5_Pin } ,
-		{ D6_GPIO_Port, D6_Pin } ,
-		{ D7_GPIO_Port, D7_Pin } ,
-		{ D8_GPIO_Port, D9_Pin } ,
-		{ D9_GPIO_Port, D9_Pin } ,
+		{ D0_GPIO_Port, D0_Pin } ,  // D6 does not exist
+		{ D0_GPIO_Port, D0_Pin } ,  // D7 does not exist
+		{ D0_GPIO_Port, D0_Pin } ,  // D8 does not exist
+		{ D0_GPIO_Port, D0_Pin } ,  // D0 does not exist
 		{ D10_GPIO_Port, D10_Pin } ,
 		{ D11_GPIO_Port, D11_Pin } ,
 		{ D12_GPIO_Port, D12_Pin } ,
@@ -303,8 +303,8 @@ static const PortPin_t PortPin_a[21] = {
 		{ A0_GPIO_Port, A0_Pin } ,
 		{ A1_GPIO_Port, A1_Pin } ,
 		{ A2_GPIO_Port, A2_Pin } ,
-		{ A3_GPIO_Port, A3_Pin } ,
-		{ A4_GPIO_Port, A4_Pin }
+		{ A0_GPIO_Port, A0_Pin } ,  // A3 does not exist
+		{ A0_GPIO_Port, A0_Pin }    // A4 does not exist
 };
 
 /**
@@ -894,14 +894,6 @@ void BSP_setModeEXTI(int pin_number, uint32_t mode) {
 		GPIO_InitStruct.Pin = D5_Pin;
 		port = D5_GPIO_Port;
 		break;
-	case 6:
-		GPIO_InitStruct.Pin = D6_Pin;
-		port = D6_GPIO_Port;
-		break;
-	case 7:
-		GPIO_InitStruct.Pin = D7_Pin;
-		port = D7_GPIO_Port;
-		break;
 	default:
 		return;
 	}
@@ -1112,7 +1104,7 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
+	BSP_neopixelDataTx(D4_GPIO_Port, D4_Pin, rgb);
 
 	RESTORE_PRIMASK();
 
@@ -1156,7 +1148,7 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelBufferTx(D6_GPIO_Port, D6_Pin, buffer, len);
+	BSP_neopixelBufferTx(D4_GPIO_Port, D4_Pin, buffer, len);
 
 	RESTORE_PRIMASK();
 

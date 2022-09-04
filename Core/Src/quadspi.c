@@ -107,7 +107,7 @@ void HAL_QSPI_MspInit(QSPI_HandleTypeDef* qspiHandle)
 
     /* QUADSPI DMA Init */
     /* QUADSPI Init */
-    hdma_quadspi.Instance = DMA1_Channel1;
+    hdma_quadspi.Instance = DMA1_Channel7;
     hdma_quadspi.Init.Request = DMA_REQUEST_QUADSPI;
     hdma_quadspi.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_quadspi.Init.PeriphInc = DMA_PINC_DISABLE;

@@ -64,7 +64,7 @@ void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -105,13 +105,12 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**ADC1 GPIO Configuration
-    PA0     ------> ADC1_IN5
-    PA8     ------> ADC1_IN15
+    PA5     ------> ADC1_IN10
     */
-    GPIO_InitStruct.Pin = A0_Pin|A4_Pin;
+    GPIO_InitStruct.Pin = A0_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(A0_GPIO_Port, &GPIO_InitStruct);
 
     /* ADC1 interrupt Init */
     HAL_NVIC_SetPriority(ADC1_IRQn, 5, 0);
@@ -134,10 +133,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     __HAL_RCC_ADC_CLK_DISABLE();
 
     /**ADC1 GPIO Configuration
-    PA0     ------> ADC1_IN5
-    PA8     ------> ADC1_IN15
+    PA5     ------> ADC1_IN10
     */
-    HAL_GPIO_DeInit(GPIOA, A0_Pin|A4_Pin);
+    HAL_GPIO_DeInit(A0_GPIO_Port, A0_Pin);
 
     /* ADC1 interrupt Deinit */
     HAL_NVIC_DisableIRQ(ADC1_IRQn);

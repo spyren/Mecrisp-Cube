@@ -231,7 +231,7 @@ void OLED_init(void) {
 #ifdef DEBUG
 	OLED_puts("\r\nKatydid Debug\r\n");
 #else
-	OLED_puts("\r\Katydid\r\n");
+	OLED_puts("\r\nKatydid\r\n");
 #endif
 	OLED_puts("Forth for the STM32WB\r\n");
 	OLED_puts("(c)2022 peter@spyr.ch");
