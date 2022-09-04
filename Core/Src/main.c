@@ -94,6 +94,7 @@
 #include "ipcc.h"
 #include "rf.h"
 #include "rtc.h"
+#include "quadspi.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -201,6 +202,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+  MX_QUADSPI_Init();
   MX_I2C1_Init();
 //  MX_IPCC_Init(); // not needed, see hw_ipcc.c
   if (MX_FATFS_Init() != APP_OK) {
