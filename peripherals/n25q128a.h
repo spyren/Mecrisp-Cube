@@ -88,6 +88,8 @@
 /* Reset Operations */
 #define RESET_ENABLE_CMD                     0x66
 #define RESET_MEMORY_CMD                     0x99
+#define QUAD_ENABLE_CMD						 0x35
+#define QUAD_DISABLE_CMD					 0xF5
 
 /* Identification Operations */
 #define READ_ID_CMD                          0x9E
@@ -131,6 +133,7 @@
 #define DUAL_IN_FAST_PROG_CMD                0xA2
 #define EXT_DUAL_IN_FAST_PROG_CMD            0xD2
 #define QUAD_IN_FAST_PROG_CMD                0x32
+//#define QUAD_IN_FAST_PROG_CMD                0x38 // MX_25L
 #define EXT_QUAD_IN_FAST_PROG_CMD            0x12
 
 /* Erase Operations */
