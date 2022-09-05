@@ -158,7 +158,7 @@ flush:
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "erasedrv"
-		@ ( -- ) save-buffers empty-buffers
+		@ (  -- ) erasedrv
 // uint8_t FD_eraseDrive(void)
 @ -----------------------------------------------------------------------------
 	ldr		r1, =DriveNumber

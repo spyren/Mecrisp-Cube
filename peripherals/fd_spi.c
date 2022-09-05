@@ -59,10 +59,12 @@
 static uint8_t reset_chip();
 static uint8_t config_chip(void);
 static uint8_t write_enable(void);
-static uint8_t wait_mem_ready(void);
+static uint8_t wait_mem_ready(int timeout);
+static int read_id(void);
+#if 0
 static uint8_t quad_enable(void);
 static uint8_t quad_disable(void);
-static int read_id(void);
+#endif
 
 // Global Variables
 // ****************
@@ -94,7 +96,7 @@ extern DMA_HandleTypeDef hdma_quadspi;
 // Private Variables
 // *****************
 static volatile uint8_t SpiError = FALSE;
-static int chip_id;
+static int chip_id = 0;
 
 // Public Functions
 // ****************
@@ -209,8 +211,8 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
 			Error_Handler();
 		}
 
-		// wait till page is written
-		wait_mem_ready();
+		// wait till page is written (max<about 1.5 ms)
+		wait_mem_ready(5);
 
 		/* Update the address and size variables for next page programming */
 		current_addr += current_size;
@@ -323,6 +325,7 @@ int FDSPI_eraseChip(void) {
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
 	write_enable();
+	wait_mem_ready(100);
 
 	/* Erasing Sequence --------------------------------- */
 	s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
@@ -342,7 +345,6 @@ int FDSPI_eraseChip(void) {
 	SpiError = FALSE;
 	hal_status = HAL_QSPI_Command_IT(&hqspi, &s_command);
 	if (hal_status == HAL_OK) {
-		// blocked till command is finished
 		os_status = osSemaphoreAcquire(FDSPI_CommandSemaphoreID, 1000);
 		if (SpiError || (os_status != osOK)) {
 			Error_Handler();
@@ -351,7 +353,8 @@ int FDSPI_eraseChip(void) {
 		Error_Handler();
 	}
 
-	wait_mem_ready();
+	// blocked till command is finished, this can take up to 80 s
+	wait_mem_ready(80000);
 
 	osMutexRelease(FDSPI_MutexID);
 	return HAL_OK;
@@ -416,7 +419,8 @@ int FDSPI_eraseSector(uint32_t EraseStartAddress, uint32_t EraseEndAddress) {
 
         EraseStartAddress += N25Q128A_SECTOR_SIZE;
 
-        wait_mem_ready();
+        // erase sector can take up to 120 ms
+        wait_mem_ready(120);
     }
 
 	osMutexRelease(FDSPI_MutexID);
@@ -475,8 +479,8 @@ int FDSPI_eraseBlock(uint32_t BlockAddress) {
 		Error_Handler();
 	}
 
-	/* Configure automatic polling mode to wait for end of erase */
-	wait_mem_ready();
+    // erase sector can take up to 650 ms
+	wait_mem_ready(650);
 
 	osMutexRelease(FDSPI_MutexID);
 	return HAL_OK;
@@ -554,7 +558,7 @@ static int read_id(void) {
 	HAL_StatusTypeDef hal_status;
 	osStatus_t os_status;
     QSPI_CommandTypeDef s_command;
-    int id;
+    int id = 0;
 
     s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
     s_command.Instruction = READ_ID_CMD2;
@@ -703,6 +707,7 @@ static uint8_t write_enable(void) {
 		Error_Handler();
 	}
 
+#if 0
     /* Configure automatic polling mode to wait for write enabling ---- */
     s_config.Match = 0x02;
     s_config.Mask = 0x02;
@@ -713,6 +718,7 @@ static uint8_t write_enable(void) {
 
     s_command.Instruction = READ_STATUS_REG_CMD;
     s_command.DataMode = QSPI_DATA_1_LINE;
+    s_command.NbData  = 1;
 
     SpiError = FALSE;
     hal_status = HAL_QSPI_AutoPolling_IT(&hqspi, &s_command, &s_config);
@@ -725,11 +731,56 @@ static uint8_t write_enable(void) {
 	} else {
 		Error_Handler();
 	}
+#endif
 
     return HAL_OK;
 }
 
 
+static uint8_t wait_mem_ready(int timeout) {
+	HAL_StatusTypeDef hal_status;
+	osStatus_t os_status;
+    QSPI_CommandTypeDef s_command;
+    QSPI_AutoPollingTypeDef s_config;
+
+    /* Configure automatic polling mode to wait for memory ready ------ */
+    s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
+    s_command.Instruction = READ_STATUS_REG_CMD;
+    s_command.AddressMode = QSPI_ADDRESS_NONE;
+    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    s_command.DataMode = QSPI_DATA_1_LINE;
+    s_command.DummyCycles = 0;
+    s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
+#if DEVICE == N25Q128
+    s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
+#endif
+    s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
+    s_command.NbData = 1;
+
+    s_config.Match = 0x00;
+    s_config.Mask = N25Q128A_SR_WIP;
+    s_config.MatchMode = QSPI_MATCH_MODE_AND;
+    s_config.StatusBytesSize = 1;
+    s_config.Interval = 0x10;
+    s_config.AutomaticStop = QSPI_AUTOMATIC_STOP_ENABLE;
+
+    SpiError = FALSE;
+    hal_status = HAL_QSPI_AutoPolling_IT(&hqspi, &s_command, &s_config);
+	if (hal_status == HAL_OK) {
+		// blocked till read/write is finished
+		os_status = osSemaphoreAcquire(FDSPI_StatusSemaphoreID, timeout);
+		if (SpiError || (os_status != osOK)) {
+			Error_Handler();
+		}
+	} else {
+		Error_Handler();
+	}
+
+    return HAL_OK;
+}
+
+
+#if 0
 static uint8_t quad_enable(void) {
 	HAL_StatusTypeDef hal_status;
 	osStatus_t os_status;
@@ -796,48 +847,7 @@ static uint8_t quad_disable(void) {
 
     return HAL_OK;
 }
-
-
-static uint8_t wait_mem_ready(void) {
-	HAL_StatusTypeDef hal_status;
-	osStatus_t os_status;
-    QSPI_CommandTypeDef s_command;
-    QSPI_AutoPollingTypeDef s_config;
-
-    /* Configure automatic polling mode to wait for memory ready ------ */
-    s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
-    s_command.Instruction = READ_STATUS_REG_CMD;
-    s_command.AddressMode = QSPI_ADDRESS_NONE;
-    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-    s_command.DataMode = QSPI_DATA_1_LINE;
-    s_command.DummyCycles = 0;
-    s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
-#if DEVICE == N25Q128
-    s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
 #endif
-    s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-
-    s_config.Match = 0x00;
-    s_config.Mask = N25Q128A_SR_WIP;
-    s_config.MatchMode = QSPI_MATCH_MODE_AND;
-    s_config.StatusBytesSize = 1;
-    s_config.Interval = 0x10;
-    s_config.AutomaticStop = QSPI_AUTOMATIC_STOP_ENABLE;
-
-    SpiError = FALSE;
-    hal_status = HAL_QSPI_AutoPolling_IT(&hqspi, &s_command, &s_config);
-	if (hal_status == HAL_OK) {
-		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(FDSPI_StatusSemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
-		}
-	} else {
-		Error_Handler();
-	}
-
-    return HAL_OK;
-}
 
 
 // Callbacks

@@ -153,15 +153,15 @@ void BSP_init(void) {
 	}
 
 	EXTI_1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
+	if (EXTI_1_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
+	if (EXTI_2_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
+	if (EXTI_3_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
