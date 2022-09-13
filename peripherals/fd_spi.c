@@ -235,7 +235,7 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
   * @param[in]
   * 	ReadAddr: flash memory address (24 bit)
   * @param[in]
-  *     Size: number of bytes to write
+  *     Size: number of bytes to read
   * @retval
   *     None
   */
@@ -247,17 +247,16 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 	// only one thread is allowed to use the QSPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
-//	quad_enable();
-
 	/* Initialize the read command */
 	s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-
 	s_command.Instruction       = READ_CMD;								// SPI read
 //	s_command.Instruction       = QUAD_OUT_FAST_READ_CMD; 				// QREAD
 //	s_command.Instruction       = QUAD_INOUT_FAST_READ_4_BYTE_ADDR_CMD;
+
 	s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
 	s_command.Address           = ReadAddr;
+
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 //	s_command.DataMode          = QSPI_DATA_4_LINES;
 	s_command.DataMode          = QSPI_DATA_1_LINE;
@@ -265,12 +264,18 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;
 #elif DEVICE == W25Q128
 	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ; // 8 clocks
+#elif DEVICE == MX25L12835
+//	s_command.DummyCycles       = 8; // 8 dummy cycle (Default)
+#else
+	s_command.DummyCycles       = 0;
 #endif
 	s_command.NbData            = Size;
 	s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
 #if DEVICE == N25Q128
 	s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-#endif	s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+#endif
+	s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+//	s_command.SIOOMode          = QSPI_SIOO_INST_ONLY_FIRST_CMD;
 
 	/* Configure the command */
 	SpiError = FALSE;
@@ -301,8 +306,6 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 	/* Restore S# timing for nonRead commands */
 	MODIFY_REG(hqspi.Instance->DCR, QUADSPI_DCR_CSHT, QSPI_CS_HIGH_TIME_6_CYCLE);
 #endif
-
-//	quad_disable();
 
 	osMutexRelease(FDSPI_MutexID);
 	return HAL_OK;
@@ -363,82 +366,15 @@ int FDSPI_eraseChip(void) {
 
 /**
   * @brief
-  *     Erase sectors
-  *
-  *     Sector is 64 KiB.
-  * @param[in]
-  * 	EraseStartAddress: flash memory address (24 bit)
-  * @param[in]
-  * 	EraseEndAddress: flash memory address (24 bit)
-  * @retval
-  *     None
-  */
-int FDSPI_eraseSector(uint32_t EraseStartAddress, uint32_t EraseEndAddress) {
-	HAL_StatusTypeDef hal_status;
-	osStatus_t os_status;
-    QSPI_CommandTypeDef s_command;
-
-	// only one thread is allowed to use the QSPI
-	osMutexAcquire(FDSPI_MutexID, osWaitForever);
-
-    EraseStartAddress = EraseStartAddress
-                        - EraseStartAddress % N25Q128A_SECTOR_SIZE;
-
-    /* Erasing Sequence -------------------------------------------------- */
-    s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
-    s_command.Instruction = SECTOR_ERASE_CMD;
-    s_command.AddressSize = QSPI_ADDRESS_24_BITS;
-    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-    s_command.DdrMode = QSPI_DDR_MODE_DISABLE;
-#if DEVICE == N25Q128
-    s_command.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
-#endif
-    s_command.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-    s_command.AddressMode = QSPI_ADDRESS_1_LINE;
-
-    s_command.DataMode = QSPI_DATA_NONE;
-    s_command.DummyCycles = 0;
-
-    while (EraseEndAddress >= EraseStartAddress)
-    {
-        s_command.Address = (EraseStartAddress & 0x0FFFFFFF);
-
-        write_enable();
-
-    	SpiError = FALSE;
-    	hal_status = HAL_QSPI_Command_IT(&hqspi, &s_command);
-    	if (hal_status == HAL_OK) {
-    		// blocked till command is finished
-    		os_status = osSemaphoreAcquire(FDSPI_CommandSemaphoreID, 1000);
-    		if (SpiError || (os_status != osOK)) {
-    			Error_Handler();
-    		}
-    	} else {
-    		Error_Handler();
-    	}
-
-        EraseStartAddress += N25Q128A_SECTOR_SIZE;
-
-        // erase sector can take up to 120 ms
-        wait_mem_ready(120);
-    }
-
-	osMutexRelease(FDSPI_MutexID);
-    return HAL_OK;
-}
-
-
-/**
-  * @brief
-  *     Erase block sectors
+  *     Erase block sector
   *
   *     (Sub-)Sector is 4 KiB.
   * @param[in]
-  * 	BlockAddress: flash memory address (12 bit)
+  * 	flash_addr flash memory address (the 12 lower bit are ignored)
   * @retval
   *     None
   */
-int FDSPI_eraseBlock(uint32_t BlockAddress) {
+int FDSPI_eraseBlock(uint32_t flash_addr) {
 	HAL_StatusTypeDef hal_status;
 	osStatus_t os_status;
 	QSPI_CommandTypeDef s_command;
@@ -451,7 +387,7 @@ int FDSPI_eraseBlock(uint32_t BlockAddress) {
 	s_command.Instruction       = SUBSECTOR_ERASE_CMD;
 	s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
-	s_command.Address           = BlockAddress;
+	s_command.Address           = flash_addr;
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	s_command.DataMode          = QSPI_DATA_NONE;
 	s_command.DummyCycles       = 0;
@@ -680,7 +616,6 @@ static uint8_t write_enable(void) {
 	HAL_StatusTypeDef hal_status;
 	osStatus_t os_status;
     QSPI_CommandTypeDef s_command;
-    QSPI_AutoPollingTypeDef s_config;
 
     /* Enable write operations ------------------------------------------ */
     s_command.InstructionMode = QSPI_INSTRUCTION_1_LINE;
@@ -706,32 +641,6 @@ static uint8_t write_enable(void) {
 	} else {
 		Error_Handler();
 	}
-
-#if 0
-    /* Configure automatic polling mode to wait for write enabling ---- */
-    s_config.Match = 0x02;
-    s_config.Mask = 0x02;
-    s_config.MatchMode = QSPI_MATCH_MODE_AND;
-    s_config.StatusBytesSize = 1;
-    s_config.Interval = 0x10;
-    s_config.AutomaticStop = QSPI_AUTOMATIC_STOP_ENABLE;
-
-    s_command.Instruction = READ_STATUS_REG_CMD;
-    s_command.DataMode = QSPI_DATA_1_LINE;
-    s_command.NbData  = 1;
-
-    SpiError = FALSE;
-    hal_status = HAL_QSPI_AutoPolling_IT(&hqspi, &s_command, &s_config);
-	if (hal_status == HAL_OK) {
-		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(FDSPI_StatusSemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
-		}
-	} else {
-		Error_Handler();
-	}
-#endif
 
     return HAL_OK;
 }
