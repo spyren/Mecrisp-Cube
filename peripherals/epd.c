@@ -74,6 +74,13 @@
 #include "font8x8.h"
 #include "font8x14.h"
 #include "font12x16.h"
+#include "font8x16b.h"
+#include "font8x16s.h"
+#include "font11x24b.h"
+#include "font11x24s.h"
+#include "font16x32b.h"
+#include "font16x32s.h"
+
 
 #if EPD == 1
 
@@ -119,6 +126,12 @@ static void putGlyph6x8(int ch);
 static void putGlyph8x8(int ch);
 static void putGlyph8x16(int ch);
 static void putGlyph12x16(int ch);
+static void putGlyph8x16B(int ch);
+static void putGlyph8x16S(int ch);
+static void putGlyph11x24B(int ch);
+static void putGlyph11x24S(int ch);
+static void putGlyph16x32B(int ch);
+static void putGlyph16x32S(int ch);
 static int autowrap(int ch, int width, int row);
 #ifdef EPD_PAGE_VERTICAL
 static void transpose_page(int page, int upper, uint8_t *buf);
@@ -323,32 +336,50 @@ void EPD_init(void) {
 //	EPD_update();
 
 	EPD_setPos(0,0);
-	EPD_setFont(EPD_FONT8X8);
 
-	EPD_puts("Mecrisp-Cube");
-	EPD_setFont(EPD_FONT6X8);
-	EPD_puts(MECRISP_CUBE_TAG);
-#ifdef DEBUG
-	EPD_puts("\r\nDebug\r\n");
-#else
-	EPD_puts("\r\n\r\n");
-#endif
-	EPD_puts("Forth for the STM32WB\r\n");
-	EPD_puts("(c)2022 peter@spyr.ch");
+	EPD_setFont(EPD_FONT8X16S);
+	EPD_puts("DejaVu Sans Mono 10 pt, 31x13 Z\r\n");
+	EPD_puts("1234567890123456789012345678901\r\n");
+	EPD_setFont(EPD_FONT8X16B);
+	EPD_puts("1234567890123456789012345678901\r\n");
 
-	EPD_puts("\r\n\r\n");
-	EPD_setFont(EPD_FONT12X16);
+	EPD_setFont(EPD_FONT11X24S);
+	EPD_puts("DejaVu 14 pt, 22x8 Z\r\n");
+	EPD_puts("1234567890123456789012\r\n");
+	EPD_setFont(EPD_FONT11X24B);
+	EPD_puts("1234567890123456789012\r\n");
 
-	EPD_puts("Mecrisp-Cube ");
-	EPD_puts(MECRISP_CUBE_TAG);
-	EPD_setFont(EPD_FONT8X16);
-#ifdef DEBUG
-	EPD_puts("\r\nDebug\r\n");
-#else
-	EPD_puts("\r\n\r\n");
-#endif
-	EPD_puts("Forth for the STM32WB\r\n");
-	EPD_puts("(c)2022 peter@spyr.ch");
+	EPD_setFont(EPD_FONT16X32S);
+	EPD_puts("DejaVu20pt,15x6\r\n");
+	EPD_puts("123456789012345\r\n");
+	EPD_setFont(EPD_FONT16X32B);
+	EPD_puts("123456789012345\r\n");
+
+
+
+//	EPD_setFont(EPD_FONT6X8);
+//	EPD_puts(MECRISP_CUBE_TAG);
+//#ifdef DEBUG
+//	EPD_puts("\r\nDebug\r\n");
+//#else
+//	EPD_puts("\r\n\r\n");
+//#endif
+//	EPD_puts("Forth for the STM32WB\r\n");
+//	EPD_puts("(c)2022 peter@spyr.ch");
+//
+//	EPD_puts("\r\n\r\n");
+//	EPD_setFont(EPD_FONT12X16);
+//
+//	EPD_puts("Mecrisp-Cube ");
+//	EPD_puts(MECRISP_CUBE_TAG);
+//	EPD_setFont(EPD_FONT8X16);
+//#ifdef DEBUG
+//	EPD_puts("\r\nDebug\r\n");
+//#else
+//	EPD_puts("\r\n\r\n");
+//#endif
+//	EPD_puts("Forth for the STM32WB\r\n");
+//	EPD_puts("(c)2022 peter@spyr.ch");
 
 
 	EPD_update();
@@ -437,6 +468,24 @@ int EPD_putc(int c) {
 		break;
 	case EPD_FONT12X16:
 		putGlyph12x16(c);
+		break;
+	case EPD_FONT8X16B:
+		putGlyph8x16B(c);
+		break;
+	case EPD_FONT8X16S:
+		putGlyph8x16S(c);
+		break;
+	case EPD_FONT11X24B:
+		putGlyph11x24B(c);
+		break;
+	case EPD_FONT11X24S:
+		putGlyph11x24S(c);
+		break;
+	case EPD_FONT16X32B:
+		putGlyph16x32B(c);
+		break;
+	case EPD_FONT16X32S:
+		putGlyph16x32S(c);
 		break;
 	}
 
@@ -844,6 +893,156 @@ static void putGlyph12x16(int ch) {
 
 /**
  *  @brief
+ *      Put a glyph in 8x16 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph8x16B(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 8, 2)) {
+		return ;
+	}
+
+	// fill the buffer with 8 columns on 2 lines (pages)
+	for (i = 0; i < 8; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X16B_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X16B_getScanColumn(ch, i, 1));
+	}
+	postwrap(8, 2);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 8x16 font DejaVu Sans Mono Standard to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph8x16S(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 8, 2)) {
+		return ;
+	}
+
+	// fill the buffer with 8 columns on 2 lines (pages)
+	for (i = 0; i < 8; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X16S_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X16S_getScanColumn(ch, i, 1));
+	}
+	postwrap(8, 2);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 11x24 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph11x24B(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 11, 3)) {
+		return ;
+	}
+
+	// fill the buffer with 11 columns on 3 lines (pages)
+	for (i = 0; i < 11; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT11X24B_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 2));
+	}
+	postwrap(11, 3);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 11x24 font DejaVu Sans Mono Standard to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph11x24S(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 11, 3)) {
+		return ;
+	}
+
+	// fill the buffer with 11 columns on 3 lines (pages)
+	for (i = 0; i < 11; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT11X24S_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT11X24S_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24S_getScanColumn(ch, i, 2));
+	}
+	postwrap(11, 3);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 16x32 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph16x32B(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 16, 4)) {
+		return ;
+	}
+
+	// fill the buffer with 16 columns on 4 lines (pages)
+	for (i = 0; i < 16; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT16X32B_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 2));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 3));
+	}
+	postwrap(16, 4);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 16x32 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph16x32S(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 16, 4)) {
+		return ;
+	}
+
+	// fill the buffer with 16 columns on 4 lines (pages)
+	for (i = 0; i < 16; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT16X32S_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 2));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 3));
+	}
+	postwrap(16, 4);
+}
+
+
+/**
+ *  @brief
  *      Test for special chars and for free space
  *  @param[in]
  *  	ch character
@@ -957,7 +1156,7 @@ static void postwrap(int width, int row) {
 }
 
 uint8_t bitswap(uint8_t byte) {
-	char i,out;
+	char i,out=0;
 
 	for(i=0;i<8;i++) {
 		out >>= 1;
