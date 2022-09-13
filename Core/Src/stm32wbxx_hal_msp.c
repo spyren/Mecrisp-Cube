@@ -67,9 +67,9 @@ void HAL_MspInit(void)
   // RTOS SysTick has lowest priority
   HAL_NVIC_SetPriority(SysTick_IRQn, configLIBRARY_LOWEST_INTERRUPT_PRIORITY, 0);
 
-  // CubeMX does not create code for the IPCC interrupt priority
-  HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
-  HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
+//  // CubeMX does not create code for the IPCC interrupt priority
+//  HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
+//  HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
 
   /* USER CODE END MspInit 0 */
 

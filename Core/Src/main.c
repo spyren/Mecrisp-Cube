@@ -91,7 +91,6 @@
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
-#include "ipcc.h"
 #include "rf.h"
 #include "rtc.h"
 #include "quadspi.h"

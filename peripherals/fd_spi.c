@@ -138,6 +138,7 @@ void FDSPI_init(void) {
   *
   *     Using DMA. RTOS blocking till finished.
   *     Page size for 16 MiB devices is 256 bytes.
+  *     Has not to be quad as flashing takes longer than data transfer.
   * @param[in]
   *     pData: Pointer to data buffer to write
   * @param[in]
@@ -249,33 +250,33 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 
 	/* Initialize the read command */
 	s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+#if QUAD_READ == 1
+	s_command.Instruction       = QUAD_OUT_FAST_READ_CMD; 				// QREAD
+	s_command.DataMode          = QSPI_DATA_4_LINES;
+#if DEVICE == N25Q128
+	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;
+#elif DEVICE == W25Q128
+	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ; // 8 clocks
+#elif DEVICE == MX25L12835
+	s_command.DummyCycles       = 8; // 8 dummy cycle (Default)
+#endif
+#else
 	s_command.Instruction       = READ_CMD;								// SPI read
-//	s_command.Instruction       = QUAD_OUT_FAST_READ_CMD; 				// QREAD
-//	s_command.Instruction       = QUAD_INOUT_FAST_READ_4_BYTE_ADDR_CMD;
+	s_command.DataMode          = QSPI_DATA_1_LINE;
+	s_command.DummyCycles       = 0;
+#endif
 
 	s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
 	s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
 	s_command.Address           = ReadAddr;
 
 	s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-//	s_command.DataMode          = QSPI_DATA_4_LINES;
-	s_command.DataMode          = QSPI_DATA_1_LINE;
-#if DEVICE == N25Q128
-	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;
-#elif DEVICE == W25Q128
-	s_command.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ; // 8 clocks
-#elif DEVICE == MX25L12835
-//	s_command.DummyCycles       = 8; // 8 dummy cycle (Default)
-#else
-	s_command.DummyCycles       = 0;
-#endif
 	s_command.NbData            = Size;
 	s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
 #if DEVICE == N25Q128
 	s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
 #endif
 	s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-//	s_command.SIOOMode          = QSPI_SIOO_INST_ONLY_FIRST_CMD;
 
 	/* Configure the command */
 	SpiError = FALSE;
