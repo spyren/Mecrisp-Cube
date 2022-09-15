@@ -2868,7 +2868,7 @@ const char font_DejaVuSansMonoStd_16w32h[256][64]={
  *      bit pattern for the char
  */
 int FONT16X32S_getScanColumn(int ch, int column, int scan) {
-	return font_DejaVuSansMonoStd_16w32h[ch][2*column+scan];
+	return font_DejaVuSansMonoStd_16w32h[ch][4*column+scan];
 }
 
 

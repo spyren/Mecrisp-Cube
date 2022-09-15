@@ -132,13 +132,40 @@
  * SMPS not used when Set to 0
  * SMPS used when Set to 1
  */
-#define CFG_USE_SMPS    0
+#define CFG_USE_SMPS    1
 
 /* USER CODE BEGIN Generic_Parameters */
 
+// Board Type
+// **********
+
+#define BOARD_TYPE_UNO		1
+#define BOARD_TYPE_MKR		2
+#define BOARD_TYPE_FEATHER	3
+#define BOARD_TYPE_FIREFLY	4
+
+#define BOARD_TYPE			BOARD_TYPE_FEATHER
+
+// MCU Type
+// ********
+
+#define MCU_TYPE		"STM32WB"
+#if BOARD_TYPE == BOARD_TYPE_FEATHER
+// Adafruit headers
+#define BOARD 			"Feather"
+#define RAM_FLASH_SIZE	"63/384"
+#else
+// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
+#define BOARD 			"Nucleo"
+#define RAM_FLASH_SIZE	"63/128"
+#endif
+
+// Greeting Message
+// ****************
+
 #define MECRISP_CUBE_TAG "1.4.5"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.5 for STM32WB Feather, 63/128 KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
-#define RC_LOCAL "0:/etc/rc.local"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
+#define RC_LOCAL "0:/etc/rc.locl"
 
 /* if asserts are not required uncomment next line */
 #define CFG_ASSERT_ON
@@ -623,7 +650,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (196 * 8)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 12)
 
 #define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)

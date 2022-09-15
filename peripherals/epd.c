@@ -80,6 +80,10 @@
 #include "font11x24s.h"
 #include "font16x32b.h"
 #include "font16x32s.h"
+#include "font9x16b.h"
+#include "font9x16s.h"
+#include "font13x24b.h"
+#include "font13x24s.h"
 
 
 #if EPD == 1
@@ -132,6 +136,10 @@ static void putGlyph11x24B(int ch);
 static void putGlyph11x24S(int ch);
 static void putGlyph16x32B(int ch);
 static void putGlyph16x32S(int ch);
+static void putGlyph9x16B(int ch);
+static void putGlyph9x16S(int ch);
+static void putGlyph13x24B(int ch);
+static void putGlyph13x24S(int ch);
 static int autowrap(int ch, int width, int row);
 #ifdef EPD_PAGE_VERTICAL
 static void transpose_page(int page, int upper, uint8_t *buf);
@@ -332,29 +340,106 @@ void EPD_init(void) {
 	EPD_sendCommand(buf);
 
 	EPD_clear();
-	memset(display_buffer->blob, 0x0F, 128);
+//	memset(display_buffer->blob, 0x0F, 128);
 //	EPD_update();
 
 	EPD_setPos(0,0);
 
-	EPD_setFont(EPD_FONT8X16S);
-	EPD_puts("DejaVu Sans Mono 10 pt, 31x13 Z\r\n");
-	EPD_puts("1234567890123456789012345678901\r\n");
-	EPD_setFont(EPD_FONT8X16B);
-	EPD_puts("1234567890123456789012345678901\r\n");
+//	EPD_setFont(EPD_FONT16X32S);
+//	EPD_puts("DejaVu20pt,");
+//	EPD_setFont(EPD_FONT16X32B);
+//	EPD_puts("15x3\r\n");
+//	EPD_setFont(EPD_FONT11X24S);
+//	EPD_puts("DejaVu 14 pt, 22x5 Z\r\n");
+//	EPD_setFont(EPD_FONT11X24B);
+//	EPD_puts("1234567890123456789012\r\n");
+//	EPD_setFont(EPD_FONT8X16S);
+//	EPD_puts("DejaVu Sans Mono 10 pt, 31x7 Z\r\n");
+//	EPD_puts("1234567890123456789012345678901\r\n");
+//	EPD_setFont(EPD_FONT8X16B);
+//	EPD_puts("1234567890123456789012345678901\r\n");
 
+//	EPD_setFont(EPD_FONT8X16S);
+//	EPD_puts("DejaVu Sans Mono 10 pt, 31x7 Z\r\n");
+//	EPD_puts("The quick brown fox jumps over\r\n");
+//	EPD_puts("the lazy dog.\r\n");
+//	EPD_puts("1234567890123456789012345678901\r\n");
+//	EPD_setFont(EPD_FONT8X16B);
+//	EPD_puts("The quick brown fox jumps over\r\n");
+//	EPD_puts("the lazy dog.\r\n");
+//	EPD_puts("1234567890123456789012345678901");
+
+//	EPD_setFont(EPD_FONT11X24S);
+//	EPD_puts("DejaVu 14 pt, 22x5 Z\r\n");
+//	EPD_puts("The quick brown fox ju\r\n");
+//	EPD_puts("mps over the lazy dog\r\n");
+//	EPD_puts("1234567890123456789012\r\n");
+//	EPD_setFont(EPD_FONT11X24B);
+//	EPD_puts("1234567890123456789012");
+
+//	EPD_setFont(EPD_FONT16X32S);
+//	EPD_puts("DejaVu20pt,15x3\r\n");
+//	EPD_puts("123456789012345\r\n");
+//	EPD_setFont(EPD_FONT16X32B);
+//	EPD_puts("The quick brown\r\n");
+//	EPD_puts("fox jumps over\r\n");
+
+//	EPD_setFont(EPD_FONT9X16S);
+//	EPD_puts("DejaVuSansMono 11pt, 27x7 Z\r\n");
+//	EPD_puts("The quick brown fox jumps\r\n");
+//	EPD_puts("over the lazy dog.\r\n");
+//	EPD_puts("123456789012345678901234567\r\n");
+//	EPD_setFont(EPD_FONT9X16B);
+//	EPD_puts("The quick brown fox jumps\r\n");
+//	EPD_puts("over the lazy dog.\r\n");
+//	EPD_puts("123456789012345678901234567\r\n");
+
+//	EPD_setFont(EPD_FONT13X24S);
+//	EPD_puts("DejaVu 16pt, 19x5 Z\r\n");
+//	EPD_puts("The quick brown fox\r\n");
+//	EPD_puts("jumps over the lazy\r\n");
+//	EPD_puts("1234567890123456789\r\n");
+//	EPD_setFont(EPD_FONT13X24B);
+//	EPD_puts("1234567890123456789");
+
+//	EPD_setFont(EPD_FONT8X8);
+//	EPD_puts("IBM PC CGA Font 8x8 px, 31x15 Z\r\n");
+//	EPD_puts("The quick brown fox jumps over\r\n");
+//	EPD_puts("the lazy dog.\r\n");
+//	EPD_puts("1234567890123456789012345678901\r\n");
+//	EPD_puts("Lorem ipsum dolor sit amet, con\r\n");
+//	EPD_puts("sectetur adipiscing elit, sed \r\n");
+//	EPD_puts("do eiusmod tempor incididunt ut\r\n");
+//	EPD_puts("labore et dolore magna aliqua.\r\n");
+//	EPD_puts("Ut enim ad minim veniam, quis \r\n");
+//	EPD_puts("nostrud exercitation ullamco\r\n");
+//	EPD_puts("laboris nisi ut aliquip ex ea \r\n");
+//	EPD_puts("commodo consequat. Duis aute  \r\n");
+//	EPD_puts("irure dolor in reprehenderit in\r\n");
+//	EPD_puts("voluptate velit esse cillum dol\r\n");
+//	EPD_puts("ore eu fugiat nulla pariatur.");
+
+//	// Small Font and 6 rows
+//	EPD_setFont(EPD_FONT13X24B);
+//	EPD_puts("Titel\r\n");
+//	EPD_setFont(EPD_FONT9X16B);
+//	//	EPD_puts("The quick brown fox\r\n");
+//	EPD_puts("    Auswahl 1\r\n");
+//	EPD_puts("    Auswahl 2\r\n");
+//	EPD_puts("  \273 Auswahl 3\r\n");
+//	EPD_puts("    Auswahl 4\r\n");
+//	EPD_puts("    Auswahl 5\r\n");
+//	EPD_puts("    Auswahl 6");
+
+	// Large Font and 4 rows
+	EPD_setFont(EPD_FONT13X24B);
+	EPD_puts("Titel\r\n");
 	EPD_setFont(EPD_FONT11X24S);
-	EPD_puts("DejaVu 14 pt, 22x8 Z\r\n");
-	EPD_puts("1234567890123456789012\r\n");
-	EPD_setFont(EPD_FONT11X24B);
-	EPD_puts("1234567890123456789012\r\n");
-
-	EPD_setFont(EPD_FONT16X32S);
-	EPD_puts("DejaVu20pt,15x6\r\n");
-	EPD_puts("123456789012345\r\n");
-	EPD_setFont(EPD_FONT16X32B);
-	EPD_puts("123456789012345\r\n");
-
+	//	EPD_puts("The quick brown fox\r\n");
+	EPD_puts("  Auswahl 1\r\n");
+	EPD_puts("  Auswahl 2\r\n");
+	EPD_puts("\273 Auswahl 3\r\n");
+	EPD_puts("  Auswahl 4");
 
 
 //	EPD_setFont(EPD_FONT6X8);
@@ -487,6 +572,18 @@ int EPD_putc(int c) {
 	case EPD_FONT16X32S:
 		putGlyph16x32S(c);
 		break;
+	case EPD_FONT9X16B:
+		putGlyph9x16B(c);
+		break;
+	case EPD_FONT9X16S:
+		putGlyph9x16S(c);
+		break;
+	case EPD_FONT13X24B:
+		putGlyph13x24B(c);
+		break;
+	case EPD_FONT13X24S:
+		putGlyph13x24S(c);
+		break;
 	}
 
 	return 0;
@@ -531,9 +628,9 @@ int EPD_puts(const char *s) {
 /**
  *  @brief
  *  @param[in]
- *      x  horizontal position, max. (128 / 6) -1, depends on font.
+ *      x  horizontal position, pixel resolution, e.g. 0 to 249 for 250x122 displays.
  *  @param[in]
- *      y  vertical position (line), max. 3 for 128x32 or 7 for 128x64 displays.
+ *      y  vertical position (line), max. 15 for  250x122 displays..
  *  @return
  *      none
  */
@@ -1070,6 +1167,104 @@ static void putGlyph16x32S(int ch) {
 		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 3));
 	}
 	postwrap(16, 4);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 9x16 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph9x16B(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 9, 2)) {
+		return ;
+	}
+
+	// fill the buffer with 8 columns on 2 lines (pages)
+	for (i = 0; i < 9; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT9X16B_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT9X16B_getScanColumn(ch, i, 1));
+	}
+	postwrap(9, 2);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 9x16 font DejaVu Sans Mono Standard to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph9x16S(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 9, 2)) {
+		return ;
+	}
+
+	// fill the buffer with 8 columns on 2 lines (pages)
+	for (i = 0; i < 9; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT9X16S_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT9X16S_getScanColumn(ch, i, 1));
+	}
+	postwrap(9, 2);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 13x24 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph13x24B(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 13, 3)) {
+		return ;
+	}
+
+	// fill the buffer with 13 columns on 3 lines (pages)
+	for (i = 0; i < 13; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT13X24B_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT13X24B_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24B_getScanColumn(ch, i, 2));
+	}
+	postwrap(13, 3);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 13x24 font DejaVu Sans Mono Standard to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph13x24S(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 13, 3)) {
+		return ;
+	}
+
+	// fill the buffer with 13 columns on 3 lines (pages)
+	for (i = 0; i < 13; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT13X24S_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 2));
+	}
+	postwrap(13, 3);
 }
 
 

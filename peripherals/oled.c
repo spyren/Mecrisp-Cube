@@ -56,6 +56,8 @@
 #include "font8x14.h"
 #include "font12x16.h"
 
+#if OLED == 1
+
 // Macros
 // ******
 #define  membersof(x) (sizeof(x) / sizeof(x[0]))
@@ -71,7 +73,7 @@ static int autowrap(int ch, int width, int row);
 #ifdef OLED_PAGE_VERTICAL
 static void transpose_page(int page, int upper, uint8_t *buf);
 #endif
-static void postwrap(int width, int row);
+void postwrap(int width, int row);
 
 // Global Variables
 // ****************
@@ -486,6 +488,47 @@ int OLED_readStatus(void) {
 }
 
 
+/**
+ *  @brief
+ *      Write a column (8 pixels) to the current position
+ *
+ *      Increment the position.
+ *  @param[in]
+ *  	column
+ *  @return
+ *      None
+ */
+void OLED_writeColumn(uint8_t column) {
+	uint8_t buf[2];
+
+	if (autowrap(' ', 1, 1)) {
+		return ;
+	}
+
+	display_buffer->rows[CurrentPosY][CurrentPosX] = column;
+
+	buf[0] = 0x40;  // write data
+	// copy into I2C array
+	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
+
+	IIC_setDevice(OLED_I2C_ADR);
+	IIC_putMessage(buf, 2);
+
+	postwrap(1, 1);
+}
+
+
+/**
+ *  @brief
+ *      Read a column (8 pixels) from the current position
+ *  @return
+ *      Column
+ */
+int OLED_readColumn(void) {
+	return display_buffer->rows[CurrentPosY][CurrentPosX];
+}
+
+
 // Private Functions
 // *****************
 
@@ -835,7 +878,7 @@ static void transpose_page(int page, int upper, uint8_t *buf) {
  *  @return
  *  	none
  */
-static void postwrap(int width, int row) {
+void postwrap(int width, int row) {
 	CurrentPosX += width;
 
 	if (CurrentPosX >= OLED_X_RESOLUTION) {
@@ -874,3 +917,4 @@ static void postwrap(int width, int row) {
 //	}
 //}
 
+#endif
