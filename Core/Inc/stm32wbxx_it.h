@@ -77,8 +77,6 @@ void SPI1_IRQHandler(void);
 void USART1_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
 void RTC_Alarm_IRQHandler(void);
-void IPCC_C1_RX_IRQHandler(void);
-void IPCC_C1_TX_IRQHandler(void);
 void HSEM_IRQHandler(void);
 void QUADSPI_IRQHandler(void);
 /* USER CODE BEGIN EFP */
@@ -92,5 +90,3 @@ void IPCC_C1_RX_IRQHandler(void);
 #endif
 
 #endif /* __STM32WBxx_IT_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

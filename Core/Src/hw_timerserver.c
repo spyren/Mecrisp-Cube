@@ -891,5 +891,3 @@ __weak void HW_TS_RTC_Int_AppNot(uint32_t TimerProcessID, uint8_t TimerID, HW_TS
 
   return;
 }
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

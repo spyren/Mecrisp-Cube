@@ -64,7 +64,6 @@ extern DMA_HandleTypeDef hdma_i2c3_rx;
 extern DMA_HandleTypeDef hdma_i2c3_tx;
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
-extern IPCC_HandleTypeDef hipcc;
 extern DMA_HandleTypeDef hdma_quadspi;
 extern QSPI_HandleTypeDef hqspi;
 extern RTC_HandleTypeDef hrtc;
@@ -531,34 +530,6 @@ void RTC_Alarm_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles IPCC RX occupied interrupt.
-  */
-void IPCC_C1_RX_IRQHandler(void)
-{
-  /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
-
-  /* USER CODE END IPCC_C1_RX_IRQn 0 */
-  HAL_IPCC_RX_IRQHandler(&hipcc);
-  /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
-
-  /* USER CODE END IPCC_C1_RX_IRQn 1 */
-}
-
-/**
-  * @brief This function handles IPCC TX free interrupt.
-  */
-void IPCC_C1_TX_IRQHandler(void)
-{
-  /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
-
-  /* USER CODE END IPCC_C1_TX_IRQn 0 */
-  HAL_IPCC_TX_IRQHandler(&hipcc);
-  /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
-
-  /* USER CODE END IPCC_C1_TX_IRQn 1 */
-}
-
-/**
   * @brief This function handles HSEM global interrupt.
   */
 void HSEM_IRQHandler(void)
@@ -625,4 +596,3 @@ volatile uint32_t psr;// Program status register.
 */
 
 /* USER CODE END 1 */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
