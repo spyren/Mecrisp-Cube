@@ -85,7 +85,7 @@ const osThreadAttr_t HrsProcess_attr = {
 static void HrMeas( void );
 static void HrsProcess(void *argument);
 static void HRSAPP_Measurement(void);
-static uint32_t HRSAPP_Read_RTC_SSR_SS ( void );
+//static uint32_t HRSAPP_Read_RTC_SSR_SS ( void );
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -210,12 +210,7 @@ static void HRSAPP_Measurement(void)
 /* USER CODE BEGIN HRSAPP_Measurement */
 	uint32_t measurement;
 
-	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		// dongle doesn't have analog pin 0
-		measurement = 30 + BSP_getAnalogPin(2) / 20;
-	} else {
-		measurement = 30 + BSP_getAnalogPin(0) / 20;
-	}
+	measurement = 30 + BSP_getAnalogPin(0) / 20;
 
 	HRSAPP_Context.MeasurementvalueChar.MeasurementValue = measurement;
 #if (BLE_CFG_HRS_ENERGY_EXPENDED_INFO_FLAG != 0)
@@ -248,10 +243,10 @@ static void HrMeas( void )
   return;
 }
 
-static uint32_t HRSAPP_Read_RTC_SSR_SS ( void )
-{
-  return ((uint32_t)(READ_BIT(RTC->SSR, RTC_SSR_SS)));
-}
+//static uint32_t HRSAPP_Read_RTC_SSR_SS ( void )
+//{
+//  return ((uint32_t)(READ_BIT(RTC->SSR, RTC_SSR_SS)));
+//}
 
 /* USER CODE BEGIN FD */
 

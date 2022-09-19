@@ -242,7 +242,7 @@ uint8_t a_ManufData[14] = {sizeof(a_ManufData)-1,
                           };
 
 /* USER CODE BEGIN PV */
-
+__attribute__((unused))
 static const uint8_t CRS_STM_UUID[] = { CRS_STM_UUID128 };
 
 /* USER CODE END PV */
@@ -404,7 +404,10 @@ void APP_BLE_Init(void)
   HRSAPP_Init();
 
   /* USER CODE BEGIN APP_BLE_Init_3 */
-
+  /**
+  * Initialize CRS (Cable Replacement Server) Application
+  */
+  CRSAPP_Init();
   /* USER CODE END APP_BLE_Init_3 */
 
   /**
@@ -483,7 +486,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
       Adv_Request(APP_BLE_FAST_ADV);
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
-      BSP_setRgbLED(BSP_getRgbLED() & 0xFFFF00); // Clear blue LED
+      BSP_setNeoPixel(BSP_getNeoPixel() & 0xFFFF00); // Clear blue LED
       /* USER CODE END EVT_DISCONN_COMPLETE */
       break; /* HCI_DISCONNECTION_COMPLETE_EVT_CODE */
     }
@@ -581,7 +584,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
           }
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle = p_connection_complete_event->Connection_Handle;
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-          BSP_setRgbLED(BSP_getRgbLED() | 0x000080); // set blue LED to 50 %
+          BSP_setNeoPixel(BSP_getNeoPixel() | 0x000020); // set blue LED to 50 %
           osThreadFlagsSet(CRS_ThreadId, CRSAPP_CONNECTED);
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
           break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */
@@ -644,6 +647,20 @@ APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 }
 
 /* USER CODE BEGIN FD*/
+int APP_BLE_getFusVersion(void) {
+	WirelessFwInfo_t fwinfo;
+
+	SHCI_GetWirelessFwInfo(&fwinfo);
+	return ((fwinfo.FusVersionMajor<<16) + (fwinfo.FusVersionMinor<<8) + (fwinfo.FusVersionSub));
+}
+
+int APP_BLE_getStackVersion(void) {
+	WirelessFwInfo_t fwinfo;
+
+	SHCI_GetWirelessFwInfo(&fwinfo);
+	return ((fwinfo.VersionMajor<<16) + (fwinfo.VersionMinor<<8) + (fwinfo.VersionSub));
+}
+
 
 /* USER CODE END FD*/
 
@@ -1178,6 +1195,7 @@ static void HciUserEvtProcess(void *argument)
 }
 
 /* USER CODE BEGIN FD_SPECIFIC_FUNCTIONS */
+__attribute__((unused))
 static void Add_Advertisment_Service_UUID_128b(const uint8_t *servUUID, uint8_t UUIDLength) {
 	int8_t i;
 
