@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
-  * File Name          : app_debug.c
-  * Description        : Debug capabilities source file for STM32WPAN Middleware
- ******************************************************************************
+  ******************************************************************************
+  * @file    app_debug.c
+  * @author  MCD Application Team
+  * @brief   Debug capabilities source file for STM32WPAN Middleware
+  ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2020-2021 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
- ******************************************************************************
- */
+  ******************************************************************************
+  */
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ typedef PACKED_STRUCT
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define GPIO_NBR_OF_RF_SIGNALS                  9
-#define GPIO_CFG_NBR_OF_FEATURES                34
+#define GPIO_CFG_NBR_OF_FEATURES                38
 #define NBR_OF_TRACES_CONFIG_PARAMETERS         4
 #define NBR_OF_GENERAL_CONFIG_PARAMETERS        4
 
@@ -51,6 +51,19 @@ typedef PACKED_STRUCT
  * THIS SHALL BE SET TO A VALUE DIFFERENT FROM 0 ONLY ON REQUEST FROM ST SUPPORT
  */
 #define BLE_DTB_CFG     0
+
+/**
+ * System Debug Options flags to be configured with:
+ * - SHCI_C2_DEBUG_OPTIONS_IPCORE_LP
+ * - SHCI_C2_DEBUG_OPTIONS_IPCORE_NO_LP
+ * - SHCI_C2_DEBUG_OPTIONS_CPU2_STOP_EN
+ * - SHCI_C2_DEBUG_OPTIONS_CPU2_STOP_DIS
+ * which are used to set following configuration bits:
+   * - bit 0:   0: IP BLE core in LP mode    1: IP BLE core in run mode (no LP supported)
+   * - bit 1:   0: CPU2 STOP mode Enable     1: CPU2 STOP mode Disable
+   * - bit [2-7]: bits reserved ( shall be set to 0)
+ */
+#define SYS_DBG_CFG1  (SHCI_C2_DEBUG_OPTIONS_IPCORE_LP | SHCI_C2_DEBUG_OPTIONS_CPU2_STOP_EN)
 /* USER CODE END PD */
 
 /* Private macros ------------------------------------------------------------*/
@@ -60,7 +73,7 @@ typedef PACKED_STRUCT
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static SHCI_C2_DEBUG_TracesConfig_t APPD_TracesConfig={0, 0, 0, 0};
-PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static SHCI_C2_DEBUG_GeneralConfig_t APPD_GeneralConfig={BLE_DTB_CFG, {0, 0, 0}};
+PLACE_IN_SECTION("MB_MEM2") ALIGN(4) static SHCI_C2_DEBUG_GeneralConfig_t APPD_GeneralConfig={BLE_DTB_CFG, SYS_DBG_CFG1, {0, 0}};
 
 #ifdef CFG_DEBUG_TRACE_UART
 #if(CFG_HW_LPUART1_ENABLED == 1)
@@ -114,9 +127,17 @@ static const APPD_GpioConfig_t aGpioConfigList[GPIO_CFG_NBR_OF_FEATURES] =
     { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* NVMA_CLEANUP - Set on Entry / Reset on Exit */
 /* From v1.4.0 */
     { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* NVMA_START - Set on Entry / Reset on Exit */
-    { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* FLASH_EOP - Set on Entry / Reset on Exit */
+    { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* FLASH_EOP - Set on Entry / Reset on Exit */   /* The FLASH_EOP Debug GPIO trace is not supported since v1.5.0 */
+/* From v1.5.0 */
     { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* FLASH_WRITE - Set on Entry / Reset on Exit */
     { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* FLASH_ERASE - Set on Entry / Reset on Exit */
+/* From v1.6.0 */
+    { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* BLE_RESCHEDULE_EVENT - Set on Entry / Reset on Exit */
+/* From v1.8.0 */
+    { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* IPCC_BLE_LLD_CMD_RX - Set on Entry / Reset on Exit */
+    { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* IPCC_BLE_LLD_ACK_TX - Set on Entry / Reset on Exit */
+/* From v1.9.0 */
+    { GPIOA, LL_GPIO_PIN_0, 0, 0},  /* BLE_ASYNCH_EVENT_NACKED - Set on Entry / Reset on Exit */
 };
 
 /**
@@ -368,18 +389,18 @@ void DbgOutputInit( void )
 {
 /* USER CODE BEGIN DbgOutputInit */
 #ifdef CFG_DEBUG_TRACE_UART
-if (CFG_DEBUG_TRACE_UART == hw_lpuart1)
-{
+  if (CFG_DEBUG_TRACE_UART == hw_lpuart1)
+  {
 #if(CFG_HW_LPUART1_ENABLED == 1)
     MX_LPUART1_UART_Init();
 #endif
-}
-else if (CFG_DEBUG_TRACE_UART == hw_uart1)
-{
+  }
+  else if (CFG_DEBUG_TRACE_UART == hw_uart1)
+  {
 #if(CFG_HW_USART1_ENABLED == 1)
     MX_USART1_UART_Init();
 #endif
-}
+  }
 #endif
 
 /* USER CODE END DbgOutputInit */

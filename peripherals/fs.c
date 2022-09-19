@@ -51,13 +51,14 @@
 #include "ff.h"
 #include "rtc.h"
 #include "block.h"
+#include "myassert.h"
 
 
 // Defines
 // *******
 #define LINE_LENGTH				256
-#define	RAM_SHARED				(0x20038000 + 0x1000)
-#define	SCRATCH_SIZE			0x0400					// 1 KiB scratch
+#define	RAM_SHARED				(SRAM2B_BASE + 0x1000)	// 4 KiB used by fd
+#define	SCRATCH_SIZE			0x1000					// 4 KiB scratch
 
 // Private typedefs
 // ****************
@@ -88,7 +89,7 @@ static osMutexId_t FS_MutexID;
 static const osMutexAttr_t FS_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
-		NULL,				// memory for control block
+		NULL,				// memory for control
 		0U					// size for control block
 };
 
@@ -115,9 +116,8 @@ void FS_init(void) {
 	mkfs_scratch = (uint8_t *) RAM_SHARED;	// 4 KiB scratch area for mkfs
 //	mkfs_scratch = pvPortMalloc(FD_PAGE_SIZE);
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
-	if (FS_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+
 
 	/* Gives a work area to the flash drive */
 	f_mount(&FatFs_FD, "0:", 0);
@@ -129,6 +129,8 @@ void FS_init(void) {
 /**
  *  @brief
  *      Interprets the content of the file.
+ *  @warning
+ *  	evaluate never returns if there is an error!
  *  @param[in]
  *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @param[in]
@@ -165,6 +167,7 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	/* Read every line and interprets it */
 	while (f_gets(line, LINE_LENGTH-1, &fil)) {
 		// line without \n
+		// evaluate never returns if there is an error!
 		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
 	}
 
@@ -485,7 +488,7 @@ uint64_t FS_ls(uint64_t forth_stack) {
 				snprintf(line, sizeof(line), "%-23s ", fno.fname);
 				if ( ( (fno.fattrib & AM_HID) != AM_HID) || a_flag) {
 					if ( (++column) >= 4) {
-						strncat(line, "\n", sizeof(line));
+						strncat(line, "\n", sizeof(line)-1);
 						column = 0;
 					}
 				}
@@ -905,13 +908,13 @@ uint64_t FS_cp(uint64_t forth_stack) {
 			if (fr == FR_OK) {
 				// copy the file
 				while (!f_eof(&fil_src)) {
-					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &rd_count);
+					fr = f_read(&fil_src, mkfs_scratch, SCRATCH_SIZE, &rd_count);
 					if (fr != FR_OK) {
 						strcpy(path, "Read error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data, rd_count, &wr_count);
+					fr = f_write(&fil_dest, mkfs_scratch, rd_count, &wr_count);
 					if (fr != FR_OK || rd_count != wr_count) {
 						strcpy(path, "Write error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
@@ -1002,7 +1005,7 @@ uint64_t FS_split(uint64_t forth_stack) {
 				if (fr == FR_OK) {
 					for (line_count = 0; line_count < lines; line_count++) {
 						buf = f_gets(line, sizeof(line), &fil_src);
-						if (*buf == NULL) {
+						if (buf == NULL) {
 							// no lines left
 							break;
 						}
@@ -1051,9 +1054,9 @@ int count_words(const char *s) {
 	int i, w;
 
 	for (i = 0, w = 0; i < strlen(s); i++) {
-		if (!isspace(*(s+i))) {
+		if (!isspace ((int) *(s+i))) {
 			w++;
-			while (!isspace(*(s+i)) && *(s+i) != '\0') {
+			while (!isspace ((int) *(s+i)) && *(s+i) != '\0') {
 				i++;
 			}
 		}
@@ -1099,7 +1102,7 @@ uint64_t FS_wc(uint64_t forth_stack) {
 		if (fr == FR_OK) {
 			while (!f_eof(&fil)) {
 				buf = f_gets(line, sizeof(line), &fil);
-				if (*buf == NULL) {
+				if (buf == NULL) {
 					// no lines left
 					break;
 				}
@@ -1145,9 +1148,20 @@ uint64_t FS_df(uint64_t forth_stack) {
 	stack = forth_stack;
 
 	stack = FS_cr(stack);
-	fr = f_getfree("", &nclst, &fatfs);  /* Get current directory path */
+	fr = f_getfree("0:", &nclst, &fatfs);  /* Get current directory path */
 	if (fr == FR_OK) {
-		snprintf(line, sizeof(line), "%lu KiB (%lu SD-Blocks)", nclst/2, nclst);
+		snprintf(line, sizeof(line), "0: %lu KiB (%lu clusters) total %lu KiB\n",
+				nclst * (fatfs->csize)/2, nclst, (fatfs->n_fatent - 2) * (fatfs->csize)/2);
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	} else {
+		strcpy(line, "Err: no volume\n");
+		stack = FS_type(stack, (uint8_t*)line, strlen(line));
+	}
+
+	fr = f_getfree("1:", &nclst, &fatfs);  /* Get current directory path */
+	if (fr == FR_OK) {
+		snprintf(line, sizeof(line), "1: %lu KiB (%lu clusters) total %lu KiB",
+				nclst * (fatfs->csize)/2, nclst, (fatfs->n_fatent - 2) * (fatfs->csize)/2);
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	} else {
 		strcpy(line, "Err: no volume");
@@ -1465,7 +1479,7 @@ uint64_t FS_dd(uint64_t forth_stack) {
 	int param = 0;
 	FIL fil_src;	/* File object */
 	FIL fil_dest;	/* File object */
-	int blocks;
+	int blocks_1k;
 	int block;
 	uint8_t status;
 
@@ -1475,7 +1489,7 @@ uint64_t FS_dd(uint64_t forth_stack) {
 	stack = FS_cr(stack);
 
 	FD_getSize();
-	blocks = FD_getBlocks();
+	blocks_1k = FD_getBlocks();
 	while (TRUE) {
 		// get tokens till end of line
 		stack = FS_token(stack, &str, &count);
@@ -1504,20 +1518,24 @@ uint64_t FS_dd(uint64_t forth_stack) {
 			if (fr == FR_OK) {
 				// copy drive to file
 				block = 0;
-				for (block=0; block<blocks; block++) {
-					status = FD_ReadBlocks(&BLOCK_Buffers[0].Data, block, 2);
+				for (block=0; block<(blocks_1k*2); block+=8) {
+					status = FD_ReadBlocks(mkfs_scratch, block, 8);
 					if (status != SD_OK) {
-						strcpy(path, "Read error");
+						strcpy(path, "\nRead error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					fr = f_write(&fil_dest, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &wr_count);
+					fr = f_write(&fil_dest, mkfs_scratch, SCRATCH_SIZE, &wr_count);
 					if (fr != FR_OK) {
-						strcpy(path, "Write error");
+						strcpy(path, "\nWrite error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
+					sprintf(path, "%i KiB written \r", (block+8)/2);
+					stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				}
+				strcpy(path, "\n");
+				stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				f_close(&fil_dest);
 			} else {
 				// open destination failed
@@ -1534,20 +1552,32 @@ uint64_t FS_dd(uint64_t forth_stack) {
 				// copy file to drive
 				block = 0;
 				while (!f_eof(&fil_src)) {
-					fr = f_read(&fil_src, &BLOCK_Buffers[0].Data, BLOCK_BUFFER_SIZE, &rd_count);
+					fr = f_read(&fil_src, mkfs_scratch, SCRATCH_SIZE, &rd_count);
 					if (fr != FR_OK) {
-						strcpy(path, "Read error");
+						strcpy(path, "\nRead error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
-					status = FD_WriteBlocks(&BLOCK_Buffers[0].Data, block, 2);
-					block += 2;
+					if (rd_count < SCRATCH_SIZE) {
+						// not enough read
+						break;
+					}
+					if (block >= (blocks_1k*2)) {
+						// no more blocks on destination
+						break;
+					}
+					status = FD_WriteBlocks(mkfs_scratch, block, 8);
 					if (status != SD_OK) {
-						strcpy(path, "Write error");
+						strcpy(path, "\nWrite error");
 						stack = FS_type(stack, (uint8_t*)path, strlen(path));
 						break;
 					}
+					block += 8;
+					sprintf(path, "%i KiB written \r", block/2);
+					stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				}
+				strcpy(path, "\n");
+				stack = FS_type(stack, (uint8_t*)path, strlen(path));
 				f_close(&fil_src);
 			} else {
 				// open source failed
@@ -1636,7 +1666,7 @@ int FS_f_error(FIL* fp) {
  */
 int FS_getc(FIL* fp) {
 	int buffer;
-	uint32_t count;
+	unsigned int count;
 
 	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
 		return -1;

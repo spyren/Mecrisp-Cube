@@ -202,14 +202,14 @@ void BSP_setRgbLED(uint32_t rgb) {
 	rgb_led = rgb;
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_SET);
 
-	SDSPI_Write(0b00000000); // give some time
+	RTSPI_Write(0b00000000); // give some time
 
 	rgb_buffer[0] = easy_set(0b00111010); 			// "start" byte
 	rgb_buffer[1] = easy_set(rgb >> 16);			// red
 	rgb_buffer[2] = easy_set((rgb >> 8) & 0xFF);	// green
 	rgb_buffer[3] = easy_set(rgb & 0xFF);			// blue
-	SDSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 16);
-	SDSPI_Write(0b10001000); // GSLAT
+	RTSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 16);
+	RTSPI_Write(0b10001000); // GSLAT
 
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
 

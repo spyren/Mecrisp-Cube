@@ -178,11 +178,11 @@ void MainThread(void *argument)
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
-		BSP_setLED3(TRUE);
+//		BSP_setLED3(TRUE);
 //		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		BSP_setLED1(FALSE); // switch off power on LED
+//		BSP_setLED1(FALSE); // switch off power on LED
 	}
 
 	Forth();
