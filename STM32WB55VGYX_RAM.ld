@@ -1,7 +1,7 @@
 /*
 ******************************************************************************
 **
-**  File        : LinkerScript.ld
+**  File        : LinkerScript.ld (debug in RAM dedicated)
 **
 **  Author		: STM32CubeIDE
 **
@@ -22,13 +22,12 @@
 *****************************************************************************
 ** @attention
 **
-** <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-** All rights reserved.</center></h2>
+** Copyright (c) 2022 STMicroelectronics.
+** All rights reserved.
 **
-** This software component is licensed by ST under BSD 3-Clause license,
-** the "License"; You may not use this file except in compliance with the
-** License. You may obtain a copy of the License at:
-**                        opensource.org/licenses/BSD-3-Clause
+** This software is licensed under terms that can be found in the LICENSE file
+** in the root directory of this software component.
+** If no LICENSE file comes with this software, it is provided AS-IS.
 **
 *****************************************************************************
 */
@@ -37,7 +36,7 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = 0x20030000;    /* end of RAM */
+_estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x400 ;  /* required amount of heap  */
 _Min_Stack_Size = 0x400 ; /* required amount of stack */
@@ -135,7 +134,7 @@ SECTIONS
   . = ALIGN(4);
   .bss :
   {
-    /* This is used by the startup in order to initialize the .bss secion */
+    /* This is used by the startup in order to initialize the .bss section */
     _sbss = .;         /* define a global symbol at bss start */
     __bss_start__ = _sbss;
     *(.bss)

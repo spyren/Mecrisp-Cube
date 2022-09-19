@@ -132,12 +132,46 @@
  * SMPS not used when Set to 0
  * SMPS used when Set to 1
  */
-#define CFG_USE_SMPS    0
+#define CFG_USE_SMPS    1
 
 /* USER CODE BEGIN Generic_Parameters */
-#define MECRISP_CUBE_TAG "1.4.4"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32WB5M, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
+
+// Board Type
+// **********
+
+#define BOARD_TYPE_UNO		1
+#define BOARD_TYPE_MKR		2
+#define BOARD_TYPE_FEATHER	3
+#define BOARD_TYPE_FIREFLY	4
+
+#define BOARD_TYPE			BOARD_TYPE_UNO
+
+// MCU Type
+// ********
+
+#define MCU_TYPE		"STM32WB"
+#if BOARD_TYPE == BOARD_TYPE_FEATHER
+// Adafruit headers
+#define BOARD 			"Feather"
+#define RAM_FLASH_SIZE	"63/384"
+#else
+// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
+#define BOARD 			"Discovery"
+#define RAM_FLASH_SIZE	"63/128"
+#endif
+
+// Greeting Message
+// ****************
+
+#define MECRISP_CUBE_TAG "1.4.5"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
+
+/* if asserts are not required uncomment next line */
+#define CFG_ASSERT_ON
+
+/* if no logs are required uncomment next line */
+#define CFG_LOG_MSG  "0:/var/log/messages"
 
 #undef CFG_GAP_DEVICE_NAME
 #define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
@@ -314,7 +348,7 @@
 
 #define CFG_BLE_MAX_COC_INITIATOR_NBR   (32)
 
-#define CFG_BLE_MIN_TX_POWER            (0)
+#define CFG_BLE_MIN_TX_POWER            (-40)
 
 #define CFG_BLE_MAX_TX_POWER            (0)
 
@@ -405,7 +439,7 @@
 /**
  * Enable/Disable USB interface
  */
-#define CFG_USB_INTERFACE_ENABLE    0
+#define CFG_USB_INTERFACE_ENABLE    1
 
 /******************************************************************************
  * IPCC interface
@@ -457,7 +491,7 @@
  *  The following settings are computed with LSI as input to the RTC
  */
 
-#define CFG_RTCCLK_DIVIDER_CONF 0
+#define CFG_RTCCLK_DIVIDER_CONF 4
 
 #if (CFG_RTCCLK_DIVIDER_CONF == 0)
 /**
@@ -610,37 +644,37 @@ typedef enum
 /* USER CODE BEGIN FreeRTOS */
 
 /* USER CODE END FreeRTOS */
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
+#define CFG_SHCI_USER_EVT_PROCESS_NAME        "BLE_SHCI"
 #define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 12)
 
-#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
+#define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
 #define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
 #define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
-#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 40)
+#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
 
-#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
+#define CFG_ADV_UPDATE_PROCESS_NAME           "BLE_ADV_UPDATE"
 #define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
 #define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
-#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 20)
+#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 8)
 
-#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
+#define CFG_HRS_PROCESS_NAME                  "BLE_HRS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
 #define CFG_HRS_PROCESS_CB_MEM                (0)
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
 #define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
-#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 20)
+#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 8)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */
@@ -667,6 +701,14 @@ typedef enum
 #define CFG_OTP_BASE_ADDRESS    OTP_AREA_BASE
 
 #define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
+
+/******************************************************************************
+ * Display modules
+ ******************************************************************************/
+#define	OLED					1
+#define MIP						0
+#define PLEX					1
+#define EPD						0
 
 #endif /*APP_CONF_H */
 

@@ -487,3 +487,151 @@ I2Cputget:
 	bl		IIC_putGetMessage
 	pop		{pc}
 
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog"
+watchdog:
+	@ ( -- )      activate watchdog
+// void WATCHDOG_activate(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		WATCHDOG_activate
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog?"
+get_watchdog_bitten:
+	@ ( -- flag )      Has the WATCHDOG bitten?
+// int WATCHDOG_bitten(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		WATCHDOG_bitten
+	cmp		r0, #0
+	beq		1f
+	ldr		r0, =-1	// true
+1:
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog#"
+get_watchdog_bites:
+	@ ( -- u )      How many times has the watchdog bitten since cold startup?
+// int WATCHDOG_bites(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		WATCHDOG_bites
+	movs	tos, r0			// bites
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "watchdog@"
+get_watchdog_adr:
+	@ ( -- a )      How many times has the watchdog bitten since cold startup?
+// int WATCHDOG_adr(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		WATCHDOG_adr
+	movs	tos, r0			// address
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert"
+assert:
+	@ ( -- u )      How many asserts occurred since cold startup?
+// int ASSERT_getCount(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getCount
+	movs	tos, r0			// count
+	pop		{pc}
+
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert?"
+get_assert:
+	@ ( -- flag )      ASSERT occurred since cold startup?
+// int ASSERT_occurred(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_occurred
+	cmp		r0, #0
+	beq		1f
+	ldr		r0, =-1	// true
+1:
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert#"
+get_assert_count:
+	@ ( -- u )      How many asserts occurred since cold startup?
+// int ASSERT_getCount(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getCount
+	movs	tos, r0			// count
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "assert@"
+get_assert_adr:
+	@ ( -- u1 u2 )      Assert number u1 and parameter u2 e.g. address where the assert occurred
+// int ASSERT_getId(void);  int ASSERT_getParam(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		ASSERT_getId
+	movs	tos, r0			// ID
+	pushdatos
+	bl		ASSERT_getParam
+	movs	tos, r0			// Parameter
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, ".assert"
+print_assert:
+	@ ( u --  )      Print assert message
+// char* ASSERT_getMsg(int index);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos			// u
+	bl		ASSERT_getMsg
+	movs	tos, r0			// string
+	bl		fs_strlen
+	bl		stype
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+    Wortbirne Flag_visible, "FusVersion"
+FusVersion:
+    @ ( -- u ) Get FUS version
+// int APP_BLE_getFusVersion(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		APP_BLE_getFusVersion
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+    Wortbirne Flag_visible, "StackVersion"
+StackVersion:
+    @ ( -- u ) Get Stack version
+// int APP_BLE_getStackVersion(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		APP_BLE_getStackVersion
+	movs	tos, r0
+	pop		{pc}
+

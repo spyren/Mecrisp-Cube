@@ -67,7 +67,7 @@
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 56 )
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)192)
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)196)
 #define configTOTAL_HEAP_SIZE                    ((size_t)81920)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
@@ -91,7 +91,7 @@
 #define configUSE_TIMERS                         1
 #define configTIMER_TASK_PRIORITY                ( 2 )
 #define configTIMER_QUEUE_LENGTH                 10
-#define configTIMER_TASK_STACK_DEPTH             192
+#define configTIMER_TASK_STACK_DEPTH             196
 
 /* The following flag must be enabled only when using newlib */
 #define configUSE_NEWLIB_REENTRANT          1
@@ -154,7 +154,8 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
-#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS(); for( ;; );} 
+#include "myassert.h"
+#define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC);}
 
 // for the user area variables (Forth tasks)
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS	1
@@ -173,6 +174,7 @@ standard names. */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
 #define configCHECK_FOR_STACK_OVERFLOW           1
 #define configUSE_MALLOC_FAILED_HOOK             1
+#define configTIMER_SERVICE_TASK_NAME			"OS_tmr_svc"
 /* USER CODE END Defines */
 
 #endif /* FREERTOS_CONFIG_H */

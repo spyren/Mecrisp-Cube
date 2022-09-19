@@ -41,6 +41,7 @@
 #include "main.h"
 #include "i2c.h"
 #include "iic.h"
+#include "myassert.h"
 
 
 // Private function prototypes
@@ -82,15 +83,10 @@ static uint16_t DevAdr;
  */
 void IIC_init(void) {
 	IIC_MutexID = osMutexNew(&IIC_MutexAttr);
-	if (IIC_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(IIC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	II2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (II2_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-
+	ASSERT_fatal(II2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 

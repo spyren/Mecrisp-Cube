@@ -67,8 +67,14 @@
 .equ	CRS_TERMINAL,		3
 
 .equ	DEFAULT_TERMINAL, CDC_TERMINAL
+//.equ	DEFAULT_TERMINAL, UART_TERMINAL
 
 .equ	TERMINAL_AUTO,		1
+
+.equ	OLED,				1
+.equ	MIP,				0
+.equ	PLEX,				1
+.equ	EPD,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -520,12 +526,15 @@ Forth:
 	bl		fs_strlen
 	bl		stype
 
+//	bl		BSP_getSwitch3		// button1 pressed on reset -> no include
+//	cmp		r0, #0
+//	bne		3f
     // include 0:/etc/rc.local
     pushdatos
    	ldr		tos, =rc_local
     bl		fs_strlen
     bl		included
-
+3:
 	@ Ready to fly !
 .include "boot.s"
 

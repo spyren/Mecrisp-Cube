@@ -38,6 +38,7 @@
 #include "block.h"
 #include "sd.h"
 #include "fd.h"
+#include "myassert.h"
 
 
 // Defines
@@ -93,9 +94,7 @@ extern uint32_t DriveNumber;
  */
 void BLOCK_init(void) {
 	BLOCK_MutexID = osMutexNew(&BLOCK_MutexAttr);
-	if (BLOCK_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(BLOCK_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
 	BLOCK_emptyBuffers();
 }

@@ -48,7 +48,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "bsp.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 
 // Private function prototypes
 // ***************************
@@ -58,7 +58,7 @@ uint32_t swap_uint32(uint32_t val);
 // Global Variables
 // ****************
 const char BSP_Version[] =
-		"  * Firmware Package STM32Cube FW_WB V1.11.0, USB-CDC, BLE Stack 5.0 (C) 2021 STMicroelectronics \n";
+	    "  * Firmware Package STM32Cube FW_WB V1.14.1, USB-CDC, BLE Stack 5.3 (C) 2022 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources

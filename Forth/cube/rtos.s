@@ -250,32 +250,6 @@ wordcopy:
 
 
 @ -----------------------------------------------------------------------------
-  Wortbirne Flag_visible, "oled-test" // (  -- )
-  // writes every 100 ms a character to the OLED
-  // for testing the redirection (hooks)
-@ -----------------------------------------------------------------------------
-	bl		hook_emit		// redirect emit to OLED
-	ldr		r0, =oled_emit
-	str		r0, [tos]
-	drop
-1:
-	ldr		r0, =32			// ASCCI starts at 32 ' '
-	ldr		r1, =128-32		// count
-2:
-	movs	tos, r0
-	pushdatos
-	bl		emit
-	push	{r0-r1}
-	ldr		r0, =100
-	bl		osDelay			// wait 100ms
-	pop		{r0-r1}
-	add		r0, r0, #1
-	subs	r1, r1, #1
-	bne		2b
-	b		1b
-
-
-@ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "stop" // ( -- )
   // blocks the current task unless or until AWAKEN has been issued
 @ -----------------------------------------------------------------------------

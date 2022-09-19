@@ -94,6 +94,7 @@
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
+#include "ipcc.h"
 #include "quadspi.h"
 #include "rf.h"
 #include "rtc.h"
@@ -116,6 +117,7 @@
 #include "app_fatfs.h"
 #include "fs.h"
 #include "clock.h"
+#include "myassert.h"
 
 /* USER CODE END Includes */
 
@@ -146,8 +148,7 @@ void SystemClock_Config(void);
 void PeriphCommonClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-static void Reset_IPCC( void );
-static void Init_Exti( void );
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -172,17 +173,21 @@ int main(void)
   MX_APPE_Config();
 
   /* USER CODE BEGIN Init */
-  Reset_IPCC();
+
+  /* activate divide by zero trap (usage fault) */
+  SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
+  /* enable Usage-/Bus-/MPU Fault */
+  SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk
+             |  SCB_SHCSR_BUSFAULTENA_Msk
+             |  SCB_SHCSR_MEMFAULTENA_Msk;
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-  Init_Exti(); /**< Configure the system Power Mode */
 
   /* USER CODE END SysInit */
 
@@ -198,7 +203,7 @@ int main(void)
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
-  MX_USB_Device_Init();
+//  MX_USB_Device_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_TIM1_Init();
@@ -219,7 +224,7 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();  /* Init code for STM32_WPAN */
-  MX_APPE_Init();
+//  MX_APPE_Init();
   /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 
@@ -332,63 +337,13 @@ void PeriphCommonClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
-	Error_Handler();
-	for(;;) {
-		;
-	}
+	ASSERT_fatal(0, ASSERT_STACK_OVERFLOW, (uint32_t) pcTaskName);
 }
 
 
 void vApplicationMallocFailedHook(void) {
-	Error_Handler();
+	ASSERT_fatal(0, ASSERT_MALLOC_FAILED, 0);
 } // vApplicationMallocFailedHook
-
-
-static void Reset_IPCC( void )
-{
-	LL_AHB3_GRP1_EnableClock(LL_AHB3_GRP1_PERIPH_IPCC);
-
-	LL_C1_IPCC_ClearFlag_CHx(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C2_IPCC_ClearFlag_CHx(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C1_IPCC_DisableTransmitChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C2_IPCC_DisableTransmitChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C1_IPCC_DisableReceiveChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	LL_C2_IPCC_DisableReceiveChannel(
-			IPCC,
-			LL_IPCC_CHANNEL_1 | LL_IPCC_CHANNEL_2 | LL_IPCC_CHANNEL_3 | LL_IPCC_CHANNEL_4
-			| LL_IPCC_CHANNEL_5 | LL_IPCC_CHANNEL_6);
-
-	return;
-}
-
-static void Init_Exti( void )
-{
-  /**< Disable all wakeup interrupt on CPU1  except IPCC(36), HSEM(38) */
-  LL_EXTI_DisableIT_0_31(~0);
-  LL_EXTI_DisableIT_32_63( (~0) & (~(LL_EXTI_LINE_36 | LL_EXTI_LINE_38)) );
-
-  return;
-}
 
 /* USER CODE END 4 */
 
