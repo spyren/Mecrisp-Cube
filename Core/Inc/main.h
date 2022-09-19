@@ -96,6 +96,8 @@ void Error_Handler(void);
 #define D3_GPIO_Port GPIOD
 #define D9_Pin GPIO_PIN_15
 #define D9_GPIO_Port GPIOD
+#define RGB_SELECT_Pin GPIO_PIN_1
+#define RGB_SELECT_GPIO_Port GPIOH
 #define OLED_CS_Pin GPIO_PIN_0
 #define OLED_CS_GPIO_Port GPIOH
 #define OLED_RST_Pin GPIO_PIN_8
