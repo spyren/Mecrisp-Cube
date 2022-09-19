@@ -66,5 +66,3 @@ extern FIL USERFile;       /* File  object for USER */
 extern char USERPath[4];   /* USER logical drive path */
 
 #endif /*__APP_FATFS_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
