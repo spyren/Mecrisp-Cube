@@ -104,7 +104,7 @@ ADC_ChannelConfTypeDef sConfig = { 0 };
 extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
 uint32_t rgb_led = 0;
-uint32_t rgb_buffer[5];
+uint32_t rgb_buffer[16];
 
 // Public Functions
 // ****************
@@ -208,8 +208,9 @@ void BSP_setRgbLED(uint32_t rgb) {
 	rgb_buffer[1] = easy_set(rgb >> 16);			// red
 	rgb_buffer[2] = easy_set((rgb >> 8) & 0xFF);	// green
 	rgb_buffer[3] = easy_set(rgb & 0xFF);			// blue
-	RTSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 16);
-	RTSPI_Write(0b10001000); // GSLAT
+	rgb_buffer[4] = 0;								// GSLAT
+	RTSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 5);
+//	RTSPI_Write(0b10001000); // GSLAT
 
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
 

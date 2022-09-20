@@ -126,7 +126,8 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = D10_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+//  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP; // CS for SD
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(D10_GPIO_Port, &GPIO_InitStruct);
 
