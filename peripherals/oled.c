@@ -229,7 +229,7 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts(MECRISP_CUBE_TAG);
 #ifdef DEBUG
-	OLED_puts("\r\nWB Discovers Debug\r\n");
+	OLED_puts("\r\nWB Discovery Debug\r\n");
 #else
 	OLED_puts("\r\nWB Discovery\r\n");
 #endif

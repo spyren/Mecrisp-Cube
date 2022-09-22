@@ -224,7 +224,7 @@ int main(void)
 
   /* Init scheduler */
   osKernelInitialize();  /* Init code for STM32_WPAN */
-//  MX_APPE_Init();
+  MX_APPE_Init();
   /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 

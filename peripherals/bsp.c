@@ -208,9 +208,8 @@ void BSP_setRgbLED(uint32_t rgb) {
 	rgb_buffer[1] = easy_set(rgb >> 16);			// red
 	rgb_buffer[2] = easy_set((rgb >> 8) & 0xFF);	// green
 	rgb_buffer[3] = easy_set(rgb & 0xFF);			// blue
-	rgb_buffer[4] = 0;								// GSLAT
-	RTSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 5);
-//	RTSPI_Write(0b10001000); // GSLAT
+	RTSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 16);
+	RTSPI_Write(0b10001000); // GSLAT
 
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
 
@@ -1098,9 +1097,9 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
  *	    TI's Single-Wire Interface.
  *
  *	@param[in]
- *      byte    bits to convert to bit stuffed
+ *      byte    bits to convert to bit stuffed.
  *  @return
- *      single-wire pattern
+ *      single-wire pattern, 32 bit
  *
  */
 uint32_t easy_set(uint8_t in_pattern) {

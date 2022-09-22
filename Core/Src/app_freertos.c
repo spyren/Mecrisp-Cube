@@ -102,7 +102,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	MX_APPE_Init();
+//	MX_APPE_Init();
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
