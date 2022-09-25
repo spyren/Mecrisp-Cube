@@ -641,8 +641,6 @@ typedef enum
 /******************************************************************************
  * FreeRTOS
  ******************************************************************************/
-/* USER CODE BEGIN FreeRTOS */
-
 /* USER CODE END FreeRTOS */
 #define CFG_SHCI_USER_EVT_PROCESS_NAME        "BLE_SHCI"
 #define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)

@@ -160,7 +160,7 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	if (fr) {
 		// open failed
 		stack = FS_type(stack, (uint8_t*)path, strlen(path));
-		strcpy(line, ": can't find file\n");
+		strcpy(line, ": file not found\n");
 		stack = FS_type(stack, (uint8_t*)line, strlen(line));
 	}
 
