@@ -460,7 +460,7 @@ static const PortPin_t PortPin_a[16] = {
 		{ D5_GPIO_Port, D5_Pin } ,
 		{ D6_GPIO_Port, D6_Pin } ,
 		{ D7_GPIO_Port, D7_Pin } ,
-		{ D8_GPIO_Port, D9_Pin } ,
+		{ D8_GPIO_Port, D8_Pin } ,
 		{ D9_GPIO_Port, D9_Pin } ,
 		{ D10_GPIO_Port, D10_Pin } ,
 		{ D11_GPIO_Port, D11_Pin } ,

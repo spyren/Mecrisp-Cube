@@ -48,8 +48,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-void HW_IPCC_Rx_Handler(void);
-void HW_IPCC_Tx_Handler(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -63,7 +62,6 @@ extern ADC_HandleTypeDef hadc1;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern I2C_HandleTypeDef hi2c1;
-extern IPCC_HandleTypeDef hipcc;
 extern RTC_HandleTypeDef hrtc;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
@@ -475,9 +473,9 @@ void RTC_Alarm_IRQHandler(void)
 void IPCC_C1_RX_IRQHandler(void)
 {
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
-   HW_IPCC_Rx_Handler(); 
+
   /* USER CODE END IPCC_C1_RX_IRQn 0 */
-//  HAL_IPCC_RX_IRQHandler(&hipcc);
+  HAL_IPCC_RX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
   /* USER CODE END IPCC_C1_RX_IRQn 1 */
 }
@@ -488,9 +486,9 @@ void IPCC_C1_RX_IRQHandler(void)
 void IPCC_C1_TX_IRQHandler(void)
 {
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
-    HW_IPCC_Tx_Handler();
+
   /* USER CODE END IPCC_C1_TX_IRQn 0 */
-//  HAL_IPCC_TX_IRQHandler(&hipcc);
+  HAL_IPCC_TX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
 
   /* USER CODE END IPCC_C1_TX_IRQn 1 */
