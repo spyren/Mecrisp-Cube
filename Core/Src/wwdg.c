@@ -38,10 +38,10 @@ void MX_WWDG_Init(void)
 
   /* USER CODE END WWDG_Init 1 */
   hwwdg.Instance = WWDG;
-  hwwdg.Init.Prescaler = WWDG_PRESCALER_1;
+  hwwdg.Init.Prescaler = WWDG_PRESCALER_32;
   hwwdg.Init.Window = 64;
   hwwdg.Init.Counter = 64;
-  hwwdg.Init.EWIMode = WWDG_EWI_DISABLE;
+  hwwdg.Init.EWIMode = WWDG_EWI_ENABLE;
   if (HAL_WWDG_Init(&hwwdg) != HAL_OK)
   {
     Error_Handler();
