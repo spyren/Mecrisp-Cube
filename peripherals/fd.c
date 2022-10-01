@@ -1,10 +1,11 @@
 /**
  *  @brief
- *      Flash drive block read and write.
+ *      Serial Flash drive block read and write.
  *
- *      The internal flash from 0x08060000 to 0x080BFFFF (384 KiB) is used
- *      for the flash drive.
+ *      The Discovery board has 16 MiB Serial Flash Infineon S25FL128SDSMFV001.
+ *      This Flash is used for the flash drive.
  *      API similar to sd card.
+ *
  *  @file
  *      fd.c
  *  @author
@@ -40,19 +41,31 @@
 #include "main.h"
 #include "fd.h"
 #include "sd.h"
-#include "flash.h"
+#include "fd_spi.h"
 #include "myassert.h"
+#include "n25q128a.h"
 
 
 // Defines
 // *******
-#define FLASH_DUMMY_BYTE		0xFF
-#define	RAM_SHARED				SRAM2B_BASE	// SRAM2b is only used for Thread, 15 KiB
+#define FLASH_DUMMY_BYTE	0xFF
+
+#if FDSPI_DEVICE == FDSPI_S25FL128
+// only the first 4 KiB of 64 KiB is used
+#define W25Q128_PAGES		((N25Q128A_FLASH_SIZE/N25Q128A_PAGE_SIZE) / 16)
+#define W25Q128_SECTORS		((N25Q128A_FLASH_SIZE/N25Q128A_SUBSECTOR_SIZE) / 16)
+#else
+#define W25Q128_PAGES		(N25Q128A_FLASH_SIZE/N25Q128A_PAGE_SIZE)
+#define W25Q128_SECTORS		(N25Q128A_FLASH_SIZE/N25Q128A_SUBSECTOR_SIZE)
+#endif
+
+#define W25Q128_PAGE_SIZE	(N25Q128A_PAGE_SIZE)
+#define W25Q128_SECTOR_SIZE	(N25Q128A_SUBSECTOR_SIZE)
 
 
 // Private function prototypes
 // ***************************
-static int flash_page(uint8_t *pData, uint32_t addr, uint16_t block_field);
+static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_field);
 
 
 // Global Variables
@@ -80,7 +93,7 @@ static const osMutexAttr_t FD_MutexAttr = {
 
 int FD_size = 0; // number of blocks
 
-static uint8_t *scratch_page; 	// protected by FD_MutexID
+static uint8_t *scratch_sector; 	// protected by FD_MutexID
 
 // Public Functions
 // ****************
@@ -92,9 +105,9 @@ static uint8_t *scratch_page; 	// protected by FD_MutexID
  *      None
  */
 void FD_init(void) {
-	scratch_page = (uint8_t *) RAM_SHARED;
-//	scratch_page = pvPortMalloc(FD_PAGE_SIZE);
-	*scratch_page = 0xaa;
+	FDSPI_init();
+	scratch_sector = pvPortMalloc(W25Q128_SECTOR_SIZE);
+	*scratch_sector = 0xaa;
 	FD_MutexID = osMutexNew(&FD_MutexAttr);
 	ASSERT_fatal(FD_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 }
@@ -107,7 +120,7 @@ void FD_init(void) {
  *      None
  */
 void FD_getSize(void) {
-	FD_size = (FD_END_ADDRESS - FD_START_ADDRESS) / 1024;
+	FD_size = W25Q128_PAGES / 4;
 }
 
 /**
@@ -128,22 +141,47 @@ int FD_getBlocks(void) {
   * @param
   *     pData: Pointer to the buffer that will contain the data to transmit
   * @param
-  *     ReadAddr: Address from where data is to be read. The address is counted
+  *     BlockAdr: Address from where data is to be read. The address is counted
   *                   in blocks of 512bytes
   * @param
   *     NumOfBlocks: Number of FD blocks to read
   * @retval
   *     FD status
   */
-uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
+uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
+	uint32_t adr;
 
-	if (FD_START_ADDRESS + (ReadAddr+NumOfBlocks)*FD_BLOCK_SIZE <= FD_END_ADDRESS) {
+#if FDSPI_DEVICE == FDSPI_S25FL128
+	// 64 KiB, 4 KiB have 8 512 B blocks
+	int i;
+	for (i=0; i++; i<NumOfBlocks) {
+		adr = ((BlockAdr+i)/8) * 0x10000 + ((BlockAdr+i)%8) * FD_BLOCK_SIZE;
+		if ((adr + FD_BLOCK_SIZE) < FD_END_ADDRESS) {
+			// valid block
+			osMutexAcquire(FD_MutexID, osWaitForever);
+			FDSPI_readData(pData, adr, FD_BLOCK_SIZE);
+			osMutexRelease(FD_MutexID);
+
+			retr = SD_OK;
+		} else {
+			return SD_ERROR;
+		}
+
+	}
+
+#else
+	adr = BlockAdr*FD_BLOCK_SIZE;
+	if (((BlockAdr+NumOfBlocks+1)*FD_BLOCK_SIZE) < FD_END_ADDRESS) {
 		// valid blocks
-		memcpy(pData, (uint8_t *) FD_START_ADDRESS + ReadAddr*FD_BLOCK_SIZE,
-				NumOfBlocks*FD_BLOCK_SIZE);
+		osMutexAcquire(FD_MutexID, osWaitForever);
+		FDSPI_readData(pData, adr, NumOfBlocks * FD_BLOCK_SIZE);
+		osMutexRelease(FD_MutexID);
+
 		retr = SD_OK;
 	}
+#endif
+
 	/* Return the reponse */
 	return retr;
 }
@@ -153,53 +191,54 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
   * @brief
   *     Writes block(s) to a specified address to the internal flash.
   *
-  *     The flash is divided in 4 KiB pages. If any byte in the sectors is not
-  *     0xFF the page where the sector belongs to has to be erased. The whole page
+  *     The flash is divided in 4 KiB (erasable) sectors.
+  *     If any byte in the block is not 0xFF the sector where the block
+  *     belongs to has to be erased. The whole sector
   *     has to be saved before.
   * @param
   *     pData: Pointer to the buffer that will contain the data to transmit
   * @param
-  *     WriteAddr: Address from where data is to be written. The address is counted
+  *     BlockAdr: Address where the data will be written. The address is counted
   *                   in blocks of 512bytes
   * @param
   *     NumOfBlocks: Number of FD blocks to write
   * @retval
   *     FD status
   */
-uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks) {
+uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 	int i;
 	uint8_t block_field; // bit0 block0, bit1 block1 ..
 
-	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_PAGE -1));
+	uint32_t base_block_adr = BlockAdr & (~ (FD_BLOCKS_PER_SECTOR -1));
 
-	if (FD_START_ADDRESS + (WriteAddr+NumOfBlocks)*FD_BLOCK_SIZE <= FD_END_ADDRESS) {
+	if ((NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
 
-		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_PAGE;
-		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_PAGE;
-		int pages = NumOfBlocks / FD_BLOCKS_PER_PAGE;
+		int FirstBoundary = BlockAdr % FD_BLOCKS_PER_SECTOR;
+		int LastBoundary = (BlockAdr + NumOfBlocks) % FD_BLOCKS_PER_SECTOR;
+		int sectors = NumOfBlocks / FD_BLOCKS_PER_SECTOR;
 		if (FirstBoundary + LastBoundary > 0) {
-			pages++;
+			sectors++;
 		}
 
-		uint32_t base_flash_addr = FD_START_ADDRESS + base_block_adr * FD_BLOCK_SIZE;
+		uint32_t base_flash_addr = base_block_adr * FD_BLOCK_SIZE;
 		retr = SD_OK;
-		for (i=0; i < pages; i++) {
-			if (i==0 && i == pages -1) {
-				// only one page
+		for (i=0; i < sectors; i++) {
+			if (i==0 && i == sectors -1) {
+				// only one sector
 				if (LastBoundary == 0) {
 					block_field = 0xFF << FirstBoundary;
 				} else {
-					block_field = (0xFF << FirstBoundary) & (0xFF >> (FD_BLOCKS_PER_PAGE - LastBoundary));
+					block_field = (0xFF << FirstBoundary) & (0xFF >> (FD_BLOCKS_PER_SECTOR - LastBoundary));
 				}
 			} else if (i==0) {
-				// first page
+				// first sector
 				block_field = 0xFF << FirstBoundary;
-			} else if (i == pages -1) {
-				// last page
+			} else if (i == sectors -1) {
+				// last sector
 				if (LastBoundary == 0) {
 					block_field = 0xFF;
 				} else {
@@ -208,13 +247,13 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 			} else {
 				block_field = 0xFF;
 			}
-			if (flash_page(
-					pData +  i*FD_PAGE_SIZE, 			// dress data source (contiguous)
-					base_flash_addr + i*FD_PAGE_SIZE,	// page base address flash dest
+			if (flash_sector(
+					pData +  i*FD_SECTOR_SIZE, 			// address data source (contiguous)
+					base_flash_addr + i*FD_SECTOR_SIZE,	// sector base address flash dest
 					block_field)						// valid blocks bitfield
 					!= SD_OK) {
-				retr = SD_ERROR;
 				break;
+				retr = SD_ERROR;
 			}
 		}
 
@@ -230,22 +269,16 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 /**
   * @brief
-  *     Erase Drive
+  *     Erase Drive (Chip Erase)
   *
   * @retval
   *     FD status
   */
 uint8_t FD_eraseDrive(void) {
-	uint8_t retr = SD_OK;
-	uint32_t flash_addr;
+	uint8_t retr = SD_ERROR;
 
 	osMutexAcquire(FD_MutexID, osWaitForever);
-	for (flash_addr = FD_START_ADDRESS; flash_addr<FD_END_ADDRESS; flash_addr += FD_PAGE_SIZE) {
-		if (FLASH_erasePage(flash_addr) != HAL_OK) {
-			retr = SD_ERROR;
-			break;
-		}
-	}
+	retr = FDSPI_eraseChip();
 	osMutexRelease(FD_MutexID);
 	return retr;
 }
@@ -254,30 +287,40 @@ uint8_t FD_eraseDrive(void) {
 // Private Functions
 // *****************
 
+
 /**
   * @brief
-  *     Writes blocks to a flash page.
+  *     Writes blocks to a flash sector.
   *
   *     The 512 bytes blocks have to be contiguous and marked in a bitfield.
   * @param
   *     pData: Pointer to the buffer that will contain the data blocks
   * @param
-  *     flash_addr: page address (4 KiB pages).
+  *     flash_addr: flash address
   * @param
   *     block_field: bit0 is block 0, bit1 is block 1 and so on. 8 blocks.
   * @retval
   *     FD status
-  */static int flash_page(uint8_t *pData, uint32_t flash_addr, uint16_t block_field) {
+  */
+static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_field) {
 	uint8_t retr = SD_OK;
 	int i, j;
 	uint8_t *byte_p;
 	uint8_t erased = TRUE;
 
-	// are the blocks in the page already erased?
-	byte_p = (uint8_t *) flash_addr;
-	for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+#if FDSPI_DEVICE == FDSPI_S25FL128
+	// 64 KiB
+	flash_addr = flash_addr * 16;
+#endif
+
+	// read out 4 KiB serial flash sector into scratch_sector
+	FDSPI_readData(scratch_sector, flash_addr, FD_SECTOR_SIZE);
+
+	// are the blocks in the sector already erased?
+	byte_p = (uint8_t *) scratch_sector;
+	for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 		if (block_field & (1 << i)) {
-			// block belongs to page
+			// block belongs to sector
 			for (j=0; j<FD_BLOCK_SIZE; j++) {
 				if (*(byte_p + j) != 0xFF) {
 					erased = FALSE;
@@ -291,65 +334,41 @@ uint8_t FD_eraseDrive(void) {
 		byte_p += FD_BLOCK_SIZE;
 	}
 
+	// copy the blocks to the scratch buffer
+	byte_p = pData;
+	for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
+		if (block_field & (1 << i)) {
+			// block belongs to sector -> copy
+			memcpy(scratch_sector+i*FD_BLOCK_SIZE, byte_p, FD_BLOCK_SIZE);
+			byte_p += FD_BLOCK_SIZE;
+		}
+	}
+
 	if (erased) {
-		// flash erased
+		// flash already erased
+
 		// flash the blocks
-		int k = 0;
-		byte_p = (uint8_t *) flash_addr;
-		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
+		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 			if (block_field & (1 << i)) {
-				// block belongs to page -> program
-				for (j=0; j < FD_BLOCK_SIZE / FD_FLASH_RECORD; j++) {
-					if (FLASH_programDouble(
-							(uint32_t) byte_p,
-							*(uint32_t *) (pData+k*FD_BLOCK_SIZE+j*FD_FLASH_RECORD),
-							*(uint32_t *) (pData+k*FD_BLOCK_SIZE+j*FD_FLASH_RECORD+4) )
-							!= HAL_OK) {
-						retr = SD_ERROR;
-						break;
-					}
-					byte_p += 8;
-				}
-				k++;
-				if (retr != SD_OK) {
-					break;
-				}
-			} else {
-				// block doesn't belong to the page -> skip
-				byte_p += FD_BLOCK_SIZE;
+				// block belongs to sector -> program
+				FDSPI_writeData(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE, FD_BLOCK_SIZE);
 			}
 		}
 	} else {
 		// flash not erased
-		// save the affected records (blocks)
-		memcpy(scratch_page, (uint8_t *) flash_addr, FD_PAGE_SIZE);
 
-		// copy the blocks to the scratch buffer
-		byte_p = pData;
-		for (i=0; i<FD_BLOCKS_PER_PAGE; i++) {
-			if (block_field & (1 << i)) {
-				// block belongs to page -> copy
-				memcpy(scratch_page+i*FD_BLOCK_SIZE, byte_p, FD_BLOCK_SIZE);
-				byte_p += FD_BLOCK_SIZE;
-			}
-		}
+		// erase sector
+#if FDSPI_DEVICE == FDSPI_S25FL128
+		// 64 KiB
+		FDSPI_eraseSector(flash_addr);
+#else
+		// 4 KiB
+		FDSPI_eraseBlock(flash_addr);
+#endif
 
-		// erase page
-		if (FLASH_erasePage(flash_addr) == HAL_OK) {
-			// flash the page
-			byte_p = (uint8_t *) flash_addr;
-			for (i=0; i<(FD_PAGE_SIZE/FD_FLASH_RECORD); i++) {
-				if (FLASH_programDouble( (uint32_t) byte_p,
-						*(uint32_t *) (scratch_page+i*FD_FLASH_RECORD),
-						*(uint32_t *) (scratch_page+i*FD_FLASH_RECORD+4) )
-						!= HAL_OK) {
-					retr = SD_ERROR;
-					break;
-				}
-				byte_p += 8;
-			}
-		} else {
-			retr = SD_ERROR;
+		// flash the sector (all blocks)
+		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
+			FDSPI_writeData(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE, FD_BLOCK_SIZE);
 		}
 	}
 	return retr;
