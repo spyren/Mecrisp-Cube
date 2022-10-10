@@ -110,7 +110,6 @@ DSTATUS USER_SD_initialize (
 {
   /* USER CODE BEGIN INIT */
 	Stat = STA_NOINIT;
-//	SD_init();
 	if (SD_getBlocks() == 0) {
 		// no SD card
 		Stat = STA_NODISK;
@@ -166,8 +165,7 @@ DRESULT USER_SD_read (
 	if( SD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
-//	BSP_setRgbLED(old_rgbled);
-	BSP_setRgbLED(0);
+	BSP_setRgbLED(old_rgbled);
 	return res;
   /* USER CODE END READ */
 }
@@ -272,7 +270,6 @@ DSTATUS USER_FD_initialize (
   /* USER CODE BEGIN INIT */
 	Stat = STA_NOINIT;
 	// flash drive
-//	FD_init();
 	if (FD_getBlocks() == 0) {
 		// no flash
 		Stat = STA_NODISK;

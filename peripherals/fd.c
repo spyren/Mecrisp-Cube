@@ -246,6 +246,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) 
 					block_field = 0xFF >> LastBoundary;
 				}
 			} else {
+				// somewhere in the middle -> all 16 blocks
 				block_field = 0xFF;
 			}
 			if (flash_sector(
@@ -291,7 +292,7 @@ uint8_t FD_eraseDrive(void) {
 
 /**
   * @brief
-  *     Writes blocks to a flash sector (4 KiB).
+  *     Writes 8 blocks to a flash sector (4 KiB).
   *
   *     The 512 bytes blocks have to be contiguous and marked in a bitfield.
   * @param

@@ -9,19 +9,16 @@
  *      STM32WB55VG: 1 MiB FLASH
  *      For details see STM32WB55VGYX_FLASH.ld
  *
- *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+ *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 384K
  *       20 KiB Forth Core
  *      150 KiB Middleware (debug 250 KiB)
  *
- *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+ *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 384K
  *      128 KiB Flash Dictionary
  *
- *      FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
- *      384 KiB future use for built in flash drive
-
  *      FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 
- *      STM32WB55C: 256 KiB RAM
+ *      STM32WB55CG: 256 KiB RAM
  *
  *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
  *       1 KiB Core
@@ -58,8 +55,8 @@
  *       22 KiB secure RAM for CPU2
  *
  *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
- *       16 KiB shared between CPU1 and CPU2
- *       16 KiB secure RAM for CPU2
+ *       15 KiB shared between CPU1 and CPU2
+ *       17 KiB secure RAM for CPU2
  *
  *
  *  @file
