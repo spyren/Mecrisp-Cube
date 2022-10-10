@@ -155,12 +155,13 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 #if FDSPI_DEVICE == FDSPI_S25FL128
 	// 64 KiB, 4 KiB have 8 512 B blocks
 	int i;
-	for (i=0; i++; i<NumOfBlocks) {
-		adr = ((BlockAdr+i)/8) * 0x10000 + ((BlockAdr+i)%8) * FD_BLOCK_SIZE;
+	for (i=0; i<NumOfBlocks; i++) {
+		adr = ( (BlockAdr+i)/8) * 0x10000 // base of the 4 KiB parts at the beginning of 64 KiB
+				+ ((BlockAdr+i)%8) * FD_BLOCK_SIZE;
 		if ((adr + FD_BLOCK_SIZE) < FD_END_ADDRESS) {
 			// valid block
 			osMutexAcquire(FD_MutexID, osWaitForever);
-			FDSPI_readData(pData, adr, FD_BLOCK_SIZE);
+			FDSPI_readData(pData+i*FD_BLOCK_SIZE, adr, FD_BLOCK_SIZE);
 			osMutexRelease(FD_MutexID);
 
 			retr = SD_OK;
@@ -290,7 +291,7 @@ uint8_t FD_eraseDrive(void) {
 
 /**
   * @brief
-  *     Writes blocks to a flash sector.
+  *     Writes blocks to a flash sector (4 KiB).
   *
   *     The 512 bytes blocks have to be contiguous and marked in a bitfield.
   * @param

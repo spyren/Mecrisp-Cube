@@ -198,11 +198,11 @@ void BSP_init(void) {
 void BSP_setRgbLED(uint32_t rgb) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	rgb_led = rgb;
+	RTSPI_Write(0b00000000); // give some time & to be sure the MOSI is low
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_SET);
-
-	RTSPI_Write(0b00000000); // give some time
 
 	rgb_buffer[0] = easy_set(0b00111010); 			// "start" byte
 	rgb_buffer[1] = easy_set(rgb >> 16);			// red
@@ -213,6 +213,7 @@ void BSP_setRgbLED(uint32_t rgb) {
 
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
 
+	osMutexRelease(RTSPI_MutexID);
 	osMutexRelease(DigitalPort_MutexID);
 	osDelay(1);
 }

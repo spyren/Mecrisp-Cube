@@ -52,6 +52,7 @@ FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
 RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
 RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
+RAM_SHARED_B (xrw)         : ORIGIN = 0x20038000, LENGTH = 15K
 }
 
 /* Define output sections */
@@ -175,4 +176,5 @@ SECTIONS
    MAPPING_TABLE (NOLOAD) : { *(MAPPING_TABLE) } >RAM_SHARED
    MB_MEM1 (NOLOAD)       : { *(MB_MEM1) } >RAM_SHARED
    MB_MEM2 (NOLOAD)       : { _sMB_MEM2 = . ; *(MB_MEM2) ; _eMB_MEM2 = . ; } >RAM_SHARED
+   RAM2_B (NOLOAD)        : { *(RAM2_B) } >RAM_SHARED_B
 }

@@ -86,8 +86,6 @@ void Error_Handler(void);
 #define D6_GPIO_Port GPIOE
 #define D8_Pin GPIO_PIN_13
 #define D8_GPIO_Port GPIOD
-#define FLASH_IO0_Pin GPIO_PIN_4
-#define FLASH_IO0_GPIO_Port GPIOD
 #define D1_Pin GPIO_PIN_5
 #define D1_GPIO_Port GPIOB
 #define STLINK_RX_Pin GPIO_PIN_7
@@ -110,6 +108,8 @@ void Error_Handler(void);
 #define D15_GPIO_Port GPIOB
 #define D0_Pin GPIO_PIN_0
 #define D0_GPIO_Port GPIOC
+#define FLASH_IO0_Pin GPIO_PIN_9
+#define FLASH_IO0_GPIO_Port GPIOB
 #define D4_Pin GPIO_PIN_3
 #define D4_GPIO_Port GPIOE
 #define A4_Pin GPIO_PIN_4

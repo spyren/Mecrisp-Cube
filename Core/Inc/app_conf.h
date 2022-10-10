@@ -157,7 +157,7 @@
 #else
 // Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
 #define BOARD 			"Discovery"
-#define RAM_FLASH_SIZE	"63/128"
+#define RAM_FLASH_SIZE	"63/384"
 #endif
 
 // Greeting Message

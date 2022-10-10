@@ -68,6 +68,7 @@ void HAL_QSPI_MspInit(QSPI_HandleTypeDef* qspiHandle)
     __HAL_RCC_QSPI_CLK_ENABLE();
 
     __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     /**QUADSPI GPIO Configuration
     PD7     ------> QUADSPI_BK1_IO3
@@ -77,18 +78,24 @@ void HAL_QSPI_MspInit(QSPI_HandleTypeDef* qspiHandle)
     PB9     ------> QUADSPI_BK1_IO0
     PA3     ------> QUADSPI_CLK
     */
-    GPIO_InitStruct.Pin = FLASH_IO3_Pin|FLASH_IO1_Pin|FLASH_NCS_Pin|FLASH_IO2_Pin
-                          |FLASH_IO0_Pin;
+    GPIO_InitStruct.Pin = FLASH_IO3_Pin|FLASH_IO1_Pin|FLASH_NCS_Pin|FLASH_IO2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF10_QUADSPI;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+    GPIO_InitStruct.Pin = FLASH_IO0_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Alternate = GPIO_AF10_QUADSPI;
+    HAL_GPIO_Init(FLASH_IO0_GPIO_Port, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = FLASH_CLK_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF10_QUADSPI;
     HAL_GPIO_Init(FLASH_CLK_GPIO_Port, &GPIO_InitStruct);
 
@@ -135,11 +142,12 @@ void HAL_QSPI_MspDeInit(QSPI_HandleTypeDef* qspiHandle)
     PD5     ------> QUADSPI_BK1_IO1
     PD3     ------> QUADSPI_BK1_NCS
     PD6     ------> QUADSPI_BK1_IO2
-    PD4     ------> QUADSPI_BK1_IO0
+    PB9     ------> QUADSPI_BK1_IO0
     PA3     ------> QUADSPI_CLK
     */
-    HAL_GPIO_DeInit(GPIOD, FLASH_IO3_Pin|FLASH_IO1_Pin|FLASH_NCS_Pin|FLASH_IO2_Pin
-                          |FLASH_IO0_Pin);
+    HAL_GPIO_DeInit(GPIOD, FLASH_IO3_Pin|FLASH_IO1_Pin|FLASH_NCS_Pin|FLASH_IO2_Pin);
+
+    HAL_GPIO_DeInit(FLASH_IO0_GPIO_Port, FLASH_IO0_Pin);
 
     HAL_GPIO_DeInit(FLASH_CLK_GPIO_Port, FLASH_CLK_Pin);
 

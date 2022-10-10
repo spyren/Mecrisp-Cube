@@ -162,11 +162,12 @@ DRESULT USER_SD_read (
 	DRESULT res = RES_ERROR;
 	// SD drive
 	uint32_t old_rgbled = BSP_getRgbLED();
-	BSP_setRgbLED(0x7f7f00); // set RGB LED to yellow
+	BSP_setRgbLED(0x7f3f00); // set RGB LED to yellow
 	if( SD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
-	BSP_setRgbLED(old_rgbled);
+//	BSP_setRgbLED(old_rgbled);
+	BSP_setRgbLED(0);
 	return res;
   /* USER CODE END READ */
 }
@@ -322,7 +323,7 @@ DRESULT USER_FD_read (
 	DRESULT res = RES_ERROR;
 	// flash drive
 	uint32_t old_rgbled = BSP_getRgbLED();
-	BSP_setRgbLED(0x7f7f00); // set RGB LED to yellow
+	BSP_setRgbLED(0x7f3f00); // set RGB LED to yellow
 	if( FD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
