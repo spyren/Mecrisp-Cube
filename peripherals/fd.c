@@ -361,8 +361,13 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 
 		// erase sector
 #if FDSPI_DEVICE == FDSPI_S25FL128
-		// 64 KiB
-		FDSPI_eraseSector(flash_addr);
+		if (flash_addr < (2 * N25Q128A_SECTOR_SIZE)) {
+			// the two first 64 KiB sectors are hybrid sectors and take very long time to erase (up to 10.4 s)
+			FDSPI_eraseBlock(flash_addr);
+		} else {
+			// 64 KiB
+			FDSPI_eraseSector(flash_addr);
+		}
 #else
 		// 4 KiB
 		FDSPI_eraseBlock(flash_addr);
