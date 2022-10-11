@@ -153,15 +153,15 @@ void BSP_init(void) {
 	}
 
 	EXTI_1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
+	if (EXTI_1_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
+	if (EXTI_2_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
+	if (EXTI_3_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
@@ -292,7 +292,7 @@ static const PortPin_t PortPin_a[21] = {
 		{ D5_GPIO_Port, D5_Pin } ,
 		{ D6_GPIO_Port, D6_Pin } ,
 		{ D7_GPIO_Port, D7_Pin } ,
-		{ D8_GPIO_Port, D9_Pin } ,
+		{ D8_GPIO_Port, D8_Pin } ,
 		{ D9_GPIO_Port, D9_Pin } ,
 		{ D10_GPIO_Port, D10_Pin } ,
 		{ D11_GPIO_Port, D11_Pin } ,
