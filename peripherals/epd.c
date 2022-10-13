@@ -76,6 +76,8 @@
 #include "font12x16.h"
 #include "font8x16b.h"
 #include "font8x16s.h"
+#include "font10x24b.h"
+#include "font10x24s.h"
 #include "font11x24b.h"
 #include "font11x24s.h"
 #include "font16x32b.h"
@@ -132,6 +134,8 @@ static void putGlyph8x16(int ch);
 static void putGlyph12x16(int ch);
 static void putGlyph8x16B(int ch);
 static void putGlyph8x16S(int ch);
+static void putGlyph10x24B(int ch);
+static void putGlyph10x24S(int ch);
 static void putGlyph11x24B(int ch);
 static void putGlyph11x24S(int ch);
 static void putGlyph16x32B(int ch);
@@ -369,7 +373,15 @@ void EPD_init(void) {
 //	EPD_puts("the lazy dog.\r\n");
 //	EPD_puts("1234567890123456789012345678901");
 
-//	EPD_setFont(EPD_FONT11X24S);
+//	EPD_setFont(EPD_FONT10X24S);
+//	EPD_puts("DejaVu Sans 12 pt, 25x5 Z");
+//	EPD_puts("The quick brown fox jumps");
+//	EPD_puts("over the lazy dog\r\n");
+//	EPD_puts("1234567890123456789012345");
+//	EPD_setFont(EPD_FONT10X24B);
+//	EPD_puts("1234567890123456789012345");
+
+	//	EPD_setFont(EPD_FONT11X24S);
 //	EPD_puts("DejaVu 14 pt, 22x5 Z\r\n");
 //	EPD_puts("The quick brown fox ju\r\n");
 //	EPD_puts("mps over the lazy dog\r\n");
@@ -431,16 +443,25 @@ void EPD_init(void) {
 //	EPD_puts("    Auswahl 5\r\n");
 //	EPD_puts("    Auswahl 6");
 
+//	// Large Font and 4 rows
+//	EPD_setFont(EPD_FONT13X24B);
+//	EPD_puts("Titel\r\n");
+//	EPD_setFont(EPD_FONT11X24S);
+//	//	EPD_puts("The quick brown fox\r\n");
+//	EPD_puts("  Auswahl 1\r\n");
+//	EPD_puts("  Auswahl 2\r\n");
+//	EPD_puts("\273 Auswahl 3\r\n");
+//	EPD_puts("  Auswahl 4");
+
 	// Large Font and 4 rows
-	EPD_setFont(EPD_FONT13X24B);
-	EPD_puts("Titel\r\n");
-	EPD_setFont(EPD_FONT11X24S);
+	EPD_setFont(EPD_FONT11X24B);
+	EPD_puts("Titel 14 pt bold\r\n");
+	EPD_setFont(EPD_FONT10X24B);
 	//	EPD_puts("The quick brown fox\r\n");
-	EPD_puts("  Auswahl 1\r\n");
+	EPD_puts("  Auswahl 1, 12 pt bold\r\n");
 	EPD_puts("  Auswahl 2\r\n");
 	EPD_puts("\273 Auswahl 3\r\n");
 	EPD_puts("  Auswahl 4");
-
 
 //	EPD_setFont(EPD_FONT6X8);
 //	EPD_puts(MECRISP_CUBE_TAG);
@@ -559,6 +580,12 @@ int EPD_putc(int c) {
 		break;
 	case EPD_FONT8X16S:
 		putGlyph8x16S(c);
+		break;
+	case EPD_FONT10X24B:
+		putGlyph10x24B(c);
+		break;
+	case EPD_FONT10X24S:
+		putGlyph10x24S(c);
 		break;
 	case EPD_FONT11X24B:
 		putGlyph11x24B(c);
@@ -716,7 +743,7 @@ void EPD_writeColumn(uint8_t column) {
 		return ;
 	}
 
-	display_buffer->rows[CurrentPosX][CurrentPosY] = column;
+	display_buffer->rows[(EPD_COLUMNS-1) - CurrentPosX][CurrentPosY] = ~bitswap(column);
 
 	postwrap(1, 1);
 }
@@ -729,7 +756,7 @@ void EPD_writeColumn(uint8_t column) {
  *      Column
  */
 int EPD_readColumn(void) {
-	return display_buffer->rows[CurrentPosX][CurrentPosY];
+	return ~bitswap(display_buffer->rows[(EPD_COLUMNS-1) - CurrentPosX][CurrentPosY]);
 }
 
 
@@ -1090,6 +1117,56 @@ static void putGlyph11x24B(int ch) {
 		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 2));
 	}
 	postwrap(11, 3);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 10x24 font DejaVu Sans Mono Standard to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph10x24S(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 10, 3)) {
+		return ;
+	}
+
+	// fill the buffer with 12 columns on 3 lines (pages)
+	for (i = 0; i < 10; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT10X24S_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT10X24S_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT10X24S_getScanColumn(ch, i, 2));
+	}
+	postwrap(10, 3);
+}
+
+
+/**
+ *  @brief
+ *      Put a glyph in 10x24 font DejaVu Sans Mono Bold to the display
+ *  @param[in]
+ *  	ch ISO/IEC 8859 Latin-1
+ *  @return
+ *      None
+ */
+static void putGlyph10x24B(int ch) {
+	uint8_t i;
+
+	if (autowrap(ch, 10, 3)) {
+		return ;
+	}
+
+	// fill the buffer with 12 columns on 3 lines (pages)
+	for (i = 0; i < 10; i++) {
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT10X24B_getScanColumn(ch, i, 0));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT10X24B_getScanColumn(ch, i, 1));
+		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT10X24B_getScanColumn(ch, i, 2));
+	}
+	postwrap(10, 3);
 }
 
 

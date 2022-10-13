@@ -499,20 +499,36 @@ int OLED_readStatus(void) {
  *      None
  */
 void OLED_writeColumn(uint8_t column) {
+#ifdef	OLED_PAGE_VERTICAL
+	uint8_t buf[9];
+	int i;
+#else
 	uint8_t buf[2];
+#endif
 
 	if (autowrap(' ', 1, 1)) {
 		return ;
 	}
 
 	display_buffer->rows[CurrentPosY][CurrentPosX] = column;
-
 	buf[0] = 0x40;  // write data
+
+#ifdef	OLED_PAGE_VERTICAL
+	// fill the buffer with 8 columns
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
+	}
+
+	transpose_page(0, 1, buf);
+
+#else
+
 	// copy into I2C array
 	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
 
 	IIC_setDevice(OLED_I2C_ADR);
 	IIC_putMessage(buf, 2);
+#endif
 
 	postwrap(1, 1);
 }
@@ -525,7 +541,7 @@ void OLED_writeColumn(uint8_t column) {
  *      Column
  */
 int OLED_readColumn(void) {
-	return display_buffer->rows[CurrentPosY][CurrentPosX];
+		return display_buffer->rows[CurrentPosY][CurrentPosX];
 }
 
 
