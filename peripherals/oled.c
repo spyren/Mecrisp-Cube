@@ -57,6 +57,7 @@
 #include "font12x16.h"
 
 #if OLED == 1
+#include "firefly.h"
 
 // Macros
 // ******
@@ -223,18 +224,27 @@ void OLED_init(void) {
 		;
 	}
 	OLED_clear();
+
+	OLED_setPos(64, 0);
+	OLED_putXBM(firefly_bits, firefly_height, firefly_width);
+
 	OLED_setPos(0,0);
 	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-Cube");
+	OLED_puts("Mecrisp-Cube\r\n");
+
+	OLED_puts("v" MECRISP_CUBE_TAG "\r\n");
 	OLED_setFont(OLED_FONT6X8);
-	OLED_puts(MECRISP_CUBE_TAG);
+
 #ifdef DEBUG
-	OLED_puts("\r\nWBfeather Debug\r\n");
+	OLED_puts("\r\nWBfeather\r\n");
 #else
 	OLED_puts("\r\nWBfeather\r\n");
 #endif
-	OLED_puts("Forth for the STM32WB\r\n");
+	OLED_puts("Forth for\r\n");
+	OLED_puts("the STM32WB \r\n");
 	OLED_puts("(c)2022 peter@spyr.ch");
+
+
 }
 
 

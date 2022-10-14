@@ -93,6 +93,15 @@ void RTSPI_init(void) {
 	ASSERT_fatal(RTSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
+/**
+ *  @brief
+ *      Get the RTSPI mutex address.
+ *  @return
+ *      Mutex address
+ */
+uint32_t* RTSPI_getMutex(void) {
+	return (uint32_t*) RTSPI_MutexID;
+}
 
 /**
   * @brief
