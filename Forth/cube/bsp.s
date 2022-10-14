@@ -451,23 +451,14 @@ EXTIwait:
 // ***
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "I2Cdev"
-I2dev:
-        @ ( c -- ) Sets the I2C slave device
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	drop
-	bl		IIC_setDevice
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "I2Cget"
 I2Cget:
         @ ( a size -- ) Get a message
-// int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize)
+// int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
+    movs	r2, tos			// dev
+	drop
 	movs	r1, tos			// RxSize
 	drop
 	movs	r0, tos			// *RxBuffer
@@ -479,9 +470,11 @@ I2Cget:
         Wortbirne Flag_visible, "I2Cput"
 I2Cput:
         @ ( a size --  ) Put a message
-// int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize)
+// int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
+    movs	r2, tos			// dev
+	drop
 	movs	r1, tos			// TxSize
 	drop
 	movs	r0, tos			// *TxBuffer
@@ -492,20 +485,21 @@ I2Cput:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "I2Cputget"
 I2Cputget:
-        @ ( a1 size1 a2 size2 --  ) Put and get a message
-// int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize)
+        @ ( a1 size1 size2 dev --  ) Put and get a message
+// int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	movs	r3, tos			// RxSize
+    movs	r3, tos			// dev
 	drop
-	movs	r2, tos			// *RxBuffer
+	movs	r2, tos			// RxSize
 	drop
 	movs	r1, tos			// TxSize
 	drop
-	movs	r0, tos			// *TxBuffer
+	movs	r0, tos			// *TxRxBuffer
 	drop
 	bl		IIC_putGetMessage
 	pop		{pc}
+
 
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "watchdog"

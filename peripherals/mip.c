@@ -287,8 +287,7 @@ void MIP_clear(void) {
 #ifdef MIP_PAGE_VERTICAL
 	for (i=0; i<(128/8); i++) {
 		MIP_setPos(i*8, 0);
-		IIC_setDevice(MIP_I2C_ADR);
-		IIC_putMessage(display_buffer->blob, 65);
+		IIC_putMessage(display_buffer->blob, 65, MIP_I2C_ADR);
 	}
 #else
 	for (i=0; i<MIP_LINES; i++) {
@@ -719,8 +718,7 @@ static void transpose_page(int page, int upper, uint8_t *buf) {
 	}
 	// set pos to the beginning of the first page
 	setPos(col, row);
-	IIC_setDevice(MIP_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	IIC_putMessage(buf, 9, MIP_I2C_ADR);
 }
 #endif
 
