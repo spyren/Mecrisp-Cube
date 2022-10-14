@@ -545,6 +545,35 @@ int OLED_readColumn(void) {
 }
 
 
+/**
+ *  @brief
+ *      Put XBM image to the OLED display
+ *  @param[in]
+ *  	image		image array (magick image.png -rotate 90 -flop image.xbm)
+ *  @param[in]
+ *  	width in pixel
+ *  @return
+ *  	height in pixel
+ */
+void OLED_putXBM(char* image, int width, int height) {
+	int line;
+	int column;
+	int i=0;
+
+	uint8_t x = CurrentPosX;
+	uint8_t y = CurrentPosY;
+
+	for (column=0; column<width; column++) {
+		for (line=0; line<(height/8); line++) {
+			OLED_setPos(column+x, line+y);
+			OLED_writeColumn(image[i]);
+			i++;
+		}
+	}
+
+}
+
+
 // Private Functions
 // *****************
 
@@ -910,27 +939,5 @@ void postwrap(int width, int row) {
 #endif
 	}
 }
-
-
-// XPM ? ICO (Favicon)
-//void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
-// OLED_X_RESOLUTIONx32/8=512
-// bitmap?
-//{
-//	uint16_t j = 0;
-//	uint8_t y;
-//	if (y1 % 8 == 0) y = y1 / 8;
-//	else y = y1 / 8 + 1;
-//	for (y = y0; y < y1; y++)
-//	{
-//		ssd1306_setpos(x0,y);
-//		ssd1306_send_data_start();
-//		for (uint8_t x = x0; x < x1; x++)
-//		{
-//			ssd1306_send_byte(pgm_read_byte(&bitmap[j++]));
-//		}
-//		ssd1306_send_data_stop();
-//	}
-//}
 
 #endif

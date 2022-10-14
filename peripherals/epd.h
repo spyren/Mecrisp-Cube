@@ -96,10 +96,12 @@ void EPD_update(void);
 void EPD_setPos(uint8_t x, uint8_t y);
 uint8_t EPD_getPosX();
 uint8_t EPD_getPosY();
+void EPD_writeColumn(uint8_t column);
+int EPD_readColumn(void);
 int EPD_putc(int c);
 int EPD_puts(const char *s);
 void EPD_setFont(EPD_FontT font);
 int EPD_readStatus(void);
-
+void EPD_putXBM(char* image, int width, int height);
 
 #endif /* INC_EPD_H_ */

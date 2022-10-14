@@ -150,7 +150,7 @@ static void transpose_page(int page, int upper, uint8_t *buf);
 #endif
 static void postwrap(int width, int row);
 uint8_t bitswap(uint8_t byte);
-static void putNozzle(void);
+
 
 // Global Variables
 // ****************
@@ -564,7 +564,9 @@ void EPD_init(void) {
 	EPD_puts("  Auswahl 2\r\n");
 	EPD_puts("\273 Auswahl 3\r\n");
 	EPD_puts("  Auswahl 4");
-	putNozzle();
+
+	EPD_setPos(150, 3);
+	EPD_putXBM(nozzle_bits, nozzle_width, nozzle_height);
 
 //	EPD_setFont(EPD_FONT6X8);
 //	EPD_puts(MECRISP_CUBE_TAG);
@@ -1450,6 +1452,35 @@ static void putGlyph13x24S(int ch) {
 
 /**
  *  @brief
+ *      Put XBM image to the EPD display
+ *  @param[in]
+ *  	image		image array (magick image.png -rotate 90 -flop image.xbm)
+ *  @param[in]
+ *  	width in pixel
+ *  @return
+ *  	height in pixel
+ */
+void EPD_putXBM(char* image, int width, int height) {
+	int line;
+	int column;
+	int i=0;
+
+	uint8_t x = CurrentPosX;
+	uint8_t y = CurrentPosY;
+
+	for (column=0; column<width; column++) {
+		for (line=0; line<(height/8); line++) {
+			EPD_setPos(column+x, line+y);
+			EPD_writeColumn(image[i]);
+			i++;
+		}
+	}
+
+}
+
+
+/**
+ *  @brief
  *      Test for special chars and for free space
  *  @param[in]
  *  	ch character
@@ -1574,18 +1605,5 @@ uint8_t bitswap(uint8_t byte) {
 }
 
 
-static void putNozzle(void) {
-	int line;
-	int column;
-	int i=0;
-
-	for (column=0; column<96; column++) {
-		for (line=0; line<12; line++) {
-			EPD_setPos(column+150, line+3);
-			EPD_writeColumn(nozzle_bits[i]);
-			i++;
-		}
-	}
-}
 
 #endif

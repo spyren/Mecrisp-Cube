@@ -88,10 +88,12 @@ void OLED_update(void);
 void OLED_setPos(uint8_t x, uint8_t y);
 uint8_t OLED_getPosX();
 uint8_t OLED_getPosY();
+void OLED_writeColumn(uint8_t column);
+int OLED_readColumn(void);
 int OLED_putc(int c);
 int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 int OLED_readStatus(void);
-
+void OLED_putXBM(char* image, int width, int height);
 
 #endif /* INC_OLED_H_ */
