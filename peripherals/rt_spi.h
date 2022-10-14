@@ -11,12 +11,9 @@
 extern osMutexId_t RTSPI_MutexID;
 
 void RTSPI_init(void);
-void RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
-void RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength);
-void RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength);
-void RTSPI_Write(uint8_t Value);
-void RTSPI_WriteEPD(uint8_t *Data, uint16_t DataLength);
-void RTSPI_WriteMIP(uint8_t *Data, uint16_t DataLength);
-
+int RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
+int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength);
+int RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength);
+int RTSPI_Write(uint8_t Value);
 
 #endif /* INC_RTSPI_H_ */
