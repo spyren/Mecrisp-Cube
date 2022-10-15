@@ -39,10 +39,9 @@
 extern osMutexId_t UART_MutexID;
 
 void IIC_init(void);
-void IIC_setDevice(uint16_t dev);
 int IIC_ready(void);
-int IIC_getMessage(uint8_t *RxBuffer, uint32_t size);
-int IIC_putMessage(uint8_t *TxBuffer, uint32_t size);
-int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize);
+int IIC_getMessage(uint8_t *RxBuffer, uint32_t size, uint16_t dev);
+int IIC_putMessage(uint8_t *TxBuffer, uint32_t size, uint16_t dev);
+int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev);
 
 #endif /* INC_UART_H_ */

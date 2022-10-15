@@ -57,6 +57,7 @@
 #include "font12x16.h"
 
 #if OLED == 1
+#include "firefly.h"
 
 // Macros
 // ******
@@ -223,18 +224,22 @@ void OLED_init(void) {
 		;
 	}
 	OLED_clear();
+
+	OLED_setPos(64, 0);
+	OLED_putXBM(firefly_bits, firefly_width, firefly_height);
+
 	OLED_setPos(0,0);
 	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-Cube");
+	OLED_puts("Mecrisp-Cube\r\n");
+	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
+
 	OLED_setFont(OLED_FONT6X8);
-	OLED_puts(MECRISP_CUBE_TAG);
-#ifdef DEBUG
-	OLED_puts("\r\nKatydid Debug\r\n");
-#else
-	OLED_puts("\r\nKatydid\r\n");
-#endif
-	OLED_puts("Forth for the STM32WB\r\n");
+	OLED_puts(BOARD "\r\n");
+	OLED_puts("Forth for\r\n");
+	OLED_puts("the STM32WB \r\n");
 	OLED_puts("(c)2022 peter@spyr.ch");
+
+
 }
 
 
@@ -390,14 +395,12 @@ void OLED_clear(void) {
 #ifdef OLED_PAGE_VERTICAL
 	for (i=0; i<(128/8); i++) {
 		OLED_setPos(i*8, 0);
-		IIC_setDevice(OLED_I2C_ADR);
-		IIC_putMessage(display_buffer->blob, 65);
+		IIC_putMessage(display_buffer->blob, 65, OLED_I2C_ADR);
 	}
 #else
 	for (i=0; i<OLED_LINES; i++) {
 		OLED_setPos(0, i);
-		IIC_setDevice(OLED_I2C_ADR);
-		IIC_putMessage(display_buffer->blob, 129);
+		IIC_putMessage(display_buffer->blob, 129, OLED_I2C_ADR);
 	}
 #endif
 	OLED_setPos(0, 0);
@@ -440,8 +443,7 @@ void OLED_update(void) {
 			memcpy(buf+1, &display_buffer->rows[i][j*8], 8);
 
 			OLED_setPos(j*8, i);
-			IIC_setDevice(OLED_I2C_ADR);
-			IIC_putMessage(buf, 9);
+			IIC_putMessage(buf, 9, OLED_I2C_ADR);
 		}
 	}
 #endif
@@ -468,8 +470,7 @@ void OLED_sendCommand(const uint8_t *command) {
 
 	buf[0] = 0x00; // write command
 	memcpy(&buf[1], &command[1], command[0]);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, command[0]+1);
+	IIC_putMessage(buf, command[0]+1, OLED_I2C_ADR);
 }
 
 
@@ -482,8 +483,7 @@ void OLED_sendCommand(const uint8_t *command) {
 int OLED_readStatus(void) {
 	uint8_t status;
 
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_getMessage(&status, 1);
+	IIC_getMessage(&status, 1, OLED_I2C_ADR);
 	return status;
 }
 
@@ -499,20 +499,35 @@ int OLED_readStatus(void) {
  *      None
  */
 void OLED_writeColumn(uint8_t column) {
+#ifdef	OLED_PAGE_VERTICAL
+	uint8_t buf[9];
+	int i;
+#else
 	uint8_t buf[2];
+#endif
 
 	if (autowrap(' ', 1, 1)) {
 		return ;
 	}
 
 	display_buffer->rows[CurrentPosY][CurrentPosX] = column;
-
 	buf[0] = 0x40;  // write data
+
+#ifdef	OLED_PAGE_VERTICAL
+	// fill the buffer with 8 columns
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
+	}
+
+	transpose_page(0, 1, buf);
+
+#else
+
 	// copy into I2C array
 	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
 
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 2);
+	IIC_putMessage(buf, 2, OLED_I2C_ADR);
+#endif
 
 	postwrap(1, 1);
 }
@@ -525,7 +540,36 @@ void OLED_writeColumn(uint8_t column) {
  *      Column
  */
 int OLED_readColumn(void) {
-	return display_buffer->rows[CurrentPosY][CurrentPosX];
+		return display_buffer->rows[CurrentPosY][CurrentPosX];
+}
+
+
+/**
+ *  @brief
+ *      Put XBM image to the OLED display
+ *  @param[in]
+ *  	image		image array (magick image.png -rotate 90 -flop image.xbm)
+ *  @param[in]
+ *  	width in pixel
+ *  @return
+ *  	height in pixel
+ */
+void OLED_putXBM(char* image, int width, int height) {
+	int line;
+	int column;
+	int i=0;
+
+	uint8_t x = CurrentPosX;
+	uint8_t y = CurrentPosY;
+
+	for (column=0; column<height; column++) {
+		for (line=0; line<(width/8); line++) {
+			OLED_setPos(column+x, line+y);
+			OLED_writeColumn(image[i]);
+			i++;
+		}
+	}
+
 }
 
 
@@ -555,8 +599,7 @@ static void setPos(uint8_t x, uint8_t y) {
 	buf[2] = ((x & 0xf0) >> 4) | 0x10; // Set Higher Column Start Address
 	buf[3] = x & 0x0f; // | 0x01 // Set Lower Column Start Address
 #endif
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 4);
+	IIC_putMessage(buf, 4, OLED_I2C_ADR);
 }
 
 
@@ -602,8 +645,7 @@ static void putGlyph6x8(int ch) {
 	for (i = 0; i < 6; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 7);
+	IIC_putMessage(buf, 7, OLED_I2C_ADR);
 #endif
 
 	postwrap(6, 1);
@@ -648,8 +690,7 @@ static void putGlyph8x8(int ch) {
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	IIC_putMessage(buf, 9, OLED_I2C_ADR);
 #endif
 
 	postwrap(8, 1);
@@ -699,15 +740,13 @@ static void putGlyph8x16(int ch) {
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	IIC_putMessage(buf, 9, OLED_I2C_ADR);
 
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	IIC_putMessage(buf, 9, OLED_I2C_ADR);
 
 #endif
 
@@ -763,15 +802,13 @@ static void putGlyph12x16(int ch) {
 	for (i = 0; i < 12; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 13);
+	IIC_putMessage(buf, 13, OLED_I2C_ADR);
 
 	for (i = 0; i < 12; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 13);
+	IIC_putMessage(buf, 13, OLED_I2C_ADR);
 
 #endif
 
@@ -863,8 +900,7 @@ static void transpose_page(int page, int upper, uint8_t *buf) {
 	}
 	// set pos to the beginning of the first page
 	setPos(col, row);
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_putMessage(buf, 9);
+	IIC_putMessage(buf, 9, OLED_I2C_ADR);
 }
 #endif
 
@@ -894,27 +930,5 @@ void postwrap(int width, int row) {
 #endif
 	}
 }
-
-
-// XPM ? ICO (Favicon)
-//void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
-// OLED_X_RESOLUTIONx32/8=512
-// bitmap?
-//{
-//	uint16_t j = 0;
-//	uint8_t y;
-//	if (y1 % 8 == 0) y = y1 / 8;
-//	else y = y1 / 8 + 1;
-//	for (y = y0; y < y1; y++)
-//	{
-//		ssd1306_setpos(x0,y);
-//		ssd1306_send_data_start();
-//		for (uint8_t x = x0; x < x1; x++)
-//		{
-//			ssd1306_send_byte(pgm_read_byte(&bitmap[j++]));
-//		}
-//		ssd1306_send_data_stop();
-//	}
-//}
 
 #endif

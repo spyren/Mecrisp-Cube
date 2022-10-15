@@ -2,9 +2,8 @@
  *  @brief
  *      Buffered I2C (or IIC) communication.
  *
- *      Using interrupt for I2C1 peripheral. Separate threads for transmitting
- *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
- *      CMSIS-RTOS queues as buffers.
+ *      Using interrupt and DMA for I2C1 peripheral.
+ *      CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
  *  @file
  *      iic.c
  *  @author
@@ -68,9 +67,6 @@ const osMutexAttr_t IIC_MutexAttr = {
 
 static osSemaphoreId_t II2_SemaphoreID;
 
-// Private Variables
-// *****************
-static uint16_t DevAdr;
 
 // Public Functions
 // ****************
@@ -88,43 +84,6 @@ void IIC_init(void) {
 	II2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	ASSERT_fatal(II2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
-
-
-/**
- *  @brief
- *      Sets the device address.
- *  @return
- *      None
- */
-void IIC_setDevice(uint16_t dev) {
-	DevAdr = dev << 1;
-}
-
-
-/**
- *  @brief
- *		Reads a char from the IIC Rx (serial in). Blocking until char is
- *      ready.
- *  @return
- *      Return the character read as an unsigned char cast to an int or EOF on
- *      error.
- */
-int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize) {
-	// only one thread is allowed to use the IIC
-	osMutexAcquire(IIC_MutexID, osWaitForever);
-	IIC_Status = 0;
-	// get the Message
-	if (HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, RxBuffer, RxSize) == HAL_ERROR) {
-		// can't get Message
-		Error_Handler();
-	}
-	// blocked till message is sent
-	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
-	osMutexRelease(IIC_MutexID);
-
-	return IIC_Status;
-}
-
 
 
 /**
@@ -147,27 +106,37 @@ int IIC_ready(void) {
 
 /**
  *  @brief
- *      Writes a char to the IIC Tx (serial out). Blocking until char can be
- *      written into the queue.
+ *		Get a message from the IIC. Blocking until message is received.
  *
- *      Does not work in ISRs.
- *  @param[in]
- *      c  char to write
+ *      Do not use in ISRs.
+ * @param[in]
+ *     RxBuffer: Pointer to data buffer for the message
+ * @param[in]
+ *     RxSize: number of bytes to receive
+ * @param[in]
+ *     dev: I2C device number
  *  @return
- *      Return EOF on error, 0 on success.
+ *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
  */
-int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize) {
+int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
+	HAL_StatusTypeDef hal_status = HAL_OK;
+
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
-	// send the Message
-	if (HAL_I2C_Master_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize) == HAL_ERROR) {
-		// can't send message
+	// get the Message
+	hal_status = HAL_I2C_Master_Receive_DMA(&hi2c1, dev<<1, RxBuffer, RxSize);
+	if (hal_status == HAL_OK) {
+		// blocked till message is received
+		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+	} else {
+		// can't get Message
+		IIC_Status = -3;
+	}
+	osMutexRelease(IIC_MutexID);
+	if (IIC_Status != 0) {
 		Error_Handler();
 	}
-	// blocked till message is sent
-	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
-	osMutexRelease(IIC_MutexID);
 
 	return IIC_Status;
 }
@@ -175,34 +144,93 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize) {
 
 /**
  *  @brief
- *      Writes a char to the IIC Tx (serial out). Blocking until char can be
- *      written into the queue.
+ *      Put a message to the IIC. Blocking until message is sent.
  *
- *      Does not work in ISRs.
- *  @param[in]
- *      c  char to write
+ *      Do not use in ISRs.
+ * @param[in]
+ *     TxBuffer: Pointer to data buffer for the message
+ * @param[in]
+ *     TxSize: number of bytes to send
+ * @param[in]
+ *     dev: I2C device number
  *  @return
- *      Return EOF on error, 0 on success.
+ *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
  */
-int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize) {
+int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
+	HAL_StatusTypeDef hal_status = HAL_OK;
+
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
 	// send the Message
-	if (HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, DevAdr, TxBuffer, TxSize, I2C_FIRST_FRAME) == HAL_ERROR) {
-		// can't send message
-		Error_Handler();
-	}
-	// blocked till message is sent
-	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
-	// get the Message
-	if (HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, DevAdr, RxBuffer, RxSize, I2C_LAST_FRAME) == HAL_ERROR) {
+	hal_status = HAL_I2C_Master_Transmit_DMA(&hi2c1, dev<<1, TxBuffer, TxSize);
+	if (hal_status == HAL_OK) {
+		// blocked till message is received
+		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+	} else {
 		// can't get Message
+		IIC_Status = -3;
+	}
+	osMutexRelease(IIC_MutexID);
+	if (IIC_Status != 0) {
 		Error_Handler();
 	}
-	// blocked till message is sent
-	osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+
+	return IIC_Status;
+}
+
+
+/**
+ *  @brief
+ *      Writes a char to the IIC. Blocking until char can be written into the queue.
+ *
+ *		Transmit and receive in the same frame.
+ *      Do not use in ISRs.
+ * @param[in]
+ *     TxRxBuffer: Pointer to data buffer for the message to send and receive
+ * @param[in]
+ *     TxSize: number of bytes to send
+ * @param[in]
+ *     RxSize: number of bytes to receive
+ * @param[in]
+ *     dev: I2C device number
+ *  @return
+ *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
+ */
+int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev) {
+	HAL_StatusTypeDef hal_status = HAL_OK;
+
+	// only one thread is allowed to use the IIC
+	osMutexAcquire(IIC_MutexID, osWaitForever);
+	IIC_Status = 0;
+	// send the Message
+	hal_status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, dev<<1, TxRxBuffer, TxSize, I2C_FIRST_FRAME);
+	if (hal_status == HAL_OK) {
+		// blocked till message is received
+		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+	} else {
+		// can't transmit Message
+		IIC_Status = -3;
+	}
 	osMutexRelease(IIC_MutexID);
+	if (IIC_Status != 0) {
+		Error_Handler();
+		return IIC_Status;
+	}
+
+	// get the Message
+	hal_status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, dev<<1, TxRxBuffer, RxSize, I2C_LAST_FRAME);
+	if (hal_status == HAL_OK) {
+		// blocked till message is received
+		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+	} else {
+		// can't get Message
+		IIC_Status = -3;
+	}
+	osMutexRelease(IIC_MutexID);
+	if (IIC_Status != 0) {
+		Error_Handler();
+	}
 
 	return IIC_Status;
 }
