@@ -838,6 +838,35 @@ void EPD_update(void) {
 }
 
 
+/**
+ *  @brief
+ *      Put XBM image to the EPD display
+ *  @param[in]
+ *  	image		image array (magick image.png -rotate 90 -flop image.xbm)
+ *  @param[in]
+ *  	width in pixel
+ *  @return
+ *  	height in pixel
+ */
+void EPD_putXBM(char* image, int width, int height) {
+	int line;
+	int column;
+	int i=0;
+
+	uint8_t x = CurrentPosX;
+	uint8_t y = CurrentPosY;
+
+	for (column=0; column<height; column++) {
+		for (line=0; line<(width/8); line++) {
+			EPD_setPos(column+x, line+y);
+			EPD_writeColumn(image[i]);
+			i++;
+		}
+	}
+
+}
+
+
 // Private Functions
 // *****************
 
@@ -1346,35 +1375,6 @@ static void putGlyph13x24S(int ch) {
 		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 2));
 	}
 	postwrap(13, 3);
-}
-
-
-/**
- *  @brief
- *      Put XBM image to the EPD display
- *  @param[in]
- *  	image		image array (magick image.png -rotate 90 -flop image.xbm)
- *  @param[in]
- *  	width in pixel
- *  @return
- *  	height in pixel
- */
-void EPD_putXBM(char* image, int width, int height) {
-	int line;
-	int column;
-	int i=0;
-
-	uint8_t x = CurrentPosX;
-	uint8_t y = CurrentPosY;
-
-	for (column=0; column<width; column++) {
-		for (line=0; line<(height/8); line++) {
-			EPD_setPos(column+x, line+y);
-			EPD_writeColumn(image[i]);
-			i++;
-		}
-	}
-
 }
 
 

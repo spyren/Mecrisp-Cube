@@ -226,7 +226,7 @@ void OLED_init(void) {
 	OLED_clear();
 
 	OLED_setPos(64, 0);
-	OLED_putXBM(firefly_bits, firefly_height, firefly_width);
+	OLED_putXBM(firefly_bits, firefly_width, firefly_height);
 
 	OLED_setPos(0,0);
 	OLED_setFont(OLED_FONT8X8);
@@ -567,8 +567,8 @@ void OLED_putXBM(char* image, int width, int height) {
 	uint8_t x = CurrentPosX;
 	uint8_t y = CurrentPosY;
 
-	for (column=0; column<width; column++) {
-		for (line=0; line<(height/8); line++) {
+	for (column=0; column<height; column++) {
+		for (line=0; line<(width/8); line++) {
 			OLED_setPos(column+x, line+y);
 			OLED_writeColumn(image[i]);
 			i++;
