@@ -73,7 +73,7 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 
 // Private Variables
 // *****************
-static volatile uint8_t SpiError = FALSE;
+static volatile int SpiStatus = 0;
 
 
 // Public Functions
@@ -93,6 +93,15 @@ void RTSPI_init(void) {
 	ASSERT_fatal(RTSPI_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
+/**
+ *  @brief
+ *      Get the RTSPI mutex address.
+ *  @return
+ *      Mutex address
+ */
+uint32_t* RTSPI_getMutex(void) {
+	return (uint32_t*) RTSPI_MutexID;
+}
 
 /**
   * @brief
@@ -106,23 +115,28 @@ void RTSPI_init(void) {
   * @param[in]
   *     DataLength: number of bytes to write
   * @retval
-  *     None
+  *      Return 0 for success, -1 SPI error, -2 abort, -3 HAL, -4 RTOS
   */
-void RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
+int RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
-	SpiError = FALSE;
+	SpiStatus = 0;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
+		if (os_status != osOK) {
+			SpiStatus = -4;
 		}
 	} else {
+		SpiStatus = -3;
+	}
+
+	if (SpiStatus != 0) {
 		Error_Handler();
 	}
+	return SpiStatus;
 }
 
 
@@ -136,23 +150,28 @@ void RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataL
   * @param[in]
   *     DataLength: number of bytes to write
   * @retval
-  *     None
+  *      Return 0 for success, -1 SPI error, -2 abort, -3 HAL
   */
-void RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
+int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
-	SpiError = FALSE;
+	SpiStatus = FALSE;
 	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
+		if (os_status != osOK) {
+			SpiStatus = -4;
 		}
 	} else {
+		SpiStatus = -3;
+	}
+
+	if (SpiStatus != 0) {
 		Error_Handler();
 	}
+	return SpiStatus;
 }
 
 
@@ -166,23 +185,28 @@ void RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
   * @param[in]
   *     DataLength: number of bytes to write
   * @retval
-  *     None
+  *      Return 0 for success, -1 SPI error, -2 abort, -3 HAL
   */
-void RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
+int RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
-	SpiError = FALSE;
-	hal_status = HAL_SPI_Receive_DMA(&hspi1, (uint8_t*) Data, DataLength);
+	SpiStatus = FALSE;
+	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
+		if (os_status != osOK) {
+			SpiStatus = -4;
 		}
 	} else {
+		SpiStatus = -3;
+	}
+
+	if (SpiStatus != 0) {
 		Error_Handler();
 	}
+	return SpiStatus;
 }
 
 
@@ -194,25 +218,29 @@ void RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
   * @param[in]
   *     Value: value to be written
   * @retval
-  *     None
+  *      Return 0 for success, -1 SPI error, -2 abort, -3 HAL
   */
-void RTSPI_Write(uint8_t Value) {
+int RTSPI_Write(uint8_t Value) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 	uint8_t data = Value;
 
-	SpiError = FALSE;
+	SpiStatus = FALSE;
 	hal_status = HAL_SPI_Transmit_DMA(&hspi1, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
-			Error_Handler();
+		if (os_status != osOK) {
+			SpiStatus = -4;
 		}
 	} else {
-		Error_Handler();
+		SpiStatus = -3;
 	}
 
+	if (SpiStatus != 0) {
+		Error_Handler();
+	}
+	return SpiStatus;
 }
 
 
@@ -248,20 +276,6 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
 
 
 /**
-  * @brief  Rx Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for SPI module.
-  * @retval None
-  */
-void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi) {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hspi);
-
-  osSemaphoreRelease(RTSPI_SemaphoreID);
-}
-
-
-/**
   * @brief  SPI error callback.
   * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
   *               the configuration information for SPI module.
@@ -271,7 +285,20 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hspi);
 
-	SpiError = TRUE;
+	SpiStatus = -1;
 	osSemaphoreRelease(RTSPI_SemaphoreID);
 }
 
+/**
+  * @brief  SPI Abort Complete callback.
+  * @param  hspi SPI handle.
+  * @retval None
+  */
+void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi)
+{
+  /* Prevent unused argument(s) compilation warning */
+  UNUSED(hspi);
+
+	SpiStatus = -2;
+	osSemaphoreRelease(RTSPI_SemaphoreID);
+}
