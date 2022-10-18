@@ -37,13 +37,13 @@
 #define OLED_FEATHER_128X32	2		// Adafruit FeatherWing #2900
 #define OLED_FEATHER_128X64	3		// Adafruit FeatherWing #4650
 #define OLED_OCTOPUS_128X64	4		// Octopus PIS-1277
-#define OLED_WB5M_128X64	5		// STM WB55 Discovery Board
+#define OLED_WB5M_128x64    5		// STM WB55 Discovery Board
 
 #define OLED_LANDSCAPE		0
 #define	OLED_PORTRAIT		1
 
 // configure your OLED type
-#define OLED_DISPLAY_TYPE	OLED_WB5M_128X64
+#define OLED_DISPLAY_TYPE	OLED_WB5M_128x64
 #define	OLED_ORIENTATION	OLED_LANDSCAPE
 
 #define OLED_I2C_ADR		60		// 0x3c
@@ -51,7 +51,6 @@
 #define OLED_SSD1306		0
 #define OLED_SH1107			1
 #define OLED_SSD1315		2
-
 #define OLED_DRIVER			OLED_SSD1315
 
 #if OLED_DISPLAY_TYPE == OLED_4PIN_128X32
@@ -78,7 +77,7 @@
 #elif OLED_DISPLAY_TYPE == OLED_OCTOPUS_128X64
 	#define OLED_X_RESOLUTION	128
 	#define OLED_Y_RESOLUTION	64
-#elif OLED_DISPLAY_TYPE == OLED_WB5M_128X64
+#elif OLED_DISPLAY_TYPE == OLED_WB5M_128x64
 	#define OLED_X_RESOLUTION	128
 	#define OLED_Y_RESOLUTION	64
     #define OLED_SPI 1
@@ -95,10 +94,12 @@ void OLED_update(void);
 void OLED_setPos(uint8_t x, uint8_t y);
 uint8_t OLED_getPosX();
 uint8_t OLED_getPosY();
+void OLED_writeColumn(uint8_t column);
+int OLED_readColumn(void);
 int OLED_putc(int c);
 int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 int OLED_readStatus(void);
-void OLED_writeColumn(uint8_t column);
-int OLED_readColumn(void);
+void OLED_putXBM(char* image, int width, int height);
+
 #endif /* INC_OLED_H_ */
