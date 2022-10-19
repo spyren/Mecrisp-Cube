@@ -9,7 +9,7 @@
  *  	  - 2.9"  296x128
  *
  *  	SPI Interface
- *  	  . 4-wire interface
+ *  	  - 4-wire interface
  *  	  - Data bits: leftmost pixel first, little-endian format
  *  	  - Data is clocked on the rising edge of SCLK, Mode 0
  *  	    SPI_POLARITY_LOW, SPI_PHASE_1EDGE
@@ -31,6 +31,8 @@
  *  	 - about 41 * 15 chars (8*6 chars)
  *  	 - Gate, Columns, left 249
  *  	 - Source, Rows, top 0
+ *
+ *		EPD_BUSY_Pin (D12) disturbs LED1.
  *
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file

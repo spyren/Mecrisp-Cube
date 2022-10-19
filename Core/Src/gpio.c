@@ -132,6 +132,13 @@ void shared_io(void) {
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(D12_GPIO_Port, &GPIO_InitStruct);
 
+	// Configure GPIO pin Output Level for A5 (Neopixel)
+	HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, GPIO_PIN_RESET);
+	GPIO_InitStruct.Pin = A5_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(A5_GPIO_Port, &GPIO_InitStruct);
 }
 
 /* USER CODE END 2 */
