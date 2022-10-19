@@ -1,13 +1,13 @@
 /**
  *  @brief
- *  	OLED driver based on the controller SSD1306 (and SH1107).
+ *  	OLED driver based on the controller SSD1306 (and SH1107, SSD1315).
  *
  *  	Resolution 128x32 or 128x64, monochrome.
  *  	A page consists of 128 columns (horizontally, x) with 8 pixels (vertically, y).
  *  	The 8 pixels are in one byte.
  *  	There are 4 pages in 128x32 display, and 8 pages in a 128x64 display.
  *  	A page is 8 pixel wide stripe on the display.
- *  	I2C Interface, address 60.
+ *  	I2C Interface, address 60, or 4 wire SPI interface.
  *  	The display RAM can not be read over the I2C, therefore the display content is
  *  	mirrored in a buffer.
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
@@ -50,14 +50,19 @@
 #include "app_common.h"
 #include "main.h"
 #include "oled.h"
+#ifndef OLED_SPI
 #include "iic.h"
+#else
+#include "rt_spi.h"
+#endif
+
 #include "font6x8.h"
 #include "font8x8.h"
 #include "font8x14.h"
 #include "font12x16.h"
 
 #if OLED == 1
-#include "firefly.h"
+#include "spyr.h"
 
 // Macros
 // ******
@@ -158,8 +163,26 @@ static const uint8_t com_pin_hw[] =		{ 2, 0xDA, 0x02 };		// Set com pins hardwar
 static const uint8_t set_vcomh[] =		{ 2, 0xDB, 0x20};		// --set vcomh 0x20,0.77xVcc
 static const uint8_t pre_charge[] =     { 2, 0xD9, 0x22 };		// Set pre-charge period & SH1107
 #endif // BONNET
+#elif OLED_DRIVER == OLED_SSD1315
+static const uint8_t seg_remap[] = 		{ 1, 0xA1 };			// Set Segment Re-map. A0=address mapped; A1=address 127 mapped.
+static const uint8_t com_scan_rev[] = 	{ 1, 0xC8 };			// Set COM Output Scan Direction
+static const uint8_t dcdc_en[] =		{ 2, 0x8D, 0x14 };		// Set DC-DC disable
+static const uint8_t adr_mode_horiz[] =	{ 2, 0x20, 0b00 };		// Set Memory Addressing Mode
+static const uint8_t start_line_adr[] =	{ 1, 0x40 };			// --set start line address
+static const uint8_t clk_div_ratio[] =  { 2, 0xD5, 0x80 };		// --set display clock divide ratio/oscillator frequency (default)
+static const uint8_t mplx_ratio[] =     { 2, 0xA8, OLED_Y_RESOLUTION -1 };		// Set multiplex ratio 32 or 64
+static const uint8_t display_offset[] = { 2, 0xD3, 0x00 };		// Set display offset. 00 = no offset
+static const uint8_t set_contrast[] = 	{ 2, 0x81, 0x7F };		// Set contrast control register (default)
+static const uint8_t lower_col_adr [] =	{ 1, 0x00 };			// ---set low column address
+static const uint8_t higher_col_adr[] =	{ 1, 0x10 };			// ---set high column address ?
+static const uint8_t page_adr[] = 		{ 1, 0xB0 };			// Set Page Start Address for Page Addressing Mode, 0-7
 
+static const uint8_t div_ratio[] =      { 1, 0xE3 };			// --set divide ratio (NOP)
+static const uint8_t com_pin_hw[] =		{ 1, 0xE3 };			// Set com pins hardware configuration (NOP)
+static const uint8_t set_vcomh[] =		{ 1, 0xE3 };			// --set vcomh (NOP)
+static const uint8_t pre_charge[] =     { 1, 0xE3 };			// Set pre-charge period (NOP)
 #endif // OLED_DRIVER
+
 static const uint8_t ram_to_display[] = { 1, 0xA4 };			// Output RAM to Display
 static const uint8_t display_normal[] =	{ 1, 0xA6 };			// Set display mode. A6=Normal;
 //static const uint8_t display_inverse[] ={ 1, 0xA7 };			// A7=Inverse
@@ -202,10 +225,17 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 void OLED_init(void) {
 	uint8_t i;
 
+#ifndef OLED_SPI
 	if (HAL_I2C_IsDeviceReady(&hi2c1, OLED_I2C_ADR << 1, 5, 100) != HAL_OK) {
 		// OLED is not ready
 		return;
 	}
+#else
+	HAL_GPIO_WritePin(OLED_RST_GPIO_Port, OLED_RST_Pin, GPIO_PIN_RESET);	// reset OLED
+	osDelay(20);
+	HAL_GPIO_WritePin(OLED_RST_GPIO_Port, OLED_RST_Pin, GPIO_PIN_SET);
+
+#endif
 	oledReady = TRUE;
 
 	display_buffer = pvPortMalloc(sizeof(display_buffer_t));
@@ -213,6 +243,8 @@ void OLED_init(void) {
 	for (i = 0; i < membersof(ssd1306_init_sequence); i++) {
 		OLED_sendCommand(ssd1306_init_sequence[i]);
 	}
+
+#ifndef OLED_SPI
 	if (OLED_readStatus() == 7) {
 		// most probably a SH1107 driver
 		;
@@ -223,28 +255,25 @@ void OLED_init(void) {
 		// the display is BUSY or OFF
 		;
 	}
-	OLED_clear();
-
-	OLED_setPos(64, 0);
-	OLED_putXBM(firefly_bits, firefly_width, firefly_height);
-
-	OLED_setPos(0,0);
-	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-Cube\r\n");
-
-	OLED_puts("v" MECRISP_CUBE_TAG "\r\n");
-	OLED_setFont(OLED_FONT6X8);
-
-#ifdef DEBUG
-	OLED_puts("\r\nWBfeather\r\n");
-#else
-	OLED_puts("\r\nWBfeather\r\n");
 #endif
+
+	OLED_clear();
+	OLED_setPos(127-spyr_height-8, 0);
+	OLED_putXBM(spyr_bits, spyr_width, spyr_height);
+
+	OLED_setPos(0, 0);
+	OLED_setFont(OLED_FONT8X8);
+	OLED_puts("Mecrisp-");
+	OLED_setPos(93, 0);
+	OLED_puts("Cube\r\n");
+	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
+
+	OLED_setFont(OLED_FONT6X8);
+	OLED_puts(BOARD "\r\n");
 	OLED_puts("Forth for\r\n");
 	OLED_puts("the STM32WB \r\n");
-	OLED_puts("(c)2022 peter@spyr.ch");
-
-
+	OLED_puts("(c)2022\r\n");
+	OLED_puts("peter@spyr.ch");
 }
 
 
@@ -295,7 +324,11 @@ int OLED_putc(int c) {
  *      FALSE if the transfer is ongoing.
  */
 int OLED_Ready(void) {
+#ifndef OLED_SPI
 	return (IIC_ready());
+#else
+	return TRUE;
+#endif
 }
 
 
@@ -405,7 +438,16 @@ void OLED_clear(void) {
 #else
 	for (i=0; i<OLED_LINES; i++) {
 		OLED_setPos(0, i);
+#ifndef OLED_SPI
 		IIC_putMessage(display_buffer->blob, 129, OLED_I2C_ADR);
+#else
+		osMutexAcquire(RTSPI_MutexID, osWaitForever);
+		HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// Data
+		HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+		RTSPI_WriteData(display_buffer->blob +1, 128);
+		HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+		osMutexRelease(RTSPI_MutexID);
+#endif
 	}
 #endif
 	OLED_setPos(0, 0);
@@ -448,7 +490,16 @@ void OLED_update(void) {
 			memcpy(buf+1, &display_buffer->rows[i][j*8], 8);
 
 			OLED_setPos(j*8, i);
+#ifndef OLED_SPI
 			IIC_putMessage(buf, 9, OLED_I2C_ADR);
+#else
+			osMutexAcquire(RTSPI_MutexID, osWaitForever);
+			HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// Data
+			HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+			RTSPI_WriteData(buf+1, 8);
+			HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+			osMutexRelease(RTSPI_MutexID);
+#endif
 		}
 	}
 #endif
@@ -475,7 +526,17 @@ void OLED_sendCommand(const uint8_t *command) {
 
 	buf[0] = 0x00; // write command
 	memcpy(&buf[1], &command[1], command[0]);
+#ifndef OLED_SPI
 	IIC_putMessage(buf, command[0]+1, OLED_I2C_ADR);
+#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_RESET);	// command
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, command[0]);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+#endif
+
 }
 
 
@@ -486,9 +547,11 @@ void OLED_sendCommand(const uint8_t *command) {
  *      None Bit7: BUSY; Bit6: ON 0, OFF 1; Bit5..7: ID 000111
  */
 int OLED_readStatus(void) {
-	uint8_t status;
+	uint8_t status=0;
 
+#ifndef OLED_SPI
 	IIC_getMessage(&status, 1, OLED_I2C_ADR);
+#endif
 	return status;
 }
 
@@ -545,7 +608,7 @@ void OLED_writeColumn(uint8_t column) {
  *      Column
  */
 int OLED_readColumn(void) {
-		return display_buffer->rows[CurrentPosY][CurrentPosX];
+	return display_buffer->rows[CurrentPosY][CurrentPosX];
 }
 
 
@@ -604,7 +667,16 @@ static void setPos(uint8_t x, uint8_t y) {
 	buf[2] = ((x & 0xf0) >> 4) | 0x10; // Set Higher Column Start Address
 	buf[3] = x & 0x0f; // | 0x01 // Set Lower Column Start Address
 #endif
+#ifndef OLED_SPI
 	IIC_putMessage(buf, 4, OLED_I2C_ADR);
+#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_RESET);	// command
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 3);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+#endif
 }
 
 
@@ -650,8 +722,18 @@ static void putGlyph6x8(int ch) {
 	for (i = 0; i < 6; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
+
+	#ifndef OLED_SPI
 	IIC_putMessage(buf, 7, OLED_I2C_ADR);
-#endif
+	#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 6);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+	#endif // OLED_SPI
+#endif // OLED_PAGE_VERTICAL
 
 	postwrap(6, 1);
 }
@@ -695,8 +777,17 @@ static void putGlyph8x8(int ch) {
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
+	#ifndef OLED_SPI
 	IIC_putMessage(buf, 9, OLED_I2C_ADR);
-#endif
+	#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 8);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+	#endif // OLED_SPI
+#endif // OLED_PAGE_VERTICAL
 
 	postwrap(8, 1);
 }
@@ -745,13 +836,31 @@ static void putGlyph8x16(int ch) {
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
+	#ifndef OLED_SPI
 	IIC_putMessage(buf, 9, OLED_I2C_ADR);
+	#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 8);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+	#endif // OLED_SPI
 
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
+	#ifndef OLED_SPI
 	IIC_putMessage(buf, 9, OLED_I2C_ADR);
+	#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 8);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+	#endif // OLED_SPI
 
 #endif
 
@@ -807,13 +916,31 @@ static void putGlyph12x16(int ch) {
 	for (i = 0; i < 12; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
+	#ifndef OLED_SPI
 	IIC_putMessage(buf, 13, OLED_I2C_ADR);
+	#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 12);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+	#endif // OLED_SPI
 
 	for (i = 0; i < 12; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
+	#ifndef OLED_SPI
 	IIC_putMessage(buf, 13, OLED_I2C_ADR);
+	#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 12);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+	#endif // OLED_SPI
 
 #endif
 
@@ -935,5 +1062,27 @@ void postwrap(int width, int row) {
 #endif
 	}
 }
+
+
+// XPM ? ICO (Favicon)
+//void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
+// OLED_X_RESOLUTIONx32/8=512
+// bitmap?
+//{
+//	uint16_t j = 0;
+//	uint8_t y;
+//	if (y1 % 8 == 0) y = y1 / 8;
+//	else y = y1 / 8 + 1;
+//	for (y = y0; y < y1; y++)
+//	{
+//		ssd1306_setpos(x0,y);
+//		ssd1306_send_data_start();
+//		for (uint8_t x = x0; x < x1; x++)
+//		{
+//			ssd1306_send_byte(pgm_read_byte(&bitmap[j++]));
+//		}
+//		ssd1306_send_data_stop();
+//	}
+//}
 
 #endif

@@ -2,14 +2,14 @@
  *  @brief
  *      Board Support Package for STM32WB5M Discovery Board.
  *
- *        - LEDs (red LED, Neopixel D12)
+ *        - LEDs (red LED D12, Neopixel A5)
  *        - Switches FeatherWing SW1 (button A, D9), SW2 (button B, D6), SW3 (button C, D5)
  *        - Digital port pins D0 to D15
  *        - Analog port pins A0 to A5
  *        - PWM TIM1CH1 A4, TIM1CH2 D1, TIM1CH3 D0
  *        - Input Capture TIM2CH1 A5
  *        - Output compare TIM2CH2 D13, TIM2CH3 D5, TIM2CH4 D6
- *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
+ *        - SPI: D4 MOSI, D3 MISO, D2 SCK (display, memory)
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -1109,7 +1109,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
  *
  */
 void BSP_setNeoPixel(uint32_t rgb) {
-	uint8_t D12_set = 0;
+	uint8_t A5_set = 0;
 
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
@@ -1118,14 +1118,14 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	if (HAL_GPIO_ReadPin(D12_GPIO_Port, D12_Pin) == GPIO_PIN_SET) {
-		HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, GPIO_PIN_RESET);
-		D12_set = TRUE;
+	if (HAL_GPIO_ReadPin(A5_GPIO_Port, A5_Pin) == GPIO_PIN_SET) {
+		HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, GPIO_PIN_RESET);
+		A5_set = TRUE;
 	}
-	BSP_neopixelDataTx(D12_GPIO_Port, D12_Pin, rgb);
+	BSP_neopixelDataTx(A5_GPIO_Port, A5_Pin, rgb);
 
-	if (D12_set) {
-		HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, GPIO_PIN_SET);
+	if (A5_set) {
+		HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, GPIO_PIN_SET);
 	}
 
 	RESTORE_PRIMASK();
