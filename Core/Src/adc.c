@@ -110,7 +110,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PA7     ------> ADC1_IN12
     */
 //    GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A2_Pin|A3_Pin|A4_Pin|A5_Pin;
-    GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A2_Pin|A3_Pin|A4_Pin;
+    // Neopixel is using A3
+    GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A2_Pin|A4_Pin|A5_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -141,7 +142,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PA7     ------> ADC1_IN12
     */
 //    HAL_GPIO_DeInit(GPIOA, A0_Pin|A1_Pin|A2_Pin|A3_Pin|A4_Pin|A5_Pin);
-    HAL_GPIO_DeInit(GPIOA, A0_Pin|A1_Pin|A2_Pin|A3_Pin|A4_Pin);
+    HAL_GPIO_DeInit(GPIOA, A0_Pin|A1_Pin|A2_Pin|A4_Pin|A5_Pin);
 
     /* ADC1 interrupt Deinit */
     HAL_NVIC_DisableIRQ(ADC1_IRQn);

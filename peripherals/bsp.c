@@ -10,6 +10,7 @@
  *        - Input Capture TIM2CH1 A5
  *        - Output compare TIM2CH2 D13, TIM2CH3 D5, TIM2CH4 D6
  *        - SPI: D4 MOSI, D3 MISO, D2 SCK (display, memory)
+ *        - Neopixel A3
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -1109,7 +1110,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
  *
  */
 void BSP_setNeoPixel(uint32_t rgb) {
-	uint8_t A5_set = 0;
+	uint8_t A3_set = 0;
 
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
@@ -1118,14 +1119,14 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	if (HAL_GPIO_ReadPin(A5_GPIO_Port, A5_Pin) == GPIO_PIN_SET) {
-		HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, GPIO_PIN_RESET);
-		A5_set = TRUE;
+	if (HAL_GPIO_ReadPin(A3_GPIO_Port, A3_Pin) == GPIO_PIN_SET) {
+		HAL_GPIO_WritePin(A3_GPIO_Port, A3_Pin, GPIO_PIN_RESET);
+		A3_set = TRUE;
 	}
-	BSP_neopixelDataTx(A5_GPIO_Port, A5_Pin, rgb);
+	BSP_neopixelDataTx(A3_GPIO_Port, A3_Pin, rgb);
 
-	if (A5_set) {
-		HAL_GPIO_WritePin(A5_GPIO_Port, A5_Pin, GPIO_PIN_SET);
+	if (A3_set) {
+		HAL_GPIO_WritePin(A3_GPIO_Port, A3_Pin, GPIO_PIN_SET);
 	}
 
 	RESTORE_PRIMASK();
