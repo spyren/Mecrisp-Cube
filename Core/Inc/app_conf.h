@@ -139,10 +139,10 @@
 // Board Type
 // **********
 
-#define BOARD_TYPE_UNO		1
-#define BOARD_TYPE_MKR		2
-#define BOARD_TYPE_FEATHER	3
-#define BOARD_TYPE_FIREFLY	4
+#define BOARD_TYPE_UNO		1		// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
+#define BOARD_TYPE_MKR		2		// Arduino MKR
+#define BOARD_TYPE_FEATHER	3		// Adafruit headers
+#define BOARD_TYPE_FIREFLY	4		// can use UNO or FEATHER headers (similar to Teensy)
 
 #define BOARD_TYPE			BOARD_TYPE_UNO
 
@@ -150,15 +150,9 @@
 // ********
 
 #define MCU_TYPE		"STM32WB"
-#if BOARD_TYPE == BOARD_TYPE_FEATHER
-// Adafruit headers
-#define BOARD 			"Feather"
-#define RAM_FLASH_SIZE	"63/384"
-#else
-// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
+
 #define BOARD 			"Firefly"
 #define RAM_FLASH_SIZE	"63/128"
-#endif
 
 // Greeting Message
 // ****************
