@@ -105,6 +105,7 @@ extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
 uint32_t rgb_led = 0;
 uint32_t rgb_buffer[16];
+static uint32_t adc_calibration;
 
 // Public Functions
 // ****************
@@ -159,10 +160,15 @@ void BSP_init(void) {
 		Error_Handler();
 	}
 
+	// ADC calibration
+	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+//	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
+//	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
+
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_1;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
+	sConfig.SamplingTime = ADC_SAMPLETIME_92CYCLES_5;
 	sConfig.SingleDiff = ADC_SINGLE_ENDED;
 	sConfig.OffsetNumber = ADC_OFFSET_NONE;
 	sConfig.Offset = 0;
@@ -429,11 +435,117 @@ int BSP_getAnalogPin(int pin_number) {
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 
 	return_value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop_IT(&hadc1);
+	HAL_ADC_Stop(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
 	return return_value;
 }
+
+/**
+ *  @brief
+ *	    Get the Vref
+ *
+ *		The Vref is actually the VDDA
+ *  @return
+ *      Voltage in mV
+ */
+int BSP_getVref(void) {
+	int value;
+	HAL_StatusTypeDef status;
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = ADC_CHANNEL_VREFINT;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+
+	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
+}
+
+
+/**
+ *  @brief
+ *	    Get the Vbat
+ *
+ *  @return
+ *      Voltage in mV
+ */
+int BSP_getVbat(void) {
+	int value;
+	int ref_voltage_mv;
+	HAL_StatusTypeDef status;
+
+	ref_voltage_mv = BSP_getVref();
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = ADC_CHANNEL_VBAT;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+
+	return 3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) ;
+}
+
+
+/**
+ *  @brief
+ *	    Gets the CPU temperature
+ *
+ *  @return
+ *      temperature in degree Celsius
+ */
+int BSP_getCpuTemperature(void) {
+	int value;
+	int ref_voltage_mv;
+	HAL_StatusTypeDef status;
+
+	ref_voltage_mv = BSP_getVref();
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+
+	return __HAL_ADC_CALC_TEMPERATURE(ref_voltage_mv, value, ADC_RESOLUTION_12B);
+}
+
 
 // digital port pin mode
 // *********************

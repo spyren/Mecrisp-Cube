@@ -105,7 +105,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     PB7     ------> USART1_RX
     PB6     ------> USART1_TX
     */
-    GPIO_InitStruct.Pin = STLINK_RX_Pin|STLINK_TX_Pin;
+    GPIO_InitStruct.Pin = STLINK_TX_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -116,7 +116,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
-
+    GPIO_InitStruct.Pin = STLINK_RX_Pin;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;  // pullup resistor for UART_Rx
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
   /* USER CODE END USART1_MspInit 1 */
   }
 }
