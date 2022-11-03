@@ -708,5 +708,7 @@ typedef enum
 #define PLEX					1
 #define EPD						0
 
+//#define __fpu_used				1
+
 #endif /*APP_CONF_H */
 

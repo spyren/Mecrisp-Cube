@@ -348,6 +348,8 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
 
+.include "fpu.s"
+
 .else  // registerallocator
 
 .include "double.s"
@@ -400,6 +402,8 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
+
+.include "fpu.s"
 
 .endif // registerallocator
 

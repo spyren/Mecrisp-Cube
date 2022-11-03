@@ -162,7 +162,7 @@ void BSP_init(void) {
 
 	// ADC calibration
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-//	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
+	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
 //	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
 
 	// Configure Regular Channel

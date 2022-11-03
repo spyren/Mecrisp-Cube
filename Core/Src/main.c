@@ -118,6 +118,10 @@
 
 /* USER CODE END Includes */
 
+#if (__FPU_USED == 0)
+      #warning "FPU is not used"
+#endif
+
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
