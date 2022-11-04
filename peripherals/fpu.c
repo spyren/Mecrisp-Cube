@@ -64,7 +64,7 @@ NULL,				// no name required
 
 // Private Variables
 // *****************
-//static char fpu_string[FPU_MAX_STR];
+static char fpu_string[FPU_MAX_STR];
 
 // Public Functions
 // ****************
@@ -102,6 +102,18 @@ void FPU_setFPSCR(uint32_t fpscr) {
 uint32_t FPU_getFPSCR(void) {
 	return __get_FPSCR();
 }
+
+/**
+ *  @brief
+ *      Convert ASCII string to floating-point number
+ *  @return
+ *      float
+ */
+float FPU_str2f(char *str, int len) {
+	memcpy(fpu_string, str, len);
+	return strtof(fpu_string, NULL);
+}
+
 
 ///**
 // *  @brief

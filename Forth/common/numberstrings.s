@@ -88,11 +88,40 @@ digit_base_r3:  @ Erwartet Base in r3  Base has to be in r3 if you enter here.
 @------------------------------------------------------------------------------
   Wortbirne Flag_visible, "number" @ Number-Input.
   @ ( String Length -- 0 )    Not recognized
-  @ ( String Length -- n 1 )  Single number
+  @ ( String Length -- n 1 )  Single number or float
   @ ( String Length -- d 2 )  Double number or fixpoint s15.16
 
 number: @ Tries to convert a string in one of the supported number formats.
 @------------------------------------------------------------------------------
+	push	{lr}
+	ddup				// save string and length
+	bl		org_number
+	cmp		tos, #1
+	beq		1f			// valid one-cell number
+	cmp		tos, #2
+	beq		2f			// valid two-cell number
+	drop
+	bl		fnumber		// try float
+	pop		{pc}
+1:
+	drop				// discard 1
+	to_r				// n
+	ddrop				// String Length
+	r_from				// n
+	pushdaconst 1		// 1
+	pop		{pc}
+2:
+	drop				// discard 2
+	to_r				// ld
+	to_r				// hd
+	ddrop				// String Length
+	r_from				// hd
+	r_from				// ld
+	pushdaconst 2		// 2
+	pop		{pc}
+
+
+org_number:
 
 /*
     ; Sind noch Zeichen da ? Sonst fertig.
