@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Interface to the FPU (Flosating Poibnt Unit)
+ *      Interface to the FPU (Floating Point Unit)
  *
  *  @file
  *      fpu.s
@@ -143,7 +143,14 @@ fround:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	vmov 	s0, tos
-	vcvtr.s32.f32 s0, s0
+	ldr		r0, =0x3f000000	// 0.5
+	tst		tos, #0x80000000
+	beq		1f
+	ldr		r0, =0xbf000000	// -0.5
+1:
+	vmov	s1, r0
+	vadd.f32	s0, s1
+	vcvt.s32.f32 s0, s0
 	vcvt.f32.s32 s0, s0
 	vmov 	tos, s0
 	pop		{pc}
@@ -217,8 +224,8 @@ fnumber:
 // -----------------------------------------------------------------------------
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f>fx"
-f_to_fx:
+        Wortbirne Flag_visible, "f>x"
+f_to_x:
         @ ( r -- d ) d is the fixed-point equivalent of the floating-point r.
 	// : v>f ( v -- df )
     //   dup 1 31 lshift and 0<> swap ( nf v )
@@ -261,8 +268,8 @@ f_to_fx:
  	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fx>f"
-fx_to_f:
+        Wortbirne Flag_visible, "x>f"
+x_to_f:
         @ ( d -- r ) r is the floating-point equivalent of the fixed-point d.
 	// : f>v ( df -- v ) L H -- v
     //   dup 1 31 lshift and -rot ( S L H )
@@ -304,7 +311,7 @@ f_dot:
         @ ( r --  ) Display, with a trailing space, the top number using fixed-point notation
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	bl		f_to_fx
+	bl		f_to_x
 	pushdatos
 	mov		tos, #4
 	bl		fdotn

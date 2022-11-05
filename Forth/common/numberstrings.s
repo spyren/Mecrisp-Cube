@@ -422,7 +422,7 @@ zifferstringende:  @ Schließt einen neuen Ziffernstring ab und gibt seine Adres
   bx lr
 
 @------------------------------------------------------------------------------
-  Wortbirne Flag_visible, "fx#S"
+  Wortbirne Flag_visible, "x#S"
 falleziffern: @ ( u -- u=0 )
       @ Inserts all digits, at least one, into number buffer.
 @------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ falleziffern: @ ( u -- u=0 )
   pop {r4, pc}
 
 @------------------------------------------------------------------------------
-  Wortbirne Flag_visible, "fx#"
+  Wortbirne Flag_visible, "x#"
 fziffer: @ ( u -- u )
       @ Insert one more digit into number buffer
 @------------------------------------------------------------------------------
@@ -508,7 +508,7 @@ zifferstringanfang: @ Eröffnet einen neuen Ziffernstring.
   bx lr
 
 @------------------------------------------------------------------------------
-  Wortbirne Flag_visible, "fx."
+  Wortbirne Flag_visible, "x."
       @ ( Low High -- )
       @ Prints a s31.32 number
 @------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ zifferstringanfang: @ Eröffnet einen neuen Ziffernstring.
   b.n fdotn
 
 @------------------------------------------------------------------------------
-  Wortbirne Flag_visible, "fx.n"
+  Wortbirne Flag_visible, "x.n"
       @ ( Low High n -- )
       @ Prints a s31.32 number with given number of fractional digits
 fdotn:
