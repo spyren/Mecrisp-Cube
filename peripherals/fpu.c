@@ -84,25 +84,6 @@ void FPU_init(void) {
 //	__set_FPSCR();
 }
 
-/**
- *  @brief
- *      Macros can't be called from assembler
- *  @return
- *      None
- */
-void FPU_setFPSCR(uint32_t fpscr) {
-	__set_FPSCR(fpscr);
-}
-
-/**
- *  @brief
- *      Macros can't be called from assembler
- *  @return
- *      None
- */
-uint32_t FPU_getFPSCR(void) {
-	return __get_FPSCR();
-}
 
 /**
  *  @brief

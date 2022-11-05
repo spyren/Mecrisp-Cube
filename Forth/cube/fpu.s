@@ -28,28 +28,23 @@
  */
 
 
-
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fflags@"
+        Wortbirne Flag_inline, "fflags@"
 get_fflags:
         @ ( -- u ) get the current value of the Floating Point Status/Control register FPSCR
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	pushdatos
-	bl FPU_getFPSCR
-	movs	tos, r0
-	pop		{pc}
+	vmrs	tos, FPSCR
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fflags!"
+        Wortbirne Flag_inline, "fflags!"
 set_fflags:
         @ ( u --  ) assign the given value to the Floating Point Status/Control register FPSCR
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	bl FPU_setFPSCR
+	vmsr	FPSCR, tos
 	drop
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_foldable_2|Flag_inline, "f+"
@@ -230,6 +225,75 @@ fnumber:
 	mov		tos, #0		// fail
 1:
 	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "f0="
+        @ ( r -- ? )          flag is true if r is equal to zero
+@ -----------------------------------------------------------------------------
+	vmov 	s0, tos
+	vcmp.f32	s0, #0.0
+	vmrs 	APSR_nzcv, FPSCR
+	beq		1f
+	mov		tos, #0
+	bx		lr
+1:
+	mov		tos, #-1
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "f0<"
+        @ ( r -- ? )          flag is true if r is less than zero
+@ -----------------------------------------------------------------------------
+	vmov 	s0, tos
+	vcmp.f32	s0, #0.0
+	vmrs 	APSR_nzcv, FPSCR
+	bmi		1f
+	mov		tos, #0
+	bx		lr
+1:
+	mov		tos, #-1
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_2, "f<"
+        @ ( r1 r2 -- ? )      flag is true if r1 is less than r2
+@ -----------------------------------------------------------------------------
+	vmov 	s0, tos		// r2
+	drop
+	vmov 	s1, tos		// r1
+	vcmp.f32	s1, s0
+	vmrs 	APSR_nzcv, FPSCR
+	blt		1f
+	mov		tos, #0
+	bx		lr
+1:
+	mov		tos, #-1
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_3, "f~"
+        @ ( r1 r2 r3 -- ? )   If r3 is positive, flag is true if the absolute value of (r1 minus r2) is less than r3
+        @				If r3 is zero, flag is true if the implementation-dependent encoding of r1 and r2 are exactly identical
+        @                 (positive and negative zero are unequal if they have distinct encodings).
+        @               If r3 is negative, flag is true if the absolute value of (r1 minus r2) is less than the absolute value
+        @                 of r3 times the sum of the absolute values of r1 and r2.
+@ -----------------------------------------------------------------------------
+	vmov 	s2, tos		// r3
+	drop
+	vmov 	s1, tos		// r2
+	drop
+	vmov 	s0, tos		// r1
+	vsub.f32	s0, s1
+	vabs.f32 	s0, s0
+	vcmp.f32	s0, s2
+	vmrs 	APSR_nzcv, FPSCR
+	ble		1f
+	mov		tos, #0
+	bx		lr
+1:
+	mov		tos, #-1
+	bx 		lr
+
 
 @ -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
