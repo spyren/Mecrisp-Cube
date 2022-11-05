@@ -36,6 +36,7 @@
 #include "cmsis_os.h"
 #include <stdio.h>
 #include <float.h>
+#include <math.h>
 
 // Application include files
 // *************************
@@ -114,6 +115,16 @@ float FPU_str2f(char *str, int len) {
 	return strtof(fpu_string, NULL);
 }
 
+
+/**
+ *  @brief
+ *      Convert ASCII string to floating-point number
+ *  @return
+ *      float
+ */
+float FPU_sin(float arg) {
+	return sinf(arg);
+}
 
 ///**
 // *  @brief

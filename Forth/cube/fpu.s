@@ -52,96 +52,88 @@ set_fflags:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f+"
+        Wortbirne Flag_foldable_2|Flag_inline, "f+"
 f_add:
         @ ( r1 r2 -- r3 ) Add r1 to r2 giving the sum r3.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s1, tos
 	drop
 	vmov 	s0, tos
 	vadd.f32 s0, s1
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f-"
+        Wortbirne Flag_foldable_2|Flag_inline, "f-"
 f_sub:
         @ ( r1 r2 -- r3 ) Subtract r2 from r1, giving r3.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s1, tos
 	drop
 	vmov 	s0, tos
 	vsub.f32 s0, s1
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f*"
+        Wortbirne Flag_foldable_2|Flag_inline, "f*"
 f_star:
         @ ( r1 r2 -- r3 ) Multiply r1 by r2 giving r3.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s1, tos
 	drop
 	vmov 	s0, tos
 	vmul.f32 s0, s1
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f/"
+        Wortbirne Flag_foldable_2|Flag_inline, "f/"
 f_slash:
         @ ( r1 r2 -- r3 ) Divide r1 by r2, giving the quotient r3.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s1, tos
 	drop
 	vmov 	s0, tos
 	vdiv.f32 s0, s0, s1
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fsqrt"
+        Wortbirne Flag_foldable_1|Flag_inline, "fsqrt"
 fsqrt:
         @ ( r1 -- r2 ) r2 is the square root of r1.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s0, tos
 	vsqrt.f32 s0, s0
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fabs"
+        Wortbirne Flag_foldable_1|Flag_inline, "fabs"
 fabs:
         @ ( r1 -- r2 ) r2 is the absolute value of r1.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s0, tos
 	vabs.f32 s0, s0
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fnegate"
+        Wortbirne Flag_foldable_1|Flag_inline, "fnegate"
 fnegate:
         @ ( r1 -- r2 ) r2 is the negation of r1.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s0, tos
 	vneg.f32 s0, s0
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fround"
+        Wortbirne Flag_visible|Flag_foldable_1, "fround"
 fround:
         @ ( r1 -- r2 ) round r1 to an integral value using the "round to nearest" rule, giving r2
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s0, tos
 	ldr		r0, =0x3f000000	// 0.5
 	tst		tos, #0x80000000
@@ -153,51 +145,72 @@ fround:
 	vcvt.s32.f32 s0, s0
 	vcvt.f32.s32 s0, s0
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f>s"
+        Wortbirne Flag_foldable_1|Flag_inline, "f>s"
 f_to_s:
         @ ( r -- n ) n is the single-cell signed-integer equivalent of the integer portion of r.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s0, tos
 	vcvt.s32.f32 s0, s0
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "s>f"
+        Wortbirne Flag_foldable_1|Flag_inline, "s>f"
 s_to_f:
         @ ( n -- r ) r is the floating-point equivalent of the single-cell value n.
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	vmov 	s0, tos
 	vcvt.f32.s32 s0, s0
 	vmov 	tos, s0
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "pi"
+        Wortbirne Flag_inline, "0.0e0"
+fzero:
+        @ (  -- r ) to cheat strtof
+@ -----------------------------------------------------------------------------
+	pushdatos
+	mov 	tos, #0
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_inline, "0.e0"
+        @ (  -- r ) to cheat strtof
+@ -----------------------------------------------------------------------------
+	pushdatos
+	mov 	tos, #0
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_inline, "0.e"
+        @ (  -- r ) to cheat strtof
+@ -----------------------------------------------------------------------------
+	pushdatos
+	mov 	tos, #0
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_inline, "pi"
 pi:
         @ (  -- r ) r is pi approx. 3.14159274101257324
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	pushdatos
 	mov 	tos, #0x0fdb
 	movt 	tos, #0x4049
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "e"
+        Wortbirne Flag_inline, "e"
 euler:
         @ (  -- r ) r is e approx. 2.718281828459045235360287
 @ -----------------------------------------------------------------------------
-	push	{lr}
 	pushdatos
 	mov 	tos, #0xf854
 	movt 	tos, #0x402d
-	pop		{pc}
+	bx 		lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "fnumber"
@@ -224,7 +237,7 @@ fnumber:
 // -----------------------------------------------------------------------------
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "f>x"
+        Wortbirne Flag_visible|Flag_foldable_1, "f>x"
 f_to_x:
         @ ( r -- d ) d is the fixed-point equivalent of the floating-point r.
 	// : v>f ( v -- df )
@@ -268,7 +281,7 @@ f_to_x:
  	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "x>f"
+        Wortbirne Flag_visible|Flag_foldable_1, "x>f"
 x_to_f:
         @ ( d -- r ) r is the floating-point equivalent of the fixed-point d.
 	// : f>v ( df -- v ) L H -- v
@@ -317,7 +330,205 @@ f_dot:
 	bl		fdotn
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fsin"
+fsin:
+        @ ( r1 -- r2 )       r2 is the sine of the radian angle r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		sinf
+	mov 	tos, r0
+	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fcos"
+fcos:
+        @ ( r1 -- r2 )       r2 is the cosine of the radian angle r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		cosf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "ftan"
+ftan:
+        @ ( r1 -- r2 )       r2 is the principal radian angle whose tangent is r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		tanf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fasin"
+fasin:
+        @ ( r1 -- r2 )       r2 is the principal radian angle whose sine is r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		fasin
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "facos"
+facos:
+        @ ( r1 -- r2 )       r2 is the principal radian angle whose cosine is r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		acosf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fatan"
+fatan:
+        @ ( r1 -- r2 )       r2 is the principal radian angle whose tangent is r1.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		atanf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fsinh"
+fsinh:
+        @ ( r1 -- r2 )       r2 is the hyperbolic sine of r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		sinhf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fcosh"
+fcosh:
+        @ ( r1 -- r2 )       r2 is the hyperbolic cosine of r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		coshf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "ftanh"
+ftanh:
+        @ ( r1 -- r2 )       r2 is the hyperbolic tangent of r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		tanhf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fasinh"
+fasinh:
+        @ ( r1 -- r2 )       r2 is the floating-point value whose hyperbolic sine is r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		asinhf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "facosh"
+facosh:
+        @ ( r1 -- r2 )       r2 is the floating-point value whose hyperbolic cosine is r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		acoshf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fatanh"
+fatanh:
+        @ ( r1 -- r2 )       r2 is the floating-point value whose hyperbolic tangent is r1.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		atanhf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fceil"
+fceil:
+        @ ( r1 -- r2 )       return the smallest integral value that is not less than r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		ceilf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "ffloor"
+ffloor:
+        @ ( r1 -- r2 )       Round r1 to an integral value using the "round toward negative infinity" rule, giving r2
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		floorf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fexp"
+fexp:
+        @ ( r1 -- r2 )       raise e to the power r1, giving r2.
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		expf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fln"
+fln:
+        @ ( r1 -- r2 )       r2 is the natural logarithm of r1. An ambiguous condition exists if r1 is less than or equal to zero
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		logf
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "flog"
+flog:
+        @ ( r1 -- r2 )       r2 is the base-ten logarithm of r1. An ambiguous condition exists if r1 is less than or equal to zero
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r0, tos
+	bl		log10f
+	mov 	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_2, "f**"
+fpow:
+        @ ( r1 r2 -- r3 )       raise r1 to the power r2, giving the product r3
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	mov 	r1, tos	// r2
+	drop
+	mov		r0, tos // r1
+	bl		powf
+	mov 	tos, r0 // r3
+	pop		{pc}
 
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !
