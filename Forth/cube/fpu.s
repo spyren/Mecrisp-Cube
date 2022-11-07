@@ -243,16 +243,15 @@ fnumber:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f0<"
         @ ( r -- ? )          flag is true if r is less than zero
+f0less:
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos
-	vcmp.f32	s0, #0.0
-	vmrs 	APSR_nzcv, FPSCR
-	bmi		1f
-	mov		tos, #0
-	bx		lr
-1:
+	tst		tos, #0x80000000
+	beq		1f
 	mov		tos, #-1
-	bx 		lr
+	bx	lr
+1:
+	mov		tos, #0
+	bx	lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_2, "f<"
@@ -292,6 +291,26 @@ fnumber:
 	bx		lr
 1:
 	mov		tos, #-1
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "f>expo"
+f2expo:
+        @ ( r1 -- n )       get exponent
+@ -----------------------------------------------------------------------------
+	lsr		tos, tos, #23		// remove fraction
+	and		tos, tos, #0xff		// remove sign
+	sub		tos, tos, #127		// bias
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "f>fract"
+f2fract:
+        @ ( r1 -- u )       get fraction part of r1
+@ -----------------------------------------------------------------------------
+	lsl		tos, tos, 9		// remove sign and exponent
+	lsr		tos, tos, 9
+	orr		tos, tos, #0x00800000		// set 23. bit
 	bx 		lr
 
 
@@ -393,6 +412,156 @@ f_dot:
 	mov		tos, #4
 	bl		fdotn
 	pop		{pc}
+
+
+// Words Using C Math Library
+// **************************
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "precision"
+precision:
+        @ ( -- u )      return the number of significant digits currently used by F., FE., or FS. as u
+@ -----------------------------------------------------------------------------
+
+	pushdatos
+	ldr		tos, =Fprecision
+	ldr		tos, [tos]
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "set-precision"
+set_precision:
+        @ ( -- u )      ( u -- )      set the number of significant digits currently used by F., FE., or FS. to u
+@ -----------------------------------------------------------------------------
+	cmp		tos, #0
+	blt		1f
+	cmp		tos, #8
+	bgt		1f
+	ldr		r0, =Fprecision
+	str		tos, [r0]
+1:
+	drop
+	bx 		lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "fs."
+fs_type:
+        @ ( r --  )     display, with a trailing space, the floating-point number r in scientific notation
+@ -----------------------------------------------------------------------------
+// s16 |r|
+// s17 exponent decimal
+// s18
+// s19 divisor
+// s20 digit
+
+	push		{r0-r3, lr}
+	cmp			tos, #0
+	bne			3f
+	pushdatos					// special case zero
+	mov			tos, #'0'
+	bl			emit
+	pushdatos
+	mov			tos, #'.'
+	bl			emit
+	ldr			r0, =Fprecision
+	ldr			r0, [r0]
+4:
+	pushdatos
+	mov			tos, #'0'
+	bl			emit
+	sub			r0, #1			// all digits?
+	cmp			r0, #0
+	bne			4b
+	pushdatos
+	mov			tos, #'E'
+	bl			emit
+	pushdatos
+	mov			tos, #'0'
+	bl			emit
+	b			5f
+
+3:
+	vmov		s16, tos			// |r| -> s16
+	vabs.f32 	s16, s16
+	tst			tos, #0x80000000
+	beq			1f					// positive number
+	pushdatos
+	mov			tos, #'-'			// '-'
+	bl			emit
+1:
+	vmov		r0, s16
+	bl			log10f
+	vmov 		s17, r0				// get the integer part of exponent
+	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
+	vcvt.f32.s32 s17, s17
+
+	ldr			r1, =Fprecision		// |r| = |r| + 0.5 * 10^(-precision+exp-1) for rounding
+	ldr			r1, [r1]
+	negs		r1, r1
+	vcvt.s32.f32 s0, s17
+	vmov		r0, s0
+	add			r1, r1, r0
+	vmov		s1, r1
+	vcvt.f32.s32 s1, s1
+	vmov		s0, #10.0
+	vmov		r0, s0
+	vmov		r1, s1
+	bl			powf
+	vmov		s0, r0
+	vmov		s1, #0.5
+	vmul.f32	s0, s0, s1
+	vadd.f32	s16, s16, s0
+
+	vmov		s0, #10.0			// divisor = 10^(exponent)
+	vmov		r0, s0
+	vmov		r1, s17				// exponent
+	bl			powf
+	vmov		s1, r0
+	vmov		s19, s1				// save divisor
+	vdiv.f32	s0, s16, s1
+	vcvt.s32.f32 s0, s0 			// digit
+	vcvt.f32.s32 s20, s0
+	pushdatos
+	vmov		tos, s0
+	add			tos, tos, #'0'		// '0'+digit
+	bl			emit
+
+	pushdatos
+	mov			tos, #'.'			// '.'
+	bl			emit
+
+	ldr			r0, =Fprecision
+	ldr			r0, [r0]
+//	vmov		s20, s17
+2:
+	vmul.f32	s0, s19, s20		// remove last digit
+	vsub.f32	s16, s16, s0
+	vmov		s1, #10.0
+	vmul.f32	s16, s1
+	vdiv.f32	s0, s16, s19
+	vcvt.s32.f32 s0, s0 			// digit
+	vcvt.f32.s32 s20, s0
+	pushdatos
+	vmov		tos, s0
+	add			tos, tos, #'0'		// '0'+digit
+	bl			emit
+
+	sub			r0, #1				// all digits?
+	cmp			r0, #0
+	bne			2b
+
+	pushdatos
+	mov			tos, #'E'			// 'E'
+	bl			emit
+
+	pushdatos
+	vcvt.s32.f32 s0, s17 			// exponent decimal
+	vmov		tos, s0
+	bl			dot					// type exponent
+5:
+	drop
+ 	pop			{r0-r3, pc}
+
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "fsin"
@@ -593,6 +762,5 @@ fpow:
 	bl		powf
 	mov 	tos, r0 // r3
 	pop		{pc}
-
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !

@@ -148,6 +148,8 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 
 	ramallot	DriveNumber, 4
 
+	ramallot	Fprecision, 4
+
 .global		Dictionarypointer
 .global		Fadenende
 .global		ZweitDictionaryPointer
@@ -427,6 +429,11 @@ Forth:
 // Stack already set in the main thread
 //	ldr		r0, =returnstackanfang
 //	str		sp, [r0]
+
+// default precision for f., fe., fs.
+	ldr		r0, =Fprecision
+	ldr		r1, =4
+	str		r1, [r0]
 
 // set the local storage pointer to the user variables
 	ldr		r0, =0	// current task xTaskToQuery = 0

@@ -81,7 +81,6 @@ void FPU_init(void) {
 	if (fpu_MutexID == NULL) {
 		Error_Handler();
 	}
-//	__set_FPSCR();
 }
 
 
@@ -96,40 +95,4 @@ float FPU_str2f(char *str, int len) {
 	return strtof(fpu_string, NULL);
 }
 
-
-/**
- *  @brief
- *      Convert ASCII string to floating-point number
- *  @return
- *      float
- */
-float FPU_sin(float arg) {
-	return sinf(arg);
-}
-
-///**
-// *  @brief
-// *      Display, with a trailing space, the top number on the floating-point stack using fixed-point notation
-// *  @param[in]
-// *      forth_stack   TOS (lower word) and SPS (higher word)
-// *  @param[in]
-// *      number
-// *  @return
-// *      TOS (lower word) and SPS (higher word)
-// */
-//uint64_t FPU_fdot(uint64_t forth_stack, float number) {
-//	uint64_t stack;
-//	stack = forth_stack;
-//
-//	stack = FS_type(stack, (uint8_t*)fpu_string, strlen(fpu_string));
-//
-//	// only one thread is allowed to use fpu string
-//	osMutexAcquire(fpu_MutexID, osWaitForever);
-//
-//	sprintf(fpu_string, "%f ", number);
-//
-//	osMutexRelease(fpu_MutexID);
-//
-//	return stack;
-//}
 
