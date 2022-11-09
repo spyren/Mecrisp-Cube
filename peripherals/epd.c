@@ -119,17 +119,25 @@
 #define SSD1680_READ_OTP 		0x2D
 #define SSD1680_READ_STATUS 	0x2F
 #define SSD1680_WRITE_LUT 		0x32
+#define SSD1680_PROGRAM_OTP		0x36
+#define SSD1680_WRITE_OPTION	0x37
 #define SSD1680_WRITE_BORDER 	0x3C
 #define SSD1680_SET_RAMXPOS 	0x44
 #define SSD1680_SET_RAMYPOS 	0x45
 #define SSD1680_SET_RAMXCOUNT 	0x4E
 #define SSD1680_SET_RAMYCOUNT 	0x4F
 
+// Types
+
+typedef union {
+   uint8_t blob[EPD_LINES * EPD_X_RESOLUTION];
+   uint8_t rows[EPD_X_RESOLUTION][EPD_LINES];
+} frame_buffer_t;
 
 // Private function prototypes
 // ***************************
 static int busy_wait(void);
-//static void setPos(uint8_t x, uint8_t y);
+static void write_displayram(frame_buffer_t *buffer, uint8_t RAM);
 static void putGlyph6x8(int ch);
 static void putGlyph8x8(int ch);
 static void putGlyph8x16(int ch);
@@ -173,12 +181,8 @@ static uint8_t CurrentPosY = 0;
 
 static EPD_FontT CurrentFont = EPD_FONT6X8;
 
-typedef union {
-   uint8_t blob[EPD_LINES * EPD_X_RESOLUTION];
-   uint8_t rows[EPD_X_RESOLUTION][EPD_LINES];
-} display_buffer_t;
-
-static display_buffer_t *display_buffer;
+static frame_buffer_t *frame_buffer;
+static frame_buffer_t *shadow_buffer;
 
 
 // Public Functions
@@ -192,7 +196,6 @@ static display_buffer_t *display_buffer;
  *      None
  */
 void EPD_init(void) {
-	uint8_t buf[6];
 	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
 	// no chip select
@@ -216,139 +219,12 @@ void EPD_init(void) {
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	HAL_GPIO_Init(EPD_RST_GPIO_Port, &GPIO_InitStruct);
 
-	// activate reset
-	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_SET);
+	frame_buffer = pvPortMalloc(sizeof(frame_buffer_t));
+	shadow_buffer = pvPortMalloc(sizeof(frame_buffer_t));
 
-	if (busy_wait()) {
-//	if (TRUE) {
-		// timeout -> no display connected
-		epdReady = FALSE;
-		return;
-	} else {
-		epdReady = TRUE;
-	}
-
-	display_buffer = pvPortMalloc(sizeof(display_buffer_t));
-
-	// SW Reset
-	buf[0] = 1;
-	buf[1] = SSD1680_SW_RESET;
-	EPD_sendCommand(buf);
-	busy_wait();
-
-	// Set display size and driver output control
-	// 250-1
-	buf[0] = 4;
-	buf[1] = SSD1680_DRIVER_CONTROL;
-	buf[2] = EPD_X_RESOLUTION - 1;
-	buf[3] = 0;
-	buf[4] = 0;
-	EPD_sendCommand(buf);
-
-	// Ram data entry mode
-	// 1: Y decrement, X increment (pixel line)
-	// 3: Y increment, X increment, Adafruit
-	buf[0] = 2;
-	buf[1] = SSD1680_DATA_MODE;
-	buf[2] = 3;
-	EPD_sendCommand(buf);
-
-	// set RAM X address range
-	buf[0] = 3;
-	buf[1] = SSD1680_SET_RAMXPOS;
-	buf[2] = 0; 			// start
-	buf[3] = EPD_LINES-1;		// end
-	EPD_sendCommand(buf);
-
-	// set RAM Y address range
-	buf[0] = 5;
-	buf[1] = SSD1680_SET_RAMYPOS;
-	buf[2] = 0; 					// start lower
-	buf[3] = 0; 					// start higer
-	buf[4] = EPD_X_RESOLUTION - 1; 	// end lower
-	buf[5] = 0; 					// end higer
-	EPD_sendCommand(buf);
-
-	// border color
-	// A [1:0] GS Transition setting for VBD: 01 LUT1
-	// A [2]   GS Transition control:          1 Follow LUT
-	// A [5:4] Fix Level Setting for VBD:     00 VSS
-	// A [7:6] Select VBD option:             00 GS Transition
-	buf[0] = 2;
-	buf[1] = SSD1680_WRITE_BORDER;
-	buf[2] = 0x01;
-	EPD_sendCommand(buf);
-
-	// Vcom Voltage
-	// 0x70: -2.8 V
-	// 0x36: -1.35 ? Adafruit
-	buf[0] = 2;
-	buf[1] = SSD1680_WRITE_VCOM;
-//	buf[2] = 0x36; // Adafruit
-	buf[2] = 0x70;
-	EPD_sendCommand(buf);
-
-	// Set gate voltage
-	// 0x17: 20 V
-	buf[0] = 2;
-	buf[1] = SSD1680_GATE_VOLTAGE;
-	buf[2] = 0x17;
-	EPD_sendCommand(buf);
-
-	// Set source voltage
-	buf[0] = 4;
-	buf[1] = SSD1680_SOURCE_VOLTAGE;
-	buf[2] = 0x41;
-	buf[3] = 0x00;
-	buf[4] = 0x32;
-	EPD_sendCommand(buf);
-
-	// RAM 0x26 bypass : enable
-	buf[0] = 3;
-	buf[1] = SSD1680_DISP_CTRL1;
-	buf[2] = 0x40;
-	buf[3] = 0x80;
-	EPD_sendCommand(buf);
-
-	// Load Waveform LUT
-	// Select internal temperature sensor
-	buf[0] = 2;
-	buf[1] = SSD1680_TEMP_CONTROL;
-	buf[2] = 0x80;
-	EPD_sendCommand(buf);
-	// Set Display update control: Enable clock, load TS value, load LUT from OTP and Clock off
-	buf[0] = 2;
-	buf[1] = SSD1680_DISP_CTRL2;
-	buf[2] = 0xb1;
-	EPD_sendCommand(buf);
-	// Master Activation: Run display update sequence which is defined by Command 0x22
-	buf[0] = 1;
-	buf[1] = SSD1680_MASTER_ACTIVATE;
-	EPD_sendCommand(buf);
-	busy_wait();
-
-	// Write always into RAM1 (B/W)
-	buf[0] = 1;
-	buf[1] = SSD1680_WRITE_RAM1;
-	EPD_sendCommand(buf);
-
-	// Set RAM X address counter
-	buf[0] = 2;
-	buf[1] = SSD1680_SET_RAMXCOUNT;
-	buf[2] = 0;
-	EPD_sendCommand(buf);
-
-	// Set RAM Y address counter
-	buf[0] = 3;
-	buf[1] = SSD1680_SET_RAMYCOUNT;
-	buf[2] = 0;
-	buf[3] = 0;
-	EPD_sendCommand(buf);
+	EPD_wakeUp();
 
 	EPD_clear();
-//	memset(display_buffer->blob, 0x0F, 128);
-//	EPD_update();
 
 	EPD_setPos(0,0);
 
@@ -493,8 +369,21 @@ void EPD_init(void) {
 //	EPD_puts("Forth for the STM32WB\r\n");
 //	EPD_puts("(c)2022 peter@spyr.ch");
 
-
 	EPD_update();
+
+	osDelay(2000);
+	EPD_startPart();
+	EPD_setPos(0, 5);
+	EPD_puts("Aber Hallo!     ");
+	EPD_updatePart();
+
+	osDelay(2000);
+//	EPD_deepSleep();
+	EPD_wakeUp();
+	EPD_clear();
+	EPD_puts("Hallo velo!");
+	EPD_update();
+
 
 }
 
@@ -728,7 +617,7 @@ void EPD_clear(void) {
 	}
 
 	// fill with 0xff
-	memset(display_buffer->blob, 0xff, sizeof(display_buffer->blob));
+	memset(frame_buffer->blob, 0xff, sizeof(frame_buffer->blob));
 
 	EPD_setPos(0, 0);
 }
@@ -749,7 +638,7 @@ void EPD_writeColumn(uint8_t column) {
 		return ;
 	}
 
-	display_buffer->rows[(EPD_COLUMNS-1) - CurrentPosX][CurrentPosY] = ~bitswap(column);
+	frame_buffer->rows[(EPD_COLUMNS-1) - CurrentPosX][CurrentPosY] = ~bitswap(column);
 
 	postwrap(1, 1);
 }
@@ -762,13 +651,16 @@ void EPD_writeColumn(uint8_t column) {
  *      Column
  */
 int EPD_readColumn(void) {
-	return ~bitswap(display_buffer->rows[(EPD_COLUMNS-1) - CurrentPosX][CurrentPosY]);
+	return ~bitswap(frame_buffer->rows[(EPD_COLUMNS-1) - CurrentPosX][CurrentPosY]);
 }
 
 
 /**
  *  @brief
  *  	Update the EPD display
+ *
+ *  	Copy the whole frame buffer to the display RAM and make a full update.
+ *  	Slow but good quality.
  *  @return
  *      none
  */
@@ -778,6 +670,284 @@ void EPD_update(void) {
 	if (!epdReady) {
 		return;
 	}
+
+	write_displayram(frame_buffer, SSD1680_WRITE_RAM1);
+
+	// update display
+	buf[0] = 2;
+	buf[1] = SSD1680_DISP_CTRL2;
+	buf[2] = 0xc7;
+	EPD_sendCommand(buf);
+
+	// Master Activation
+	buf[0] = 1;
+	buf[1] = SSD1680_MASTER_ACTIVATE;
+	EPD_sendCommand(buf);
+	busy_wait();
+}
+
+
+/**
+ *  @brief
+ *  	Start Partial update of the EPD display
+ *
+ *  	Copy the frame buffer to the shadow buffer
+ *  @return
+ *      none
+ */
+void EPD_startPart(void) {
+//	uint8_t buf[10];
+
+	if (!epdReady) {
+		return;
+	}
+
+//	// ping pong mode
+//	buf[0] = 9;
+//	buf[1] = SSD1680_WRITE_OPTION;
+//	buf[2] = 0x00;
+//	buf[3] = 0x00;
+//	buf[4] = 0x00;
+//	buf[5] = 0x00;
+//	buf[6] = 0x00;
+//	buf[7] = 0x40;
+//	buf[8] = 0x00;
+//	buf[9] = 0x00;
+//	EPD_sendCommand(buf);
+
+	memcpy(shadow_buffer, frame_buffer, sizeof(frame_buffer_t));
+}
+
+
+/**
+ *  @brief
+ *  	Update Part of the EPD display
+ *  @return
+ *      none
+ */
+void EPD_updatePart(void) {
+	uint8_t buf[10];
+
+	if (!epdReady) {
+		return;
+	}
+
+
+	// load partial update LUT by MCU
+	// ??
+
+	// Set gate voltage
+	// 0x17: 20 V
+	buf[0] = 2;
+	buf[1] = SSD1680_GATE_VOLTAGE;
+	buf[2] = 0x17;
+	EPD_sendCommand(buf);
+
+	// Set source voltage
+	buf[0] = 4;
+	buf[1] = SSD1680_SOURCE_VOLTAGE;
+	buf[2] = 0x41;
+	buf[3] = 0x00;	// 0xA8
+	buf[4] = 0x32;
+	EPD_sendCommand(buf);
+
+	// Vcom Voltage
+	// 0x70: -2.8 V
+	// 0x36: -1.35 ? Adafruit
+	buf[0] = 2;
+	buf[1] = SSD1680_WRITE_VCOM;
+//	buf[2] = 0x36; // Adafruit
+	buf[2] = 0x70;
+	EPD_sendCommand(buf);
+
+	// RAM 0x26 bypass : disable
+	buf[0] = 3;
+	buf[1] = SSD1680_DISP_CTRL1;
+	buf[2] = 0x00;
+	buf[3] = 0x80;
+	EPD_sendCommand(buf);
+
+	// write NEW image in RAM 0x24
+	write_displayram(frame_buffer, SSD1680_WRITE_RAM1);
+	// write OLD image in RAM 0x26
+	write_displayram(shadow_buffer, SSD1680_WRITE_RAM2);
+
+	// update display
+	buf[0] = 2;
+	buf[1] = SSD1680_DISP_CTRL2;
+	buf[2] = 0xCF;
+//	buf[2] = 0x1C;
+	EPD_sendCommand(buf);
+
+	// Master Activation
+	buf[0] = 1;
+	buf[1] = SSD1680_MASTER_ACTIVATE;
+	EPD_sendCommand(buf);
+	busy_wait();
+}
+
+
+/**
+ *  @brief
+ *  	Enter the deep sleep mode
+ *
+ *  	Exit only with harware reset
+ *  @return
+ *      none
+ */
+void EPD_deepSleep(void) {
+	uint8_t buf[5];
+
+	if (!epdReady) {
+		return;
+	}
+
+	// Master Activation
+	buf[0] = 2;
+	buf[1] = SSD1680_DEEP_SLEEP;
+	buf[2] = 0x01;
+	EPD_sendCommand(buf);
+	osDelay(10);		// wait for power off
+}
+
+
+/**
+ *  @brief
+ *  	Wake up display
+ *  @return
+ *      none
+ */
+void EPD_wakeUp(void) {
+	uint8_t buf[10];
+
+	// activate reset
+	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_SET);
+
+	if (busy_wait()) {
+//	if (TRUE) {
+		// timeout -> no display connected
+		epdReady = FALSE;
+		return;
+	} else {
+		epdReady = TRUE;
+	}
+
+	// SW Reset
+	buf[0] = 1;
+	buf[1] = SSD1680_SW_RESET;
+	EPD_sendCommand(buf);
+	busy_wait();
+
+	// Set display size and driver output control
+	// 250-1
+	buf[0] = 4;
+	buf[1] = SSD1680_DRIVER_CONTROL;
+	buf[2] = EPD_X_RESOLUTION - 1;
+	buf[3] = 0;
+	buf[4] = 0;
+	EPD_sendCommand(buf);
+
+	// Ram data entry mode
+	// 1: Y decrement, X increment (pixel line)
+	// 3: Y increment, X increment, Adafruit
+	buf[0] = 2;
+	buf[1] = SSD1680_DATA_MODE;
+	buf[2] = 3;
+	EPD_sendCommand(buf);
+
+	// set RAM X address range
+	buf[0] = 3;
+	buf[1] = SSD1680_SET_RAMXPOS;
+	buf[2] = 0; 			// start
+	buf[3] = EPD_LINES-1;		// end
+	EPD_sendCommand(buf);
+
+	// set RAM Y address range
+	buf[0] = 5;
+	buf[1] = SSD1680_SET_RAMYPOS;
+	buf[2] = 0; 					// start lower
+	buf[3] = 0; 					// start higer
+	buf[4] = EPD_X_RESOLUTION - 1; 	// end lower
+	buf[5] = 0; 					// end higer
+	EPD_sendCommand(buf);
+
+	// border color
+	// A [1:0] GS Transition setting for VBD: 01 LUT1
+	// A [2]   GS Transition control:          1 Follow LUT
+	// A [5:4] Fix Level Setting for VBD:     00 VSS
+	// A [7:6] Select VBD option:             00 GS Transition
+	// 0xC0 yes optoelectronics YMS122250-0213ABCMFGL JUN.12.2020 -> grey border
+	buf[0] = 2;
+	buf[1] = SSD1680_WRITE_BORDER;
+	buf[2] = 0x01;
+	EPD_sendCommand(buf);
+
+	// Vcom Voltage
+	// 0x70: -2.8 V
+	// 0x36: -1.35 ? Adafruit
+	buf[0] = 2;
+	buf[1] = SSD1680_WRITE_VCOM;
+//	buf[2] = 0x36; // Adafruit
+	buf[2] = 0x70;
+	EPD_sendCommand(buf);
+
+	// Set gate voltage
+	// 0x17: 20 V
+	buf[0] = 2;
+	buf[1] = SSD1680_GATE_VOLTAGE;
+	buf[2] = 0x17;
+	EPD_sendCommand(buf);
+
+	// Set source voltage
+	buf[0] = 4;
+	buf[1] = SSD1680_SOURCE_VOLTAGE;
+	buf[2] = 0x41;
+	buf[3] = 0x00;
+	buf[4] = 0x32;
+	EPD_sendCommand(buf);
+
+	// RAM 0x26 bypass : enable
+	buf[0] = 3;
+	buf[1] = SSD1680_DISP_CTRL1;
+	buf[2] = 0x40;
+	buf[3] = 0x80;
+	EPD_sendCommand(buf);
+
+//	// ping pong mode
+//	buf[0] = 9;
+//	buf[1] = SSD1680_WRITE_OPTION;
+//	buf[2] = 0x00;
+//	buf[3] = 0x40;
+//	buf[4] = 0x20;
+//	buf[5] = 0x10;
+//	buf[6] = 0x00;
+//	buf[7] = 0x40;
+//	buf[8] = 0x00;
+//	buf[9] = 0x00;
+//	EPD_sendCommand(buf);
+
+	// Load Waveform LUT
+	// Select internal temperature sensor
+	buf[0] = 2;
+	buf[1] = SSD1680_TEMP_CONTROL;
+	buf[2] = 0x80;
+	EPD_sendCommand(buf);
+	// Set Display update control: Enable clock, load TS value, load LUT from OTP and Clock off
+	buf[0] = 2;
+	buf[1] = SSD1680_DISP_CTRL2;
+	buf[2] = 0xb1;
+	EPD_sendCommand(buf);
+	// Master Activation: Run display update sequence which is defined by Command 0x22
+	buf[0] = 1;
+	buf[1] = SSD1680_MASTER_ACTIVATE;
+	EPD_sendCommand(buf);
+	busy_wait();
+
+	// Write always into RAM1 (B/W)
+	buf[0] = 1;
+	buf[1] = SSD1680_WRITE_RAM1;
+	EPD_sendCommand(buf);
 
 	// Set RAM X address counter
 	buf[0] = 2;
@@ -791,54 +961,7 @@ void EPD_update(void) {
 	buf[2] = 0;
 	buf[3] = 0;
 	EPD_sendCommand(buf);
-
-	// only one thread is allowed to use the SPI
-	osMutexAcquire(RTSPI_MutexID, osWaitForever);
-
-	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
-	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
-	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
-	// dummy write to synchronize the CLK
-	RTSPI_Write(0xff);
-
-	// command
-	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
- 	// chip select
-	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_RESET);
-	RTSPI_Write(SSD1680_WRITE_RAM1);
-
-	// Data
-	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_SET);
-	// copy framebuffer to display
-	RTSPI_WriteData(display_buffer->blob, EPD_LINES * EPD_X_RESOLUTION);
-	// Command
-	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
-	busy_wait();
-
-	// chip deselect
-	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
-
-	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
-	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
-	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
-	// dummy write to synchronize the CLK
-	RTSPI_Write(0xff);
-
-	osMutexRelease(RTSPI_MutexID);
-
-	// update display
-	buf[0] = 2;
-	buf[1] = SSD1680_DISP_CTRL2;
-	buf[2] = 0xf7;
-	EPD_sendCommand(buf);
-
-	// Master Activation
-	buf[0] = 1;
-	buf[1] = SSD1680_MASTER_ACTIVATE;
-	EPD_sendCommand(buf);
-	busy_wait();
 }
-
 
 /**
  *  @brief
@@ -898,18 +1021,62 @@ static int busy_wait(void) {
 }
 
 
-///**
-// *  @brief
-// *      Set the framebuffer position (page and column address)
-// *  @param[in]
-// *  	x 0 .. 127, column
-// *  @param[in]
-// *  	y 0 .. EPD_LINES, page/line
-// *  @return
-// *      None
-// */
-//static void setPos(uint8_t x, uint8_t y) {
-//}
+/**
+ *  @brief
+ *      Write the framebuffer to the display memory
+ *  @return
+ *      None
+ */
+static void write_displayram(frame_buffer_t *buffer, uint8_t RAM) {
+	uint8_t buf[5];
+
+	// Set RAM X address counter
+	buf[0] = 2;
+	buf[1] = SSD1680_SET_RAMXCOUNT;
+	buf[2] = 0;
+	EPD_sendCommand(buf);
+
+	// Set RAM Y address counter
+	buf[0] = 3;
+	buf[1] = SSD1680_SET_RAMYCOUNT;
+	buf[2] = 0;
+	buf[3] = 0;
+	EPD_sendCommand(buf);
+
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_1EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_LOW);
+	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+	// dummy write to synchronize the CLK
+	RTSPI_Write(0xff);
+
+	// command
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
+ 	// chip select
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_RESET);
+	RTSPI_Write(RAM);
+
+	// Data
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_SET);
+	// copy framebuffer to display
+	RTSPI_WriteData(buffer->blob, EPD_LINES * EPD_X_RESOLUTION);
+	// Command
+	HAL_GPIO_WritePin(EPD_DC_GPIO_Port, EPD_DC_Pin, GPIO_PIN_RESET);
+	busy_wait();
+
+	// chip deselect
+	HAL_GPIO_WritePin(EPD_ECS_GPIO_Port, EPD_ECS_Pin, GPIO_PIN_SET);
+
+	LL_SPI_SetClockPhase(SPI1, LL_SPI_PHASE_2EDGE);
+	LL_SPI_SetClockPolarity(SPI1, LL_SPI_POLARITY_HIGH);
+	//	LL_SPI_SetTransferBitOrder(LL_SPI_LSB_FIRST);
+	// dummy write to synchronize the CLK
+	RTSPI_Write(0xff);
+
+	osMutexRelease(RTSPI_MutexID);
+}
 
 
 /**
@@ -932,7 +1099,7 @@ static void putGlyph6x8(int ch) {
 
 	// fill the buffer with 6 columns
 	for (i = 0; i < 6; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY] = ~bitswap(FONT6X8_getColumn(ch, i));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY] = ~bitswap(FONT6X8_getColumn(ch, i));
 	}
 
 
@@ -972,7 +1139,7 @@ static void putGlyph8x8(int ch) {
 
 	// fill the buffer with 8 columns
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY] = ~bitswap(FONT8X8_getColumn(ch, i));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY] = ~bitswap(FONT8X8_getColumn(ch, i));
 	}
 
 #ifdef	EPD_PAGE_VERTICAL
@@ -1009,8 +1176,8 @@ static void putGlyph8x16(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X14_getUpperColumn(ch, i));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X14_getLowerColumn(ch, i));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X14_getUpperColumn(ch, i));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X14_getLowerColumn(ch, i));
 	}
 
 
@@ -1053,8 +1220,8 @@ static void putGlyph12x16(int ch) {
 
 	// fill the buffer with 12 columns on 2 lines (pages)
 	for (i = 0; i < 12; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT12X16_getUpperColumn(ch, i));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT12X16_getLowerColumn(ch, i));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT12X16_getUpperColumn(ch, i));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT12X16_getLowerColumn(ch, i));
 	}
 
 #ifdef	EPD_PAGE_VERTICAL
@@ -1099,8 +1266,8 @@ static void putGlyph8x16B(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X16B_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X16B_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X16B_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X16B_getScanColumn(ch, i, 1));
 	}
 	postwrap(8, 2);
 }
@@ -1123,8 +1290,8 @@ static void putGlyph8x16S(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 8; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X16S_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X16S_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT8X16S_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT8X16S_getScanColumn(ch, i, 1));
 	}
 	postwrap(8, 2);
 }
@@ -1147,9 +1314,9 @@ static void putGlyph11x24B(int ch) {
 
 	// fill the buffer with 11 columns on 3 lines (pages)
 	for (i = 0; i < 11; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT11X24B_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT11X24B_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24B_getScanColumn(ch, i, 2));
 	}
 	postwrap(11, 3);
 }
@@ -1172,9 +1339,9 @@ static void putGlyph10x24S(int ch) {
 
 	// fill the buffer with 12 columns on 3 lines (pages)
 	for (i = 0; i < 10; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT10X24S_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT10X24S_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT10X24S_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT10X24S_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT10X24S_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT10X24S_getScanColumn(ch, i, 2));
 	}
 	postwrap(10, 3);
 }
@@ -1197,9 +1364,9 @@ static void putGlyph10x24B(int ch) {
 
 	// fill the buffer with 12 columns on 3 lines (pages)
 	for (i = 0; i < 10; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT10X24B_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT10X24B_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT10X24B_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT10X24B_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT10X24B_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT10X24B_getScanColumn(ch, i, 2));
 	}
 	postwrap(10, 3);
 }
@@ -1222,9 +1389,9 @@ static void putGlyph11x24S(int ch) {
 
 	// fill the buffer with 11 columns on 3 lines (pages)
 	for (i = 0; i < 11; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT11X24S_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT11X24S_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24S_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT11X24S_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT11X24S_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT11X24S_getScanColumn(ch, i, 2));
 	}
 	postwrap(11, 3);
 }
@@ -1247,10 +1414,10 @@ static void putGlyph16x32B(int ch) {
 
 	// fill the buffer with 16 columns on 4 lines (pages)
 	for (i = 0; i < 16; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT16X32B_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 2));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 3));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT16X32B_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32B_getScanColumn(ch, i, 3));
 	}
 	postwrap(16, 4);
 }
@@ -1273,10 +1440,10 @@ static void putGlyph16x32S(int ch) {
 
 	// fill the buffer with 16 columns on 4 lines (pages)
 	for (i = 0; i < 16; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT16X32S_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 2));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 3));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT16X32S_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+3] = ~bitswap(FONT16X32S_getScanColumn(ch, i, 3));
 	}
 	postwrap(16, 4);
 }
@@ -1299,8 +1466,8 @@ static void putGlyph9x16B(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 9; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT9X16B_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT9X16B_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT9X16B_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT9X16B_getScanColumn(ch, i, 1));
 	}
 	postwrap(9, 2);
 }
@@ -1323,8 +1490,8 @@ static void putGlyph9x16S(int ch) {
 
 	// fill the buffer with 8 columns on 2 lines (pages)
 	for (i = 0; i < 9; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT9X16S_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT9X16S_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT9X16S_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT9X16S_getScanColumn(ch, i, 1));
 	}
 	postwrap(9, 2);
 }
@@ -1347,9 +1514,9 @@ static void putGlyph13x24B(int ch) {
 
 	// fill the buffer with 13 columns on 3 lines (pages)
 	for (i = 0; i < 13; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT13X24B_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT13X24B_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24B_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT13X24B_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT13X24B_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24B_getScanColumn(ch, i, 2));
 	}
 	postwrap(13, 3);
 }
@@ -1372,9 +1539,9 @@ static void putGlyph13x24S(int ch) {
 
 	// fill the buffer with 13 columns on 3 lines (pages)
 	for (i = 0; i < 13; i++) {
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT13X24S_getScanColumn(ch, i, 0));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 1));
-		display_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 2));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY]   = ~bitswap(FONT13X24S_getScanColumn(ch, i, 0));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+1] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 1));
+		frame_buffer->rows[(EPD_COLUMNS-1)-(CurrentPosX+i)][CurrentPosY+2] = ~bitswap(FONT13X24S_getScanColumn(ch, i, 2));
 	}
 	postwrap(13, 3);
 }
@@ -1453,7 +1620,7 @@ static void transpose_page(int page, int upper, uint8_t *buf) {
 	memset(buf+1, 0, 8); 	// clear the I2C array
 	// transpose glyph and copy into I2C array
 	for (y=0; y<8; y++) {
-		column = display_buffer->rows[row][col+y];
+		column = frame_buffer->rows[row][col+y];
 		if (column) {
 			// only needed if a bit is set
 			for (x=0; x<8; x++) {
