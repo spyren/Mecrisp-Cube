@@ -1,10 +1,10 @@
 /**
  *  @brief
- *  	E-Paper Display (EPA, E-Ink) driver for displays
+ *  	E-Paper Display (EPD, E-Ink) driver for displays
  *  	SSD1680 Drivers (max. 176x296).
  *
  *  	Resolution (from Adafruit):
- *  	  - 2.13" #4195 250x122
+ *  	  - 2.13" #4195 250x122, YMS122250-0213AAAMFGN
  *  	  - 1.54" 200x200,
  *  	  - 2.9"  296x128
  *
@@ -225,7 +225,6 @@ void EPD_init(void) {
 	EPD_wakeUp();
 
 	EPD_clear();
-
 	EPD_setPos(0,0);
 
 //	EPD_setFont(EPD_FONT16X32S);
@@ -676,7 +675,7 @@ void EPD_update(void) {
 	// update display
 	buf[0] = 2;
 	buf[1] = SSD1680_DISP_CTRL2;
-	buf[2] = 0xc7;
+	buf[2] = 0xF4;		// from sample code
 	EPD_sendCommand(buf);
 
 	// Master Activation
@@ -701,20 +700,7 @@ void EPD_startPart(void) {
 	if (!epdReady) {
 		return;
 	}
-
-//	// ping pong mode
-//	buf[0] = 9;
-//	buf[1] = SSD1680_WRITE_OPTION;
-//	buf[2] = 0x00;
-//	buf[3] = 0x00;
-//	buf[4] = 0x00;
-//	buf[5] = 0x00;
-//	buf[6] = 0x00;
-//	buf[7] = 0x40;
-//	buf[8] = 0x00;
-//	buf[9] = 0x00;
-//	EPD_sendCommand(buf);
-
+	// save old image in the shadow buffer
 	memcpy(shadow_buffer, frame_buffer, sizeof(frame_buffer_t));
 }
 
@@ -732,40 +718,12 @@ void EPD_updatePart(void) {
 		return;
 	}
 
-
-	// load partial update LUT by MCU
-	// ??
-
-	// Set gate voltage
-	// 0x17: 20 V
-	buf[0] = 2;
-	buf[1] = SSD1680_GATE_VOLTAGE;
-	buf[2] = 0x17;
-	EPD_sendCommand(buf);
-
-	// Set source voltage
-	buf[0] = 4;
-	buf[1] = SSD1680_SOURCE_VOLTAGE;
-	buf[2] = 0x41;
-	buf[3] = 0x00;	// 0xA8
-	buf[4] = 0x32;
-	EPD_sendCommand(buf);
-
-	// Vcom Voltage
-	// 0x70: -2.8 V
-	// 0x36: -1.35 ? Adafruit
-	buf[0] = 2;
-	buf[1] = SSD1680_WRITE_VCOM;
-//	buf[2] = 0x36; // Adafruit
-	buf[2] = 0x70;
-	EPD_sendCommand(buf);
-
-	// RAM 0x26 bypass : disable
-	buf[0] = 3;
-	buf[1] = SSD1680_DISP_CTRL1;
-	buf[2] = 0x00;
-	buf[3] = 0x80;
-	EPD_sendCommand(buf);
+//	// RAM 0x26 bypass : disable
+//	buf[0] = 3;
+//	buf[1] = SSD1680_DISP_CTRL1;
+//	buf[2] = 0x00;
+//	buf[3] = 0x80;
+//	EPD_sendCommand(buf);
 
 	// write NEW image in RAM 0x24
 	write_displayram(frame_buffer, SSD1680_WRITE_RAM1);
@@ -775,8 +733,7 @@ void EPD_updatePart(void) {
 	// update display
 	buf[0] = 2;
 	buf[1] = SSD1680_DISP_CTRL2;
-	buf[2] = 0xCF;
-//	buf[2] = 0x1C;
+	buf[2] = 0x1C; // from sample code
 	EPD_sendCommand(buf);
 
 	// Master Activation
@@ -825,8 +782,6 @@ void EPD_wakeUp(void) {
 	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_SET);
 
 	if (busy_wait()) {
-//	if (TRUE) {
-		// timeout -> no display connected
 		epdReady = FALSE;
 		return;
 	} else {
@@ -883,71 +838,60 @@ void EPD_wakeUp(void) {
 	buf[2] = 0x01;
 	EPD_sendCommand(buf);
 
-	// Vcom Voltage
-	// 0x70: -2.8 V
-	// 0x36: -1.35 ? Adafruit
-	buf[0] = 2;
-	buf[1] = SSD1680_WRITE_VCOM;
-//	buf[2] = 0x36; // Adafruit
-	buf[2] = 0x70;
-	EPD_sendCommand(buf);
-
-	// Set gate voltage
-	// 0x17: 20 V
-	buf[0] = 2;
-	buf[1] = SSD1680_GATE_VOLTAGE;
-	buf[2] = 0x17;
-	EPD_sendCommand(buf);
-
-	// Set source voltage
-	buf[0] = 4;
-	buf[1] = SSD1680_SOURCE_VOLTAGE;
-	buf[2] = 0x41;
-	buf[3] = 0x00;
-	buf[4] = 0x32;
-	EPD_sendCommand(buf);
-
-	// RAM 0x26 bypass : enable
-	buf[0] = 3;
-	buf[1] = SSD1680_DISP_CTRL1;
-	buf[2] = 0x40;
-	buf[3] = 0x80;
-	EPD_sendCommand(buf);
-
-//	// ping pong mode
-//	buf[0] = 9;
-//	buf[1] = SSD1680_WRITE_OPTION;
-//	buf[2] = 0x00;
-//	buf[3] = 0x40;
-//	buf[4] = 0x20;
-//	buf[5] = 0x10;
-//	buf[6] = 0x00;
-//	buf[7] = 0x40;
-//	buf[8] = 0x00;
-//	buf[9] = 0x00;
+// the default values are already tuned
+//	// Vcom Voltage
+//	// 0x70: -2.8 V
+//	// 0x36: -1.35 ? Adafruit
+//	buf[0] = 2;
+//	buf[1] = SSD1680_WRITE_VCOM;
+////	buf[2] = 0x36; // Adafruit
+//	buf[2] = 0x70;
+//	EPD_sendCommand(buf);
+//
+//	// Set gate voltage
+//	// 0x17: 20 V
+//	buf[0] = 2;
+//	buf[1] = SSD1680_GATE_VOLTAGE;
+//	buf[2] = 0x17;
+//	EPD_sendCommand(buf);
+//
+//	// Set source voltage
+//	buf[0] = 4;
+//	buf[1] = SSD1680_SOURCE_VOLTAGE;
+//	buf[2] = 0x41;
+//	buf[3] = 0x00;
+//	buf[4] = 0x32;
 //	EPD_sendCommand(buf);
 
-	// Load Waveform LUT
-	// Select internal temperature sensor
-	buf[0] = 2;
-	buf[1] = SSD1680_TEMP_CONTROL;
-	buf[2] = 0x80;
-	EPD_sendCommand(buf);
-	// Set Display update control: Enable clock, load TS value, load LUT from OTP and Clock off
-	buf[0] = 2;
-	buf[1] = SSD1680_DISP_CTRL2;
-	buf[2] = 0xb1;
-	EPD_sendCommand(buf);
-	// Master Activation: Run display update sequence which is defined by Command 0x22
-	buf[0] = 1;
-	buf[1] = SSD1680_MASTER_ACTIVATE;
-	EPD_sendCommand(buf);
-	busy_wait();
+//	// RAM 0x26 bypass : enable
+//	buf[0] = 3;
+//	buf[1] = SSD1680_DISP_CTRL1;
+//	buf[2] = 0x40;
+//	buf[3] = 0x80;
+//	EPD_sendCommand(buf);
 
-	// Write always into RAM1 (B/W)
-	buf[0] = 1;
-	buf[1] = SSD1680_WRITE_RAM1;
-	EPD_sendCommand(buf);
+// the default values are already tuned
+//	// Load Waveform LUT
+//	// Select internal temperature sensor
+//	buf[0] = 2;
+//	buf[1] = SSD1680_TEMP_CONTROL;
+//	buf[2] = 0x80;
+//	EPD_sendCommand(buf);
+//	// Set Display update control: Enable clock, load TS value, load LUT from OTP and Clock off
+//	buf[0] = 2;
+//	buf[1] = SSD1680_DISP_CTRL2;
+//	buf[2] = 0xb1;
+//	EPD_sendCommand(buf);
+//	// Master Activation: Run display update sequence which is defined by Command 0x22
+//	buf[0] = 1;
+//	buf[1] = SSD1680_MASTER_ACTIVATE;
+//	EPD_sendCommand(buf);
+//	busy_wait();
+
+//	// Write always into RAM1 (B/W)
+//	buf[0] = 1;
+//	buf[1] = SSD1680_WRITE_RAM1;
+//	EPD_sendCommand(buf);
 
 	// Set RAM X address counter
 	buf[0] = 2;

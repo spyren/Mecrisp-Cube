@@ -589,6 +589,45 @@ epdupdate:
 	bl		EPD_update
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "epdstartpart"
+epdustartpart:
+        @ ( --  ) Start the partial update for the EPD display
+// void EPD_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		EPD_startPart
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "epdupdatepart"
+epdupdatepart:
+        @ ( --  ) Update part of the EPD display
+// void EPD_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		EPD_updatePart
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "epddeepsleep"
+epddeepsleep:
+        @ ( --  ) enter the EPD deep sleep mode
+// void EPD_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		EPD_deepSleep
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "epdwakeup"
+epdwakeup:
+        @ ( --  ) wake up the EPD display
+// void EPD_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		EPD_wakeUp
+	pop		{pc}
 
 .endif // EPD == 1
 
