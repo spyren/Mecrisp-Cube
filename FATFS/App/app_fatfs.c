@@ -86,8 +86,8 @@ int32_t MX_FATFS_Init(void) {
 	if (FATFS_LinkDriver(&USER_SD_Driver, USERPathSD) != 0) {
 		return APP_ERROR;
 	} else {
-    Appli_state = APPLICATION_INIT;
-    return APP_OK;
+		Appli_state = APPLICATION_INIT;
+		return APP_OK;
   }
   /* USER CODE END FATFS_Init */
 }

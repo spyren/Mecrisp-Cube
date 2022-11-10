@@ -369,21 +369,6 @@ void EPD_init(void) {
 //	EPD_puts("(c)2022 peter@spyr.ch");
 
 	EPD_update();
-
-	osDelay(2000);
-	EPD_startPart();
-	EPD_setPos(0, 5);
-	EPD_puts("Aber Hallo!     ");
-	EPD_updatePart();
-
-	osDelay(2000);
-//	EPD_deepSleep();
-	EPD_wakeUp();
-	EPD_clear();
-	EPD_puts("Hallo velo!");
-	EPD_update();
-
-
 }
 
 
@@ -779,6 +764,7 @@ void EPD_wakeUp(void) {
 
 	// activate reset
 	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_RESET);
+	osDelay(10);
 	HAL_GPIO_WritePin(EPD_RST_GPIO_Port, EPD_RST_Pin, GPIO_PIN_SET);
 
 	if (busy_wait()) {

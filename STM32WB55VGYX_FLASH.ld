@@ -48,8 +48,8 @@ MEMORY
 FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 384K
 FLASH_FORTH (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
+RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 48K
+RAM1 (xrw)                 : ORIGIN = 0x2000C000, LENGTH = 144K
 RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 
