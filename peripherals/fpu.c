@@ -37,6 +37,8 @@
 #include <stdio.h>
 #include <float.h>
 #include <math.h>
+#include <ctype.h>
+
 
 // Application include files
 // *************************
@@ -86,13 +88,179 @@ void FPU_init(void) {
 
 /**
  *  @brief
- *      Convert ASCII string to floating-point number
+ *      Convert ASCII string to single precision floating-point number
+ *
+ *      				:= 	<significand>[<exponent>]
+ *		<significand> 	:= 	[<sign>]{<digits>[.<digits0>] | .<digits> }
+ *			<exponent> 	:= 	{<marker><digits0> | <unit-prefix> }
+ * 			<marker> 	:= 	{<e-form> | <sign-form>}
+ *			<e-form> 	:= 	<e-char>[<sign-form>]
+ *		<sign-form> 	:= 	{ + | - }
+ *			<e-char> 	:= 	{ D | d | E | e }
+ *		<unit-prefix> 	:=  { P | T | G | M | k | e | m | u | n | p | f | a | }
  *  @return
- *      float
+ *      float, NAN for invalid numbers
  */
 float FPU_str2f(char *str, int len) {
-	memcpy(fpu_string, str, len);
-	return strtof(fpu_string, NULL);
+	int exponent = 0;
+	int sign = 1;
+	int integer = 0;
+	int fract;
+	float number = 0.0f;
+	int unit_prefix;
+	int i, j, k;
+	char *s;
+
+	s = str;
+
+	// eat white spaces
+	// eat only at the beginning/end?
+	j = 0;
+	for (i=0; i<len; i++) {
+		if (!isblank(s[i])) {
+			fpu_string[j++] = s[i];
+		}
+	}
+	fpu_string[j] = 0;
+
+	// sign
+	if (fpu_string[0] == '+') {
+		// remove +
+		s = fpu_string + 1;
+	} else if (fpu_string[0] == '-') {
+		// remove -
+		s = fpu_string + 1;
+		sign = -1;
+	} else {
+		s = fpu_string;
+	}
+
+	// check for unit-prefix
+	unit_prefix = TRUE;
+	switch (s[strlen(s)-1]) {
+	case 'P':
+		exponent = 15;
+		break;
+	case 'T':
+		exponent = 12;
+		break;
+	case 'G':
+		exponent = 9;
+		break;
+	case 'M':
+		exponent = 6;
+		break;
+	case 'k':
+		exponent = 3;
+		break;
+	case 'e':
+		// fall through
+	case 'E':
+		exponent = 0;
+		break;
+	case 'm':
+		exponent = -3;
+		break;
+	case 'u':
+		exponent = -6;
+		break;
+	case 'n':
+		exponent = -9;
+		break;
+	case 'p':
+		exponent = -12;
+		break;
+	case 'f':
+		exponent = -15;
+		break;
+	case 'a':
+		exponent = -18;
+		break;
+	default:
+		unit_prefix = FALSE;
+	}
+	if (unit_prefix) {
+		s[strlen(s)-1] = 0;
+	} else {
+		// check for exponent
+		if (       (toupper(s[strlen(s)-2]) == 'D') ||
+			       (toupper(s[strlen(s)-2]) == 'E') ) {
+			// single digit exponent
+			if (isdigit((unsigned char) s[strlen(s)-1])) {
+				exponent = s[strlen(s)-1] - '0';
+			} else {
+				return NAN;
+			}
+			s[strlen(s)-2] = 0;
+		} else if ( (toupper((unsigned char) s[strlen(s)-3]) == 'D') ||
+				    (toupper(s[strlen(s)-3]) == 'E') ) {
+			// double digit exponent, or single digit exponent with sign
+			if (isdigit((unsigned char) s[strlen(s)-2])) {
+				// double digit exponent
+				if (isdigit((unsigned char) s[strlen(s)-1])) {
+					exponent = (s[strlen(s)-2] - '0')*10 + s[strlen(s)-1] - '0';
+				} else {
+					return NAN;
+				}
+
+			} else {
+				// single digit exponent with sign
+				if (s[strlen(s)-2] == '-') {
+					exponent = -1;
+				} else if (s[strlen(s)-2] == '+')  {
+					exponent = 1;
+				} else {
+					return NAN;
+				}
+				if (isdigit((unsigned char) s[strlen(s)-1])) {
+					exponent = exponent * (s[strlen(s)-1] - '0');
+				} else {
+					return NAN;
+				}
+			}
+			s[strlen(s)-3] = 0;
+		} else if ( (toupper(s[strlen(s)-4]) == 'D') ||
+				    (toupper(s[strlen(s)-4]) == 'E') ) {
+			// double digit exponent with sign
+			if (s[strlen(s)-3] == '-') {
+				exponent = -1;
+			} else if (s[strlen(s)-3] == '+')  {
+				exponent = 1;
+			} else {
+				return NAN;
+			}
+			if (isdigit((unsigned char) s[strlen(s)-2]) && isdigit((unsigned char) s[strlen(s)-1])) {
+				exponent = exponent * ((s[strlen(s)-2] - '0')*10 + s[strlen(s)-1] - '0');
+			} else {
+				return NAN;
+			}
+			s[strlen(s)-4] = 0;
+		} else {
+			// no exponent
+		}
+	}
+	// decode significand
+	for (i=0; i<strlen(s); i++) {
+		// search for decimal point
+		if (s[i] == '.') {
+			break;
+		}
+	}
+	k=1;
+	for (j=i-1; j>=0; j--) {
+		if (isdigit((unsigned char) s[j])) {
+			integer = integer+(s[j]-'0')*k;
+			k=k*10;
+		} else {
+			return NAN;
+		}
+	}
+	for (j=i+1; j<strlen(s); j++) {
+
+	}
+
+	number = sign * integer * powf(10.0f, exponent);
+	return number;
 }
 
 

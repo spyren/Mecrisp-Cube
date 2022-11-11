@@ -220,7 +220,8 @@ fnumber:
 	mov		tos, r0		// float
 	pushdatos
 	mov		tos, #1
-	cmp		r0, #0
+	ldr		r2, =0x7fc00000  // NaN
+	cmp		r0, r2
 	bne		1f			// success
 	mov		tos, #0		// fail
 1:
@@ -455,14 +456,26 @@ fs_type:
 // s20 digit
 
 	push		{r0-r3, lr}
+	ldr			r2, =#0x7fc00000	// NaN
+	cmp			tos, r2
+	bne			10f
+	write		"NaN "
+	b			5f
+10:
+	cmp			tos, #0x7f800000	// +infinity
+	bne			11f
+	write		"+infinity "
+	b			5f
+11:
+	cmp			tos, #0xff800000	// -infinity
+	bne			12f
+	write		"-infinity "
+	b			5f
+12:
 	cmp			tos, #0
 	bne			3f
 	pushdatos					// special case zero
-	mov			tos, #'0'
-	bl			emit
-	pushdatos
-	mov			tos, #'.'
-	bl			emit
+	write		"0."
 	ldr			r0, =Fprecision
 	ldr			r0, [r0]
 4:
@@ -473,11 +486,7 @@ fs_type:
 	cmp			r0, #0
 	bne			4b
 	pushdatos
-	mov			tos, #'E'
-	bl			emit
-	pushdatos
-	mov			tos, #'0'
-	bl			emit
+	write		"E0"
 	b			5f
 
 3:
