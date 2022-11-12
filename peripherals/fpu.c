@@ -105,7 +105,7 @@ float FPU_str2f(char *str, int len) {
 	int exponent = 0;
 	int sign = 1;
 	int integer = 0;
-	int fract;
+	float fract = 0.0f;
 	float number = 0.0f;
 	int unit_prefix;
 	int i, j, k;
@@ -135,7 +135,7 @@ float FPU_str2f(char *str, int len) {
 		s = fpu_string;
 	}
 
-	// check for unit-prefix
+	// check for unit-prefix at the end
 	unit_prefix = TRUE;
 	switch (s[strlen(s)-1]) {
 	case 'P':
@@ -235,10 +235,9 @@ float FPU_str2f(char *str, int len) {
 				return NAN;
 			}
 			s[strlen(s)-4] = 0;
-		} else {
-			// no exponent
 		}
 	}
+
 	// decode significand
 	for (i=0; i<strlen(s); i++) {
 		// search for decimal point
@@ -246,20 +245,28 @@ float FPU_str2f(char *str, int len) {
 			break;
 		}
 	}
+	// integer part
 	k=1;
 	for (j=i-1; j>=0; j--) {
 		if (isdigit((unsigned char) s[j])) {
-			integer = integer+(s[j]-'0')*k;
+			integer += (s[j]-'0')*k;
 			k=k*10;
 		} else {
 			return NAN;
 		}
 	}
+	// fract part
+	k=10;
 	for (j=i+1; j<strlen(s); j++) {
-
+		if (isdigit((unsigned char) s[j])) {
+			fract += ((float)(s[j]-'0'))/((float)k);
+			k=k*10;
+		} else {
+			return NAN;
+		}
 	}
 
-	number = sign * integer * powf(10.0f, exponent);
+	number = sign * ((float) integer+fract) * powf(10.0f, exponent);
 	return number;
 }
 

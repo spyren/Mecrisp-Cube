@@ -208,9 +208,9 @@ euler:
 	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fnumber"
-fnumber:
-        @ (a # -- r u ) convert the numbered string to float r, on success u is 1, fail 0
+        Wortbirne Flag_visible, ">float"
+to_float:
+        @ (a # -- r f ) convert the numbered string to float r, on success flag is true
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
 	mov 	r1, tos		// #
@@ -223,9 +223,22 @@ fnumber:
 	ldr		r2, =0x7fc00000  // NaN
 	cmp		r0, r2
 	bne		1f			// success
-	mov		tos, #0		// fail
+	mov		tos, #-1	// fail
 1:
 	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "fnumber"
+fnumber:
+        @ (a # -- r u ) convert the numbered string to float r, on success u is 1, fail 0
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		to_float
+	cmp		tos, #0
+	beq		1f			// fail
+	mov		tos, #1		// success
+1:
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f0="
@@ -503,7 +516,11 @@ fs_type:
 	vmov 		s17, r0				// get the integer part of exponent
 	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
 	vcvt.f32.s32 s17, s17
-
+	tst			r0, #0x80000000		// is exponent negative?
+	beq			13f
+	vmov		s18, #1.0
+	vsub.f32	s17, s18
+13:
 	ldr			r1, =Fprecision		// |r| = |r| + 0.5 * 10^(-precision+exp-1) for rounding
 	ldr			r1, [r1]
 	negs		r1, r1
