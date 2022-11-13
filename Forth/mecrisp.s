@@ -432,7 +432,7 @@ Forth:
 
 // default precision for f., fe., fs.
 	ldr		r0, =Fprecision
-	ldr		r1, =4
+	ldr		r1, =2
 	str		r1, [r0]
 
 // set the local storage pointer to the user variables

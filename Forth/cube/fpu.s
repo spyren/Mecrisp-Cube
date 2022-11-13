@@ -475,14 +475,15 @@ fs_type:
 	vmov		r0, s16
 	bl			log10f
 	vmov 		s17, r0				// get the integer part of exponent
-	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
-	vcvt.f32.s32 s17, s17
 	tst			r0, #0x80000000		// is exponent negative?
-//	beq			1f
-	b			1f
-	vmov		s18, #1.0
+	beq			1f
+	ldr			r0, =0x3f7ffffe		// second largest number lesser than 1
+	vmov		s18, r0
 	vsub.f32	s17, s18
 1:
+	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
+	vcvt.f32.s32 s17, s17
+	vmov		s18, s17
 	bl			f_dot_round
 	vmov		s0, #10.0			// divisor = 10^(exponent)
 	vmov		r0, s0
@@ -542,14 +543,14 @@ fe_m_type:
 	vmov		r0, s16
 	bl			log10f
 	vmov 		s17, r0				// get the integer part of exponent
-	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
-	vcvt.f32.s32 s17, s17
 	tst			r0, #0x80000000		// is exponent negative?
-//	beq			1f
-	b			1f
-	vmov		s18, #1.0
+	beq			1f
+	ldr			r0, =0x3f7ffffe		// second largest number lesser than 1
+	vmov		s18, r0
 	vsub.f32	s17, s18
 1:
+	vcvt.s32.f32 s17, s17
+	vcvt.f32.s32 s17, s17
 	vcvt.s32.f32 s18, s17			// exponent mod 3: 0 > 0; 1 > -1; 2 > +1; -1 > +1; -2 > -1
 	pushdatos
 	vmov		tos, s18
