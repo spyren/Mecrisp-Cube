@@ -219,18 +219,19 @@ to_float:
 	bl		FPU_str2f
 	mov		tos, r0		// float
 	pushdatos
-	mov		tos, #1
+	mov		tos, #-1
 	ldr		r2, =0x7fc00000  // NaN
 	cmp		r0, r2
 	bne		1f			// success
-	mov		tos, #-1	// fail
+	mov		tos, #0		// fail
 1:
 	pop		{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "fnumber"
 fnumber:
-        @ (a # -- r u ) convert the numbered string to float r, on success u is 1, fail 0
+        @ (a # -- r u ) convert the numbered string to float r, on success u is 1 or 2, fail 0
+        //				single precision u = 1, double precision u = 2
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	bl		to_float
@@ -468,76 +469,21 @@ fs_type:
 // s19 divisor
 // s20 digit
 
-	push		{r0-r3, lr}
-	ldr			r2, =#0x7fc00000	// NaN
-	cmp			tos, r2
-	bne			10f
-	write		"NaN "
-	b			5f
-10:
-	cmp			tos, #0x7f800000	// +infinity
-	bne			11f
-	write		"+infinity "
-	b			5f
-11:
-	cmp			tos, #0xff800000	// -infinity
-	bne			12f
-	write		"-infinity "
-	b			5f
-12:
-	cmp			tos, #0
-	bne			3f
-	pushdatos					// special case zero
-	write		"0."
-	ldr			r0, =Fprecision
-	ldr			r0, [r0]
-4:
-	pushdatos
-	mov			tos, #'0'
-	bl			emit
-	sub			r0, #1			// all digits?
-	cmp			r0, #0
-	bne			4b
-	pushdatos
-	write		"E0"
-	b			5f
-
-3:
-	vmov		s16, tos			// |r| -> s16
-	vabs.f32 	s16, s16
-	tst			tos, #0x80000000
-	beq			1f					// positive number
-	pushdatos
-	mov			tos, #'-'			// '-'
-	bl			emit
-1:
+	push		{r0-r3, r8,r9, lr}
+	mov			r8, #0				// scientific exponent
+	bl			f_dot_special_values
 	vmov		r0, s16
 	bl			log10f
 	vmov 		s17, r0				// get the integer part of exponent
 	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
 	vcvt.f32.s32 s17, s17
 	tst			r0, #0x80000000		// is exponent negative?
-	beq			13f
+//	beq			1f
+	b			1f
 	vmov		s18, #1.0
 	vsub.f32	s17, s18
-13:
-	ldr			r1, =Fprecision		// |r| = |r| + 0.5 * 10^(-precision+exp-1) for rounding
-	ldr			r1, [r1]
-	negs		r1, r1
-	vcvt.s32.f32 s0, s17
-	vmov		r0, s0
-	add			r1, r1, r0
-	vmov		s1, r1
-	vcvt.f32.s32 s1, s1
-	vmov		s0, #10.0
-	vmov		r0, s0
-	vmov		r1, s1
-	bl			powf
-	vmov		s0, r0
-	vmov		s1, #0.5
-	vmul.f32	s0, s0, s1
-	vadd.f32	s16, s16, s0
-
+1:
+	bl			f_dot_round
 	vmov		s0, #10.0			// divisor = 10^(exponent)
 	vmov		r0, s0
 	vmov		r1, s17				// exponent
@@ -558,7 +504,6 @@ fs_type:
 
 	ldr			r0, =Fprecision
 	ldr			r0, [r0]
-//	vmov		s20, s17
 2:
 	vmul.f32	s0, s19, s20		// remove last digit
 	vsub.f32	s16, s16, s0
@@ -576,17 +521,288 @@ fs_type:
 	cmp			r0, #0
 	bne			2b
 
+	b			f_dot_exponent
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "fe."
+fe_type:
+        @ ( r --  )     display, with a trailing space, the floating-point number r in engineering notation
+@ -----------------------------------------------------------------------------
+// s16 |r|
+// s17 exponent decimal (engineering)
+// s18 exponent decimal
+// s19 divisor
+// s20 digit
+
+	push		{r0-r3, r8,r9, lr}
+	mov			r8, #1				// engineering exponent
+fe_m_type:
+	bl			f_dot_special_values
+1:
+	vmov		r0, s16
+	bl			log10f
+	vmov 		s17, r0				// get the integer part of exponent
+	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
+	vcvt.f32.s32 s17, s17
+	tst			r0, #0x80000000		// is exponent negative?
+//	beq			1f
+	b			1f
+	vmov		s18, #1.0
+	vsub.f32	s17, s18
+1:
+	vcvt.s32.f32 s18, s17			// exponent mod 3: 0 > 0; 1 > -1; 2 > +1; -1 > +1; -2 > -1
+	pushdatos
+	vmov		tos, s18
+	mov			r1, tos
+	push		{r1}
+	pushdatos
+	mov			tos, #3
+	bl			divmod
+	drop
+	pop			{r1}
+	mov			r0, tos
+	drop
+	cmp			r0, #0
+	bne			1f
+	mov			r9, #1				// position decimal point
+	vmov		s18, s17
+	b			3f
+1:
+	cmp			r0, #1
+	bne			1f
+	sub			r1, #1
+	mov			r9, #2				// position decimal point
+	b			2f
+1:
+	cmp			r0, #2
+	bne			1f
+	sub			r1, #2
+	mov			r9, #3				// position decimal point
+	b			2f
+1:
+	cmp			r0, #-1
+	bne			1f
+	sub			r1, #2
+	mov			r9, #3				// position decimal point
+	b			2f
+1:
+	cmp			r0, #-2
+	bne			3f
+	sub			r1, #1
+	mov			r9, #2				// position decimal point
+
+2:
+	vmov		s18, s17
+	vmov		s17, r1				// save new exponent
+	vcvt.f32.s32 s17, s17
+3:
+	bl			f_dot_round
+	vmov		s0, #10.0			// divisor = 10^(exponent)
+	vmov		r0, s0
+	vmov		r1, s18				// exponent
+	bl			powf
+	vmov		s1, r0
+	vmov		s19, s1				// save divisor
+	vdiv.f32	s0, s16, s1
+	vcvt.s32.f32 s0, s0 			// digit
+	vcvt.f32.s32 s20, s0
+	pushdatos
+	vmov		tos, s0
+	add			tos, tos, #'0'		// '0'+digit
+	bl			emit
+
+	ldr			r0, =Fprecision
+	ldr			r0, [r0]
+2:
+	sub			r9, #1
+	cmp			r9, #0
+	bne			3f
+	pushdatos
+	mov			tos, #'.'			// '.'
+	bl			emit
+3:
+	vmul.f32	s0, s19, s20		// remove last digit
+	vsub.f32	s16, s16, s0
+	vmov		s1, #10.0
+	vmul.f32	s16, s1
+	vdiv.f32	s0, s16, s19
+	vcvt.s32.f32 s0, s0 			// digit
+	vcvt.f32.s32 s20, s0
+	pushdatos
+	vmov		tos, s0
+	add			tos, tos, #'0'		// '0'+digit
+	bl			emit
+
+	sub			r0, #1				// all digits?
+	cmp			r0, #0
+	bne			2b
+
+	b			f_dot_exponent
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "fm."
+fm_type:
+        @ ( r --  )     display, with a trailing space, the floating-point number r in metric notation
+@ -----------------------------------------------------------------------------
+	push		{r0-r3, r8, r9, lr}
+	mov			r8, #2				// metric unit exponent
+	b			fe_m_type
+
+f_dot_special_values:
+	push		{lr}
+	ldr			r2, =#0x7fc00000	// NaN
+	cmp			tos, r2
+	bne			1f
+	write		"NaN "
+	pop			{r0}				// remove return
+	b			f_dot_exit
+1:
+	cmp			tos, #0x7f800000	// +infinity
+	bne			1f
+	write		"+infinity "
+	pop			{r0}				// remove return
+	b			f_dot_exit
+1:
+	cmp			tos, #0xff800000	// -infinity
+	bne			1f
+	write		"-infinity "
+	pop			{r0}				// remove return
+	b			f_dot_exit
+1:									// zero?
+	cmp			tos, #0
+	bne			3f
+									// special case zero
+	pushdatos
+	write		"0."
+	ldr			r0, =Fprecision
+	ldr			r0, [r0]
+1:
+	pushdatos
+	mov			tos, #'0'
+	bl			emit
+	sub			r0, #1				// all digits?
+	cmp			r0, #0
+	bne			1b
+	pushdatos
+	cmp			r8, #2
+	bne			1f
+	write		"e "				// metric unit exponent
+	b			2f
+1:
+	write		"E0 "
+2:
+	pop			{r0}				// remove return
+	b			f_dot_exit
+3:									// minus sign?
+	vmov		s16, tos			// |r| -> s16
+	vabs.f32 	s16, s16
+	tst			tos, #0x80000000
+	beq			3f					// positive number
+	pushdatos
+	mov			tos, #'-'			// '-'
+	bl			emit
+3:
+	pop			{pc}
+
+f_dot_round:
+	push		{lr}
+	ldr			r1, =Fprecision		// |r| = |r| + 0.5 * 10^(-precision+exp-1) for rounding
+	ldr			r1, [r1]
+	negs		r1, r1
+	vcvt.s32.f32 s0, s18
+	vmov		r0, s0
+	add			r1, r1, r0
+	vmov		s1, r1
+	vcvt.f32.s32 s1, s1
+	vmov		s0, #10.0
+	vmov		r0, s0
+	vmov		r1, s1
+	bl			powf
+	vmov		s0, r0
+	vmov		s1, #0.5
+	vmul.f32	s0, s0, s1
+	vadd.f32	s16, s16, s0
+	pop			{pc}
+
+f_dot_exponent:
+	cmp			r8, #2
+	bne			1f
+									// metric unit exponent
+	vcvt.s32.f32 s0, s17 			// exponent decimal
+	vmov		r0, s0
+	cmp			r0, #0
+	bne			1f
+	mov			r0, #'e'
+	b			2f
+1:
+	cmp			r0, #3
+	bne			1f
+	mov			r0, #'k'
+	b			2f
+1:
+	cmp			r0, #6
+	bne			1f
+	mov			r0, #'M'
+	b			2f
+1:
+	cmp			r0, #9
+	bne			1f
+	mov			r0, #'G'
+	b			2f
+1:
+	cmp			r0, #12
+	bne			1f
+	mov			r0, #'T'
+	b			2f
+1:
+	cmp			r0, #15
+	bne			1f
+	mov			r0, #'P'
+	b			2f
+1:
+	cmp			r0, #-3
+	bne			1f
+	mov			r0, #'m'
+	b			2f
+1:
+	cmp			r0, #-6
+	bne			1f
+	mov			r0, #'u'
+	b			2f
+1:
+	cmp			r0, #-9
+	bne			1f
+	mov			r0, #'n'
+	b			2f
+1:
+	cmp			r0, #-12
+	bne			1f
+	mov			r0, #'p'
+	b			2f
+1:
+	cmp			r0, #-15
+	bne			1f
+	mov			r0, #'f'
+	b			2f
+1:
+	b			1f					// no metric unit found
+2:
+	pushdatos
+	mov			tos, r0
+	bl			emit
+	b			f_dot_exit
+
+1:
 	pushdatos
 	mov			tos, #'E'			// 'E'
 	bl			emit
-
 	pushdatos
 	vcvt.s32.f32 s0, s17 			// exponent decimal
 	vmov		tos, s0
 	bl			dot					// type exponent
-5:
+f_dot_exit:
 	drop
- 	pop			{r0-r3, pc}
+ 	pop			{r0-r3, r8, r9, pc}
 
 
 @ -----------------------------------------------------------------------------
