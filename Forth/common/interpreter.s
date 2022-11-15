@@ -576,8 +576,6 @@ quit:
   .endif
 
   ldr psp, =datenstackanfang
-   @ TOS setzen, um Pufferunterläufe gut erkennen zu können
-    movs tos, #42
 
   .ifdef initflash
    bl initflash

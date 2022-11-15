@@ -74,6 +74,7 @@
 .equ	MIP,				0
 .equ	PLEX,				1
 .equ	EPD,				1
+.equ	FPU,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -146,6 +147,11 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 
 	ramallot	DriveNumber, 4
 
+// FPU variable only if needed
+.if FPU == 1
+	ramallot    Fprecision, 4
+.endif // FPU == 1
+
 .global		Dictionarypointer
 .global		Fadenende
 .global		ZweitDictionaryPointer
@@ -153,6 +159,10 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 .global		EvaluateState
 .global		DriveNumber
 
+// FPU variable only if needed
+.if FPU == 1
+.global		Fprecision
+.endif // FPU == 1
 
 .ifdef registerallocator
 
@@ -346,6 +356,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
 
+.include "fpu.s"
 .else  // registerallocator
 
 .include "double.s"
@@ -399,6 +410,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
 
+.include "fpu.s"
 .endif // registerallocator
 
 @ -----------------------------------------------------------------------------
@@ -421,6 +433,15 @@ Forth:
 // Stack already set in the main thread
 //	ldr		r0, =returnstackanfang
 //	str		sp, [r0]
+
+// FPU variable only if needed
+.if FPU == 1
+// default precision for f., fe., fs., fm.
+	ldr		r0, =Fprecision
+	ldr		r1, =2
+	str		r1, [r0]
+.endif // EPD == 1
+
 
 // set the local storage pointer to the user variables
 	ldr		r0, =0	// current task xTaskToQuery = 0
