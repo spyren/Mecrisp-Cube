@@ -210,40 +210,6 @@ euler:
 	bx 		lr
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, ">float"
-to_float:
-        @ (a # -- r f ) convert the numbered string to float r, on success flag is true
-@ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	mov 	r1, tos		// #
-	drop
-	mov		r0, tos		// a
-	bl		FPU_str2f
-	mov		tos, r0		// float
-	pushdatos
-	mov		tos, #-1
-	ldr		r2, =0x7fc00000  // NaN
-	cmp		r0, r2
-	bne		1f			// success
-	mov		tos, #0		// fail
-1:
-	pop		{r0-r3, pc}
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fnumber"
-fnumber:
-        @ (a # -- r u ) convert the numbered string to float r, on success u is 1 or 2, fail 0
-        //				single precision u = 1, double precision u = 2
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	bl		to_float
-	cmp		tos, #0
-	beq		1f			// fail
-	mov		tos, #1		// success
-1:
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f0="
         @ ( r -- ? )          flag is true if r is equal to zero
 @ -----------------------------------------------------------------------------
@@ -421,18 +387,48 @@ x_to_f:
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "f."
 f_dot:
-        @ ( r --  ) Display, with a trailing space, the top number using fixed-point notation
+        @ ( r --  ) Display, with a trailing space, the rounded floating-point number r in fixed-point notation
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	bl		f_to_x
+	push 		{r0-r3, lr}
+
+	ldr			r2, =Fprecision		// round to the precision
+	ldr			r2, [r2]
+	ldr			r0, =0x3F000000 	//  0.5
+	vmov		s0, r0
+	ldr			r1, =0x41200000  	//  10.0
+	vmov		s1, r1
+1:
+	vdiv.f32	s0, s0, s1
+	sub			r2, #1				// all digits?
+	cmp			r2, #0
+	bne			1b
+
+	vmov		s1, tos
+	vadd.f32	s0, s1				// round
+
+	vmov		tos, s0
+	bl			f_to_x				// f>x
+
+	bl			zifferstringanfang	// <#
+	pushdaconst	0
+	bl			alleziffern			// #s
+	drop
+	mov			tos, #'.'
+	bl			zahlanhaengen		// hold<
+	ldr			r2, =Fprecision		// add <precision> fract digits
+	ldr			r2, [r2]
+2:
+	bl			fziffer
+	sub			r2, #1				// all digits?
+	cmp			r2, #0
+	bne			2b
+
 	pushdatos
-	mov		tos, #4
-	bl		fdotn
-	pop		{pc}
+	bl			zifferstringende	// #>
+	bl			stype				// type
+	bl			space				// space
+	pop		{r0-r3, pc}
 
-
-// Words Using C Math Library
-// **************************
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "precision"
@@ -459,6 +455,44 @@ set_precision:
 1:
 	drop
 	bx 		lr
+
+
+// Words Using C Math Library
+// **************************
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, ">float"
+to_float:
+        @ (a # -- r f ) convert the numbered string to float r, on success flag is true
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	mov 	r1, tos		// #
+	drop
+	mov		r0, tos		// a
+	bl		FPU_str2f
+	mov		tos, r0		// float
+	pushdatos
+	mov		tos, #-1
+	ldr		r2, =0x7fc00000  // NaN
+	cmp		r0, r2
+	bne		1f			// success
+	mov		tos, #0		// fail
+1:
+	pop		{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "fnumber"
+fnumber:
+        @ (a # -- r u ) convert the numbered string to float r, on success u is 1 or 2, fail 0
+        //				single precision u = 1, double precision u = 2
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		to_float
+	cmp		tos, #0
+	beq		1f			// fail
+	mov		tos, #1		// success
+1:
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "fs."
@@ -792,6 +826,9 @@ f_dot_exponent:
 2:
 	pushdatos
 	mov			tos, r0
+	bl			emit
+	pushdatos
+	mov			tos, ' '			// trailling space
 	bl			emit
 	b			f_dot_exit
 
