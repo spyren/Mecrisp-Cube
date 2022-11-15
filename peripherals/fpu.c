@@ -46,6 +46,8 @@
 #include "main.h"
 #include "fpu.h"
 
+#if FPU_IP == 1
+
 // Private function prototypes
 // ***************************
 
@@ -270,4 +272,5 @@ float FPU_str2f(char *str, int len) {
 	return number;
 }
 
+#endif // FPU_IP == 1
 
