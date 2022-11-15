@@ -708,7 +708,8 @@ typedef enum
 #define	OLED					1
 #define MIP						0
 #define PLEX					1
-#define EPD						1
+#define EPD						0
+#define FPU_IP					1
 
 #endif /*APP_CONF_H */
 
