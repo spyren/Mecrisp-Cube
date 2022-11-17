@@ -50,6 +50,7 @@
 
 // Private function prototypes
 // ***************************
+float pow10_to_f(int exp);
 
 // Global Variables
 // ****************
@@ -268,9 +269,36 @@ float FPU_str2f(char *str, int len) {
 		}
 	}
 
-	number = sign * ((float) integer+fract) * powf(10.0f, exponent);
+	number = sign * ((float) integer+fract) * pow10_to_f(exponent);
 	return number;
 }
+
+
+float pow10_to_f(int exp) {
+	float value=1.0f;
+	int i;
+
+	if (exp != 0) {
+		if (exp < 0) {
+			for (i=0; i<24; i++) {
+				value = value / 10.0f;
+				if (++exp >= 0) {
+					break;
+				}
+			}
+		} else {
+			for (i=0; i<24; i++) {
+				value = 10.0f * value;
+				if (--exp <= 0) {
+					break;
+				}
+			}
+
+		}
+	}
+	return value;
+}
+
 
 #endif // FPU_IP == 1
 
