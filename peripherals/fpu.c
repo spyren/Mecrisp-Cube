@@ -280,14 +280,14 @@ float pow10_to_f(int exp) {
 
 	if (exp != 0) {
 		if (exp < 0) {
-			for (i=0; i<24; i++) {
+			for (i=0; i<38; i++) {
 				value = value / 10.0f;
 				if (++exp >= 0) {
 					break;
 				}
 			}
 		} else {
-			for (i=0; i<24; i++) {
+			for (i=0; i<38; i++) {
 				value = 10.0f * value;
 				if (--exp <= 0) {
 					break;
