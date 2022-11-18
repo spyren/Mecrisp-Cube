@@ -93,6 +93,7 @@ digit_base_r3:  @ Erwartet Base in r3  Base has to be in r3 if you enter here.
 
 number: @ Tries to convert a string in one of the supported number formats.
 @------------------------------------------------------------------------------
+.if FPU == 1
 	push	{lr}
 	ddup				// save string and length
 	bl		org_number
@@ -120,8 +121,8 @@ number: @ Tries to convert a string in one of the supported number formats.
 	pushdaconst 2		// 2
 	pop		{pc}
 
-
 org_number:
+.endif // FPU == 1
 
 /*
     ; Sind noch Zeichen da ? Sonst fertig.
