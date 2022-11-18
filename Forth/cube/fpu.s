@@ -117,77 +117,134 @@ fabs:
 	bx 		lr
 
 @ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "10**>f"
+pow10_to_f:
+        @ ( n -- r ) raise 10 to the power n, giving r.
+@ -----------------------------------------------------------------------------
+	mov			r0, tos
+	cmp			r0, #0
+	bne			1f
+	vmov		s0, #1.0		// 10^0 = 1
+	vmov		tos, s0
+	bx			lr
+1:
+	bmi			4f				// exponent negative
+
+	vmov 		s0, #10.0
+	vmov		s1, s0
+2:
+	sub			r0, #1
+	cmp			r0, #0
+	beq			3f
+	vmul.f32 	s0, s0, s1
+	b			2b
+4:
+	vmov 		s0, #1.0
+	vmov		s1, #10.0
+5:
+	vdiv.f32 	s0, s0, s1
+	add			r0, #1
+	cmp			r0, #0
+	bpl			3f
+	b			5b
+3:
+	vmov		tos, s0
+	bx 			lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "flog>n"
+flog_to_n:
+        @ ( r -- n ) n is the base-ten logarithm of r.
+@ -----------------------------------------------------------------------------
+	mov			r0, #0
+	vmov 		s0, tos
+	vmov		s1, #10.0
+	mov			tos, #0				// start with exponent 0
+	vmov		s2, r0				// 0.0
+	vcmp.f32	s0, s2
+	vmrs 		APSR_nzcv, FPSCR
+	bne			1f
+	ldr			tos, =0x7fffffff	// -infinity
+	bx			lr
+1:
+	bpl			2f
+	ldr			tos, =0				// NaN
+	bx			lr
+2:
+	vmov		s2, #1.0
+	vcmp.f32	s0, s2
+	vmrs 		APSR_nzcv, FPSCR
+	blt			3f
+	b			6f
+4:
+	add			tos, #1
+6:
+	vdiv.f32 	s0, s0, s1
+	vmov		s2, #1.0
+	vcmp.f32	s0, s2
+	vmrs 		APSR_nzcv, FPSCR
+	bpl			4b
+	bx			lr
+
+3:
+	ldr			r0, =0x3F7FFF58     // 0.99999
+	vmov		s2, r0
+5:
+	sub			tos, #1
+	vmul.f32 	s0, s0, s1
+	vcmp.f32	s0, s2
+	vmrs 		APSR_nzcv, FPSCR
+	ble			5b
+6:
+	bx 			lr
+
+@ -----------------------------------------------------------------------------
         Wortbirne Flag_foldable_1|Flag_inline, "fnegate"
 fnegate:
         @ ( r1 -- r2 ) r2 is the negation of r1.
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos
-	vneg.f32 s0, s0
-	vmov 	tos, s0
-	bx 		lr
+	vmov 		s0, tos
+	vneg.f32 	s0, s0
+	vmov 		tos, s0
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "fround"
 fround:
         @ ( r1 -- r2 ) round r1 to an integral value using the "round to nearest" rule, giving r2
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos
-	ldr		r0, =0x3f000000	// 0.5
-	tst		tos, #0x80000000
-	beq		1f
-	ldr		r0, =0xbf000000	// -0.5
+	vmov 		s0, tos
+	ldr			r0, =0x3f000000	// 0.5
+	tst			tos, #0x80000000
+	beq			1f
+	ldr			r0, =0xbf000000	// -0.5
 1:
-	vmov	s1, r0
+	vmov		s1, r0
 	vadd.f32	s0, s1
 	vcvt.s32.f32 s0, s0
 	vcvt.f32.s32 s0, s0
-	vmov 	tos, s0
-	bx 		lr
+	vmov 		tos, s0
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_foldable_1|Flag_inline, "f>s"
 f_to_s:
         @ ( r -- n ) n is the single-cell signed-integer equivalent of the integer portion of r.
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos
+	vmov 		s0, tos
 	vcvt.s32.f32 s0, s0
-	vmov 	tos, s0
-	bx 		lr
+	vmov 		tos, s0
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_foldable_1|Flag_inline, "s>f"
 s_to_f:
         @ ( n -- r ) r is the floating-point equivalent of the single-cell value n.
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos
+	vmov 		s0, tos
 	vcvt.f32.s32 s0, s0
-	vmov 	tos, s0
-	bx 		lr
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_inline, "0.0e0"
-fzero:
-        @ (  -- r ) to cheat strtof
-@ -----------------------------------------------------------------------------
-	pushdatos
-	mov 	tos, #0
-	bx 		lr
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_inline, "0.e0"
-        @ (  -- r ) to cheat strtof
-@ -----------------------------------------------------------------------------
-	pushdatos
-	mov 	tos, #0
-	bx 		lr
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_inline, "0.e"
-        @ (  -- r ) to cheat strtof
-@ -----------------------------------------------------------------------------
-	pushdatos
-	mov 	tos, #0
-	bx 		lr
+	vmov 		tos, s0
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_inline, "pi"
@@ -195,9 +252,9 @@ pi:
         @ (  -- r ) r is pi approx. 3.14159274101257324
 @ -----------------------------------------------------------------------------
 	pushdatos
-	mov 	tos, #0x0fdb
-	movt 	tos, #0x4049
-	bx 		lr
+	mov 		tos, #0x0fdb
+	movt 		tos, #0x4049
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_inline, "e"
@@ -205,52 +262,52 @@ euler:
         @ (  -- r ) r is e approx. 2.718281828459045235360287
 @ -----------------------------------------------------------------------------
 	pushdatos
-	mov 	tos, #0xf854
-	movt 	tos, #0x402d
-	bx 		lr
+	mov 		tos, #0xf854
+	movt 		tos, #0x402d
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f0="
         @ ( r -- ? )          flag is true if r is equal to zero
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos
+	vmov 		s0, tos
 	vcmp.f32	s0, #0.0
-	vmrs 	APSR_nzcv, FPSCR
-	beq		1f
-	mov		tos, #0
-	bx		lr
+	vmrs 		APSR_nzcv, FPSCR
+	beq			1f
+	mov			tos, #0
+	bx			lr
 1:
-	mov		tos, #-1
-	bx 		lr
+	mov			tos, #-1
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f0<"
         @ ( r -- ? )          flag is true if r is less than zero
 f0less:
 @ -----------------------------------------------------------------------------
-	tst		tos, #0x80000000
-	beq		1f
-	mov		tos, #-1
-	bx	lr
+	tst			tos, #0x80000000
+	beq			1f
+	mov			tos, #-1
+	bx			lr
 1:
-	mov		tos, #0
-	bx	lr
+	mov			tos, #0
+	bx			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_2, "f<"
         @ ( r1 r2 -- ? )      flag is true if r1 is less than r2
 @ -----------------------------------------------------------------------------
-	vmov 	s0, tos		// r2
+	vmov 		s0, tos			// r2
 	drop
-	vmov 	s1, tos		// r1
+	vmov 		s1, tos			// r1
 	vcmp.f32	s1, s0
-	vmrs 	APSR_nzcv, FPSCR
-	blt		1f
-	mov		tos, #0
-	bx		lr
+	vmrs 		APSR_nzcv, FPSCR
+	blt			1f
+	mov			tos, #0
+	bx			lr
 1:
-	mov		tos, #-1
-	bx 		lr
+	mov			tos, #-1
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_3, "f~"
@@ -260,41 +317,41 @@ f0less:
         @               If r3 is negative, flag is true if the absolute value of (r1 minus r2) is less than the absolute value
         @                 of r3 times the sum of the absolute values of r1 and r2.
 @ -----------------------------------------------------------------------------
-	vmov 	s2, tos		// r3
+	vmov 		s2, tos		// r3
 	drop
-	vmov 	s1, tos		// r2
+	vmov 		s1, tos		// r2
 	drop
-	vmov 	s0, tos		// r1
+	vmov 		s0, tos		// r1
 	vsub.f32	s0, s1
 	vabs.f32 	s0, s0
 	vcmp.f32	s0, s2
-	vmrs 	APSR_nzcv, FPSCR
-	ble		1f
-	mov		tos, #0
-	bx		lr
+	vmrs 		APSR_nzcv, FPSCR
+	ble			1f
+	mov			tos, #0
+	bx			lr
 1:
-	mov		tos, #-1
-	bx 		lr
+	mov			tos, #-1
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f>expo"
 f2expo:
         @ ( r1 -- n )       get exponent
 @ -----------------------------------------------------------------------------
-	lsr		tos, tos, #23		// remove fraction
-	and		tos, tos, #0xff		// remove sign
-	sub		tos, tos, #127		// bias
-	bx 		lr
+	lsr			tos, tos, #23		// remove fraction
+	and			tos, tos, #0xff		// remove sign
+	sub			tos, tos, #127		// bias
+	bx 			lr
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "f>fract"
 f2fract:
         @ ( r1 -- u )       get fraction part of r1
 @ -----------------------------------------------------------------------------
-	lsl		tos, tos, 9		// remove sign and exponent
-	lsr		tos, tos, 9
-	orr		tos, tos, #0x00800000		// set 23. bit
-	bx 		lr
+	lsl			tos, tos, 9		// remove sign and exponent
+	lsr			tos, tos, 9
+	orr			tos, tos, #0x00800000		// set 23. bit
+	bx 			lr
 
 
 @ -----------------------------------------------------------------------------
@@ -318,33 +375,33 @@ f_to_x:
 	// ; 1-foldable
 
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r1, #0
-							// dup 1 31 lshift and
-    movs	r0, #0x80000000
-    and		r1, r0, tos		// tos v, r1 S
-	vmov 	s0, tos			// s0 v
-	vabs.f32 s0, s0			// s0 v
-	vcvt.s32.f32 s1, s0		// v>n s1 h
-	vmov	r0, s1			// r0 h
-	vcvt.f32.s32 s3, s1		// n>v s3 h'
-	movs	r2, #0x4f800000
-	vmov	s2, r2			// s2 0x4f800000
-	vsub.f32 s0, s0, s3
-	vmul.f32 s0, s0, s2		// s0 l
+	push		{lr}
+	movs		r1, #0
+								// dup 1 31 lshift and
+    movs		r0, #0x80000000
+    and			r1, r0, tos		// tos v, r1 S
+	vmov 		s0, tos			// s0 v
+	vabs.f32 	s0, s0			// s0 v
+	vcvt.s32.f32 s1, s0			// v>n s1 h
+	vmov		r0, s1			// r0 h
+	vcvt.f32.s32 s3, s1			// n>v s3 h'
+	movs		r2, #0x4f800000
+	vmov		s2, r2			// s2 0x4f800000
+	vsub.f32 	s0, s0, s3
+	vmul.f32 	s0, s0, s2		// s0 l
 	vcvt.u32.f32 s0, s0
-	vmov	tos, s0			// tos l
-	cmp		r1, #0
-  	beq 	2f 				// Zero? Nothing to do!
-  	movs 	r2, #0			// dnegate
-	mvns 	tos, tos
-	mvns 	r0, r0
- 	adds 	tos, #1
-	adcs 	r0, r2
+	vmov		tos, s0			// tos l
+	cmp			r1, #0
+  	beq 		2f 				// Zero? Nothing to do!
+  	movs 		r2, #0			// dnegate
+	mvns 		tos, tos
+	mvns 		r0, r0
+ 	adds 		tos, #1
+	adcs 		r0, r2
 2:
 	pushdatos
-	movs	tos, r0
- 	pop		{pc}
+	movs		tos, r0
+ 	pop			{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "x>f"
@@ -357,32 +414,32 @@ x_to_f:
     //   or                       \ apply the sign
     // ; 2-foldable
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r1, tos			// r1  H
-	drop					// tos L
-    movs	r0, #0x80000000
-    and		r0, r0, r1		// r0 S
-    						// dabs d
-  	cmp 	r0, #0   		// check sign in H
-  	bpl 	1f 				// positive? Nothing to do!
-  	movs 	r2, #0			// dnegate r1 tos
-	mvns 	tos, tos
-	mvns 	r1, r1
- 	adds 	tos, #1
-	adcs 	r1, r2
+	push		{lr}
+	movs		r1, tos			// r1  H
+	drop						// tos L
+    movs		r0, #0x80000000
+    and			r0, r0, r1		// r0 S
+    							// dabs d
+  	cmp 		r0, #0   		// check sign in H
+  	bpl 		1f 				// positive? Nothing to do!
+  	movs 		r2, #0			// dnegate r1 tos
+	mvns 		tos, tos
+	mvns 		r1, r1
+ 	adds 		tos, #1
+	adcs 		r1, r2
 1:
-	vmov 	s1, r1			// H u>v, vh
+	vmov 		s1, r1			// H u>v, vh
 	vcvt.f32.s32 s1, s1
-	vmov 	s0, tos			// L u>v, vl
+	vmov 		s0, tos			// L u>v, vl
 	vcvt.f32.s32 s0, s0
-    movs	r3, #0x2f800000
-    vmov	s2, r3
-	vmul.f32 s0, s2
-	vadd.f32 s0, s1
+    movs		r3, #0x2f800000
+    vmov		s2, r3
+	vmul.f32 	s0, s2
+	vadd.f32 	s0, s1
 
-	vmov 	tos, s0
-  	orr		tos, r0			// set sign
-	pop		{pc}
+	vmov 		tos, s0
+  	orr			tos, r0			// set sign
+	pop			{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "f."
@@ -390,7 +447,12 @@ f_dot:
         @ ( r --  ) Display, with a trailing space, the rounded floating-point number r in fixed-point notation
 @ -----------------------------------------------------------------------------
 	push 		{r0-r3, lr}
-
+	tst			tos, #0x80000000	// is r negative?
+	beq			1f
+	pushdaconst	'-'
+	bl			emit				// sign
+1:
+	and			tos, #0x7fffffff	// abs
 	ldr			r2, =Fprecision		// round to the precision
 	ldr			r2, [r2]
 	ldr			r0, =0x3F000000 	//  0.5
@@ -427,72 +489,7 @@ f_dot:
 	bl			zifferstringende	// #>
 	bl			stype				// type
 	bl			space				// space
-	pop		{r0-r3, pc}
-
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "precision"
-precision:
-        @ ( -- u )      return the number of significant digits currently used by F., FE., or FS. as u
-@ -----------------------------------------------------------------------------
-
-	pushdatos
-	ldr		tos, =Fprecision
-	ldr		tos, [tos]
-	bx 		lr
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "set-precision"
-set_precision:
-        @ ( -- u )      ( u -- )      set the number of significant digits currently used by F., FE., or FS. to u
-@ -----------------------------------------------------------------------------
-	cmp		tos, #0
-	blt		1f
-	cmp		tos, #8
-	bgt		1f
-	ldr		r0, =Fprecision
-	str		tos, [r0]
-1:
-	drop
-	bx 		lr
-
-
-// Words Using C Math Library
-// **************************
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, ">float"
-to_float:
-        @ (a # -- r f ) convert the numbered string to float r, on success flag is true
-@ -----------------------------------------------------------------------------
-	push	{r0-r3, lr}
-	mov 	r1, tos		// #
-	drop
-	mov		r0, tos		// a
-	bl		FPU_str2f
-	mov		tos, r0		// float
-	pushdatos
-	mov		tos, #-1
-	ldr		r2, =0x7fc00000  // NaN
-	cmp		r0, r2
-	bne		1f			// success
-	mov		tos, #0		// fail
-1:
-	pop		{r0-r3, pc}
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "fnumber"
-fnumber:
-        @ (a # -- r u ) convert the numbered string to float r, on success u is 1 or 2, fail 0
-        //				single precision u = 1, double precision u = 2
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	bl		to_float
-	cmp		tos, #0
-	beq		1f			// fail
-	mov		tos, #1		// success
-1:
-	pop		{pc}
+	pop			{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "fs."
@@ -508,24 +505,16 @@ fs_type:
 	push		{r0-r3, r8,r9, lr}
 	mov			r8, #0				// scientific exponent
 	bl			f_dot_special_values
-	vmov		r0, s16
-	bl			log10f
-	vmov 		s17, r0				// get the integer part of exponent
-	tst			r0, #0x80000000		// is exponent negative?
-	beq			1f
-	ldr			r0, =0x3f7ffffe		// second largest number lesser than 1
-	vmov		s18, r0
-	vsub.f32	s17, s18
-1:
-	vcvt.s32.f32 s17, s17 			// exponent decimal -> s17
-	vcvt.f32.s32 s17, s17
+	pushdatos
+	vmov		tos, s16
+	bl			flog_to_n			// get the integer part of exponent
+	vmov 		s17, tos
+	vcvt.f32.s32 s17, s17 			// exponent decimal -> s17
 	vmov		s18, s17
 	bl			f_dot_round
-	vmov		s0, #10.0			// divisor = 10^(exponent)
-	vmov		r0, s0
-	vmov		r1, s17				// exponent
-	bl			powf
-	vmov		s1, r0
+	bl			pow10_to_f			// exponent in tos
+	vmov		s1, tos
+	drop
 	vmov		s19, s1				// save divisor
 	vdiv.f32	s0, s16, s1
 	vcvt.s32.f32 s0, s0 			// digit
@@ -571,34 +560,28 @@ fe_type:
 // s19 divisor
 // s20 digit
 
-	push		{r0-r3, r8,r9, lr}
+	push		{r0-r3, r8, r9, lr} // -- r
 	mov			r8, #1				// engineering exponent
 fe_m_type:
-	bl			f_dot_special_values
-1:
-	vmov		r0, s16
-	bl			log10f
-	vmov 		s17, r0				// get the integer part of exponent
-	tst			r0, #0x80000000		// is exponent negative?
-	beq			1f
-	ldr			r0, =0x3f7ffffe		// second largest number lesser than 1
-	vmov		s18, r0
-	vsub.f32	s17, s18
-1:
-	vcvt.s32.f32 s17, s17
-	vcvt.f32.s32 s17, s17
-	vcvt.s32.f32 s18, s17			// exponent mod 3: 0 > 0; 1 > -1; 2 > +1; -1 > +1; -2 > -1
+	bl			f_dot_special_values //
 	pushdatos
-	vmov		tos, s18
-	mov			r1, tos
-	push		{r1}
+	vmov		tos, s16			// -- r |r|
+	bl			flog_to_n			// get the integer part of exponent
+	vmov 		s17, tos			// tos exponent
+	vcvt.f32.s32 s17, s17 			// exponent decimal -> s17
+	vmov		s18, s17            // old exponent
+									// exponent mod 3: 0 > 0; 1 > -1; 2 > +1; -1 > +1; -2 > -1
+	pushdatos						// -- r exp exp
 	pushdatos
-	mov			tos, #3
-	bl			divmod
+	mov			tos, #3				// -- r exp exp 3
+	bl			divmod				// -- nexp remainder
+	drop							// -- r exp remainder
+
+	mov			r0, tos				// remainder
 	drop
-	pop			{r1}
-	mov			r0, tos
+	mov			r1, tos				// exponent
 	drop
+
 	cmp			r0, #0
 	bne			1f
 	mov			r9, #1				// position decimal point
@@ -629,18 +612,18 @@ fe_m_type:
 	mov			r9, #2				// position decimal point
 
 2:
-	vmov		s18, s17
+	vmov		s18, s17			// old exponent
 	vmov		s17, r1				// save new exponent
 	vcvt.f32.s32 s17, s17
 3:
+	pushdatos
+	vcvt.s32.f32 s0, s18 			// old exponent
+	vmov		tos, s0
 	bl			f_dot_round
-	vmov		s0, #10.0			// divisor = 10^(exponent)
-	vmov		r0, s0
-	vmov		r1, s18				// exponent
-	bl			powf
-	vmov		s1, r0
-	vmov		s19, s1				// save divisor
-	vdiv.f32	s0, s16, s1
+	bl			pow10_to_f			// exponent in tos
+	vmov		s19, tos				// save divisor
+	drop
+	vdiv.f32	s0, s16, s19
 	vcvt.s32.f32 s0, s0 			// digit
 	vcvt.f32.s32 s20, s0
 	pushdatos
@@ -709,7 +692,6 @@ f_dot_special_values:
 	cmp			tos, #0
 	bne			3f
 									// special case zero
-	pushdatos
 	write		"0."
 	ldr			r0, =Fprecision
 	ldr			r0, [r0]
@@ -720,7 +702,6 @@ f_dot_special_values:
 	sub			r0, #1				// all digits?
 	cmp			r0, #0
 	bne			1b
-	pushdatos
 	cmp			r8, #2
 	bne			1f
 	write		"e "				// metric unit exponent
@@ -844,6 +825,69 @@ f_dot_exit:
 	drop
  	pop			{r0-r3, r8, r9, pc}
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "precision"
+precision:
+        @ ( -- u )      return the number of significant digits currently used by F., FE., or FS. as u
+@ -----------------------------------------------------------------------------
+
+	pushdatos
+	ldr			tos, =Fprecision
+	ldr			tos, [tos]
+	bx 			lr
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "set-precision"
+set_precision:
+        @ ( -- u )      ( u -- )      set the number of significant digits currently used by F., FE., or FS. to u
+@ -----------------------------------------------------------------------------
+	cmp			tos, #0
+	blt			1f
+	cmp			tos, #8
+	bgt			1f
+	ldr			r0, =Fprecision
+	str			tos, [r0]
+1:
+	drop
+	bx 			lr
+
+
+// Words Using C Math Library
+// **************************
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, ">float"
+to_float:
+        @ (a # -- r f ) convert the numbered string to float r, on success flag is true
+@ -----------------------------------------------------------------------------
+	push		{r0-r3, lr}
+	mov 		r1, tos		// #
+	drop
+	mov			r0, tos		// a
+	bl			FPU_str2f
+	mov			tos, r0		// float
+	pushdatos
+	mov			tos, #-1
+	ldr			r2, =0x7fc00000  // NaN
+	cmp			r0, r2
+	bne			1f			// success
+	mov			tos, #0		// fail
+1:
+	pop			{r0-r3, pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "fnumber"
+fnumber:
+        @ (a # -- r u ) convert the numbered string to float r, on success u is 1 or 2, fail 0
+        //				single precision u = 1, double precision u = 2
+@ -----------------------------------------------------------------------------
+	push		{lr}
+	bl			to_float
+	cmp			tos, #0
+	beq			1f			// fail
+	mov			tos, #1		// success
+1:
+	pop			{pc}
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "fsin"
