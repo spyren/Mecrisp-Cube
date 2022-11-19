@@ -60,7 +60,7 @@ osThreadId_t CDC_ThreadID;
 const osThreadAttr_t cdc_thread_attributes = {
 		.name = "USB_CDC",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 128*8
+		.stack_size = 512*2
 };
 
 // Definitions for TxQueue
