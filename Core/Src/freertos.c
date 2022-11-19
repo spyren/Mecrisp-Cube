@@ -188,6 +188,8 @@ void MainThread(void *argument)
 //  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN MainThread */
 //	SD_getSize();
+//	BSP_setNeoPixel(0);
+	ASSERT_init();
 	OLED_init();
 	PLEX_init();
 	ASSERT_init();

@@ -123,6 +123,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_NVIC_SetPriority(USART3_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART3_IRQn);
   /* USER CODE BEGIN USART3_MspInit 1 */
+    GPIO_InitStruct.Pin = D0_Pin;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;  // pullup resistor for UART_Rx
+    HAL_GPIO_Init(D0_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE END USART3_MspInit 1 */
   }
