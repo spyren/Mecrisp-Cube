@@ -153,6 +153,43 @@ get_apin:
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "vref@"
+get_vref:
+		@ (  -- u ) Get the Vref
+// int BSP_getVref(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getVref
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "vbat@"
+get_vbat:
+		@ (  -- u ) Get the Vbat
+// int BSP_getVbat(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getVbat
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "cputemp@"
+get_cputemp:
+		@ (  -- u ) Get the CPU temperature
+// int BSP_getCpuTemperature(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getCpuTemperature
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dmod"
 set_dmod:
 		@ ( u a --  ) sets the pin mode: 0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain.
@@ -441,23 +478,14 @@ EXTIwait:
 // ***
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "I2Cdev"
-I2dev:
-        @ ( c -- ) Sets the I2C slave device
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	drop
-	bl		IIC_setDevice
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "I2Cget"
+		Wortbirne Flag_visible, "I2Cget"
 I2Cget:
-        @ ( a size -- ) Get a message
-// int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize)
+		@ ( a size -- ) Get a message
+// int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	movs	r2, tos			// dev
+	drop
 	movs	r1, tos			// RxSize
 	drop
 	movs	r0, tos			// *RxBuffer
@@ -466,12 +494,14 @@ I2Cget:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "I2Cput"
+		Wortbirne Flag_visible, "I2Cput"
 I2Cput:
-        @ ( a size --  ) Put a message
-// int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize)
+		@ ( a size --  ) Put a message
+// int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	movs	r2, tos			// dev
+	drop
 	movs	r1, tos			// TxSize
 	drop
 	movs	r0, tos			// *TxBuffer
@@ -480,50 +510,83 @@ I2Cput:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "I2Cputget"
+		Wortbirne Flag_visible, "I2Cputget"
 I2Cputget:
-        @ ( a1 size1 a2 size2 --  ) Put and get a message
-// int IIC_putGetMessage(uint8_t *TxBuffer, uint32_t TxSize, uint8_t *RxBuffer, uint32_t RxSize)
+		@ ( a size1 size2 dev --  ) Put and get a message
+// int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	movs	r3, tos			// RxSize
+	movs	r3, tos			// dev
 	drop
-	movs	r2, tos			// *RxBuffer
+	movs	r2, tos			// RxSize
 	drop
 	movs	r1, tos			// TxSize
 	drop
-	movs	r0, tos			// *TxBuffer
+	movs	r0, tos			// *TxRxBuffer
 	drop
 	bl		IIC_putGetMessage
 	pop		{pc}
 
+
+	// SPI
+	// ***
+
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "SPIputc"
-        @ ( c --  ) Put a message
-// void EXTSPI_Write(uint8_t Value)
+	   Wortbirne Flag_visible, "SPIget"
+SPIget:
+	   @ ( a size -- ) Get a message
+// int RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
-SPIputc:
 	push	{lr}
-	movs	r0, tos			// Value
+	movs	r1, tos			// DataLength
 	drop
-	bl		EXTSPI_Write
+	movs	r0, tos			// *Data
+	drop
+	bl		RTSPI_ReadData
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "SPIputget"
-       @ ( a1 a2 size2 --  ) Put and get a message
-// void EXTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength)
+		Wortbirne Flag_visible, "SPIput"
+SPIput:
+		@ ( a size --  ) Put a message
+// int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r1, tos			// DataLength
+	drop
+	movs	r0, tos			// *Data
+	drop
+	bl		RTSPI_WriteData
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "SPIputget"
 SPIputget:
- 	push	{lr}
+		@ ( a1 a2 size --  ) Put and get a message
+// int RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
+@ -----------------------------------------------------------------------------
+	push	{lr}
 	movs	r2, tos			// DataLength
 	drop
 	movs	r1, tos			// *DataOut
 	drop
 	movs	r0, tos			// *DataIn
 	drop
-	bl		EXTSPI_WriteReadData
+	bl		RTSPI_WriteReadData
 	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "SPImutex"
+SPImutex:
+		@ ( -- a ) Get the SPI mutex address
+// uint32_t* RTSPI_getMutex(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		RTSPI_getMutex
+	movs	tos, r0
+	pop		{pc}
+
 
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "watchdog"

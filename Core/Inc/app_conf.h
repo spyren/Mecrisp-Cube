@@ -24,6 +24,44 @@
 
 #include "app_common.h"
 
+// Board Type
+// **********
+
+#define BOARD_TYPE_UNO		1
+#define BOARD_TYPE_MKR		2
+#define BOARD_TYPE_FEATHER	3
+#define BOARD_TYPE_FIREFLY	4
+
+#define BOARD_TYPE			BOARD_TYPE_FEATHER
+
+// MCU Type
+// ********
+
+#define MCU_TYPE		"STM32F4"
+#if BOARD_TYPE == BOARD_TYPE_FEATHER
+// Adafruit headers
+#define BOARD 			"Feather"
+#define RAM_FLASH_SIZE	"31/768 KiB"
+#else
+// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
+#define BOARD 			"Nucleo"
+#define RAM_FLASH_SIZE	"63/128"
+#endif
+
+// Greeting Message
+// ****************
+
+#define MECRISP_CUBE_TAG "1.5.0"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
+#define RC_LOCAL "0:/etc/rc.local"
+
+/* if asserts are not required uncomment next line */
+#define CFG_ASSERT_ON
+
+/* if no logs are required uncomment next line */
+#define CFG_LOG_MSG  "0:/var/log/messages"
+
+
 /******************************************************************************
  * Application Config
  ******************************************************************************/
@@ -37,24 +75,6 @@
 #define YES (0x01)
 #define NO  (0x00)
 
-/**
- * Device name configuration for Generic Access Service
- */
-#define CFG_GAP_DEVICE_NAME             "TEMPLATE"
-#define CFG_GAP_DEVICE_NAME_LENGTH      (8)
-
-
-/* USER CODE BEGIN Generic_Parameters */
-
-#define MECRISP_CUBE_TAG "1.4.4"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32F405, 31/768 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch\n"
-#define RC_LOCAL "0:/etc/rc.local"
-
-/* if no logs are required uncomment next line */
-#define CFG_LOG_MSG  "0:/var/log/messages"
-
-/* if asserts are not required uncomment next line */
-#define CFG_ASSERT_ON
 
 /* USER CODE END Generic_Parameters */
 
@@ -283,6 +303,13 @@ typedef enum
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */
 
-#endif /*APP_CONF_H */
+/******************************************************************************
+ * Display modules
+ ******************************************************************************/
+#define	OLED					1
+#define MIP						0
+#define PLEX					1
+#define EPD						0
+#define FPU_IP					1
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif /*APP_CONF_H */

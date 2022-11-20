@@ -8,6 +8,9 @@
 #ifndef INC_FDSPI_H_
 #define INC_FDSPI_H_
 
+extern volatile uint8_t FDSPI_Error;
+extern osSemaphoreId_t FDSPI_SemaphoreID;
+
 void FDSPI_init(void);
 void FDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
 void FDSPI_Write(uint8_t Value);

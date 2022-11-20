@@ -37,15 +37,16 @@
 #include "app_common.h"
 #include "main.h"
 #include "fd_spi.h"
-#include "ext_spi.h"
+#include "rt_spi.h"
 #include "myassert.h"
-
+#include "rt_spi.h"
 
 // Private function prototypes
 // ***************************
 
 // Global Variables
 // ****************
+volatile uint8_t FDSPI_Error = FALSE;
 
 // RTOS resources
 // **************
@@ -58,7 +59,7 @@ static const osMutexAttr_t FDSPI_MutexAttr = {
 		0U					// size for control block
 };
 
-static osSemaphoreId_t FDSPI_SemaphoreID;
+osSemaphoreId_t FDSPI_SemaphoreID;
 
 
 // Hardware resources
@@ -72,7 +73,6 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 
 // Private Variables
 // *****************
-static volatile uint8_t SpiError = FALSE;
 
 
 // Public Functions
@@ -113,12 +113,12 @@ void FDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataL
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
-	SpiError = FALSE;
+	FDSPI_Error = FALSE;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(FDSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
+		if (FDSPI_Error || (os_status != osOK)) {
 			Error_Handler();
 		}
 	} else {
@@ -147,12 +147,12 @@ void FDSPI_Write(uint8_t Value) {
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
-	SpiError = FALSE;
+	FDSPI_Error = FALSE;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) &Value, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(FDSPI_SemaphoreID, 1000);
-		if (SpiError || (os_status != osOK)) {
+		if (FDSPI_Error || (os_status != osOK)) {
 			Error_Handler();
 		}
 	} else {
@@ -167,38 +167,4 @@ void FDSPI_Write(uint8_t Value) {
 // Callbacks
 // *********
 
-/**
-  * @brief  Tx and Rx Transfer completed callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for SPI module.
-  * @retval None
-  */
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-	if (hspi->Instance == hspi1.Instance) {
-		osSemaphoreRelease(FDSPI_SemaphoreID);
-	}
-
-	if (hspi->Instance == hspi2.Instance) {
-		osSemaphoreRelease(EXTSPI_SemaphoreID);
-	}
-}
-
-
-/**
-  * @brief  SPI error callback.
-  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains
-  *               the configuration information for SPI module.
-  * @retval None
-  */
-void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
-	if (hspi->Instance == hspi1.Instance) {
-		SpiError = TRUE;
-		osSemaphoreRelease(FDSPI_SemaphoreID);
-	}
-
-	if (hspi->Instance == hspi2.Instance) {
-		EXTSPI_Error = TRUE;
-		osSemaphoreRelease(FDSPI_SemaphoreID);
-	}
-}
-
+// see rt_spi.c

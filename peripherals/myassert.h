@@ -60,6 +60,8 @@
 
 #define ASSERT_FREERTOS					20
 
+#define ASSERT_CRS_SIGINT				21
+
 void ASSERT_init(void);
 int ASSERT_occurred(void);
 int ASSERT_getCount(void);

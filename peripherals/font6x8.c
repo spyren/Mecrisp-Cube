@@ -28,6 +28,7 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
+//#undef DEBUG
 #ifdef DEBUG
 // DEBUG: save some space and use only 128 chars
 const char font_6x8[128][6]={

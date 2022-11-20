@@ -185,13 +185,12 @@ cdc_terminal:
 	str		r1, [r0, #user_hook_qemit]
 
 	ldr		r1, =cdc_key
-	str		r1, [r0, #user_hook_qemit]
+	str		r1, [r0, #user_hook_key]
 
 	ldr		r1, =cdc_qkey
 	str		r1, [r0, #user_hook_qkey]
 
 	pop		{pc}
-
 
 .ltorg
 
@@ -261,6 +260,5 @@ serial_emit2key:
 	drop
 	bl		UART_putkey
 	pop		{pc}
-
 
 

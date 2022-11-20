@@ -32,7 +32,7 @@
 #include "usb_cdc.h"
 #include "bsp.h"
 #include "fd_spi.h"
-#include "ext_spi.h"
+#include "rt_spi.h"
 #include "sd.h"
 #include "fd.h"
 #include "block.h"

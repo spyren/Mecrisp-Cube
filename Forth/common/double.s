@@ -703,8 +703,8 @@ d_slash_mod:  @ ( 1L 1H 2L tos: 2H -- Rem-L Rem-H Quot-L tos: Quot-H )
 
 
 @------------------------------------------------------------------------------
-  Wortbirne Flag_visible|Flag_foldable_4, "f*"
-f_star: @ Signed multiply s31.32
+  Wortbirne Flag_visible|Flag_foldable_4, "x*"
+x_star: @ Signed multiply s31.32
         @ ( fi fi -- fi )
         @ Overflow possible. Sign wrong in this case.
 @------------------------------------------------------------------------------
@@ -747,7 +747,7 @@ f_star: @ Signed multiply s31.32
   pop {pc}
 
 @------------------------------------------------------------------------------
-  Wortbirne Flag_visible|Flag_foldable_4, "f/"
+  Wortbirne Flag_visible|Flag_foldable_4, "x/"
   @ Signed divide for s31.32. Overflow possible. Sign wrong in this case.
 @------------------------------------------------------------------------------
   @ Take care of sign ! ( 1L 1H 2L 2H - EL EH )
