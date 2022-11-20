@@ -289,6 +289,14 @@ oledfont:
 	movs	tos, r0		// column
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oledupdate"
+oledupdate:
+        @ ( --  ) Update the OLED display
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		OLED_update
+	pop		{pc}
 
 @ -----------------------------------------------------------------------------
   Wortbirne Flag_visible, "oled-test" // (  -- )
