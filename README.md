@@ -161,6 +161,10 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Own Tags for F405 and WB55 chips
 * `0:/etc/rc.local` startup script
 * 2 MiB flash drive for F405
+### v1.5.0 FPU Release
+* Support for Floating-Point Unit
+* EPD driver
+* Watchdog and Asserts
 
 ## Authors
 
