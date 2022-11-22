@@ -188,6 +188,7 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 * [CMSIS-RTOS](man/CmsisRtos.md)
 * How to call [C functions](man/CallingCFunction.md)
 * Built-in editor [vi](man/EditorVi.md)
-* Real Tiem Clock [RTC](man/RealTimeClock.md)
+* Real Time Clock [RTC](man/RealTimeClock.md)
+* Floating-Point Unit [FPU](man/fpu.md)
 
 
