@@ -271,7 +271,7 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts(BOARD "\r\n");
 	OLED_puts("Forth for\r\n");
-	OLED_puts("the STM32F4 \r\n");
+	OLED_puts("the STM32WB \r\n");
 	OLED_puts("(c)2022\r\n");
 	OLED_puts("peter@spyr.ch");
 }
@@ -1062,5 +1062,27 @@ void postwrap(int width, int row) {
 #endif
 	}
 }
+
+
+// XPM ? ICO (Favicon)
+//void OLED_drawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[])
+// OLED_X_RESOLUTIONx32/8=512
+// bitmap?
+//{
+//	uint16_t j = 0;
+//	uint8_t y;
+//	if (y1 % 8 == 0) y = y1 / 8;
+//	else y = y1 / 8 + 1;
+//	for (y = y0; y < y1; y++)
+//	{
+//		ssd1306_setpos(x0,y);
+//		ssd1306_send_data_start();
+//		for (uint8_t x = x0; x < x1; x++)
+//		{
+//			ssd1306_send_byte(pgm_read_byte(&bitmap[j++]));
+//		}
+//		ssd1306_send_data_stop();
+//	}
+//}
 
 #endif
