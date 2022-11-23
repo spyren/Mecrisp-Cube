@@ -62,7 +62,8 @@
 #include "font12x16.h"
 
 #if OLED == 1
-#include "spyr.h"
+//#include "spyr.h"
+#include "firefly.h"
 
 // Macros
 // ******
@@ -258,8 +259,8 @@ void OLED_init(void) {
 #endif
 
 	OLED_clear();
-	OLED_setPos(127-spyr_height-8, 0);
-	OLED_putXBM(spyr_bits, spyr_width, spyr_height);
+	OLED_setPos(64, 0);
+	OLED_putXBM(firefly_bits, firefly_width, firefly_height);
 
 	OLED_setPos(0, 0);
 	OLED_setFont(OLED_FONT8X8);
