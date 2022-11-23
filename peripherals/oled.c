@@ -62,7 +62,7 @@
 #include "font12x16.h"
 
 #if OLED == 1
-#include "firefly.h"
+#include "spyr.h"
 
 // Macros
 // ******
@@ -258,20 +258,22 @@ void OLED_init(void) {
 #endif
 
 	OLED_clear();
-	OLED_setPos(64, 0);
-	OLED_putXBM(firefly_bits, firefly_width, firefly_height);
+	OLED_setPos(127-spyr_height-8, 0);
+	OLED_putXBM(spyr_bits, spyr_width, spyr_height);
 
-	OLED_setPos(0,0);
+	OLED_setPos(0, 0);
 	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-Cube\r\n");
+	OLED_puts("Mecrisp-");
+	OLED_setPos(93, 0);
+	OLED_puts("Cube\r\n");
 	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
 
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts(BOARD "\r\n");
 	OLED_puts("Forth for\r\n");
 	OLED_puts("the STM32WB \r\n");
-	OLED_puts("(c)2022 \r\n");
-	OLED_puts("peter@spyr.ch ");
+	OLED_puts("(c)2022\r\n");
+	OLED_puts("peter@spyr.ch");
 }
 
 
@@ -710,7 +712,7 @@ static void putGlyph6x8(int ch) {
 	transpose_page(0, 1, buf);
 
 	// second page
-	if ((CurrentPosX % 6) >= 8)  {
+	if ((CurrentPosX % 8) + 6 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 	}
@@ -765,7 +767,7 @@ static void putGlyph8x8(int ch) {
 	transpose_page(0, 1, buf);
 
 	// second page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 	}
@@ -822,7 +824,7 @@ static void putGlyph8x16(int ch) {
 	transpose_page(0, 0, buf);
 
 	// second page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 		transpose_page(1, 0, buf);
@@ -902,7 +904,7 @@ static void putGlyph12x16(int ch) {
 	transpose_page(1, 0, buf);
 
 	// third page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// third page needed
 		transpose_page(2, 1, buf);
 		transpose_page(2, 0, buf);
