@@ -643,6 +643,8 @@ int BSP_getVref(void) {
 	value = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop_IT(&hadc1);
 
+	osMutexRelease(Adc_MutexID);
+
 	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
 }
 
@@ -677,6 +679,8 @@ int BSP_getVbat(void) {
 
 	value = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop_IT(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
 
 	return 3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) ;
 }

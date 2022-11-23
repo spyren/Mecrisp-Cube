@@ -149,6 +149,12 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * OLED driver, I2C, timer, RTC
 * Markdown docs
 
+### v1.5.0 
+* Floating-Point Unit support 
+* Watchdog and Asserts
+* EPD driver
+* BSP for Firefly and Katydid
+
 ## Authors
 
 * **Matthias Koch** - *Forth on ARM Cortex M0/M4* - [Mecrisp Stellaris](http://mecrisp.sourceforge.net/)
