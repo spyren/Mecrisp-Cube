@@ -712,7 +712,7 @@ static void putGlyph6x8(int ch) {
 	transpose_page(0, 1, buf);
 
 	// second page
-	if ((CurrentPosX % 6) >= 8)  {
+	if ((CurrentPosX % 8) + 6 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 	}
@@ -767,7 +767,7 @@ static void putGlyph8x8(int ch) {
 	transpose_page(0, 1, buf);
 
 	// second page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 	}
@@ -824,7 +824,7 @@ static void putGlyph8x16(int ch) {
 	transpose_page(0, 0, buf);
 
 	// second page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 		transpose_page(1, 0, buf);
@@ -904,7 +904,7 @@ static void putGlyph12x16(int ch) {
 	transpose_page(1, 0, buf);
 
 	// third page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// third page needed
 		transpose_page(2, 1, buf);
 		transpose_page(2, 0, buf);
