@@ -271,7 +271,7 @@ void OLED_init(void) {
 	OLED_setFont(OLED_FONT6X8);
 	OLED_puts(BOARD "\r\n");
 	OLED_puts("Forth for\r\n");
-	OLED_puts("the STM32WB \r\n");
+	OLED_puts("the STM32F4 \r\n");
 	OLED_puts("(c)2022\r\n");
 	OLED_puts("peter@spyr.ch");
 }
