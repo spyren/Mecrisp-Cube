@@ -6,6 +6,7 @@
  *  	The 7 vertical pixels are in one byte.
  *  	There are 8 independent frames.
  *  	I2C Interface, address 0x74.
+ *  	400kHz I2C-compatible interface
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file
  *      plex.c
@@ -94,7 +95,7 @@ extern I2C_HandleTypeDef hi2c1;
 // Private Variables
 // *****************
 
-static uint8_t plexReady = FALSE;
+static uint8_t plexReady = TRUE;
 
 static uint8_t CurrentPosX = 0;
 static uint8_t CurrentBrightness = 255;
@@ -119,6 +120,7 @@ static uint8_t frame_buffer[8][15];
 void PLEX_init(void) {
 	if (HAL_I2C_IsDeviceReady(&hi2c1, PLEX_I2C_ADR << 1, 5, 100) != HAL_OK) {
 		// PLEX is not ready
+		plexReady = FALSE;
 		return;
 	}
 	plexReady = TRUE;
