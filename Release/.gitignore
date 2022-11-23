@@ -1,0 +1,14 @@
+/Core/
+/Drivers/
+/FATFS/
+/Forth/
+/Middlewares/
+/STM32_WPAN/
+/USB_Device/
+/Utilities/
+/makefile
+/objects.list
+/objects.mk
+/sources.mk
+/peripherals/
+/vi/
