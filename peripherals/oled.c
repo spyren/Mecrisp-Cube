@@ -550,8 +550,7 @@ int OLED_readStatus(void) {
 	uint8_t status=0;
 
 #ifndef OLED_SPI
-	IIC_setDevice(OLED_I2C_ADR);
-	IIC_getMessage(&status, 1);
+	IIC_getMessage(&status, 1, OLED_I2C_ADR);
 #endif
 	return status;
 }
@@ -568,27 +567,34 @@ int OLED_readStatus(void) {
  *      None
  */
 void OLED_writeColumn(uint8_t column) {
+#ifdef	OLED_PAGE_VERTICAL
+	uint8_t buf[9];
+	int i;
+#else
 	uint8_t buf[2];
+#endif
 
 	if (autowrap(' ', 1, 1)) {
 		return ;
 	}
 
 	display_buffer->rows[CurrentPosY][CurrentPosX] = column;
-
 	buf[0] = 0x40;  // write data
+
+#ifdef	OLED_PAGE_VERTICAL
+	// fill the buffer with 8 columns
+	for (i = 0; i < 8; i++) {
+		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
+	}
+
+	transpose_page(0, 1, buf);
+
+#else
+
 	// copy into I2C array
 	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
 
-#ifndef OLED_SPI
 	IIC_putMessage(buf, 2, OLED_I2C_ADR);
-#else
-	osMutexAcquire(RTSPI_MutexID, osWaitForever);
-	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// Data
-	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
-	RTSPI_WriteData(buf+1, 1);
-	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
-	osMutexRelease(RTSPI_MutexID);
 #endif
 
 	postwrap(1, 1);
@@ -706,7 +712,7 @@ static void putGlyph6x8(int ch) {
 	transpose_page(0, 1, buf);
 
 	// second page
-	if ((CurrentPosX % 6) >= 8)  {
+	if ((CurrentPosX % 8) + 6 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 	}
@@ -761,7 +767,7 @@ static void putGlyph8x8(int ch) {
 	transpose_page(0, 1, buf);
 
 	// second page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 	}
@@ -818,7 +824,7 @@ static void putGlyph8x16(int ch) {
 	transpose_page(0, 0, buf);
 
 	// second page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// second page needed
 		transpose_page(1, 1, buf);
 		transpose_page(1, 0, buf);
@@ -898,7 +904,7 @@ static void putGlyph12x16(int ch) {
 	transpose_page(1, 0, buf);
 
 	// third page
-	if ((CurrentPosX % 8) >= 8)  {
+	if ((CurrentPosX % 8) + 8 >= 8)  {
 		// third page needed
 		transpose_page(2, 1, buf);
 		transpose_page(2, 0, buf);
