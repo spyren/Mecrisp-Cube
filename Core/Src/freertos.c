@@ -95,10 +95,7 @@ void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
    /* Run time stack overflow checking is performed if
    configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
    called if a stack overflow is detected. */
-	Error_Handler();
-	for(;;) {
-		;
-	}
+	ASSERT_fatal(0, ASSERT_STACK_OVERFLOW, (uint32_t) pcTaskName);
 
 }
 /* USER CODE END 4 */
@@ -116,10 +113,7 @@ void vApplicationMallocFailedHook(void)
    FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
    to query the size of free heap space that remains (although it does not
    provide information on how the remaining heap might be fragmented). */
-	Error_Handler();
-	for(;;) {
-		;
-	}
+	ASSERT_fatal(0, ASSERT_MALLOC_FAILED, 0);
 }
 /* USER CODE END 5 */
 
@@ -182,25 +176,20 @@ void MX_FREERTOS_Init(void) {
   * @retval None
   */
 /* USER CODE END Header_MainThread */
-void MainThread(void *argument)
-{
-  /* init code for USB_DEVICE */
-//  MX_USB_DEVICE_Init();
-  /* USER CODE BEGIN MainThread */
-//	SD_getSize();
-//	BSP_setNeoPixel(0);
+void MainThread(void *argument) {
+	/* init code for USB_DEVICE */
+	//  MX_USB_DEVICE_Init();
+/* USER CODE BEGIN MainThread */
+	BSP_setNeoPixel(0);
 	ASSERT_init();
 	OLED_init();
 	PLEX_init();
 	ASSERT_init();
 
 	Forth();
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END MainThread */
+
+	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0)
+/* USER CODE END MainThread */
 }
 
 /* Private application code --------------------------------------------------*/

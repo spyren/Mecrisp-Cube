@@ -1,0 +1,11 @@
+/Core/
+/FATFS/
+/Forth/
+/Middlewares/
+/USB_DEVICE/
+/makefile
+/objects.list
+/objects.mk
+/sources.mk
+/peripherals/
+/vi/
