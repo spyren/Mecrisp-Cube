@@ -72,7 +72,7 @@ static osThreadId_t UART_TxThreadId;
 static const osThreadAttr_t UART_TxThreadAttr = {
 		.name = "UART_Tx",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 128 * 6
+		.stack_size = 512 * 2
 };
 
 // Definitions for UART Rx thread
@@ -80,7 +80,7 @@ static osThreadId_t UART_RxThreadId;
 static const osThreadAttr_t UART_RxThreadAttr = {
 		.name = "UART_Rx",
 		.priority = (osPriority_t) osPriorityHigh,
-		.stack_size = 128 * 6
+		.stack_size = 512 * 2
 };
 
 osMutexId_t UART_MutexID;
@@ -138,19 +138,6 @@ void UART_init(void) {
 	// creation of UART_RxThread
 	UART_RxThreadId = osThreadNew(UART_RxThread, NULL, &UART_RxThreadAttr);
 	ASSERT_fatal(UART_RxThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
-}
-
-
-/**
- *  @brief
- *      De-initializes the UART.
- *  @return
- *      None
- */
-void UART_deinit(void) {
-	osThreadTerminate(UART_TxThreadId);
-	osThreadTerminate(UART_RxThreadId);
-	HAL_UART_MspDeInit(&huart1);
 }
 
 /**

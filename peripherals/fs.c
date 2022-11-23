@@ -129,8 +129,6 @@ void FS_init(void) {
 /**
  *  @brief
  *      Interprets the content of the file.
- *  @warning
- *  	evaluate never returns if there is an error!
  *  @param[in]
  *      forth_stack   TOS (lower word) and SPS (higher word)
  *  @param[in]
@@ -167,7 +165,6 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 	/* Read every line and interprets it */
 	while (f_gets(line, LINE_LENGTH-1, &fil)) {
 		// line without \n
-		// evaluate never returns if there is an error!
 		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
 	}
 
@@ -1005,7 +1002,7 @@ uint64_t FS_split(uint64_t forth_stack) {
 				if (fr == FR_OK) {
 					for (line_count = 0; line_count < lines; line_count++) {
 						buf = f_gets(line, sizeof(line), &fil_src);
-						if (buf == NULL) {
+						if (*buf == NULL) {
 							// no lines left
 							break;
 						}
@@ -1102,7 +1099,7 @@ uint64_t FS_wc(uint64_t forth_stack) {
 		if (fr == FR_OK) {
 			while (!f_eof(&fil)) {
 				buf = f_gets(line, sizeof(line), &fil);
-				if (buf == NULL) {
+				if (*buf == NULL) {
 					// no lines left
 					break;
 				}

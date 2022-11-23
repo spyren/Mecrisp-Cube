@@ -108,6 +108,9 @@ void Error_Handler(void);
 #define D14_GPIO_Port GPIOB
 #define D15_Pin GPIO_PIN_7
 #define D15_GPIO_Port GPIOB
+#define VBAT_EN_Pin GPIO_PIN_0
+#define VBAT_EN_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

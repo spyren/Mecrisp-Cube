@@ -75,6 +75,7 @@
 .equ	MIP,				0
 .equ	PLEX,				1
 .equ	EPD,				0
+.equ	FPU,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -94,8 +95,9 @@
 MEMORY
 MEMORY
 {
-FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 384K
-FLASH_FORTH (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
 RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
@@ -108,9 +110,9 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 
 @ Konstanten für die Größe und Aufteilung des Flash-Speichers
 
-.equ	Kernschutzadresse,		0x08060000	@ Mecrisp core never writes flash below this address.
-.equ	FlashDictionaryAnfang,	0x08060000	@ 384 KiB Flash reserved for core and C.
-.equ	FlashDictionaryEnde,	0x080C0000	@ 384 KiB Flash available, 256 KiB for BLE Stack
+.equ	Kernschutzadresse,		0x08040000	@ Mecrisp core never writes flash below this address.
+.equ	FlashDictionaryAnfang,	0x08040000	@ 256 KiB Flash reserved for core and C.
+.equ	FlashDictionaryEnde,	0x08060000	@ 128 KiB Flash available, 386 KiB for drive, 256 KiB for BLE Stack
 .equ	Backlinkgrenze,			RamAnfang	@ Ab dem Ram-Start.
 
 
@@ -147,6 +149,11 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 
 	ramallot	DriveNumber, 4
 
+// FPU variable only if needed
+.if FPU == 1
+	ramallot    Fprecision, 4
+.endif // FPU == 1
+
 .global		Dictionarypointer
 .global		Fadenende
 .global		ZweitDictionaryPointer
@@ -154,6 +161,10 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 .global		EvaluateState
 .global		DriveNumber
 
+// FPU variable only if needed
+.if FPU == 1
+.global		Fprecision
+.endif // FPU == 1
 
 .ifdef registerallocator
 
@@ -347,6 +358,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
 
+.include "fpu.s"
 .else  // registerallocator
 
 .include "double.s"
@@ -400,6 +412,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "interrupts-common.s"
 .include "interrupts.s" @ You have to change interrupt handlers for Porting !
 
+.include "fpu.s"
 .endif // registerallocator
 
 @ -----------------------------------------------------------------------------
@@ -422,6 +435,14 @@ Forth:
 // Stack already set in the main thread
 //	ldr		r0, =returnstackanfang
 //	str		sp, [r0]
+
+// FPU variable only if needed
+.if FPU == 1
+// default precision for f., fe., fs., fm.
+	ldr		r0, =Fprecision
+	ldr		r1, =2
+	str		r1, [r0]
+.endif // EPD == 1
 
 // set the local storage pointer to the user variables
 	ldr		r0, =0	// current task xTaskToQuery = 0
