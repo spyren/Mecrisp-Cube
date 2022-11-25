@@ -227,110 +227,6 @@ void EPD_init(void) {
 	EPD_clear();
 	EPD_setPos(0,0);
 
-//	EPD_setFont(EPD_FONT16X32S);
-//	EPD_puts("DejaVu20pt,");
-//	EPD_setFont(EPD_FONT16X32B);
-//	EPD_puts("15x3\r\n");
-//	EPD_setFont(EPD_FONT11X24S);
-//	EPD_puts("DejaVu 14 pt, 22x5 Z\r\n");
-//	EPD_setFont(EPD_FONT11X24B);
-//	EPD_puts("1234567890123456789012\r\n");
-//	EPD_setFont(EPD_FONT8X16S);
-//	EPD_puts("DejaVu Sans Mono 10 pt, 31x7 Z\r\n");
-//	EPD_puts("1234567890123456789012345678901\r\n");
-//	EPD_setFont(EPD_FONT8X16B);
-//	EPD_puts("1234567890123456789012345678901\r\n");
-
-//	EPD_setFont(EPD_FONT8X16S);
-//	EPD_puts("DejaVu Sans Mono 10 pt, 31x7 Z\r\n");
-//	EPD_puts("The quick brown fox jumps over\r\n");
-//	EPD_puts("the lazy dog.\r\n");
-//	EPD_puts("1234567890123456789012345678901\r\n");
-//	EPD_setFont(EPD_FONT8X16B);
-//	EPD_puts("The quick brown fox jumps over\r\n");
-//	EPD_puts("the lazy dog.\r\n");
-//	EPD_puts("1234567890123456789012345678901");
-
-//	EPD_setFont(EPD_FONT10X24S);
-//	EPD_puts("DejaVu Sans 12 pt, 25x5 Z");
-//	EPD_puts("The quick brown fox jumps");
-//	EPD_puts("over the lazy dog\r\n");
-//	EPD_puts("1234567890123456789012345");
-//	EPD_setFont(EPD_FONT10X24B);
-//	EPD_puts("1234567890123456789012345");
-
-	//	EPD_setFont(EPD_FONT11X24S);
-//	EPD_puts("DejaVu 14 pt, 22x5 Z\r\n");
-//	EPD_puts("The quick brown fox ju\r\n");
-//	EPD_puts("mps over the lazy dog\r\n");
-//	EPD_puts("1234567890123456789012\r\n");
-//	EPD_setFont(EPD_FONT11X24B);
-//	EPD_puts("1234567890123456789012");
-
-//	EPD_setFont(EPD_FONT16X32S);
-//	EPD_puts("DejaVu20pt,15x3\r\n");
-//	EPD_puts("123456789012345\r\n");
-//	EPD_setFont(EPD_FONT16X32B);
-//	EPD_puts("The quick brown\r\n");
-//	EPD_puts("fox jumps over\r\n");
-
-//	EPD_setFont(EPD_FONT9X16S);
-//	EPD_puts("DejaVuSansMono 11pt, 27x7 Z\r\n");
-//	EPD_puts("The quick brown fox jumps\r\n");
-//	EPD_puts("over the lazy dog.\r\n");
-//	EPD_puts("123456789012345678901234567\r\n");
-//	EPD_setFont(EPD_FONT9X16B);
-//	EPD_puts("The quick brown fox jumps\r\n");
-//	EPD_puts("over the lazy dog.\r\n");
-//	EPD_puts("123456789012345678901234567\r\n");
-
-//	EPD_setFont(EPD_FONT13X24S);
-//	EPD_puts("DejaVu 16pt, 19x5 Z\r\n");
-//	EPD_puts("The quick brown fox\r\n");
-//	EPD_puts("jumps over the lazy\r\n");
-//	EPD_puts("1234567890123456789\r\n");
-//	EPD_setFont(EPD_FONT13X24B);
-//	EPD_puts("1234567890123456789");
-
-//	EPD_setFont(EPD_FONT8X8);
-//	EPD_puts("IBM PC CGA Font 8x8 px, 31x15 Z\r\n");
-//	EPD_puts("The quick brown fox jumps over\r\n");
-//	EPD_puts("the lazy dog.\r\n");
-//	EPD_puts("1234567890123456789012345678901\r\n");
-//	EPD_puts("Lorem ipsum dolor sit amet, con\r\n");
-//	EPD_puts("sectetur adipiscing elit, sed \r\n");
-//	EPD_puts("do eiusmod tempor incididunt ut\r\n");
-//	EPD_puts("labore et dolore magna aliqua.\r\n");
-//	EPD_puts("Ut enim ad minim veniam, quis \r\n");
-//	EPD_puts("nostrud exercitation ullamco\r\n");
-//	EPD_puts("laboris nisi ut aliquip ex ea \r\n");
-//	EPD_puts("commodo consequat. Duis aute  \r\n");
-//	EPD_puts("irure dolor in reprehenderit in\r\n");
-//	EPD_puts("voluptate velit esse cillum dol\r\n");
-//	EPD_puts("ore eu fugiat nulla pariatur.");
-
-//	// Small Font and 6 rows
-//	EPD_setFont(EPD_FONT13X24B);
-//	EPD_puts("Titel\r\n");
-//	EPD_setFont(EPD_FONT9X16B);
-//	//	EPD_puts("The quick brown fox\r\n");
-//	EPD_puts("    Auswahl 1\r\n");
-//	EPD_puts("    Auswahl 2\r\n");
-//	EPD_puts("  \273 Auswahl 3\r\n");
-//	EPD_puts("    Auswahl 4\r\n");
-//	EPD_puts("    Auswahl 5\r\n");
-//	EPD_puts("    Auswahl 6");
-
-//	// Large Font and 4 rows
-//	EPD_setFont(EPD_FONT13X24B);
-//	EPD_puts("Titel\r\n");
-//	EPD_setFont(EPD_FONT11X24S);
-//	//	EPD_puts("The quick brown fox\r\n");
-//	EPD_puts("  Auswahl 1\r\n");
-//	EPD_puts("  Auswahl 2\r\n");
-//	EPD_puts("\273 Auswahl 3\r\n");
-//	EPD_puts("  Auswahl 4");
-
 	// Large Font and 4 rows
 	EPD_setFont(EPD_FONT11X24B);
 	EPD_puts("Titel 14 pt bold\r\n");
@@ -344,31 +240,8 @@ void EPD_init(void) {
 	EPD_setPos(150, 3);
 	EPD_putXBM(nozzle_bits, nozzle_width, nozzle_height);
 
-//	EPD_setFont(EPD_FONT6X8);
-//	EPD_puts(MECRISP_CUBE_TAG);
-//#ifdef DEBUG
-//	EPD_puts("\r\nDebug\r\n");
-//#else
-//	EPD_puts("\r\n\r\n");
-//#endif
-//	EPD_puts("Forth for the STM32WB\r\n");
-//	EPD_puts("(c)2022 peter@spyr.ch");
-//
-//	EPD_puts("\r\n\r\n");
-//	EPD_setFont(EPD_FONT12X16);
-//
-//	EPD_puts("Mecrisp-Cube ");
-//	EPD_puts(MECRISP_CUBE_TAG);
-//	EPD_setFont(EPD_FONT8X16);
-//#ifdef DEBUG
-//	EPD_puts("\r\nDebug\r\n");
-//#else
-//	EPD_puts("\r\n\r\n");
-//#endif
-//	EPD_puts("Forth for the STM32WB\r\n");
-//	EPD_puts("(c)2022 peter@spyr.ch");
-
 	EPD_update();
+	EPD_deepSleep();
 }
 
 

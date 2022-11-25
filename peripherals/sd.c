@@ -240,6 +240,8 @@ void SD_getSize(void) {
 		osMutexRelease(RTSPI_MutexID);
 		if (SD_GetCardInfo(&CardInfo) != SD_ERROR) {
 			sd_size = CardInfo.CardCapacity / 1024;
+		} else {
+			Error_Handler();
 		}
 	}
 

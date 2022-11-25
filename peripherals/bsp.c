@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Board Support Package for STM32WB5M Discovery Board.
+ *      Board Support Package for STM32WB Feather Board.
  *
  *        - LEDs (red LED D12, Neopixel A5)
  *        - Switches FeatherWing SW1 (button A, D9), SW2 (button B, D6), SW3 (button C, D5)

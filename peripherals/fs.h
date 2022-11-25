@@ -14,7 +14,7 @@ extern const char FS_Version[];
 extern	uint32_t **ZweitDictionaryPointer;
 
 extern int EvaluateState;
-
+extern FATFS FatFs_SD;
 
 void FS_init(void);
 

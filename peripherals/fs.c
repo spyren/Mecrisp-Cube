@@ -118,7 +118,6 @@ void FS_init(void) {
 	FS_MutexID = osMutexNew(&FS_MutexAttr);
 	ASSERT_fatal(FS_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
-
 	/* Gives a work area to the flash drive */
 	f_mount(&FatFs_FD, "0:", 0);
 	/* Gives a work area to the SD drive */

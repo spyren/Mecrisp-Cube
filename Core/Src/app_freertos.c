@@ -159,8 +159,8 @@ void MainThread(void *argument)
   /* USER CODE BEGIN MainThread */
 	BSP_setNeoPixel(0);
 	ASSERT_init();
-	SD_init();
 	FD_init();
+	SD_init();
 	FS_init();
 #if OLED == 1
 	OLED_init();
@@ -183,7 +183,7 @@ void MainThread(void *argument)
 	} else {
 		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-//		BSP_setLED1(FALSE); // switch off power on LED
+		BSP_setLED1(FALSE); // switch off power on LED
 	}
 
 	Forth();

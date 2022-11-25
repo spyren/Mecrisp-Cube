@@ -54,8 +54,8 @@
 #define EPD_ECS_GPIO_Port	D9_GPIO_Port
 #define EPD_DC_Pin			D11_Pin			// EPD Command/Control
 #define EPD_DC_GPIO_Port	D11_GPIO_Port
-#define EPD_BUSY_Pin		D12_Pin			// EPD Busy (optional)
-#define EPD_BUSY_GPIO_Port	D12_GPIO_Port
+#define EPD_BUSY_Pin		A4_Pin			// EPD Busy (optional)
+#define EPD_BUSY_GPIO_Port	A4_GPIO_Port
 #define EPD_RST_Pin			D13_Pin			// EPD Reset (optional)
 #define EPD_RST_GPIO_Port	D13_GPIO_Port
 
