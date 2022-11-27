@@ -136,14 +136,14 @@ void FD_init(void) {
  */
 void FD_reset(void) {
 	// reset chip
-	osMutexAcquire(FD_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 	RTSPI_Write(EN_RES_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 	RTSPI_Write(RESET_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
-	osMutexRelease(FD_MutexID);
+	osMutexRelease(RTSPI_MutexID);
 }
 
 
@@ -188,7 +188,7 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 
 	if ((ReadAddr+NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
-		osMutexAcquire(FD_MutexID, osWaitForever);
+		osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 		RTSPI_Write(READ_CMD);
@@ -198,7 +198,7 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 		RTSPI_WriteReadData(pData, pData, NumOfBlocks * FD_BLOCK_SIZE);
 		HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
 
-		osMutexRelease(FD_MutexID);
+		osMutexRelease(RTSPI_MutexID);
 
 		retr = SD_OK;
 	}
@@ -234,9 +234,6 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 	if ((NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
-
-		osMutexAcquire(FD_MutexID, osWaitForever);
-
 		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_PAGE;
 		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_PAGE;
 		int sectors = NumOfBlocks / FD_BLOCKS_PER_PAGE;
@@ -276,8 +273,6 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 				retr = SD_ERROR;
 			}
 		}
-
-		osMutexRelease(FD_MutexID);
 	} else {
 		retr = SD_ERROR;
 	}
@@ -299,7 +294,6 @@ uint8_t FD_eraseDrive(void) {
 	int i;
 	uint8_t status;
 
-	osMutexAcquire(FD_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 	RTSPI_Write(WREN_CMD);
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_SET);
@@ -323,7 +317,6 @@ uint8_t FD_eraseDrive(void) {
 		}
 
 	}
-	osMutexRelease(FD_MutexID);
 	return retr;
 }
 
@@ -352,7 +345,11 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 	uint8_t *byte_p;
 	uint8_t erased = TRUE;
 
+	// only one thread is allowed to use scratch_sector
+	osMutexAcquire(FD_MutexID, osWaitForever);
+
 	// read out 4 KiB serial flash sector into scratch_sector
+	// only one thread is allowed to use the SPI
 	osMutexAcquire(RTSPI_MutexID, osWaitForever); 	// only one thread is allowed to use the SPI
 	HAL_GPIO_WritePin(FLASH_CS_GPIO_Port, FLASH_CS_Pin, GPIO_PIN_RESET);
 	RTSPI_Write(READ_CMD);
@@ -412,6 +409,8 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 			flash_block(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE);
 		}
 	}
+	osMutexRelease(FD_MutexID);
+
 	return retr;
 }
 
