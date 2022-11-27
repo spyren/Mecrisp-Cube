@@ -3,7 +3,9 @@
  *      Secure Digital Memory Card block read and write.
  *
  *      SPI is used as interface. D10 is chip select.
- *      Based on stm32_adafruit_sd.c and sd_diskio.c
+ *      Based on stm32_adafruit_sd.c and sd_diskio.c.
+ *      Pullup for MISO.
+ *      fd seems to disturb sd, SPI?
  *  @file
  *      sd.c
  *  @author
@@ -221,28 +223,28 @@ void SD_init(void) {
  *      None
  */
 void SD_getSize(void) {
+	/* Configure IO functionalities for SD pin */
+	uint8_t state;
+
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(RTSPI_MutexID, osWaitForever);
-
-	/* Configure IO functionalities for SD pin */
 	SD_IO_Init();
-
 	/* SD detection pin is not physically mapped on the Adafruit shield */
 	SdStatus = SD_PRESENT;
-
 	/* SD initialized and set to SPI mode properly */
-	if (SD_GoIdleState() != 0) {
+	state = SD_GoIdleState();
+	osMutexRelease(RTSPI_MutexID);
+	if (state != 0) {
 		// no SD Card found
 		sd_size = 0;
-		osMutexRelease(RTSPI_MutexID);
 	} else {
 		// get some card infos e.g. size
-		osMutexRelease(RTSPI_MutexID);
 		if (SD_GetCardInfo(&CardInfo) != SD_ERROR) {
 			sd_size = CardInfo.CardCapacity / 1024;
+		} else {
+			Error_Handler();
 		}
 	}
-
 }
 
 /**
@@ -269,10 +271,11 @@ int SD_getBlocks(void) {
 uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 	uint8_t status;
 
+	// only one thread is allowed to use the SPI
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+
 	status = SD_GetCSDRegister(&(pCardInfo->Csd));
 	status|= SD_GetCIDRegister(&(pCardInfo->Cid));
-
-	osMutexRelease(RTSPI_MutexID);
 
 	if(flag_SDHC == 1 )
 	{
@@ -292,6 +295,7 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 		pCardInfo->CardCapacity *= pCardInfo->CardBlockSize;
 		pCardInfo->LogBlockNbr = (pCardInfo->CardCapacity) / (pCardInfo->LogBlockSize);
 	}
+	osMutexRelease(RTSPI_MutexID);
 
 	return status;
 }
@@ -484,7 +488,8 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 	/* Send CMD32 (Erase group start) and check if the SD acknowledged the erase command: R1 response (0x00: no errors) */
 	response = SD_SendCmd(SD_CMD_SD_ERASE_GRP_START, (StartAddr) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
 	SD_IO_CSState(1);
-	SD_IO_WriteByte(SD_DUMMY_BYTE);  if (response.r1 == SD_R1_NO_ERROR) {
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
+	if (response.r1 == SD_R1_NO_ERROR) {
 		/* Send CMD33 (Erase group end) and Check if the SD acknowledged the erase command: R1 response (0x00: no errors) */
 		response = SD_SendCmd(SD_CMD_SD_ERASE_GRP_END, (EndAddr*SD_BLOCK_SIZE) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
 		SD_IO_CSState(1);
@@ -1029,7 +1034,6 @@ static void SD_IO_Init(void) {
   *     None
   */
 static void SD_IO_CSState(uint8_t val) {
-	// Nucleo Board
 	if(val != 0) {
 		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);
 	} else {
