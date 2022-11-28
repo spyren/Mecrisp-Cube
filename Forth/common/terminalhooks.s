@@ -253,7 +253,7 @@ TERMINAL_redirect:
 	ldr		r1, =crs_emit2key
 3:
 	str		r1, [r0]
-	pop		{lr}
+	pop		{pc}
 
 // status = osMessageQueuePut(UART_RxQueueId, &UART_RxBuffer, 0, 100);
 
@@ -271,7 +271,7 @@ TERMINAL_unredirect:
 	ldr		r1, =RedirectStore
 	ldr		r2, [r1]
 	str		r2, [r0]				// restore old hook
-	pop		{lr}
+	pop		{pc}
 
 
 cdc_emit2key:
