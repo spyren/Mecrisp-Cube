@@ -34,6 +34,10 @@
 #include "app_conf.h"
 #include "clock.h"
 
+#ifndef CFG_ASSERT_ON
+#define CFG_ASSERT_ON	1
+#endif
+
 #define ASSERT_HARD_FAULT				1
 #define ASSERT_MEM_MANAGE_FAULT			2
 #define ASSERT_BUS_FAULT				3
@@ -97,7 +101,7 @@ __attribute__( ( always_inline ) ) static inline uint32_t __get_PC(void)
  *  @return
  *      None
  */
-#ifdef CFG_ASSERT_ON
+#if CFG_ASSERT_ON == 1
 #define ASSERT_nonfatal(cond, id, param)                \
   if (!(cond)) {                                        \
 	RTC_Backup.assert = RTC_MAGIC_COOKIE;               \

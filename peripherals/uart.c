@@ -502,7 +502,7 @@ static void UART_RxThread(void *argument) {
 	for(;;) {
 		// blocked till a character is received
 		status = osThreadFlagsWait(UART_CHAR_RECEIVED, osFlagsWaitAny, osWaitForever);
-		ASSERT_nonfatal(UART_RxBuffer != 0x03, ASSERT_UART_SIGINT, 0) // ^C character abort
+		ASSERT_nonfatal(UART_RxBuffer != 0x03, ASSERT_UART_SIGINT, 0); // ^C character abort
 		// put the received character into the queue
 		status = osMessageQueuePut(UART_RxQueueId, &UART_RxBuffer, 0, 100);
 		if (status != osOK) {
