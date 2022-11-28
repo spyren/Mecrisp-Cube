@@ -264,9 +264,7 @@ void OLED_init(void) {
 
 	OLED_setPos(0, 0);
 	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-");
-	OLED_setPos(93, 0);
-	OLED_puts("Cube\r\n");
+	OLED_puts("Mecrisp-Cube\r\n");
 	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
 
 	OLED_setFont(OLED_FONT6X8);
