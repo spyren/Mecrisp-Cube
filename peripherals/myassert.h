@@ -34,6 +34,10 @@
 #include "app_conf.h"
 #include "clock.h"
 
+#ifndef CFG_ASSERT_ON
+#define CFG_ASSERT_ON	1
+#endif
+
 #define ASSERT_HARD_FAULT				1
 #define ASSERT_MEM_MANAGE_FAULT			2
 #define ASSERT_BUS_FAULT				3
