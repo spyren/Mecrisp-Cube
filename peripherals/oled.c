@@ -594,8 +594,17 @@ void OLED_writeColumn(uint8_t column) {
 	// copy into I2C array
 	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
 
+#ifndef OLED_SPI
 	IIC_putMessage(buf, 2, OLED_I2C_ADR);
-#endif
+#else
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);	// data
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	RTSPI_WriteData(buf+1, 1);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(RTSPI_MutexID);
+#endif // OLED_SPI
+#endif // OLED_PAGE_VERTICA
 
 	postwrap(1, 1);
 }

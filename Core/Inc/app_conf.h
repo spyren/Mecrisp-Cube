@@ -168,7 +168,7 @@
 #define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required uncomment next line */
-#define CFG_ASSERT_ON
+#define CFG_ASSERT_ON	1
 
 /* if no logs are required uncomment next line */
 #define CFG_LOG_MSG  "0:/var/log/messages"
