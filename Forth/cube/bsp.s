@@ -195,6 +195,43 @@ get_apin:
 	movs	tos, r0
 	pop		{pc}
 
+	@ -----------------------------------------------------------------------------
+			Wortbirne Flag_visible, "vref@"
+	get_vref:
+			@ (  -- u ) Get the Vref
+	// int BSP_getVref(void)
+	@ -----------------------------------------------------------------------------
+		push	{lr}
+		pushdatos
+		bl		BSP_getVref
+		movs	tos, r0
+		pop		{pc}
+
+	@ -----------------------------------------------------------------------------
+			Wortbirne Flag_visible, "vbat@"
+	get_vbat:
+			@ (  -- u ) Get the Vbat
+	// int BSP_getVbat(void)
+	@ -----------------------------------------------------------------------------
+		push	{lr}
+		pushdatos
+		bl		BSP_getVbat
+		movs	tos, r0
+		pop		{pc}
+
+	@ -----------------------------------------------------------------------------
+			Wortbirne Flag_visible, "cputemp@"
+	get_cputemp:
+			@ (  -- u ) Get the CPU temperature
+	// int BSP_getCpuTemperature(void)
+	@ -----------------------------------------------------------------------------
+		push	{lr}
+		pushdatos
+		bl		BSP_getCpuTemperature
+		movs	tos, r0
+		pop		{pc}
+
+
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dmod"
