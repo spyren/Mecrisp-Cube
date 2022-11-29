@@ -183,7 +183,7 @@ void MainThread(void *argument)
 		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		BSP_setLED1(FALSE); // switch off power on LED
+		BSP_setLED2(FALSE); // switch off power on LED
 	}
 
 	Forth();

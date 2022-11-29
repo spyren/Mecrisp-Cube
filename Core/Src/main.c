@@ -211,6 +211,7 @@ int main(void)
   }
 //  MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
+  BSP_setLED2(TRUE); // switch on power on LED
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
   printf("Hallo Velo\n");

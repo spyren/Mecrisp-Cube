@@ -9,7 +9,7 @@
  *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2 (Dongle: D6)
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
  *        - Timer Capture/Compare
- *        - NeoPixel D8
+ *        - NeoPixel D8 (Dongle D6)
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -1357,7 +1357,13 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle
+		BSP_neopixelDataTx(D6_GPIO_Port, D6_Pin, rgb);
+	} else {
+		// Nucleo Board
+		BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
+	}
 
 	RESTORE_PRIMASK();
 

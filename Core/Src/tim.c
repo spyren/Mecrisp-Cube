@@ -244,7 +244,14 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* timHandle)
     PA9     ------> TIM1_CH2
     PA10     ------> TIM1_CH3
     */
-    GPIO_InitStruct.Pin = D6_Pin|D9_Pin|D3_Pin;
+	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
+		// QFN48 Package -> Dongle
+		// D6 used for Neopixel
+	    GPIO_InitStruct.Pin = D9_Pin|D3_Pin;
+	} else {
+		// Nucleo Board
+		GPIO_InitStruct.Pin = D6_Pin|D9_Pin|D3_Pin;
+	}
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
