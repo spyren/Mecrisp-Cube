@@ -3,7 +3,7 @@ Board Support Package
 
 The board support package for the STM32WB Nucleo Board is restricted to the
 Arduino UNO R3 pin header and the onboard LEDs and switches (buttons).
-The STM32 has much more capabilities then 14 digital I/O pins, 6 analog
+The STM32 has much more capabilities than 14 digital I/O pins, 6 analog
 input pins, UART, SPI, and I2C interfaces. But if you want to use the
 more advanced features you can use the CubeMX to create source code for
 the internal peripherals. This project wants to show how to use the Cube
@@ -38,6 +38,12 @@ are inputs with pull-up resistors.
     pwmprescale ( u --  )   Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
     apin@    ( a -- u )    gets the analog input port pin (A0 .. A5). Returns a 12 bit value (0..4095) 
+
+    neopixel! ( rgb -- )   sets the neopixel RGB LED ($ff0000 red, $00ff00 green, $0000ff blue)
+    neopixel@ ( -- rgb )   gets the neopixel RGB LED
+    neopixels ( a u -- )   sets u pixels at address a
+
+
 
 
 Using the Digital Port Pins (Input and Output)

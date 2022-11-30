@@ -124,6 +124,7 @@ void vApplicationMallocFailedHook(void)
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+	BSP_setNeoPixel(0x008000); // power on LED, green LED
 	BSP_init();
 	RTC_init();
 	UART_init();
