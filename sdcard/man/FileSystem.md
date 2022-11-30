@@ -24,12 +24,15 @@ the old DD 5 1/4\" floppy from 1978 had.
 
 ### Flash Memory Layout
 
-    FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 384K
+    FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
        20 KiB Forth Core
        140 KiB Middleware (debug 210 KiB)
 
-    FLASH_FORTH (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+    FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
        128 KiB Flash Dictionary
+
+    FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+       384 KiB future use for built in flash drive
 
     FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 

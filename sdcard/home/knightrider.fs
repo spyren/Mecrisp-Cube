@@ -1,10 +1,13 @@
 CR .( knightrider.fs loading ... )
 
-3 3 dmod   \ set D3 to Output
-3 6 dmod   \ set D6 to Output
 3 0 dmod   \ set D0 to Output
 3 1 dmod   \ set D1 to Output
+3 2 dmod   \ set D2 to Output
+3 3 dmod   \ set D3 to Output
+3 4 dmod   \ set D4 to Output
 3 5 dmod   \ set D5 to Output
+3 6 dmod   \ set D6 to Output
+3 7 dmod   \ set D7 to Output
 
 : left ( -- ) 
   7 0 do

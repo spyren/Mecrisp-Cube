@@ -165,7 +165,7 @@
 
 #define MECRISP_CUBE_TAG "1.5.0"
 #define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
-#define RC_LOCAL "0:/etc/rc.locl"
+#define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required uncomment next line */
 #define CFG_ASSERT_ON

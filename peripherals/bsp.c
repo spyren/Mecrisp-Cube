@@ -504,6 +504,115 @@ int BSP_getAnalogPin(int pin_number) {
 	return return_value;
 }
 
+/**
+ *  @brief
+ *	    Get the Vref intern
+ *
+ *		The Vref is actually the VDDA
+ *  @return
+ *      Voltage in mV
+ */
+int BSP_getVref(void) {
+	int value;
+	HAL_StatusTypeDef status;
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = ADC_CHANNEL_VREFINT;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+
+	value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+
+	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
+}
+
+
+/**
+ *  @brief
+ *	    Get the Vbat
+ *
+ *  @return
+ *      Voltage in mV
+ */
+int BSP_getVbat(void) {
+	int value;
+	int ref_voltage_mv;
+	HAL_StatusTypeDef status;
+
+	ref_voltage_mv = BSP_getVref();
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = ADC_CHANNEL_VBAT;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+
+	value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+
+	return 3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) ;
+}
+
+
+/**
+ *  @brief
+ *	    Gets the CPU temperature
+ *
+ *  @return
+ *      temperature in degree Celsius
+ */
+int BSP_getCpuTemperature(void) {
+	int value;
+	int ref_voltage_mv;
+	HAL_StatusTypeDef status;
+
+	ref_voltage_mv = BSP_getVref();
+
+	// only one thread is allowed to use the ADC
+	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+		Error_Handler();
+	}
+	status = HAL_ADC_Start_IT(&hadc1);
+	if (status != HAL_OK) {
+		Error_Handler();
+	}
+	// blocked till ADC conversion is finished
+	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+
+	value = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
+
+	osMutexRelease(Adc_MutexID);
+
+	return __HAL_ADC_CALC_TEMPERATURE(ref_voltage_mv, value, ADC_RESOLUTION_12B);
+}
+
+
 // digital port pin mode
 // *********************
 typedef struct {
