@@ -139,6 +139,11 @@ CR .( redirection.fs loading ... )
 
 [IFDEF] plex-emit : >plex  hook-emit @  hook-emit? @  ['] plex-emit hook-emit !  ['] plex-emit? hook-emit? ! ; [THEN]
 
+\ epd display
+\ ************
+
+[IFDEF] epd-emit : >epd  hook-emit @  hook-emit? @  ['] epd-emit hook-emit !  ['] epd-emit? hook-emit? ! ; [THEN]
+
 \ terminate redirection
 \ ********************
 

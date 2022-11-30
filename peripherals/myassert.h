@@ -26,10 +26,8 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
-
-
-#ifndef INC_MYASSERT_H_
-#define INC_MYASSERT_H_
+#ifndef MYASSERT_H
+#define MYASSERT_H
 
 #include "app_conf.h"
 #include "clock.h"
@@ -97,7 +95,8 @@ __attribute__( ( always_inline ) ) static inline uint32_t __get_PC(void)
  *  @return
  *      None
  */
-#ifdef CFG_ASSERT_ON
+// #if defined(CFG_ASSERT_ON)
+#if 1
 #define ASSERT_nonfatal(cond, id, param)                \
   if (!(cond)) {                                        \
 	RTC_Backup.assert = RTC_MAGIC_COOKIE;               \
@@ -131,4 +130,5 @@ __attribute__( ( always_inline ) ) static inline uint32_t __get_PC(void)
   }
 
 
-#endif /* INC_MYASSERT_H_ */
+#endif /* MYASSERT_H */
+

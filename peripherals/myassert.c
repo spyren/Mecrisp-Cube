@@ -5,8 +5,8 @@
  *  	Other asserts (unknown events) can be ignored because they do not
  *  	have fatal consequences. But for debugging during the development
  *  	cycle, all asserts should be observed. Therefore Mecrisp-Cube has
- *  	two types of asserts: fatal asserts and non-fatal asserts. T
- *  	he non-fatal asserts can be ignored in production systems.
+ *  	two types of asserts: fatal asserts and non-fatal asserts.
+ *  	The non-fatal asserts can be ignored in production systems.
  *
  *   	RTC registers are used for accounting the asserts occurred.
  *
