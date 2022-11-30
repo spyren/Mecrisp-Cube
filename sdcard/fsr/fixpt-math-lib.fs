@@ -191,13 +191,13 @@ $0 $80000000 2constant -inf         \ 2147483648,0
 \ -------------------------------------------------------------------------
 : deg2rad ( deg -- rad )
   \ Convert s31.32 in degress to s31.32 in radians
-  74961321 0 f*
+  74961321 0 x*
   2-foldable
 ;
 
 : rad2deg ( rad -- deg )
   \ Convert s31.32 in radians to s31.32 in degrees
-  1270363336 57 f*
+  1270363336 57 x*
   2-foldable
 ;
 
@@ -220,17 +220,17 @@ numbertable sin-coef
 : half-q1-sin-rad  ( x -- sinx )
   \ Sin(x) for x in first half of first quadrant Q1 and its negative 
   \ x is a s31.32 angle in radians between -pi/4 and pi/4 
-  2dup 2dup f*          \  x and x^2 on stack as dfs
+  2dup 2dup x*          \  x and x^2 on stack as dfs
   \ Calculate Horner terms
   -1,0   \ Starting Horner term is -1
   7 0 do
     \ Multiply last term by x^2 and coefficient, then add +1 or -1 to get
     \ new term
-    2over f* i sin-coef 0 f* 0 1
+    2over x* i sin-coef 0 x* 0 1
     i 2 mod 0= if d+ else d- then
   loop
   \ Last term is multiplied by x
-  2nip f*
+  2nip x*
   2-foldable
 ;
 
@@ -249,13 +249,13 @@ numbertable cos-coef
 : half-q1-cos-rad  ( x -- cosx )
   \ Cos(x) for x in first half of first quadrant Q1 and its negative 
   \ x is a s31.32 angle in radians between -pi/4 and pi/4 
-  2dup f*          \  x^2 on stack
+  2dup x*          \  x^2 on stack
   \ Calculate Horner terms
   1,0   \ Starting Horner term is 1
   8 0 do
     \ Multiply last term by x^2 and coefficient, then add +1 or -1 to get
     \ new term
-    2over f* i cos-coef 0 f* 0 1
+    2over x* i cos-coef 0 x* 0 1
     i 2 mod 0= if d- else d+ then
   loop
   2nip 
@@ -302,17 +302,17 @@ numbertable atan-coef
 
 : base-ivl-atan ( x -- atanx )
   \ Calc atan for s32.31 x in base interval 0 to 1/8.
-  2dup 2dup f* 2dup 1,0 d+     \ Stack: ( x  x^2  x^2+1 )
-  2rot 2swap f/                \ Stack: ( x^2  x/(x^2+1) )
-  2swap 2dup 1,0 d+ f/         \ Stack: ( x/(x^2+1)  (x^2)/(x^2+1) )
+  2dup 2dup x* 2dup 1,0 d+     \ Stack: ( x  x^2  x^2+1 )
+  2rot 2swap x/                \ Stack: ( x^2  x/(x^2+1) )
+  2swap 2dup 1,0 d+ x/         \ Stack: ( x/(x^2+1)  (x^2)/(x^2+1) )
   \ Calc Horner terms for powers of y = (x^2)/(x^2+1)
   1,0   \ Starting Horner term is 1
   6 0 do
     \ Multiply last term by y and coefficient, then add 1 to get new term
-    2over f* i atan-coef 0 f* 1,0 d+
+    2over x* i atan-coef 0 x* 1,0 d+
   loop
   \ Last term is multiplied by x/(x^2+1)
-  2nip f*
+  2nip x*
   2-foldable
 ;
 
@@ -339,10 +339,10 @@ numbertable atan-table
     \ atan(x) = atan(i/8) + atan((x - (i/8))/(1 + (x*i/8))) where
     \ the argument in the second term is in [0, 1/8].
     0 7 do
-      0 i 8,0 f/ 2over 2over d< not if
+      0 i 8,0 x/ 2over 2over d< not if
         2over 2over d-
-        2-rot f* 1,0 d+
-        f/ base-ivl-atan
+        2-rot x* 1,0 d+
+        x/ base-ivl-atan
         i atan-table 0 d+
         leave
       else
@@ -379,10 +379,10 @@ numbertable atan-table
   deg-90to90
   \ If |x| > 89,9 deg, use approximation sgn(x)(180/pi)/(90-|x|) 
   2dup dabs 2dup 89,8 d> if
-    90,0 2swap d- 608135817 3 f* 180,0 2swap f/
+    90,0 2swap d- 608135817 3 x* 180,0 2swap x/
     2swap d0< if dnegate then
   else 
-    2drop 2dup sin 2swap cos f/
+    2drop 2dup sin 2swap cos x/
   then
   2-foldable
 ;
@@ -393,7 +393,7 @@ numbertable atan-table
   \ Find atan(|x|)
   2dup 1,0 d> if
     \ |x| > 1, use atan(|x|) = (pi/2) - atan(1/|x|) with 1/|x| in [0, 1]
-    1,0 2swap f/ 0to1-atan pi/2 2swap d- 
+    1,0 2swap x/ 0to1-atan pi/2 2swap d- 
   else
     \ |x| <= 1
     0to1-atan
@@ -409,11 +409,11 @@ numbertable atan-table
   2dup 2dup d0< if dabs then
   \ Stack is ( x |x| )
   2dup 1,0 d> if drop exit then     \ Exit if |x|>1 with x on stack
-  2dup 2dup f* 1,0 2swap d- 0to1sqrt    \ Stack: ( x  |x|  sqrt(1-x^2) )
-  2over 2dup f* 0,5 d> if           \ x^2 > (1/2) ?
-    2swap f/ atan 90,0 2swap d-
+  2dup 2dup x* 1,0 2swap d- 0to1sqrt    \ Stack: ( x  |x|  sqrt(1-x^2) )
+  2over 2dup x* 0,5 d> if           \ x^2 > (1/2) ?
+    2swap x/ atan 90,0 2swap d-
   else
-    f/ atan
+    x/ atan
   then
   \ Negate if x is negative
   2swap d0< if dnegate then
@@ -442,7 +442,7 @@ numbertable atan-table
     ( retval cum_m m z)
     \ Do z = z*z, m = m+1 until 2 <= z.  We also get z < 4
     begin
-      2dup f* rot 1 + -rot
+      2dup x* rot 1 + -rot
       ( retval cum_m m z )
       2dup 2,0 d< not
     until
@@ -521,19 +521,19 @@ numbertable atan-table
     \ Do n = n+1, y = y/10 while (y >= 10)
     begin 2dup 10,0 d< not while
       ( n y )
-      10,0 f/ rot 1 + -rot
+      10,0 x/ rot 1 + -rot
     repeat
   else
     \ Do n = n-1, y = 10*y while (y < 1)
     begin 2dup 1,0 d<  while
       ( n y )
-      10,0 f* rot 1 - -rot
+      10,0 x* rot 1 - -rot
     repeat  
   then
   
   \ Now y = (10^(-n))*x so log10(x) = n + log10(y) and we use the
   \ identity log10(y) = log10(2)*log2(y)
-  log2 log10of2 f* rot 0 swap d+
+  log2 log10of2 x* rot 0 swap d+
   ( log10x )  
   2-foldable
 ;
@@ -549,7 +549,7 @@ numbertable atan-table
   \ If x = 1, return 0
   2dup 1,0 d= if 2drop 0,0 exit then
 
-  log2 lnof2 f*
+  log2 lnof2 x*
   2-foldable
 ;
 
@@ -579,10 +579,10 @@ numbertable exp-coef
   1,0   \ Starting Horner term is 1
   10 0 do
     \ Multiply last term by x and coefficient, then add to get new term
-    2over f* i exp-coef 0 f* 0 1 d+
+    2over x* i exp-coef 0 x* 0 1 d+
   loop
   \ Last part of expansion
-  2over f* 0 1 d+
+  2over x* 0 1 d+
   2nip
   2-foldable
 ;
@@ -598,7 +598,7 @@ numbertable exp-coef
   2dup floor 2swap 2over d-
   ( n z )
   \ Get exp(z*ln2) = 2^z, then shift n times to get 2^x = (2^n)*(2^z)
-  lnof2 f* exp-1to1 2swap nip
+  lnof2 x* exp-1to1 2swap nip
   ( 2^z n )  \ n now a single
   dup 0= if
     drop
@@ -626,7 +626,7 @@ numbertable exp-coef
   2dup dabs 0,36 d< if
     exp-1to1
   else
-    1overlnof2 f* pow2
+    1overlnof2 x* pow2
   then
   2-foldable
 ;
@@ -645,12 +645,12 @@ numbertable exp-coef
   2dup 2dup floor d= if
     2dup 0,0 d> if
       1,0 2swap nip
-      0 do 10,0 f* loop
+      0 do 10,0 x* loop
     else
-      ln10overln2 f* pow2
+      ln10overln2 x* pow2
     then
   else
-    ln10overln2 f* pow2
+    ln10overln2 x* pow2
   then
   2-foldable
 ;
