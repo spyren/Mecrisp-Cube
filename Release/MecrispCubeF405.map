@@ -1759,6 +1759,19 @@ Discarded input sections
  .text          0x0000000000000000        0x0 ./peripherals/clock.o
  .data          0x0000000000000000        0x0 ./peripherals/clock.o
  .bss           0x0000000000000000        0x0 ./peripherals/clock.o
+ .text          0x0000000000000000        0x0 ./peripherals/dotstar.o
+ .data          0x0000000000000000        0x0 ./peripherals/dotstar.o
+ .bss           0x0000000000000000        0x0 ./peripherals/dotstar.o
+ .text.DOTSTAR_init
+                0x0000000000000000        0x2 ./peripherals/dotstar.o
+ .text.DOTSTAR_setPixels
+                0x0000000000000000       0x48 ./peripherals/dotstar.o
+ .text.DOTSTAR_setPixel
+                0x0000000000000000       0x28 ./peripherals/dotstar.o
+ .bss.pixels    0x0000000000000000      0x128 ./peripherals/dotstar.o
+ .comment       0x0000000000000000       0x51 ./peripherals/dotstar.o
+ .ARM.attributes
+                0x0000000000000000       0x32 ./peripherals/dotstar.o
  .text          0x0000000000000000        0x0 ./peripherals/fd.o
  .data          0x0000000000000000        0x0 ./peripherals/fd.o
  .bss           0x0000000000000000        0x0 ./peripherals/fd.o
@@ -2356,6 +2369,7 @@ LOAD ./USB_DEVICE/Target/usbd_conf.o
 LOAD ./peripherals/block.o
 LOAD ./peripherals/bsp.o
 LOAD ./peripherals/clock.o
+LOAD ./peripherals/dotstar.o
 LOAD ./peripherals/fd.o
 LOAD ./peripherals/fd_spi.o
 LOAD ./peripherals/flash.o

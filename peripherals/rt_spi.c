@@ -1,10 +1,11 @@
 /**
  *  @brief
- *      Serial Peripheral Interface (SPI) for SD, serial FD, MIP, and EPD
+ *      Serial Peripheral Interface (SPI) for MIP, dotstar, and EPD
  *
  *		Default is SD. SD is using 2EDGE (CPHA=1) and polarity high (CPOL=1), MODE3
  *		The application is responsible for chip select and mode. To protect
  *		for race condition use the RTSPI_MutexID.
+ *		F405: spi2 is used. FD is using spi1.
  *  @file
  *      rt_spi.c
  *  @author
@@ -124,7 +125,7 @@ int RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLe
 	osStatus_t os_status = osOK;
 
 	RTSPI_Status = 0;
-	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
+	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi2, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
@@ -159,7 +160,7 @@ int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
 	osStatus_t os_status = osOK;
 
 	RTSPI_Status = 0;
-	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
+	hal_status = HAL_SPI_Transmit_DMA(&hspi2, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
@@ -194,7 +195,7 @@ int RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
 	osStatus_t os_status = osOK;
 
 	RTSPI_Status = 0;
-	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
+	hal_status = HAL_SPI_Transmit_DMA(&hspi2, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
@@ -228,7 +229,7 @@ int RTSPI_Write(uint8_t Value) {
 	uint8_t data = Value;
 
 	RTSPI_Status = 0;
-	hal_status = HAL_SPI_Transmit_DMA(&hspi1, &data, 1);
+	hal_status = HAL_SPI_Transmit_DMA(&hspi2, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);

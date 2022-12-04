@@ -397,3 +397,32 @@ get_plexdisplay:
 	movs	tos, r0		// frame
 	pop		{pc}
 
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "dotstarpixel!"
+set_dotstarpixel:
+		@ ( u --  ) set dotstar pixel (irgb)
+// void DOTSTAR_setPixel(uint32_t irgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		DOTSTAR_setPixel
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "dotstarpixels"
+dotstarpixels:
+		@ ( addr len --  ) set dotstar pixels
+// void DOTSTAR_setPixels(uint32_t *buffer, uint32_t len)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r1, tos		// len
+	drop
+	movs	r0, tos		// buffer
+	drop
+	bl		DOTSTAR_setPixels
+	pop		{pc}
+
+
+
