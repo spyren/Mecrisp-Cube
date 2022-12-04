@@ -39,6 +39,7 @@
 #include "rt_spi.h"
 #include "dotstar.h"
 
+#if DOTSTAR == 1
 
 // Defines
 // *******
@@ -126,4 +127,4 @@ void DOTSTAR_setPixel(uint32_t irgb) {
 	DOTSTAR_setPixels((uint32_t*)buffer, 1);
 }
 
-
+#endif

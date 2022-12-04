@@ -183,8 +183,21 @@ void MainThread(void *argument) {
 /* USER CODE BEGIN MainThread */
 	BSP_setNeoPixel(0x008000); // power on LED, green LED
 	ASSERT_init();
+#if OLED == 1
 	OLED_init();
+#endif
+#if MIP == 1
+	MIP_init();
+#endif
+#if PLEX == 1
 	PLEX_init();
+#endif
+#if EPD == 1
+	EPD_init();
+#endif
+#if DOTSTAR == 1
+	DOTSTAR_init();
+#endif
 	ASSERT_init();
 	BSP_setNeoPixel(0x000000); // power on LED, off
 

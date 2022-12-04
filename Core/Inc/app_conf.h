@@ -311,5 +311,6 @@ typedef enum
 #define PLEX					1
 #define EPD						0
 #define FPU_IP					1
+#define DOTSTAR                 1
 
 #endif /*APP_CONF_H */

@@ -182,6 +182,9 @@ bit_loop2:
 	pop		{r4-r8, pc}
 
 
+// PLEX words only if needed
+.if PLEX == 1
+
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "plex-emit"
 plex_emit:
@@ -397,6 +400,10 @@ get_plexdisplay:
 	movs	tos, r0		// frame
 	pop		{pc}
 
+.endif  // PLEX
+
+// DOTSTAR words only if needed
+.if DOTSTAR == 1
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dotstarpixel!"
@@ -424,5 +431,6 @@ dotstarpixels:
 	bl		DOTSTAR_setPixels
 	pop		{pc}
 
+.endif  // DOTSTAR
 
 
