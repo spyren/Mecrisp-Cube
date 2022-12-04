@@ -119,7 +119,7 @@ void DOTSTAR_setPixels(uint32_t *buffer, uint32_t len) {
 void DOTSTAR_setPixel(uint32_t irgb) {
 	uint8_t buffer[4];
 
-	buffer[0] = irgb >> 24; 			// brightness
+	buffer[0] = (irgb >> 24) | 0xd0;	// brightness
 	buffer[1] = irgb & 0xFF;			// blue
 	buffer[2] = (irgb >> 8) & 0xFF;		// green
 	buffer[3] = (irgb >> 16) & 0xFF;	// red

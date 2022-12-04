@@ -163,7 +163,7 @@ int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
 	hal_status = HAL_SPI_Transmit_DMA(&hspi2, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
-		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, 1000);
+		os_status = osSemaphoreAcquire(RTSPI_SemaphoreID, osWaitForever);
 		if (os_status != osOK) {
 			RTSPI_Status = -4;
 		}

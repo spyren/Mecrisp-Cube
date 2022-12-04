@@ -124,7 +124,6 @@ void vApplicationMallocFailedHook(void)
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	BSP_setNeoPixel(0x008000); // power on LED, green LED
 	BSP_init();
 	RTC_init();
 	UART_init();
@@ -132,6 +131,7 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 //	SDSPI_init();
+	RTSPI_init();
 	SD_init();
 	FD_init();
 	BLOCK_init();
@@ -181,11 +181,12 @@ void MainThread(void *argument) {
 	/* init code for USB_DEVICE */
 	//  MX_USB_DEVICE_Init();
 /* USER CODE BEGIN MainThread */
-	BSP_setNeoPixel(0);
+	BSP_setNeoPixel(0x008000); // power on LED, green LED
 	ASSERT_init();
 	OLED_init();
 	PLEX_init();
 	ASSERT_init();
+	BSP_setNeoPixel(0x000000); // power on LED, off
 
 	Forth();
 
