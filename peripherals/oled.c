@@ -62,8 +62,10 @@
 #include "font12x16.h"
 
 #if OLED == 1
+#if OLED_Y_RESOLUTION >= 64
 //#include "spyr.h"
 #include "firefly.h"
+#endif
 
 // Macros
 // ******
@@ -259,6 +261,7 @@ void OLED_init(void) {
 #endif
 
 	OLED_clear();
+#if OLED_Y_RESOLUTION >= 64
 	OLED_setPos(64, 0);
 	OLED_putXBM(firefly_bits, firefly_width, firefly_height);
 
@@ -275,6 +278,14 @@ void OLED_init(void) {
 	OLED_puts("the STM32WB \r\n");
 	OLED_puts("(c)2022\r\n");
 	OLED_puts("peter@spyr.ch");
+#else
+	OLED_setFont(OLED_FONT8X8);
+	OLED_puts("Mecrisp-Cube\r\n");
+	OLED_setFont(OLED_FONT6X8);
+	OLED_puts("v" MECRISP_CUBE_TAG ", " BOARD "\r\n");
+	OLED_puts("Forth for the STM32WB");
+	OLED_puts("(c)2022 peter@spyr.ch");
+#endif
 }
 
 
