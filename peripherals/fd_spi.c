@@ -182,16 +182,6 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
 			Error_Handler();
 		}
 
-//		if (hal_status == HAL_OK) {
-//			// blocked till command is finished
-//			os_status = osSemaphoreAcquire(FDSPI_CommandSemaphoreID, 1000);
-//			if (SpiError || (os_status != osOK)) {
-//				Error_Handler();
-//			}
-//		} else {
-//			Error_Handler();
-//		}
-
 		/* Transmission of the data */
 		SpiError = FALSE;
 		hal_status = HAL_QSPI_Transmit_DMA(&hqspi, pData);
