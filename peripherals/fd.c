@@ -2,7 +2,8 @@
  *  @brief
  *      Serial Flash drive block read and write.
  *
- *      An external board with 16 MiB Serial Flash W25Q128 is used for the flash drive.
+ *      The external board has 16 MiB Serial Flash Macronix MX25L12835F.
+ *      This Flash is used for the flash drive.
  *      API similar to sd card.
  *
  *  @file
@@ -59,8 +60,6 @@
 // Private function prototypes
 // ***************************
 static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_field);
-static void flash_block(uint8_t *pData, uint32_t flash_addr);
-static void erase_sector(uint32_t flash_addr);
 
 
 // Global Variables
@@ -136,18 +135,18 @@ int FD_getBlocks(void) {
   * @param
   *     pData: Pointer to the buffer that will contain the data to transmit
   * @param
-  *     ReadAddr: Address from where data is to be read. The address is counted
+  *     BlockAdr: Address from where data is to be read. The address is counted
   *                   in blocks of 512bytes
   * @param
   *     NumOfBlocks: Number of FD blocks to read
   * @retval
   *     FD status
   */
-uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
+uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
-	uint32_t adr = ReadAddr*FD_BLOCK_SIZE + FD_START_ADDRESS;
+	uint32_t adr = BlockAdr*FD_BLOCK_SIZE + FD_START_ADDRESS;
 
-	if ((FD_START_ADDRESS + (ReadAddr+NumOfBlocks+1)*FD_BLOCK_SIZE) < FD_END_ADDRESS) {
+	if ((FD_START_ADDRESS + (BlockAdr+NumOfBlocks+1)*FD_BLOCK_SIZE) < FD_END_ADDRESS) {
 		// valid blocks
 		osMutexAcquire(FD_MutexID, osWaitForever);
 		FDSPI_readData(pData, adr, NumOfBlocks * FD_BLOCK_SIZE);
@@ -171,27 +170,27 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
   * @param
   *     pData: Pointer to the buffer that will contain the data to transmit
   * @param
-  *     WriteAddr: Address from where data is to be written. The address is counted
+  *     BlockAdr: Address where the data will be written. The address is counted
   *                   in blocks of 512bytes
   * @param
   *     NumOfBlocks: Number of FD blocks to write
   * @retval
   *     FD status
   */
-uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks) {
+uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 	int i;
 	uint8_t block_field; // bit0 block0, bit1 block1 ..
 
-	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_SECTOR -1));
+	uint32_t base_block_adr = BlockAdr & (~ (FD_BLOCKS_PER_SECTOR -1));
 
 	if ((NumOfBlocks+1)*FD_BLOCK_SIZE < FD_END_ADDRESS) {
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
 
-		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_SECTOR;
-		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_SECTOR;
+		int FirstBoundary = BlockAdr % FD_BLOCKS_PER_SECTOR;
+		int LastBoundary = (BlockAdr + NumOfBlocks) % FD_BLOCKS_PER_SECTOR;
 		int sectors = NumOfBlocks / FD_BLOCKS_PER_SECTOR;
 		if (FirstBoundary + LastBoundary > 0) {
 			sectors++;
@@ -319,48 +318,22 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
 			if (block_field & (1 << i)) {
 				// block belongs to sector -> program
-				flash_block(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE);
+				FDSPI_writeData(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE, FD_BLOCK_SIZE);
 			}
 		}
 	} else {
 		// flash not erased
 
 		// erase sector
-		erase_sector(flash_addr);
+		FDSPI_eraseBlock(flash_addr);
 
 		// flash the sector (all blocks)
 		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {
-			flash_block(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE);
+			FDSPI_writeData(scratch_sector+i*FD_BLOCK_SIZE, flash_addr+i*FD_BLOCK_SIZE, FD_BLOCK_SIZE);
 		}
 	}
 	return retr;
 }
 
 
-/**
-  * @brief
-  *     Writes a block to 2 flash pages.
-  * @param
-  *     pData: Pointer to the buffer that will contain the data blocks
-  * @param
-  *     flash_addr: flash address
-  * @retval
-  *     FD status
-  */
-static void flash_block(uint8_t *pData, uint32_t flash_addr) {
 
-	FDSPI_writeData(pData, flash_addr, FD_BLOCK_SIZE);
-}
-
-
-/**
-  * @brief
-  *     Erases a flash sector.
-  * @param
-  *     flash_addr: sector address (4 KiB sectors).
-  * @retval
-  *     FD status
-  */
-static void erase_sector(uint32_t flash_addr) {
-	FDSPI_eraseBlock(flash_addr / W25Q128_SECTOR_SIZE);
-}

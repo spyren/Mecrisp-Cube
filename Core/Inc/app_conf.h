@@ -46,15 +46,43 @@
 
 /* USER CODE BEGIN Generic_Parameters */
 
-#define MECRISP_CUBE_TAG "1.4.4"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube 1.4.4 for STM32H743, 256/1024 KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
+// Board Type
+// **********
+
+#define BOARD_TYPE_UNO		1
+#define BOARD_TYPE_MKR		2
+#define BOARD_TYPE_FEATHER	3
+#define BOARD_TYPE_FIREFLY	4
+
+#define BOARD_TYPE			BOARD_TYPE_UNO
+
+// MCU Type
+// ********
+
+#define MCU_TYPE		"STM32H74"
+#if BOARD_TYPE == BOARD_TYPE_FEATHER
+// Adafruit headers
+#define BOARD 			"Feather"
+#define RAM_FLASH_SIZE	"31/768 KiB"
+#else
+// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
+#define BOARD 			"Nucleo"
+#define RAM_FLASH_SIZE	"63/128"
+#endif
+
+// Greeting Message
+// ****************
+
+#define MECRISP_CUBE_TAG "1.5.0"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
+
+/* if asserts are not required uncomment next line */
+#define CFG_ASSERT_ON	1
 
 /* if no logs are required uncomment next line */
 #define CFG_LOG_MSG  "0:/var/log/messages"
 
-/* if asserts are not required uncomment next line */
-#define CFG_ASSERT_ON
 
 /******************************************************************************
  * Display modules
@@ -62,7 +90,9 @@
 #define	OLED					1
 #define MIP						0
 #define PLEX					0
-#define EINK					0
+#define EPD						0
+#define FPU_IP					0
+#define DOTSTAR                 0
 
 /* USER CODE END Generic_Parameters */
 
