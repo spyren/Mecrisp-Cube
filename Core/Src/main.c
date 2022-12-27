@@ -120,7 +120,7 @@ int main(void)
   MX_QUADSPI_Init();
 //  MX_WWDG1_Init();
   /* USER CODE BEGIN 2 */
-
+  BSP_setLED1(TRUE); // switch on power on LED (green)
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -214,6 +214,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
+	ASSERT_fatal(0, ASSERT_STACK_OVERFLOW, (uint32_t) pcTaskName);
+}
+
+
+void vApplicationMallocFailedHook(void) {
+	ASSERT_fatal(0, ASSERT_MALLOC_FAILED, 0);
+} // vApplicationMallocFailedHook
 
 /* USER CODE END 4 */
 

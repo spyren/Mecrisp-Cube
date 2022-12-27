@@ -2,7 +2,7 @@
  *  @brief
  *      Serial Flash drive block read and write.
  *
- *      The external board has 16 MiB Serial Flash Macronix MX25L12835F.
+ *      The Discovery board has 16 MiB Serial Flash Infineon S25FL128SDSMFV001.
  *      This Flash is used for the flash drive.
  *      API similar to sd card.
  *
@@ -50,8 +50,14 @@
 // *******
 #define FLASH_DUMMY_BYTE	0xFF
 
+#if FDSPI_DEVICE == FDSPI_S25FL128
+// only the first 4 KiB of 64 KiB is used
+#define W25Q128_PAGES		((N25Q128A_FLASH_SIZE/N25Q128A_PAGE_SIZE) / 16)
+#define W25Q128_SECTORS		((N25Q128A_FLASH_SIZE/N25Q128A_SUBSECTOR_SIZE) / 16)
+#else
 #define W25Q128_PAGES		(N25Q128A_FLASH_SIZE/N25Q128A_PAGE_SIZE)
 #define W25Q128_SECTORS		(N25Q128A_FLASH_SIZE/N25Q128A_SUBSECTOR_SIZE)
+#endif
 
 #define W25Q128_PAGE_SIZE	(N25Q128A_PAGE_SIZE)
 #define W25Q128_SECTOR_SIZE	(N25Q128A_SUBSECTOR_SIZE)
@@ -144,9 +150,30 @@ int FD_getBlocks(void) {
   */
 uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
-	uint32_t adr = BlockAdr*FD_BLOCK_SIZE + FD_START_ADDRESS;
+	uint32_t adr;
 
-	if ((FD_START_ADDRESS + (BlockAdr+NumOfBlocks+1)*FD_BLOCK_SIZE) < FD_END_ADDRESS) {
+#if FDSPI_DEVICE == FDSPI_S25FL128
+	// 64 KiB, 4 KiB have 8 512 B blocks
+	int i;
+	for (i=0; i<NumOfBlocks; i++) {
+		adr = ( (BlockAdr+i)/8) * 0x10000 // base of the 4 KiB parts at the beginning of 64 KiB
+				+ ((BlockAdr+i)%8) * FD_BLOCK_SIZE;
+		if ((adr + FD_BLOCK_SIZE) < FD_END_ADDRESS) {
+			// valid block
+			osMutexAcquire(FD_MutexID, osWaitForever);
+			FDSPI_readData(pData+i*FD_BLOCK_SIZE, adr, FD_BLOCK_SIZE);
+			osMutexRelease(FD_MutexID);
+
+			retr = SD_OK;
+		} else {
+			return SD_ERROR;
+		}
+
+	}
+
+#else
+	adr = BlockAdr*FD_BLOCK_SIZE;
+	if (((BlockAdr+NumOfBlocks+1)*FD_BLOCK_SIZE) < FD_END_ADDRESS) {
 		// valid blocks
 		osMutexAcquire(FD_MutexID, osWaitForever);
 		FDSPI_readData(pData, adr, NumOfBlocks * FD_BLOCK_SIZE);
@@ -154,6 +181,8 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 
 		retr = SD_OK;
 	}
+#endif
+
 	/* Return the reponse */
 	return retr;
 }
@@ -217,6 +246,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) 
 					block_field = 0xFF >> LastBoundary;
 				}
 			} else {
+				// somewhere in the middle -> all 16 blocks
 				block_field = 0xFF;
 			}
 			if (flash_sector(
@@ -262,7 +292,7 @@ uint8_t FD_eraseDrive(void) {
 
 /**
   * @brief
-  *     Writes blocks to a flash sector.
+  *     Writes 8 blocks to a flash sector (4 KiB).
   *
   *     The 512 bytes blocks have to be contiguous and marked in a bitfield.
   * @param
@@ -279,6 +309,11 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 	int i, j;
 	uint8_t *byte_p;
 	uint8_t erased = TRUE;
+
+#if FDSPI_DEVICE == FDSPI_S25FL128
+	// 64 KiB
+	flash_addr = flash_addr * 16;
+#endif
 
 	// read out 4 KiB serial flash sector into scratch_sector
 	FDSPI_readData(scratch_sector, flash_addr, FD_SECTOR_SIZE);
@@ -325,7 +360,18 @@ static int flash_sector(uint8_t *pData, uint32_t flash_addr, uint16_t block_fiel
 		// flash not erased
 
 		// erase sector
+#if FDSPI_DEVICE == FDSPI_S25FL128
+		if (flash_addr < (2 * N25Q128A_SECTOR_SIZE)) {
+			// the two first 64 KiB sectors are hybrid sectors and take very long time to erase (up to 10.4 s)
+			FDSPI_eraseBlock(flash_addr);
+		} else {
+			// 64 KiB
+			FDSPI_eraseSector(flash_addr);
+		}
+#else
+		// 4 KiB
 		FDSPI_eraseBlock(flash_addr);
+#endif
 
 		// flash the sector (all blocks)
 		for (i=0; i<FD_BLOCKS_PER_SECTOR; i++) {

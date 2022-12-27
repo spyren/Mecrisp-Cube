@@ -92,7 +92,7 @@ void FLASH_init(void) {
 /**
  *  @brief
  *      Programs 8 bytes (doubleword) in the FLASH.
- *      Minimal size for a flash junk is 32 bytes.
+ *      Minimal size for a flash junk is 32 bytes (256-bit word).
  *  @param[in]
  *      Address  first byte
  *  @param[in]
@@ -104,6 +104,8 @@ void FLASH_init(void) {
  */
 int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	int return_value;
+	uint32_t base_adr;
+	uint32_t index;
 
 
 	if (Address < 0x08100000 || Address >= 0x08200000) {
@@ -114,22 +116,28 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
 
-	memcpy(flash_junk, (void *) (Address & 0xFFFFFFE0), 32);
-	flash_junk[Address % 8] = word1;
-	flash_junk[(Address % 8)+1] = word2;
+	base_adr = Address & 0xFFFFFFE0;
+	index = (Address & 0x1F)>>2;
+	memcpy(flash_junk, (void *) (base_adr), 32);
+	flash_junk[index]   = word1;
+	flash_junk[index+1] = word2;
 
-	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, Address, flash_junk[0]);
+	if (HAL_FLASH_Unlock() == HAL_ERROR) {
+		Error_Handler();
+	}
+
+	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, base_adr, (uint32_t) flash_junk);
 	if (return_value != HAL_OK) {
-		return_value = HAL_ERROR;
+		return_value = HAL_FLASH_GetError();
+//		return_value = HAL_ERROR;
+		Error_Handler();
+	}
+
+	if (HAL_FLASH_Lock() == HAL_ERROR) {
 		Error_Handler();
 	}
 
 	osMutexRelease(FLASH_MutexID);
-
-	if (return_value != HAL_OK) {
-		return_value = HAL_ERROR;
-		Error_Handler();
-	}
 
 	return return_value;
 }
@@ -214,6 +222,7 @@ int FLASH_erasePage(uint32_t Address) {
 	if (HAL_FLASH_Unlock() == HAL_ERROR) {
 		Error_Handler();
 		return_value = HAL_ERROR;
+		osMutexRelease(FLASH_MutexID);
 		return return_value;
 	}
 

@@ -32,6 +32,7 @@
 #include "bsp.h"
 #include "sd.h"
 #include "fd_spi.h"
+#include "rt_spi.h"
 #include "fd.h"
 #include "block.h"
 #include "fatfs.h"
@@ -73,7 +74,7 @@
 /* Definitions for FORTH_ConThread */
 osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
-  .name = "FORTH_ConThread",
+  .name = "FORTH_Console",
   .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
@@ -96,13 +97,15 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-//	WATCHDOG_init();
+	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
 	UART_init();
 	IIC_init();
-//	CDC_init();
+	CDC_init();
 	FLASH_init();
+	RTSPI_init();
+	BLOCK_init();
 	VI_init();
   /* USER CODE END Init */
 
@@ -145,10 +148,11 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-  /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN MainThread */
-	SD_getSize();
+	ASSERT_init();
+	SD_init();
+	FD_init();
+	FS_init();
 #if OLED == 1
 	OLED_init();
 #endif
@@ -158,8 +162,11 @@ void MainThread(void *argument)
 #if PLEX == 1
 	PLEX_init();
 #endif
+#if EPD == 1
+	EPD_init();
+#endif
 
-	ASSERT_init();
+	osDelay(10);
 
 	osDelay(10);
 	FDSPI_init();
@@ -167,6 +174,8 @@ void MainThread(void *argument)
 	SD_init();
 	BLOCK_init();
 	FS_init();
+
+	BSP_setLED1(FALSE); // switch off power on LED
 
 	Forth();
 
