@@ -1,0 +1,10 @@
+.metadata/
+Drivers/
+Debug/
+Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc/
+Middlewares/ST/STM32_USB_Device_Library/Class/MSC/
+Middlewares/ST/STM32_USB_Device_Library/Core/
+Middlewares/Third_Party/
+RemoteSystemsTempFiles/
+Utilities/
+
