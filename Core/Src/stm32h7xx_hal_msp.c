@@ -75,7 +75,6 @@ void HAL_MspInit(void)
   /* Peripheral interrupt init */
   /* FLASH_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(FLASH_IRQn, 5, 0);
-  /* FLASH_IRQn interrupt configuration */
   HAL_NVIC_EnableIRQ(FLASH_IRQn);
 
   /* USER CODE BEGIN MspInit 1 */
