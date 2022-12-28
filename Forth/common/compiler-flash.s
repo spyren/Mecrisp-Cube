@@ -66,6 +66,10 @@ smudge:
       bl align16komma
     .endif
 
+    .ifdef flash32bytesblockwrite
+      bl align32komma
+    .endif
+
     @ Brenne die gesammelten Flags:  Flash in the collected Flags:
     ldr r0, =FlashFlags
     ldr r0, [r0]
@@ -256,6 +260,27 @@ align16komma: @ Macht den Dictionarypointer auf 16 gerade
 2:pop {pc}
   .endif
 
+  .ifdef flash32bytesblockwrite
+@ -----------------------------------------------------------------------------
+  Wortbirne Flag_visible, "align32," @ ( -- )
+align32komma: @ Macht den Dictionarypointer auf 32 gerade
+@ -----------------------------------------------------------------------------
+  push {lr}
+
+1:ldr r0, =Dictionarypointer
+  ldr r1, [r0] @ Hole den Dictionarypointer
+
+  movs r0, #31
+  ands r1, r0
+  beq 2f
+
+    pushdatos
+    ldr tos, =writtenhalfword
+    bl hkomma
+    b 1b
+
+2:pop {pc}
+  .endif
 
   .ifdef charkommaavailable
 @ -----------------------------------------------------------------------------
@@ -633,6 +658,12 @@ create: @ Nimmt das nächste Token aus dem Puffer,
   .ifdef flash16bytesblockwrite
     bl align16komma @ Vorrücken auf die nächste passende Schreibstelle
     pushdaconst 12  @ Es muss ein kompletter 16-Byte-Block für das Linkfeld reserviert werden
+    bl allot        @ damit dies später noch nachträglich eingefügt werden kann.
+  .endif
+
+  .ifdef flash32bytesblockwrite
+    bl align32komma @ Vorrücken auf die nächste passende Schreibstelle
+    pushdaconst 28  @ Es muss ein kompletter 32-Byte-Block für das Linkfeld reserviert werden
     bl allot        @ damit dies später noch nachträglich eingefügt werden kann.
   .endif
 

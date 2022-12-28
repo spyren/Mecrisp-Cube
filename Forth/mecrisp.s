@@ -57,8 +57,10 @@
 @ -----------------------------------------------------------------------------
 
 .equ	registerallocator, 1
+.equ	debug, 1
+.equ	flash32bytesblockwrite, 1
 @.equ	flash16bytesblockwrite, 1
-.equ	flash8bytesblockwrite, 1
+@.equ	flash8bytesblockwrite, 1
 @.equ	charkommaavailable, 1  Not available.
 
 // console redirection
@@ -234,10 +236,16 @@ MEMORY
 .ifdef flash16bytesblockwrite
 	.equ		Sammelstellen, 32 					@ 32 * (16 + 4) = 640 Bytes
 	ramallot	Sammeltabelle, Sammelstellen * 20	@ Buffer 32 blocks of 16 bytes each for ECC constrained Flash write
+.endif
+
+.ifdef flash32bytesblockwrite
+	.equ		Sammelstellen, 32 					@ 32 * (32 + 4) = 1152 Bytes
+	ramallot	Sammeltabelle, Sammelstellen * 36	@ Buffer 32 blocks of 32 bytes each for ECC constrained Flash write
+	ramallot	flashbuffer, 32
+.endif
 
 	ramallot	iap_command, 5*4
 	ramallot	iap_reply, 4*4
-.endif
 
 .equ	user_size,				128
 
@@ -310,6 +318,11 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .ltorg
 .endif
 
+.ifdef flash32bytesblockwrite
+.include "flash32bytesblockwrite.s"
+.ltorg
+.endif
+
 .include "ra/calculations.s"
 .include "terminal.s"
 .include "query.s"
@@ -365,6 +378,11 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 
 .ifdef flash16bytesblockwrite
 	.include "flash16bytesblockwrite.s"
+	.ltorg
+.endif
+
+.ifdef flash32bytesblockwrite
+	.include "flash32bytesblockwrite.s"
 	.ltorg
 .endif
 

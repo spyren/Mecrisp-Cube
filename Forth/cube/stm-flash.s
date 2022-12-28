@@ -31,17 +31,35 @@
 
 
 @ -----------------------------------------------------------------------------
-	Wortbirne Flag_visible, "8flash!" @ Writes 8 Bytes at once into Flash.
-eightflashstore: @ ( x1 x2 addr -- ) x1 contains LSB of those 64 bits.
+	Wortbirne Flag_visible, "32flash!" @ Writes 32 Bytes at once into Flash.
+flashstore_32b: @ ( x1 x2 x3 x4 x5 x6 x7 x8 addr -- ) x1 contains LSB of those 256 bits.
 @ -----------------------------------------------------------------------------
 	push	{r0-r3, lr}
-	movs	r0, tos		// set Address
+  	movs 	r0, #31
+  	ands 	r0, tos
+  	beq 	1f
+    Fehler_Quit "32flash! needs 32-aligned address"
+1:
+	movs	r0, tos				// addr
 	drop
-	movs	r2, tos		// set word2
+	ldr		r1, =flashbuffer
+	str		tos, [r1, #28]		// x8
 	drop
-	movs	r1, tos		// set word1
+	str		tos, [r1, #24]		// x7
 	drop
-	bl		FLASH_programDouble
+	str		tos, [r1, #20]		// x6
+	drop
+	str		tos, [r1, #16]		// x5
+	drop
+	str		tos, [r1, #12]		// x4
+	drop
+	str		tos, [r1, #8]		// x3
+	drop
+	str		tos, [r1, #4]		// x2
+	drop
+	str		tos, [r1]			// x1
+	drop
+	bl		FLASH_program32B	// int FLASH_program32B(uint32_t Address, uint32_t* buffer)
 	pop		{r0-r3, pc}
 
 

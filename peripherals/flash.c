@@ -67,7 +67,6 @@ static const osMutexAttr_t FLASH_MutexAttr = {
 
 // Variable used for Erase procedure
 static FLASH_EraseInitTypeDef EraseInitStruct;
-static uint32_t flash_junk[8];
 
 // Public Functions
 // ****************
@@ -87,61 +86,6 @@ void FLASH_init(void) {
 	EraseInitStruct.Banks        = FLASH_BANK_2;
 	EraseInitStruct.VoltageRange = FLASH_VOLTAGE_RANGE_3;
 }
-
-
-/**
- *  @brief
- *      Programs 8 bytes (doubleword) in the FLASH.
- *      Minimal size for a flash junk is 32 bytes (256-bit word).
- *  @param[in]
- *      Address  first byte
- *  @param[in]
- *      word1
- *  @param[in]
- *      word2
- *  @return
- *      HAL Status
- */
-int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
-	int return_value;
-	uint32_t base_adr;
-	uint32_t index;
-
-
-	if (Address < 0x08100000 || Address >= 0x08200000) {
-		Error_Handler();
-		return -1;
-	}
-
-	// only one thread is allowed to use the flash
-	osMutexAcquire(FLASH_MutexID, osWaitForever);
-
-	base_adr = Address & 0xFFFFFFE0;
-	index = (Address & 0x1F)>>2;
-	memcpy(flash_junk, (void *) (base_adr), 32);
-	flash_junk[index]   = word1;
-	flash_junk[index+1] = word2;
-
-	if (HAL_FLASH_Unlock() == HAL_ERROR) {
-		Error_Handler();
-	}
-
-	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, base_adr, (uint32_t) flash_junk);
-	if (return_value != HAL_OK) {
-		return_value = HAL_FLASH_GetError();
-//		return_value = HAL_ERROR;
-		Error_Handler();
-	}
-
-	if (HAL_FLASH_Lock() == HAL_ERROR) {
-		Error_Handler();
-	}
-
-	osMutexRelease(FLASH_MutexID);
-
-	return return_value;
-}
-
 
 /**
  *  @brief

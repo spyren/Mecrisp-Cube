@@ -290,13 +290,17 @@ psp .req r7
 
       .equ Dictionary_\@, .  @ Labels for a more readable assembler listing only
 
-   .ifdef flash16bytesblockwrite
-9:      .word FlashDictionaryAnfang + 0x0C @ Insert Link with offset because of alignment issues.
+   .ifdef flash32bytesblockwrite
+9:      .word FlashDictionaryAnfang + 0x1C @ Insert Link with offset because of alignment issues.
    .else
-     .ifdef flash8bytesblockwrite
-9:      .word FlashDictionaryAnfang + 0x04 @ Insert Link with offset because of alignment issues.
+     .ifdef flash16bytesblockwrite
+9:      .word FlashDictionaryAnfang + 0x0C @ Insert Link with offset because of alignment issues.
      .else
+       .ifdef flash8bytesblockwrite
+9:      .word FlashDictionaryAnfang + 0x04 @ Insert Link with offset because of alignment issues.
+       .else
 9:      .word FlashDictionaryAnfang  @ Link einfügen  Insert Link
+       .endif
      .endif
    .endif
         .hword \Flags     @ Flags setzen, diesmal 2 Bytes ! Wir haben Platz und Ideen :-)  Flag field, 2 bytes, space for ideas left !
