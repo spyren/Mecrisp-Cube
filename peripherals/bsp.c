@@ -49,6 +49,7 @@
 #include "main.h"
 #include "bsp.h"
 #include "rt_spi.h"
+#include "power.h"
 
 // Private function prototypes
 // ***************************
@@ -1128,6 +1129,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		break;
 	case GPIO_PIN_4: // D10
 		osSemaphoreRelease(EXTI_4_SemaphoreID);
+		break;
+	case GPIO_PIN_13: // B1, switch1
+		POWER_switchEvent(POWER_SWITCH1);
+		break;
+	case GPIO_PIN_14: // B2, switch2
+		POWER_switchEvent(POWER_SWITCH2);
 		break;
 
 	}
