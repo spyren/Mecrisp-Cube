@@ -101,7 +101,7 @@ __attribute__( ( always_inline ) ) static inline uint32_t __get_PC(void)
  *  @return
  *      None
  */
-#ifdef CFG_ASSERT_ON
+#if CFG_ASSERT_ON == 1
 #define ASSERT_nonfatal(cond, id, param)                \
   if (!(cond)) {                                        \
 	RTC_Backup.assert = RTC_MAGIC_COOKIE;               \
