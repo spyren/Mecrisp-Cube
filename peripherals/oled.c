@@ -279,6 +279,17 @@ void OLED_init(void) {
 
 /**
  *  @brief
+ *      Switch off the OLED controller.
+ *  @return
+ *      None
+ */
+void OLED_switchOff(void) {
+	OLED_sendCommand(display_off);
+}
+
+
+/**
+ *  @brief
  *      Writes a char to the OLED. Blocking until char is written into the controller memory.
  *
  *      Does not work in ISRs.
