@@ -1121,7 +1121,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	case GPIO_PIN_5:  // D1
 		osSemaphoreRelease(EXTI_9_5_SemaphoreID);
 		break;
-	case GPIO_PIN_12: // D2
+	case GPIO_PIN_12: // D2 and B2 (switch1)
+		POWER_switchEvent(POWER_SWITCH1);
 		osSemaphoreRelease(EXTI_15_10_SemaphoreID);
 		break;
 	case GPIO_PIN_3: // D4
@@ -1130,13 +1131,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	case GPIO_PIN_4: // D10
 		osSemaphoreRelease(EXTI_4_SemaphoreID);
 		break;
-	case GPIO_PIN_13: // B1, switch1
-		POWER_switchEvent(POWER_SWITCH1);
-		break;
-	case GPIO_PIN_14: // B2, switch2
+	case GPIO_PIN_13: // B2 (switch2)
 		POWER_switchEvent(POWER_SWITCH2);
 		break;
-
 	}
 }
 

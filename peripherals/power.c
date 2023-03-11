@@ -76,7 +76,7 @@ void POWER_startup(void) {
 
 			// clear halt request
 			hrtc.Instance = RTC;
-			__HAL_RTC_WRITEPROTECTION_DISABLE(&hrtc);
+		    HAL_PWR_EnableBkUpAccess();
 			RTC_Backup.power_param &= ~POWER_SHUTDOWN;
 
 		    // CPU2 is not started
@@ -86,14 +86,14 @@ void POWER_startup(void) {
 		    // shutdown, exit into POR, wake up on falling edge (PWR_WAKEUP_PINx_LOW)
 		    HAL_PWREx_EnablePullUpPullDownConfig();
 			if (RTC_Backup.power_param & POWER_SWITCH1) {
-				// enable wakeup switch1 (PC12, WKUP3)
-			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_12); // wakeup is PC12
+				// enable wake up switch1 (PC12, WKUP3)
+			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_12); // wake up pin is PC12
 			    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF3);
 			    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN3_LOW, PWR_CORE_CPU1);
 			}
 			if (RTC_Backup.power_param & POWER_SWITCH2) {
-				// enable wakeup switch2 (PC13, WKUP2)
-			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_13); // wakeup is PC13
+				// enable wake up switch2 (PC13, WKUP2)
+			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_13); // wake up pin is PC13
 			    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF2);
 			    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN2_LOW, PWR_CORE_CPU1);
 			}
@@ -133,7 +133,7 @@ void POWER_init(void) {
  */
 void POWER_halt(void) {
 	if (RTC_Backup.power == RTC_MAGIC_COOKIE) {
-		// RTC is up and running and power is activated
+		// RTC is up and running and low power shutdown is activated
 
 		// switch off peripherals
 		OLED_switchOff();
@@ -202,6 +202,10 @@ void update_sw(void) {
 		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_12);
+		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 	} else {
 		// disable halt switch1
 		GPIO_InitStruct.Pin = B1_Pin;
@@ -216,6 +220,9 @@ void update_sw(void) {
 		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		HAL_GPIO_Init(B2_GPIO_Port, &GPIO_InitStruct);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
+		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 	} else {
 		// disable halt switch2
 		GPIO_InitStruct.Pin = B2_Pin;
