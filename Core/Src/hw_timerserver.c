@@ -66,23 +66,24 @@ typedef struct
  * START of Section TIMERSERVER_CONTEXT
  */
 
-PLACE_IN_SECTION("TIMERSERVER_CONTEXT") static volatile TimerContext_t aTimerContext[CFG_HW_TS_MAX_NBR_CONCURRENT_TIMER];
-PLACE_IN_SECTION("TIMERSERVER_CONTEXT") static volatile uint8_t CurrentRunningTimerID;
-PLACE_IN_SECTION("TIMERSERVER_CONTEXT") static volatile uint8_t PreviousRunningTimerID;
-PLACE_IN_SECTION("TIMERSERVER_CONTEXT") static volatile uint32_t SSRValueOnLastSetup;
-PLACE_IN_SECTION("TIMERSERVER_CONTEXT") static volatile WakeupTimerLimitation_Status_t  WakeupTimerLimitation;
+static volatile TimerContext_t aTimerContext[CFG_HW_TS_MAX_NBR_CONCURRENT_TIMER];
+static volatile uint8_t CurrentRunningTimerID;
+static volatile uint8_t PreviousRunningTimerID;
+static volatile uint32_t SSRValueOnLastSetup;
+static volatile WakeupTimerLimitation_Status_t  WakeupTimerLimitation;
 
 /**
  * END of Section TIMERSERVER_CONTEXT
  */
 
-static RTC_HandleTypeDef *phrtc;  /**< RTC handle */
 static uint8_t  WakeupTimerDivider;
 static uint8_t  AsynchPrescalerUserConfig;
 static uint16_t SynchPrescalerUserConfig;
 static volatile uint16_t MaxWakeupTimerSetup;
 
 /* Global variables ----------------------------------------------------------*/
+extern RTC_HandleTypeDef hrtc;
+
 /* Private function prototypes -----------------------------------------------*/
 static void RestartWakeupCounter(uint16_t Value);
 static uint16_t ReturnTimeElapsed(void);
@@ -338,7 +339,7 @@ static void RestartWakeupCounter(uint16_t Value)
   /**
    * The wakeuptimer has been disabled in the calling function to reduce the time to poll the WUTWF
    * FLAG when the new value will have to be written
-   *  __HAL_RTC_WAKEUPTIMER_DISABLE(phrtc);
+   *  __HAL_RTC_WAKEUPTIMER_DISABLE(&hrtc);
    */
 
   if(Value == 0)
@@ -357,7 +358,7 @@ static void RestartWakeupCounter(uint16_t Value)
       Value -= 1;
     }
 
-    while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(phrtc, RTC_FLAG_WUTWF) == RESET);
+    while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTWF) == RESET);
 
     /**
      * make sure to clear the flags after checking the WUTWF.
@@ -366,7 +367,7 @@ static void RestartWakeupCounter(uint16_t Value)
      * Otherwise, when the timer is periodic with 1 Tick, it may generate an extra interrupt in between
      * due to the autoreload feature
      */
-    __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(phrtc, RTC_FLAG_WUTF);   /**<  Clear flag in RTC module */
+    __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);   /**<  Clear flag in RTC module */
     __HAL_RTC_WAKEUPTIMER_EXTI_CLEAR_FLAG(); /**<  Clear flag in EXTI module */
     HAL_NVIC_ClearPendingIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID);   /**<  Clear pending bit in NVIC */
 
@@ -377,7 +378,7 @@ static void RestartWakeupCounter(uint16_t Value)
      */
     SSRValueOnLastSetup = ReadRtcSsrValue();
 
-    __HAL_RTC_WAKEUPTIMER_ENABLE(phrtc);    /**<  Enable the Wakeup Timer */
+    __HAL_RTC_WAKEUPTIMER_ENABLE(&hrtc);    /**<  Enable the Wakeup Timer */
 
     HW_TS_RTC_CountUpdated_AppNot();
   }
@@ -408,9 +409,9 @@ static void RescheduleTimerList(void)
     /**
      * Wait for the flag to be back to 0 when the wakeup timer is enabled
      */
-    while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(phrtc, RTC_FLAG_WUTWF) == SET);
+    while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTWF) == SET);
   }
-  __HAL_RTC_WAKEUPTIMER_DISABLE(phrtc);   /**<  Disable the Wakeup Timer */
+  __HAL_RTC_WAKEUPTIMER_DISABLE(&hrtc);   /**<  Disable the Wakeup Timer */
 
   localTimerID = CurrentRunningTimerID;
 
@@ -499,14 +500,14 @@ void HW_TS_RTC_Wakeup_Handler(void)
 #endif
 
 /* Disable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_DISABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_DISABLE( &hrtc );
 
   /**
    * Disable the Wakeup Timer
    * This may speed up a bit the processing to wait the timer to be disabled
    * The timer is still counting 2 RTCCLK
    */
-  __HAL_RTC_WAKEUPTIMER_DISABLE(phrtc);
+  __HAL_RTC_WAKEUPTIMER_DISABLE(&hrtc);
 
   local_current_running_timer_id = CurrentRunningTimerID;
 
@@ -533,7 +534,7 @@ void HW_TS_RTC_Wakeup_Handler(void)
         HW_TS_Start(local_current_running_timer_id, aTimerContext[local_current_running_timer_id].CounterInit);
 
         /* Disable the write protection for RTC registers */
-        __HAL_RTC_WRITEPROTECTION_DISABLE( phrtc );
+        __HAL_RTC_WRITEPROTECTION_DISABLE( &hrtc );
         }
       else
       {
@@ -543,7 +544,7 @@ void HW_TS_RTC_Wakeup_Handler(void)
         HW_TS_Stop(local_current_running_timer_id);
 
         /* Disable the write protection for RTC registers */
-        __HAL_RTC_WRITEPROTECTION_DISABLE( phrtc );
+        __HAL_RTC_WRITEPROTECTION_DISABLE( &hrtc );
         }
 
       HW_TS_RTC_Int_AppNot(timer_process_id, local_current_running_timer_id, ptimer_callback);
@@ -563,7 +564,7 @@ void HW_TS_RTC_Wakeup_Handler(void)
      * However, if due to any bug in the timer server this is the case, the mistake may not impact the user.
      * We could just clean the interrupt flag and get out from this unexpected interrupt
      */
-    while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(phrtc, RTC_FLAG_WUTWF) == RESET);
+    while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTWF) == RESET);
 
     /**
      * make sure to clear the flags after checking the WUTWF.
@@ -572,7 +573,7 @@ void HW_TS_RTC_Wakeup_Handler(void)
      * Otherwise, when the timer is periodic with 1 Tick, it may generate an extra interrupt in between
      * due to the autoreload feature
      */
-    __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(phrtc, RTC_FLAG_WUTF);   /**<  Clear flag in RTC module */
+    __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);   /**<  Clear flag in RTC module */
     __HAL_RTC_WAKEUPTIMER_EXTI_CLEAR_FLAG(); /**<  Clear flag in EXTI module */
 
 #if (CFG_HW_TS_USE_PRIMASK_AS_CRITICAL_SECTION == 1)
@@ -581,23 +582,18 @@ void HW_TS_RTC_Wakeup_Handler(void)
   }
 
   /* Enable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_ENABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_ENABLE( &hrtc );
 
   return;
 }
 
-void HW_TS_Init(HW_TS_InitMode_t TimerInitMode, RTC_HandleTypeDef *hrtc)
+void HW_TS_Init(HW_TS_InitMode_t TimerInitMode, RTC_HandleTypeDef *phrtc)
 {
   uint8_t loop;
   uint32_t localmaxwakeuptimersetup;
 
-  /**
-   * Get RTC handler
-   */
-  phrtc = hrtc;
-
  /* Disable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_DISABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_DISABLE( &hrtc );
 
   SET_BIT(RTC->CR, RTC_CR_BYPSHAD);
 
@@ -646,15 +642,15 @@ void HW_TS_Init(HW_TS_InitMode_t TimerInitMode, RTC_HandleTypeDef *hrtc)
 
     CurrentRunningTimerID = CFG_HW_TS_MAX_NBR_CONCURRENT_TIMER;   /**<  Set ID to non valid value */
 
-    __HAL_RTC_WAKEUPTIMER_DISABLE(phrtc);                       /**<  Disable the Wakeup Timer */
-    __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(phrtc, RTC_FLAG_WUTF);     /**<  Clear flag in RTC module */
+    __HAL_RTC_WAKEUPTIMER_DISABLE(&hrtc);                       /**<  Disable the Wakeup Timer */
+    __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);     /**<  Clear flag in RTC module */
     __HAL_RTC_WAKEUPTIMER_EXTI_CLEAR_FLAG(); /**<  Clear flag in EXTI module  */
     HAL_NVIC_ClearPendingIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID);       /**<  Clear pending bit in NVIC  */
-    __HAL_RTC_WAKEUPTIMER_ENABLE_IT(phrtc, RTC_IT_WUT);         /**<  Enable interrupt in RTC module  */
+    __HAL_RTC_WAKEUPTIMER_ENABLE_IT(&hrtc, RTC_IT_WUT);         /**<  Enable interrupt in RTC module  */
   }
   else
   {
-    if(__HAL_RTC_WAKEUPTIMER_GET_FLAG(phrtc, RTC_FLAG_WUTF) != RESET)
+    if(__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTF) != RESET)
     {
       /**
        * Simulate that the Timer expired
@@ -664,7 +660,7 @@ void HW_TS_Init(HW_TS_InitMode_t TimerInitMode, RTC_HandleTypeDef *hrtc)
   }
 
   /* Enable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_ENABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_ENABLE( &hrtc );
 
   HAL_NVIC_SetPriority(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID, CFG_HW_TS_NVIC_RTC_WAKEUP_IT_PREEMPTPRIO, CFG_HW_TS_NVIC_RTC_WAKEUP_IT_SUBPRIO);   /**<  Set NVIC priority */
   HAL_NVIC_EnableIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID); /**<  Enable NVIC */
@@ -742,7 +738,7 @@ void HW_TS_Stop(uint8_t timer_id)
   HAL_NVIC_DisableIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID);    /**<  Disable NVIC */
 
   /* Disable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_DISABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_DISABLE( &hrtc );
 
   if(aTimerContext[timer_id].TimerIDStatus == TimerID_Running)
   {
@@ -763,11 +759,11 @@ void HW_TS_Stop(uint8_t timer_id)
         /**
          * Wait for the flag to be back to 0 when the wakeup timer is enabled
          */
-        while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(phrtc, RTC_FLAG_WUTWF) == SET);
+        while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTWF) == SET);
       }
-      __HAL_RTC_WAKEUPTIMER_DISABLE(phrtc);   /**<  Disable the Wakeup Timer */
+      __HAL_RTC_WAKEUPTIMER_DISABLE(&hrtc);   /**<  Disable the Wakeup Timer */
 
-      while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(phrtc, RTC_FLAG_WUTWF) == RESET);
+      while(__HAL_RTC_WAKEUPTIMER_GET_FLAG(&hrtc, RTC_FLAG_WUTWF) == RESET);
 
       /**
        * make sure to clear the flags after checking the WUTWF.
@@ -776,7 +772,7 @@ void HW_TS_Stop(uint8_t timer_id)
        * Otherwise, when the timer is periodic with 1 Tick, it may generate an extra interrupt in between
        * due to the autoreload feature
        */
-      __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(phrtc, RTC_FLAG_WUTF);   /**<  Clear flag in RTC module */
+      __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc, RTC_FLAG_WUTF);   /**<  Clear flag in RTC module */
       __HAL_RTC_WAKEUPTIMER_EXTI_CLEAR_FLAG(); /**<  Clear flag in EXTI module */
       HAL_NVIC_ClearPendingIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID);   /**<  Clear pending bit in NVIC */
     }
@@ -787,7 +783,7 @@ void HW_TS_Stop(uint8_t timer_id)
   }
 
   /* Enable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_ENABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_ENABLE( &hrtc );
 
   HAL_NVIC_EnableIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID); /**<  Enable NVIC */
 
@@ -820,7 +816,7 @@ void HW_TS_Start(uint8_t timer_id, uint32_t timeout_ticks)
   HAL_NVIC_DisableIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID);    /**<  Disable NVIC */
 
   /* Disable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_DISABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_DISABLE( &hrtc );
 
   aTimerContext[timer_id].TimerIDStatus = TimerID_Running;
 
@@ -841,7 +837,7 @@ void HW_TS_Start(uint8_t timer_id, uint32_t timeout_ticks)
   }
 
   /* Enable the write protection for RTC registers */
-  __HAL_RTC_WRITEPROTECTION_ENABLE( phrtc );
+  __HAL_RTC_WRITEPROTECTION_ENABLE( &hrtc );
 
   HAL_NVIC_EnableIRQ(CFG_HW_TS_RTC_WAKEUP_HANDLER_ID); /**<  Enable NVIC */
 

@@ -59,7 +59,7 @@ typedef struct
  * START of Section BLE_APP_CONTEXT
  */
 
-PLACE_IN_SECTION("BLE_APP_CONTEXT") static HRSAPP_Context_t HRSAPP_Context;
+static HRSAPP_Context_t HRSAPP_Context;
 
 /**
  * END of Section BLE_APP_CONTEXT
@@ -85,7 +85,7 @@ const osThreadAttr_t HrsProcess_attr = {
 static void HrMeas( void );
 static void HrsProcess(void *argument);
 static void HRSAPP_Measurement(void);
-//static uint32_t HRSAPP_Read_RTC_SSR_SS ( void );
+static uint32_t HRSAPP_Read_RTC_SSR_SS ( void );
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -243,10 +243,10 @@ static void HrMeas( void )
   return;
 }
 
-//static uint32_t HRSAPP_Read_RTC_SSR_SS ( void )
-//{
-//  return ((uint32_t)(READ_BIT(RTC->SSR, RTC_SSR_SS)));
-//}
+static uint32_t HRSAPP_Read_RTC_SSR_SS ( void )
+{
+  return ((uint32_t)(READ_BIT(RTC->SSR, RTC_SSR_SS)));
+}
 
 /* USER CODE BEGIN FD */
 
