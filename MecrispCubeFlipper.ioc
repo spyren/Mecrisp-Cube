@@ -757,4 +757,4 @@ WWDG.Prescaler=WWDG_PRESCALER_32
 board=P-NUCLEO-WB55-Nucleo
 boardIOC=true
 rtos.0.ip=FREERTOS
-isbadioc=true
+isbadioc=false
