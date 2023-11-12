@@ -67,8 +67,8 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
+#include "d_spi.h"
 #include "epd.h"
-#include "rt_spi.h"
 #include "stm32wbxx_ll_spi.h"
 #include "font6x8.h"
 #include "font8x8.h"

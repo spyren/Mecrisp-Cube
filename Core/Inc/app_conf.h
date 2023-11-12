@@ -756,9 +756,9 @@ typedef enum
 /******************************************************************************
  * Display modules
  ******************************************************************************/
-#define	OLED					1
+#define	OLED					0
 #define MIP						0
-#define PLEX					1
+#define PLEX					0
 #define EPD						0
 #define FPU_IP					1
 

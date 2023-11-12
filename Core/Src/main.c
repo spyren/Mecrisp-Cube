@@ -204,6 +204,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
+  MX_SPI2_Init();
   MX_I2C1_Init();
 //  MX_IPCC_Init(); // not needed, see hw_ipcc.c
   if (MX_FATFS_Init() != APP_OK) {
@@ -211,7 +212,7 @@ int main(void)
   }
 //  MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
-  BSP_setLED2(TRUE); // switch on power on LED
+//  BSP_setLED2(TRUE); // switch on power on LED
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
   printf("Hallo Velo\n");
@@ -382,7 +383,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-	BSP_setLED3(TRUE);
+	// BSP_setLED3(TRUE);
   /* USER CODE END Error_Handler_Debug */
 }
 

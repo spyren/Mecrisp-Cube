@@ -30,73 +30,6 @@
 
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "led1!"
-set_led1:
-		@ ( n --  ) set LED1 (blue)
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	drop
-	bl		BSP_setLED1
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "led1@"
-get_led1:
-		@ (  -- n ) get LED1 (blue)
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	pushdatos
-	bl		BSP_getLED1
-	movs	tos, r0
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "led2!"
-set_led2:
-		@ ( n --  ) set LED2 (green)
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	drop
-	bl		BSP_setLED2
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "led2@"
-get_led2:
-		@ (  -- n ) get LED2 (green)
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	pushdatos
-	bl		BSP_getLED2
-	movs	tos, r0
-	pop		{pc}
-
-	@ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "led3!"
-set_led3:
-		@ ( n --  ) set LED3 (red)
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	drop
-	bl		BSP_setLED3
-	pop		{pc}
-
-@ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "led3@"
-get_led3:
-		@ (  -- n ) get LED3 (red)
-@ -----------------------------------------------------------------------------
-	push	{lr}
-	pushdatos
-	bl		BSP_getLED3
-	movs	tos, r0
-	pop		{pc}
-
-
-@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
 get_switch1:
 		@ (  -- n ) get switch1
@@ -579,35 +512,35 @@ I2Cputget:
 	   Wortbirne Flag_visible, "SPIget"
 SPIget:
 	   @ ( a size -- ) Get a message
-// int RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength);
+// int DSPI_ReadData(const uint8_t *Data, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r1, tos			// DataLength
 	drop
 	movs	r0, tos			// *Data
 	drop
-	bl		RTSPI_ReadData
+	bl		DSPI_ReadData
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "SPIput"
 SPIput:
 		@ ( a size --  ) Put a message
-// int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength);
+// int DSPI_WriteData(const uint8_t *Data, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r1, tos			// DataLength
 	drop
 	movs	r0, tos			// *Data
 	drop
-	bl		RTSPI_WriteData
+	bl		DSPI_WriteData
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "SPIputget"
 SPIputget:
 		@ ( a1 a2 size --  ) Put and get a message
-// int RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
+// int DSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r2, tos			// DataLength
@@ -616,18 +549,18 @@ SPIputget:
 	drop
 	movs	r0, tos			// *DataIn
 	drop
-	bl		RTSPI_WriteReadData
+	bl		DSPI_WriteReadData
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "SPImutex"
 SPImutex:
 		@ ( -- a ) Get the SPI mutex address
-// uint32_t* RTSPI_getMutex(void)
+// uint32_t* DSPI_getMutex(void)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
-	bl		RTSPI_getMutex
+	bl		DSPI_getMutex
 	movs	tos, r0
 	pop		{pc}
 
