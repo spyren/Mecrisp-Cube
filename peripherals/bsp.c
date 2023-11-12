@@ -56,7 +56,7 @@
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.14.1, USB-CDC, BLE Stack 5.3 (C) 2022 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
@@ -228,7 +228,7 @@ int BSP_getSwitch1(void) {
  *  @brief
  *      Gets the switch2 state
  *
- *      No debouncing
+ *      No debouncing. There is a pulldown resistor.
  *  @return
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
@@ -239,13 +239,13 @@ int BSP_getSwitch2(void) {
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
 	// Flipper OK button
-	if (HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == GPIO_PIN_SET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
 	}
 
-		osMutexRelease(DigitalPort_MutexID);
+	osMutexRelease(DigitalPort_MutexID);
 	return return_value;
 }
 

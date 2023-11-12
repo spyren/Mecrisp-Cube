@@ -66,8 +66,8 @@
 .equ	CDC_TERMINAL, 		2
 .equ	CRS_TERMINAL,		3
 
-.equ	DEFAULT_TERMINAL, CDC_TERMINAL
-//.equ	DEFAULT_TERMINAL, UART_TERMINAL
+//.equ	DEFAULT_TERMINAL, CDC_TERMINAL
+.equ	DEFAULT_TERMINAL, UART_TERMINAL
 
 .equ	TERMINAL_AUTO,		1
 
@@ -516,11 +516,11 @@ Forth:
 	bl		BSP_getSwitch1
 	cmp		r0, #0
 	beq		1f
-	bl		crs_terminal		// button1 pressed on reset -> crs terminal
+	bl		crs_terminal		// button1 (back) pressed on reset -> crs terminal
 1:	bl		BSP_getSwitch2
 	cmp		r0, #0
 	beq		2f
-	bl		uart_terminal		// button2 pressed on reset -> uart terminal
+	bl		uart_terminal		// button2 (OK) pressed on reset -> uart terminal
 2:
 	welcome " by Matthias Koch. "
 
