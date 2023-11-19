@@ -57,13 +57,16 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOB, SPEAKER_Pin|DISPLAY_RST_Pin|DISPLAY_DI_Pin|RFID_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, CC1101_G0_Pin|RFID_PULL_Pin|PERIPH_POWER_Pin|VIBRO_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, CC1101_G0_Pin|RFID_PULL_Pin|VIBRO_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, RF_SW_O_Pin|DISPLAY_CS_Pin|SD_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PERIPH_POWER_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(NFC_CS_GPIO_Port, NFC_CS_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, RF_SW_O_Pin|DISPLAY_CS_Pin|SD_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(NFC_CS_GPIO_Port, NFC_CS_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(CC1101_CS_GPIO_Port, CC1101_CS_Pin, GPIO_PIN_RESET);

@@ -39,6 +39,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "d_spi.h"
+#include "r_spi.h"
 #include "myassert.h"
 
 
@@ -254,10 +255,11 @@ int DSPI_Write(uint8_t Value) {
   * @retval None
   */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hspi);
-
-	osSemaphoreRelease(DSPI_SemaphoreID);
+	if (hspi->Instance == SPI2) {
+		osSemaphoreRelease(DSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI1) {
+		osSemaphoreRelease(RSPI_SemaphoreID);
+	}
 }
 
 
@@ -268,10 +270,11 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
   * @retval None
   */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hspi);
-
-  osSemaphoreRelease(DSPI_SemaphoreID);
+	if (hspi->Instance == SPI2) {
+		osSemaphoreRelease(DSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI1) {
+		osSemaphoreRelease(RSPI_SemaphoreID);
+	}
 }
 
 
@@ -282,11 +285,13 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
   * @retval None
   */
 void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hspi);
-
-	SpiStatus = -1;
-	osSemaphoreRelease(DSPI_SemaphoreID);
+	if (hspi->Instance == SPI2) {
+		SpiStatus = -1;
+		osSemaphoreRelease(DSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI1) {
+		RSPI_SpiStatus = -1;
+		osSemaphoreRelease(RSPI_SemaphoreID);
+	}
 }
 
 /**
@@ -294,11 +299,12 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
   * @param  hspi SPI handle.
   * @retval None
   */
-void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi)
-{
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hspi);
-
-	SpiStatus = -2;
-	osSemaphoreRelease(DSPI_SemaphoreID);
+void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi) {
+	if (hspi->Instance == SPI2) {
+		SpiStatus = -2;
+		osSemaphoreRelease(DSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI1) {
+		RSPI_SpiStatus = -2;
+		osSemaphoreRelease(RSPI_SemaphoreID);
+	}
 }

@@ -46,6 +46,7 @@
 // ****************
 
 osMutexId_t RSPI_MutexID;
+volatile int RSPI_SpiStatus = 0;
 
 // RDOS resources
 // **************
@@ -57,7 +58,7 @@ static const osMutexAttr_t RSPI_MutexAttr = {
 		0U					// size for control block
 };
 
-static osSemaphoreId_t RSPI_SemaphoreID;
+osSemaphoreId_t RSPI_SemaphoreID;
 
 
 // Hardware resources
@@ -70,7 +71,6 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 
 // Private Variables
 // *****************
-static volatile int SpiStatus = 0;
 
 
 // Public Functions
@@ -118,22 +118,22 @@ int RSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLen
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
-	SpiStatus = 0;
+	RSPI_SpiStatus = 0;
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RSPI_SemaphoreID, 1000);
 		if (os_status != osOK) {
-			SpiStatus = -4;
+			RSPI_SpiStatus = -4;
 		}
 	} else {
-		SpiStatus = -3;
+		RSPI_SpiStatus = -3;
 	}
 
-	if (SpiStatus != 0) {
+	if (RSPI_SpiStatus != 0) {
 		Error_Handler();
 	}
-	return SpiStatus;
+	return RSPI_SpiStatus;
 }
 
 
@@ -153,22 +153,22 @@ int RSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
-	SpiStatus = FALSE;
+	RSPI_SpiStatus = FALSE;
 	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RSPI_SemaphoreID, 1000);
 		if (os_status != osOK) {
-			SpiStatus = -4;
+			RSPI_SpiStatus = -4;
 		}
 	} else {
-		SpiStatus = -3;
+		RSPI_SpiStatus = -3;
 	}
 
-	if (SpiStatus != 0) {
+	if (RSPI_SpiStatus != 0) {
 		Error_Handler();
 	}
-	return SpiStatus;
+	return RSPI_SpiStatus;
 }
 
 
@@ -188,22 +188,22 @@ int RSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 	osStatus_t os_status = osOK;
 
-	SpiStatus = FALSE;
+	RSPI_SpiStatus = FALSE;
 	hal_status = HAL_SPI_Transmit_DMA(&hspi1, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RSPI_SemaphoreID, 1000);
 		if (os_status != osOK) {
-			SpiStatus = -4;
+			RSPI_SpiStatus = -4;
 		}
 	} else {
-		SpiStatus = -3;
+		RSPI_SpiStatus = -3;
 	}
 
-	if (SpiStatus != 0) {
+	if (RSPI_SpiStatus != 0) {
 		Error_Handler();
 	}
-	return SpiStatus;
+	return RSPI_SpiStatus;
 }
 
 
@@ -222,22 +222,22 @@ int RSPI_Write(uint8_t Value) {
 	osStatus_t os_status = osOK;
 	uint8_t data = Value;
 
-	SpiStatus = FALSE;
+	RSPI_SpiStatus = FALSE;
 	hal_status = HAL_SPI_Transmit_DMA(&hspi1, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
 		os_status = osSemaphoreAcquire(RSPI_SemaphoreID, 1000);
 		if (os_status != osOK) {
-			SpiStatus = -4;
+			RSPI_SpiStatus = -4;
 		}
 	} else {
-		SpiStatus = -3;
+		RSPI_SpiStatus = -3;
 	}
 
-	if (SpiStatus != 0) {
+	if (RSPI_SpiStatus != 0) {
 		Error_Handler();
 	}
-	return SpiStatus;
+	return RSPI_SpiStatus;
 }
 
 

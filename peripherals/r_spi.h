@@ -9,6 +9,8 @@
 #define INC_RSPI_H_
 
 extern osMutexId_t RSPI_MutexID;
+extern volatile int RSPI_SpiStatus;
+extern osSemaphoreId_t RSPI_SemaphoreID;
 
 void RSPI_init(void);
 uint32_t* RSPI_getMutex(void);
