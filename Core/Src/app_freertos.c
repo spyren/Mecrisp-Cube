@@ -176,6 +176,9 @@ void MainThread(void *argument)
 #if EPD == 1
 	EPD_init();
 #endif
+#if LCDISPLAY == 1
+	LCD_init();
+#endif
 
 	osDelay(10);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
