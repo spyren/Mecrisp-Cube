@@ -28,6 +28,50 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "rgbled!"
+set_rgbled:
+		@ ( n --  ) set RGB LED (rgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		RGBW_setRGB
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "rgbled@"
+get_rgbled:
+		@ (  --  n ) get RGB LED (rgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		RGBW_getRGB
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "wled!"
+set_wled:
+		@ ( n --  ) set white (backlight) LED (rgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		RGBW_setW
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "wled@"
+get_wled:
+		@ (  --  n ) get white (backlight) LED (rgb)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		RGBW_getW
+	movs	tos, r0
+	pop		{pc}
+
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
@@ -60,6 +104,39 @@ get_switch3:
 	push	{lr}
 	pushdatos
 	bl		BSP_getSwitch3
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switch4?"
+get_switch4:
+		@ (  -- n ) get switch4
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitch4
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switch5?"
+get_switch5:
+		@ (  -- n ) get switch5
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitch5
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switch6?"
+get_switch6:
+		@ (  -- n ) get switch6
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitch6
 	movs	tos, r0
 	pop		{pc}
 

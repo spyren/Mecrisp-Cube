@@ -42,6 +42,7 @@ void RGBW_setRGB(uint32_t rgb);
 uint32_t RGBW_getRGB(void);
 void RGBW_setW(uint8_t w);
 uint8_t RGBW_getW(void);
-
+void RGBW_setRegister(uint8_t reg, uint8_t data);
+uint8_t RGBW_getRegister(uint8_t reg);
 
 #endif /* INC_RGBW_H_ */

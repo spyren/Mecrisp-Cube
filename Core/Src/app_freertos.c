@@ -43,6 +43,7 @@
 #include "clock.h"
 #include "iic.h"
 #include "plex.h"
+#include "rgbw.h"
 #include "watchdog.h"
 #include "myassert.h"
 #if OLED == 1
@@ -157,6 +158,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
+	RGBW_init();
 	BSP_setNeoPixel(0);
 	ASSERT_init();
 	SD_init();
