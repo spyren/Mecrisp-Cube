@@ -46,6 +46,7 @@
 typedef enum {LCD_FONT6X8, LCD_FONT8X8, LCD_FONT8X16, LCD_FONT12X16} LCD_FontT;
 
 void LCD_init(void);
+void LCD_switchOff(void);
 void LCD_sendCommand(const uint8_t *command);
 void LCD_clear(void);
 void LCD_update(void);

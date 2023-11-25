@@ -31,6 +31,10 @@ typedef struct {
 	uint32_t        assert_id;
 	/** assert parameter e.g. address where the assert occurred                (RTC_BKP7R)*/
 	uint32_t        assert_param;
+	/** power cookie                										   (RTC_BKP8R)*/
+	uint32_t 		power;
+	/** power parameter                										   (RTC_BKP9R)*/
+	uint32_t		power_param;
 } RTC_Backup_t;
 
 

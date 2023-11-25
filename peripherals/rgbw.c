@@ -69,6 +69,7 @@
 #define RGBW_REG_W_CURRENT 	0x0F 	// W_CURRENT[7:0]
 
 #define RGBW_CHIP_ENABLE	0b01000000	// chip enable
+#define RGBW_CHIP_DISABLE	0b00000000	// chip disable
 
 // Private function prototypes
 // ***************************
@@ -79,7 +80,6 @@
 
 // Hardware resources
 // ******************
-extern I2C_HandleTypeDef hi2c1;
 
 // RTOS resources
 // **************
@@ -118,6 +118,17 @@ void RGBW_init(void) {
 	RGBW_setRegister(RGBW_REG_W_CURRENT, LED_CURRENT_WHITE); 	// white LED current
 	RGBW_setRGB(0);
 	RGBW_setW(0);
+}
+
+
+/**
+ *  @brief
+ *      Switch off RGBW
+ *  @return
+ *      None
+ */
+void RGBW_switchOff(void) {
+	RGBW_setRegister(RGBW_REG_ENABLE, RGBW_CHIP_DISABLE); // chip disable
 }
 
 

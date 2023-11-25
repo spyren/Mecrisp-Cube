@@ -207,6 +207,21 @@ void LCD_init(void) {
 
 /**
  *  @brief
+ *      Switch off LCD
+ *  @return
+ *      None
+ */
+void LCD_switchOff(void) {
+	int i;
+
+	for (i = 0; i < membersof(st7567_off_sequence); i++) {
+		LCD_sendCommand(st7567_on_sequence[i]);
+	}
+}
+
+
+/**
+ *  @brief
  *      Writes a char to the LCD. Blocking until char is written into the controller memory.
  *
  *      Does not work in ISRs.

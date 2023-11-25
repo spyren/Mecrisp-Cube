@@ -46,6 +46,7 @@
 #include "rgbw.h"
 #include "watchdog.h"
 #include "myassert.h"
+#include "power.h"
 #if OLED == 1
 #include "oled.h"
 #endif
@@ -54,6 +55,9 @@
 #endif
 #if EPD == 1
 #include "epd.h"
+#endif
+#if LCDISPLAY == 1
+#include "lcd.h"
 #endif
 
 
@@ -104,6 +108,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 	MX_APPE_Init();
+	POWER_init();
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();

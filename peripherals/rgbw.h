@@ -38,6 +38,7 @@
 
 
 void RGBW_init(void);
+void RGBW_switchOff(void);
 void RGBW_setRGB(uint32_t rgb);
 uint32_t RGBW_getRGB(void);
 void RGBW_setW(uint8_t w);
