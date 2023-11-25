@@ -822,3 +822,52 @@ set_halt:
 	bl		POWER_setSwitch
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "lipocharge@"
+get_lipocharge:
+	@ ( -- u ) Get LIPO charge
+// int GAUGE_getCharge(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		GAUGE_getCharge
+	movs	tos, r0			// charge
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "lipovoltage@"
+get_lipovoltage:
+	@ ( -- u ) Get LIPO voltage
+// int GAUGE_getVoltage(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		GAUGE_getVoltage
+	movs	tos, r0			// voltage
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "lipocurrent@"
+get_lipocurrent:
+	@ ( -- u ) Get LIPO current
+// int GAUGE_getCurrent(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		GAUGE_getCurrent
+	movs	tos, r0			// current
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "lipogauge@"
+get_lipogauge:
+	@ ( u -- u ) Get register from fuel gauge
+// int GAUGE_getRegister(uint8_t reg)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos			// register
+	bl		GAUGE_getRegister
+	movs	tos, r0			// current
+	pop		{pc}
+
+

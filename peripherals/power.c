@@ -3,7 +3,17 @@
  *      Power management e.g. low power, shutdown, charging and the like.
  *
  *		Flipper's power switch is the back button.
+ *
  *		Fuel gauge BQ27220YZFR
+ *		  - uses the Compensated End-of-Discharge Voltage (CEDV) algorithm
+ *		    for fuel gauging
+ *		  - remaining battery capacity (mAh),
+ *		  - state-of-charge (%)
+ *		  - runtime-to-empty (min)
+ *		  - battery voltage (mV)
+ *		  - temperature (°C)
+ *		  - state-of-health (%)
+ *
  *		Charger BQ25896RTWR
  *  @file
  *      power.c
@@ -43,6 +53,7 @@
 #include "lcd.h"
 #include "rgbw.h"
 #include "power.h"
+#include "iic.h"
 
 // Private function prototypes
 // ***************************
@@ -203,6 +214,56 @@ void POWER_setPeripheral(int status) {
 		HAL_GPIO_WritePin(GPIOA, PERIPH_POWER_Pin, GPIO_PIN_RESET);
 	}
 
+}
+
+
+/**
+ *  @brief
+ *      Get LIPO voltage
+ *  @return
+ *      voltage in mV
+ */
+int GAUGE_getVoltage(void) {
+	return GAUGE_getRegister(GAUGE_CMD_VOLTAGE);
+}
+
+
+/**
+ *  @brief
+ *      Get LIPO current
+ *  @return
+ *      current in mA
+ */
+int GAUGE_getCurrent(void) {
+	return GAUGE_getRegister(GAUGE_CMD_CURRENT);
+}
+
+
+/**
+ *  @brief
+ *      Get LIPO charge
+ *  @return
+ *      charge in %
+ */
+int GAUGE_getCharge(void) {
+	return GAUGE_getRegister(GAUGE_CMD_STATE_OF_CHARGE);
+}
+
+
+/**
+ *  @brief
+ *      Get register from fuel gauge
+ *  @param[in]
+ *  	reg   register/command
+ *  @return
+ *      data
+ */
+int GAUGE_getRegister(uint8_t reg) {
+	uint8_t buf[3];
+
+	buf[0] = reg;
+	IIC_putGetMessage(buf, 1, 2, GAUGE_I2C_ADR);
+	return buf[0] + (buf[1] << 8);
 }
 
 
