@@ -823,7 +823,7 @@ set_halt:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-	Wortbirne Flag_visible, "lipocharge@"
+	Wortbirne Flag_visible, "LIPOcharge@"
 get_lipocharge:
 	@ ( -- u ) Get LIPO charge
 // int GAUGE_getCharge(void)
@@ -835,7 +835,7 @@ get_lipocharge:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-	Wortbirne Flag_visible, "lipovoltage@"
+	Wortbirne Flag_visible, "LIPOvoltage@"
 get_lipovoltage:
 	@ ( -- u ) Get LIPO voltage
 // int GAUGE_getVoltage(void)
@@ -847,7 +847,7 @@ get_lipovoltage:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-	Wortbirne Flag_visible, "lipocurrent@"
+	Wortbirne Flag_visible, "LIPOcurrent@"
 get_lipocurrent:
 	@ ( -- u ) Get LIPO current
 // int GAUGE_getCurrent(void)
@@ -859,15 +859,78 @@ get_lipocurrent:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-	Wortbirne Flag_visible, "lipogauge@"
+	Wortbirne Flag_visible, "LIPOgauge@"
 get_lipogauge:
-	@ ( u -- u ) Get register from fuel gauge
+	@ ( u -- u ) Get fuel gauge register
 // int GAUGE_getRegister(uint8_t reg)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r0, tos			// register
 	bl		GAUGE_getRegister
+	movs	tos, r0			// data
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "LIPOgauge!"
+set_lipogauge:
+		@ ( u1 u2 --  ) Set fuel gauge register
+// void GAUGE_setRegister(uint8_t reg, int data);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2
+	drop
+	movs	r1, tos		// u1
+	drop
+	bl		GAUGE_setRegister
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "LIPOcharger@"
+get_lipocharger:
+	@ ( u -- u ) Get charger register
+// int CHARGER_getRegister(uint8_t reg);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos			// register
+	bl		CHARGER_getRegister
 	movs	tos, r0			// current
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "LIPOcharger!"
+set_lipocharger:
+		@ ( u1 u2 --  ) Set charger register
+// void CHARGER_setRegister(uint8_t reg, uint8_t data)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2
+	drop
+	movs	r1, tos		// u1
+	drop
+	bl		CHARGER_setRegister
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "vibro@"
+get_vibro:
+	@ (  -- flag ) Get vibro state
+// int BSP_getVibro(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getVibro
+	movs	tos, r0			// status
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "vibro!"
+set_vibro:
+	@ ( flag -- ) Set vibro status
+// int POWER_setSwitch()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		BSP_setVibro
+	pop		{pc}
 

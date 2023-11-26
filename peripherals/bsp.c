@@ -1284,3 +1284,40 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
 }
 
 
+/**
+ *  @brief
+ *	    Set vibro.
+ *
+ *	@param[in]
+ *      status    0 off, 1 on
+ *  @return
+ *      none
+ *
+ */
+void BSP_setVibro(int status) {
+	if (status) {
+		HAL_GPIO_WritePin(VIBRO_GPIO_Port, VIBRO_Pin, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(VIBRO_GPIO_Port, VIBRO_Pin, GPIO_PIN_RESET);
+	}
+}
+
+
+/**
+ *  @brief
+ *	    Get vibro status.
+ *
+ *  @return
+ *      0 off, 1 on
+ *
+ */
+int BSP_getVibro(void) {
+	if (HAL_GPIO_ReadPin(VIBRO_GPIO_Port, VIBRO_Pin) == GPIO_PIN_SET) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+
+

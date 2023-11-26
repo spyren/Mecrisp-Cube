@@ -73,5 +73,7 @@ void BSP_setNeoPixel(uint32_t rgb);
 int BSP_getNeoPixel(void);
 void BSP_setNeoPixels(uint32_t *buffer, uint32_t len);
 
+void BSP_setVibro(int status);
+int BSP_getVibro(void);
 
 #endif /* INC_BSP_H_ */

@@ -267,6 +267,60 @@ int GAUGE_getRegister(uint8_t reg) {
 }
 
 
+/**
+ *  @brief
+ *      Set fuel gauge register
+ *  @param[in]
+ *  	reg   register/command
+ *  @return
+ *      data
+ */
+void GAUGE_setRegister(uint8_t reg, int data) {
+	uint8_t buf[3];
+
+	buf[0] = reg;
+	buf[1] = data & 0xFF;
+	buf[2] = (data >> 8) & 0xFF;
+	IIC_putMessage(buf, 3, GAUGE_I2C_ADR);
+}
+
+
+/**
+ *  @brief
+ *      Get register from charger
+ *  @param[in]
+ *  	reg   register/command
+ *  @return
+ *      data
+ */
+int CHARGER_getRegister(uint8_t reg) {
+	uint8_t buf[2];
+
+	buf[0] = reg;
+	IIC_putGetMessage(buf, 1, 1, CHARGER_I2C_ADR);
+	return buf[0];
+}
+
+
+/**
+ *  @brief
+ *      Set register content of the charger
+ *  @param[in]
+ *  	reg   register/command
+ *  @param[in]
+ *  	data
+ *  @return
+ *      none
+ */
+void CHARGER_setRegister(uint8_t reg, uint8_t data) {
+	uint8_t buf[2];
+
+	buf[0] = reg;
+	buf[1] = data;
+	IIC_putMessage(buf, 2, CHARGER_I2C_ADR);
+}
+
+
 // Private Functions
 // *****************
 
