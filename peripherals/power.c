@@ -335,8 +335,8 @@ void update_sw(void) {
 		GPIO_InitStruct.Pull = GPIO_PULLUP;
 		HAL_GPIO_Init(BUTTON_BACK_GPIO_Port, &GPIO_InitStruct);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
-		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
-		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+//		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+//		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 	} else {
 		// disable halt switch1

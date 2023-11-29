@@ -899,7 +899,7 @@ get_lipocharger:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "LIPOcharger!"
 set_lipocharger:
-		@ ( u1 u2 --  ) Set charger register
+		@ ( u1 u2 --  ) Set charger register u2 with data u1
 // void CHARGER_setRegister(uint8_t reg, uint8_t data)
 @ -----------------------------------------------------------------------------
 	push	{lr}

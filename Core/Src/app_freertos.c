@@ -58,6 +58,7 @@
 #endif
 #if LCDISPLAY == 1
 #include "lcd.h"
+#include "button.h"
 #endif
 
 
@@ -113,6 +114,7 @@ void MX_FREERTOS_Init(void) {
 	BSP_init();
 	RTC_init();
 	UART_init();
+	BUTTON_init();
 	IIC_init();
 	CDC_init();
 	FLASH_init();

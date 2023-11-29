@@ -1225,14 +1225,6 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-//	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-//		// QFN48 Package -> Dongle
-//		BSP_neopixelDataTx(D6_GPIO_Port, D6_Pin, rgb);
-//	} else {
-//		// Nucleo Board
-//		BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
-//	}
-
 	RESTORE_PRIMASK();
 
 	neo_pixel = rgb;

@@ -566,6 +566,31 @@ epdfont:
 .endif // EPD == 1
 
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "button"
+button:
+        @ ( -- c ) Receive one character
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BUTTON_getc
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "button?"
+button_q:
+        @ ( -- ? ) Is there a key press ?
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BUTTON_Ready
+	movs	tos, r0
+	pop		{pc}
+
+
+
 // C Interface to some Forth Words
 //********************************
 
