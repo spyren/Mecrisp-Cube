@@ -114,7 +114,6 @@ void MX_FREERTOS_Init(void) {
 	BSP_init();
 	RTC_init();
 	UART_init();
-	BUTTON_init();
 	IIC_init();
 	CDC_init();
 	FLASH_init();
@@ -167,6 +166,7 @@ void MainThread(void *argument)
   /* USER CODE BEGIN MainThread */
 	RGBW_init();
 	BSP_setNeoPixel(0);
+	BUTTON_init();
 	ASSERT_init();
 	SD_init();
 	FD_init();

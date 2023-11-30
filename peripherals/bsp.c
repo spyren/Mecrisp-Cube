@@ -1,15 +1,17 @@
 /**
  *  @brief
- *      Board Support Package for STM32WB Nucleo Board and Dongle.
+ *      Board Support Package for STM32WB Flipper Zero
  *
- *        - LEDs (LED1, LED2, LED3)
- *        - Switches (SW1, SW2, SW3; dongle: SW1)
- *        - Digital port pins D0 to D15 (Dongle: D0, D1, D6, D10, D11, D12, D13, D14, D15)
- *        - Analog port pins A0 to A5 (Dongle: A2, A3)
- *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2 (Dongle: D6)
- *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
- *        - Timer Capture/Compare
- *        - NeoPixel D8 (Dongle D6)
+ *        - LEDs see rbgw.c module
+ *        - Switches (SW1, SW2, SW3, SW4, SW5, S6)
+ *        - Analog port pins A0 to A2
+ *        - Digital port pins D0 to D4 and D9 to D13
+ *          - PWM: D11 TIM1CH1, D4 TIM1CH2
+ *          - SPI: D11 MOSI, D12 MISO, D13 SCK
+ *          - I2C: A0 I2C3_SCL, A1 I2C3_SDA
+ *          - Timer Capture/Compare D9 TIM2_CH2
+ *        - Vibro
+ *        - NeoPixel D4
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -1267,7 +1269,7 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-//	BSP_neopixelBufferTx(D6_GPIO_Port, D6_Pin, buffer, len);
+	BSP_neopixelBufferTx(D4_GPIO_Port, D4_Pin, buffer, len);
 
 	RESTORE_PRIMASK();
 
