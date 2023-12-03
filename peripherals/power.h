@@ -116,7 +116,7 @@ int GAUGE_getVoltage(void);
 int GAUGE_getCurrent(void);
 int GAUGE_getCharge(void);
 int GAUGE_getRegister(uint8_t reg);
-void GAUGE_setRegister(uint8_t reg, int data);
+void GAUGE_setRegister(uint8_t reg, int16_t data);
 int CHARGER_getRegister(uint8_t reg);
 void CHARGER_setRegister(uint8_t reg, uint8_t data);
 

@@ -934,3 +934,15 @@ set_vibro:
 	bl		BSP_setVibro
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "peripheral!"
+set_peripheral:
+	@ ( flag -- ) Set peripheral status
+// void POWER_setPeripheral(int status);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		POWER_setPeripheral
+	pop		{pc}
+

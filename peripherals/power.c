@@ -98,11 +98,22 @@ void POWER_startup(void) {
 		    // Set the lowest low-power mode for CPU2: shutdown mode */
 		    LL_C2_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
 
+		    // wakeup in debug mode
+		    // should also work on STOP2/Shutdown mode
+		    GPIO_InitTypeDef GPIO_InitStruct = {0};
+		    __disable_irq();
+		    __HAL_RCC_GPIOC_CLK_ENABLE();
+		    GPIO_InitStruct.Pin = BUTTON_BACK_Pin;
+		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+		    GPIO_InitStruct.Pull = GPIO_PULLUP;
+		    HAL_GPIO_Init(BUTTON_BACK_GPIO_Port, &GPIO_InitStruct);
+		    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+		    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+
 		    // shutdown, exit into POR, wake up on falling edge (PWR_WAKEUP_PINx_LOW)
 		    // BACK button is the power switch
 		    HAL_PWREx_EnablePullUpPullDownConfig();
 			if (RTC_Backup.power_param & POWER_SWITCH1) {
-				// enable wake up switch2 (PC13, WKUP2)
 			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_13); // wake up pin is PC13
 			    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF2);
 			    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN2_LOW, PWR_CORE_CPU1);
@@ -263,7 +274,7 @@ int GAUGE_getRegister(uint8_t reg) {
 
 	buf[0] = reg;
 	IIC_putGetMessage(buf, 1, 2, GAUGE_I2C_ADR);
-	return buf[0] + (buf[1] << 8);
+	return (int16_t) (buf[0] + (buf[1] << 8));
 }
 
 
@@ -275,7 +286,7 @@ int GAUGE_getRegister(uint8_t reg) {
  *  @return
  *      data
  */
-void GAUGE_setRegister(uint8_t reg, int data) {
+void GAUGE_setRegister(uint8_t reg, int16_t data) {
 	uint8_t buf[3];
 
 	buf[0] = reg;
