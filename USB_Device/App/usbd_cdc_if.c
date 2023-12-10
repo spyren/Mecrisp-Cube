@@ -29,6 +29,7 @@
 #include "usb_cdc.h"
 #include "bsp.h"
 #include "myassert.h"
+#include "rgbw.h"
 
 // function prototypes
 void cdc_terminal(void);
@@ -182,7 +183,7 @@ static int8_t CDC_Init_FS(void)
   /* Set Application Buffers */
   USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
   USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
-  BSP_setNeoPixel(BSP_getNeoPixel() | 0x002000); // set green RGB LED to 10 %
+//  RGBW_setRGB(RGBW_getRGB() | 0x002000); // set green RGB LED to 10 %
   osEventFlagsSet(CDC_EvtFlagsID, CDC_CONNECTED);
   return (USBD_OK);
   /* USER CODE END 3 */
