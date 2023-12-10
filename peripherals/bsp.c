@@ -51,6 +51,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "bsp.h"
+#include "power.h"
 
 
 // Private function prototypes
@@ -1200,6 +1201,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	case GPIO_PIN_6:  // D2
 		osSemaphoreRelease(EXTI_9_5_SemaphoreID);
 		break;
+	case GPIO_PIN_13: // B2 (switch2)
+		POWER_switchEvent(POWER_SWITCH1);
 	default:
 		break;
 	}

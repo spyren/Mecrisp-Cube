@@ -107,18 +107,26 @@ void POWER_startup(void) {
 		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
 		    GPIO_InitStruct.Pull = GPIO_PULLUP;
 		    HAL_GPIO_Init(BUTTON_BACK_GPIO_Port, &GPIO_InitStruct);
+
+		    while (HAL_GPIO_ReadPin(BUTTON_BACK_GPIO_Port, BUTTON_BACK_Pin) == GPIO_PIN_RESET) {
+		    	; // wait till button release
+		    }
+
+		    __HAL_GPIO_EXTI_CLEAR_IT(BUTTON_BACK_Pin);
 		    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 		    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
-		    // shutdown, exit into POR, wake up on falling edge (PWR_WAKEUP_PINx_LOW)
+		    LL_EXTI_DisableIT_0_31( (~0) );
+		    LL_EXTI_DisableIT_32_63( (~0) );
+		    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_13);
+		    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_13);
+
+		    // shutdown, exit into POR, wake up on falling edge (BUTTON_BACK_Pin, PWR_WAKEUP_PIN2_LOW)
 		    // BACK button is the power switch
-		    HAL_PWREx_EnablePullUpPullDownConfig();
-			if (RTC_Backup.power_param & POWER_SWITCH1) {
-			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_13); // wake up pin is PC13
-			    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF2);
-			    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN2_LOW, PWR_CORE_CPU1);
-			}
-#ifdef NDEBUG
+		    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF2);
+		    HAL_PWREx_DisableInternalWakeUpLine();
+		    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN2_LOW, PWR_CORE_CPU1);
+#ifndef DEBUG
 			DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
 #endif
     		HAL_PWREx_EnterSHUTDOWNMode();
@@ -142,7 +150,6 @@ void POWER_init(void) {
 		RTC_Backup.power = RTC_MAGIC_COOKIE;
 		RTC_Backup.power_param = POWER_SWITCH1;
 	}
-	update_sw();
 }
 
 
@@ -178,7 +185,6 @@ void POWER_halt(void) {
  */
 void POWER_setSwitch(int sw) {
 	RTC_Backup.power_param = sw;
-	update_sw();
 }
 
 
@@ -334,29 +340,6 @@ void CHARGER_setRegister(uint8_t reg, uint8_t data) {
 
 // Private Functions
 // *****************
-
-void update_sw(void) {
-	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-
-	if (RTC_Backup.power_param & POWER_SWITCH1) {
-		// enable halt switch1
-		// halt on switch button 1 release (rising edge)
-		GPIO_InitStruct.Pin = BUTTON_BACK_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(BUTTON_BACK_GPIO_Port, &GPIO_InitStruct);
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
-//		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
-//		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
-	} else {
-		// disable halt switch1
-		GPIO_InitStruct.Pin = BUTTON_BACK_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(BUTTON_BACK_GPIO_Port, &GPIO_InitStruct);
-	}
-}
 
 
 // Callbacks
