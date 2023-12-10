@@ -204,7 +204,7 @@ void BSP_init(void) {
 
 /**
  *  @brief
- *      Gets the switch1 (back button) state
+ *      Gets the switch1 (OK button) state
  *
  *      No debouncing
  *  @return
@@ -217,7 +217,7 @@ int BSP_getSwitch1(void) {
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
 	// Flipper Back button
-	if (HAL_GPIO_ReadPin(BUTTON_BACK_GPIO_Port, BUTTON_BACK_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == GPIO_PIN_RESET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -229,7 +229,7 @@ int BSP_getSwitch1(void) {
 
 /**
  *  @brief
- *      Gets the switch2 (OK button) state
+ *      Gets the switch2 (BACK button) state
  *
  *      No debouncing. There is a pulldown resistor.
  *  @return
@@ -242,7 +242,7 @@ int BSP_getSwitch2(void) {
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
 	// Flipper OK button
-	if (HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == GPIO_PIN_SET) {
+	if (HAL_GPIO_ReadPin(BUTTON_BACK_GPIO_Port, BUTTON_BACK_Pin) == GPIO_PIN_SET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -254,65 +254,13 @@ int BSP_getSwitch2(void) {
 
 /**
  *  @brief
- *      Gets the switch3 (right button) state
+ *      Gets the switch3 (UP button) state
  *
  *      No debouncing
  *  @return
  *      FALSE for open switch, TRUE for closed (pressed) switch.
  */
 int BSP_getSwitch3(void) {
-	int return_value;
-
-	// only one thread is allowed to use the digital port
-	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
-
-	// Flipper Right button
-	if (HAL_GPIO_ReadPin(BUTTON_RIGHT_GPIO_Port, BUTTON_RIGHT_Pin) == GPIO_PIN_RESET) {
-		return_value =  -1;
-	} else {
-		return_value = FALSE;
-	}
-
-	osMutexRelease(DigitalPort_MutexID);
-	return return_value;
-}
-
-
-/**
- *  @brief
- *      Gets the switch4 (left) state
- *
- *      No debouncing
- *  @return
- *      FALSE for open switch, TRUE for closed (pressed) switch.
- */
-int BSP_getSwitch4(void) {
-	int return_value;
-
-	// only one thread is allowed to use the digital port
-	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
-
-	// Flipper Right button
-	if (HAL_GPIO_ReadPin(BUTTON_LEFT_GPIO_Port, BUTTON_LEFT_Pin) == GPIO_PIN_RESET) {
-		return_value =  -1;
-	} else {
-		return_value = FALSE;
-	}
-
-	osMutexRelease(DigitalPort_MutexID);
-	return return_value;
-}
-
-
-/**
- *  @brief
- *      Gets the switch5 (up button) state
- *
- *      No debouncing
- *  @return
- *      FALSE for open switch, TRUE for closed (pressed) switch.
- */
-int BSP_getSwitch5(void) {
 	int return_value;
 
 	// only one thread is allowed to use the digital port
@@ -332,7 +280,59 @@ int BSP_getSwitch5(void) {
 
 /**
  *  @brief
- *      Gets the switch5 (down button) state
+ *      Gets the switch4 (DOWN) state
+ *
+ *      No debouncing
+ *  @return
+ *      FALSE for open switch, TRUE for closed (pressed) switch.
+ */
+int BSP_getSwitch4(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// Flipper Right button
+	if (HAL_GPIO_ReadPin(BUTTON_DOWN_GPIO_Port, BUTTON_DOWN_Pin) == GPIO_PIN_RESET) {
+		return_value =  -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+
+/**
+ *  @brief
+ *      Gets the switch5 (LEFT button) state
+ *
+ *      No debouncing
+ *  @return
+ *      FALSE for open switch, TRUE for closed (pressed) switch.
+ */
+int BSP_getSwitch5(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	// Flipper Right button
+	if (HAL_GPIO_ReadPin(BUTTON_LEFT_GPIO_Port, BUTTON_LEFT_Pin) == GPIO_PIN_RESET) {
+		return_value =  -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+
+/**
+ *  @brief
+ *      Gets the switch5 (RIGHT button) state
  *
  *      No debouncing
  *  @return
@@ -345,7 +345,7 @@ int BSP_getSwitch6(void) {
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
 	// Flipper Right button
-	if (HAL_GPIO_ReadPin(BUTTON_DOWN_GPIO_Port, BUTTON_DOWN_Pin) == GPIO_PIN_RESET) {
+	if (HAL_GPIO_ReadPin(BUTTON_RIGHT_GPIO_Port, BUTTON_RIGHT_Pin) == GPIO_PIN_RESET) {
 		return_value =  -1;
 	} else {
 		return_value = FALSE;

@@ -1039,7 +1039,6 @@ static void SD_IO_CSState(uint8_t val) {
 	} else {
 		HAL_GPIO_WritePin(SD_CS_GPIO_Port, SD_CS_Pin, GPIO_PIN_RESET);
 	}
-	HAL_GPIO_WritePin(SD_CS_GPIO_Port, SD_CS_Pin, GPIO_PIN_RESET);
 }
 
 

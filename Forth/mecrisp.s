@@ -66,8 +66,8 @@
 .equ	CDC_TERMINAL, 		2
 .equ	CRS_TERMINAL,		3
 
-//.equ	DEFAULT_TERMINAL, CDC_TERMINAL
-.equ	DEFAULT_TERMINAL, UART_TERMINAL
+.equ	DEFAULT_TERMINAL, CDC_TERMINAL
+//.equ	DEFAULT_TERMINAL, UART_TERMINAL
 
 .equ	TERMINAL_AUTO,		1
 
@@ -513,14 +513,14 @@ Forth:
 	ldr		r0, =2
 	str		r0, [r1]
 
-	bl		BSP_getSwitch1
+	bl		BSP_getSwitch3
 	cmp		r0, #0
 	beq		1f
-	bl		crs_terminal		// button1 (back) pressed on reset -> crs terminal
-1:	bl		BSP_getSwitch2
+	bl		crs_terminal		// button3 (UP) pressed on reset -> crs terminal
+1:	bl		BSP_getSwitch4
 	cmp		r0, #0
 	beq		2f
-	bl		uart_terminal		// button2 (OK) pressed on reset -> uart terminal
+	bl		uart_terminal		// button4 (DOWN) pressed on reset -> uart terminal
 2:
 	welcome " by Matthias Koch. "
 
@@ -546,7 +546,7 @@ Forth:
 	bl		fs_strlen
 	bl		stype
 
-	bl		BSP_getSwitch3		// button1 pressed on reset -> no include
+	bl		BSP_getSwitch6		// button6 (RIGHT) pressed on reset -> no include
 	cmp		r0, #0
 	bne		3f
     // include 0:/etc/rc.local
