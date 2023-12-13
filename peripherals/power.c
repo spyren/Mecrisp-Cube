@@ -72,6 +72,10 @@ extern RTC_HandleTypeDef hrtc;
 // Private Variables
 // *****************
 
+// Global Variables
+// ****************
+uint8_t GAUGE_UpdateBatState = TRUE;
+
 
 // Public Functions
 // ****************
@@ -337,6 +341,18 @@ void CHARGER_setRegister(uint8_t reg, uint8_t data) {
 	IIC_putMessage(buf, 2, CHARGER_I2C_ADR);
 }
 
+/**
+ *  @brief
+ *      Update the charge LED
+ *
+ *  @param[in]
+ *      state  TRUE update LED
+ *  @return
+ *      none
+ */
+void GAUGE_updateLED(uint8_t state) {
+	GAUGE_UpdateBatState = state;
+}
 
 // Private Functions
 // *****************

@@ -911,6 +911,18 @@ set_lipocharger:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "LIPOled"
+set_lipoled:
+	@ ( flag -- ) Update the charge LED
+// void GAUGE_updateLED(uint8_t state)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		GAUGE_updateLED
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "vibro@"
 get_vibro:
 	@ (  -- flag ) Get vibro state
