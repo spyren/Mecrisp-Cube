@@ -462,7 +462,7 @@ epd_emit:
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "epd-emit?"
-sepd_qemit:
+epd_qemit:
         @ ( -- ? ) Ready to send a character ?
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -565,6 +565,126 @@ epdfont:
 
 .endif // EPD == 1
 
+
+// LCD words only if needed
+.if LCD == 1
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcd-emit"
+lcd_emit:
+        @ ( c -- ) Emit one character
+// void LCD_sendChar(char ch)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		LCD_putc
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcd-emit?"
+lcd_qemit:
+        @ ( -- ? ) Ready to send a character ?
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		LCD_Ready
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdpos!"
+lcd_get_pos:
+        @ ( x y -- ) Set LCD position
+// void LCD_setPos(uint8_t x, uint8_t y)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r1, tos		// y
+	drop
+	movs	r0, tos		// x
+	drop
+	bl		LCD_setPos
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdpos@"
+lcd_set_pos:
+        @ (  -- x y ) Get LCD position
+// void LCD_getPos(uint8_t x, uint8_t y)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		LCD_getPosX
+	movs	tos, r0		// x
+	pushdatos
+	bl		LCD_getPosY
+	movs	tos, r0		// y
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdcmd"
+lcdcmd:
+        @ ( c-addr -- ) send command to LCD
+// void LCD_sendCommand(static uint8_t *command, size)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// command
+	drop
+	bl		LCD_sendCommand
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdclr"
+lcdclr:
+        @ ( --  ) Clears the LCD display
+// void LCD_clear()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		LCD_clear
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdfont"
+lcdfont:
+        @ ( u -- ) select font for the LCD
+// void LCD_setFont(LCD_FontT font);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// font
+	drop
+	bl		LCD_setFont
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdcolumn!"
+        @ ( u -- ) Write a column (8 pixels) to the current position
+// void LCD_writeColumn(uint8_t column)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// column
+	drop
+	bl		LCD_writeColumn
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "lcdcolumn@"
+        @ (  -- u ) Read a column (8 pixels) from the current position
+// int LCD_readColumn(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		LCD_readColumn
+	movs	tos, r0		// column
+	pop		{pc}
+
+.endif // LCD == 1
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "button"
