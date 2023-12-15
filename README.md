@@ -1,68 +1,179 @@
 # Mecrisp-Cube
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
-The STM32WB Nucleo Board is working out of the box yet. See also [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube).
+
+Forth is an interactive and extensible language, with built-in lexical analysis (tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
+
+Forth is perfect for embedded systems where some sort of user interactivity like CLI and extensibility (at runtime) are needed. 
+
+C & Forth in the 21st Century. C and Forth are both about 50 years old. To combine the strength of this two worlds results in a powerful system that outperforms other much newer systems like Python. Good design withstands the test of time.
+
+The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. There are three flavors available:
+
+  * MecrispCubeWB (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](tree/firefly), [Katydid](tree/katydid), [Discovery](tree/WB5M) and the [STM32WB Feather](tree/WBfeater) Dev Board. In work [STM32WB Flipper Zero](tree/Flipper)
+  * [F405](tree/F405) for Adafruit's Feather STM32F405.
+  * [H74x](tree/H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+
+
+## Intro for the Flipper Zero
+
+Instant real-time programming with Forth. 
+The [Flipper Zero](https://flipperzero.one/) is an excellent portable tool for interaction with access control systems. 
+But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make it also an ideal tool for programming on the go.
+
+## Features
+
+### Standard Mecrisp-Cube features
+  * 63 !KiB RAM dictionary 
+  * 128 !KiB Flash Forth dictionary 
+  * 50 !KiB for C code 
+  * Serial console UART / USB CDC / BLE
+  * Filesystem (FAT)
+    * Internal Flash drive 0:, 384 !KiB
+    * microSD drive 1: 
+  * Integration in STM32 Cube Ecosystem. 
+    * Create C code from CubeMX for internal peripherals and use it in Forth
+    * Calling C Functions from Forth and vice versa 
+  * RTOS
+    * Forth as CMSIS-RTOS thread.
+    * CMSIS-RTOS API to use FreeRTOS from Forth.
+    * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware, key and emit block the calling thread. 
+  * USB
+    * USB-CDC for serial communication via USB
+    * Redirect console I/O like cdc-emit, cdc-key
+  * BLE 5.0 GAP Peripheral Role (STM32WB)
+    * DIS Device Information Service
+    * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
+    * CRS Cable Replacement Server service (proprietary service from STM, similar to Classic Bluetooth SPP). Redirect console I/O like crs-emit, crs-key. 
+  * Floating-Point Unit
+    * Support for the floating-point unit FPU, single precision for M4F MPUs and double precision for M7 MPUs
+    * CMSIS-DSP 
+
+### Board Support Package BSP
+  * Control (5-button joystick, Back button, Reboot)
+  * LCD display 128x64 pixel
+  * RGB LED
+  * Power (LIPO charger and fuel gauge)
+  * Vibration Motor
+  * GPIO
+
+Not supported yet:
+  * Sub-1 GHz Transceiver
+  * 125kHz RFID
+  * NFC
+  * Infrared Transceiver
+  * iButton
+  * Buzzer/Speaker
+
+For more BSP details see BoardSupportPackageFlipper.
+
+### External Peripherals (e.g. Feather Wings) 
+
+  * OLED Display 128x32, 128x64, I2C
+  * E-Ink FeatherWing 250x122 SPI
+  * NeoPixel
+  * CharlieWing
+  * NeoPixelWing
+  * DotStarWing 
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
-machine (STM32 Nucleo board) for development and testing purposes. 
+machine (Flipper Zero) for development and testing purposes. 
 
 ### Prerequisites
 
-* One of these boards
-  * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) - 
-    The highly affordable STM32 Nucleo boards allow anyone to try out 
-    new ideas and to quickly create prototypes with any STM32 MCU. 
-    The STM32 Nucleo boards integrate an ST-Link debugger/programmer, 
-    so there is no need for a separate probe.
-  * [STM32WB5MM-DK Discovery Kit](https://www.st.com/en/evaluation-tools/stm32wb5mm-dk.html) - 
-    complete demonstration and development platform for the STMicroelectronics STM32W5MMG module.
-  * [STM32WB Feather Development Board](https://www.reclaimerlabs.com/stm32wb-feather) - 
-    The STM32WB Feather Board is a development board based on the Adafruit Feather standard with the STM32WB Bluetooth SoC at its core. This board specifically uses the STM32WBCGU6. It includes all the basic functionality you need to get up and running quickly. 
-  * [STM32F405 Adafruit Feather Express Board](https://www.adafruit.com/product/4382) - 
-    ST takes flight in this Feather board. The new STM32F405 Feather that we (Adafruit) designed runs CircuitPython (and _Forth_) at a blistering 168MHz – our fastest CircuitPython board ever! We put a STEMMA QT / Qwiic port on the end, so you can really easily plug and play I2C sensors.
-* Terminal emulator application for PC, e.g.: 
-  * [PuTTY](http://www.putty.org/) - Windows and Linux
-  * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
-  * [Realterm](http://realterm.sourceforge.net/) - Windows
-  * minicom, microcom, screen - Linux
-  * Use the built in Eclipse console (but no LF)
- 
-Flash the Mecrisp-Cube [binary](Release/MecrispCube.bin) to the Nucleo Board.
+  * [Flipper Zero](https://flipperzero.one/) with STM32WB55 MCU (Cortex ARM M4) runs at a 32 MHz (the Bluetooth stack runs on a Cortex ARM M0+ core). 
+  * Optional: [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) or you can build your own e.g. with a [STLINK-V3MINI](https://www.st.com/en/development-tools/stlink-v3mini.html) and some cables, see BoardSupportPackageFlipper#JTAG_SWD_Adaptor
+  * Terminal emulator application for PC, e.g.: 
+    * [PuTTY](http://www.putty.org/) - Windows and Linux
+    * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
+    * [Realterm](http://realterm.sourceforge.net/) - Windows
+    * minicom, microcom, screen - Linux
+    * Use the built in Eclipse console (but no LF)
+    * for details see [TerminalIO]
+  * STM32CubeProgrammer or [qFlipper](https://docs.flipper.net/qflipper)
 
-1. Connect the Nucleo Board USB ST-LINK to the PC
-2. Copy [binary](Release/MecrispCube.bin) (`MecrispCube.bin`) to the USB mass 
-   storage NODE_WB55RG. Or even better the [binary with tools and drive](sdcard/boot/MecrispCubeFS.bin).
+### Flash the Mecrisp-Cube Firmware
 
-For other boards see https://github.com/spyren/Mecrisp-Cube/branches
+Flash the Mecrisp-Cube [binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipper/Release/MecrispCubeFlipper.bin) ```MecrispCubeFlipper.bin``` or better the [fs-util-binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipper/sdcard/boot/MecrispCubeFlipperFS.bin) (```MecrispCubeFlipperFS.bin```) to the Flipper Zero. Using the built-in USB DFU bootloader, see also [firmware recovery](https://docs.flipper.net/basics/firmware-update/firmware-recovery).
 
-Start the terminal emulator application on the PC. 
-Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`) 
-and set the speed to 115200 baud. 
+   1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
+   1. Connect the Flipper Zero USB to the PC
+   1. Program the binary (```MecrispCubeFlipper.bin``` or ```MecrispCubeFlipperFS.bin```) with 
+      A. the STMCubeProgrammer (select USB Device), for Linux %BR%
+         ```sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer```
+      A. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
+   1. Reboot your device by pressing and holding the left and back buttons 
+
+
+### Use the Terminal (USB CDC)
+
+Connect the Flipper Zero USB to the PC. Start the terminal emulator application on the PC. 
+Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
 I set the putty terminal configuration to 
 
   * Implicit CR in every LF 
-  * Local echo: Auto
-  * Local line editing: Auto
+  * Local echo: off
+  * Local line editing: off
+  * Keyboard Backspace: Control-H
+  * Keyboard Function: Keys VT100
+  * Remote character set: CP850
   
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
-Mecrisp-Cube 1.4.4 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.11.0, USB-CDC, BLE Stack 5.0 (C) 2021 STMicroelectronics
+Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 2023 peter@spyr.ch
+  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
-  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
-
-
 include 0:/etc/rc.local
+```
+Use the interpreter:
+```
 23 5 / .[CR] 4  ok.
 : hello ." World" ;[CR]  ok.
 hello[CR] World ok.
 ```
+Type in your first Forth program:
+```
+: hello ." World" ;[CR]  ok.
+hello[CR] World ok.
+```
 
-### Installing
+### Switch On/Off, Buttons, LED
+
+  * *Switch Off* press and hold the BACK-Button for 5 s or type in the command =halt=
+  * *Switch On* press the BACK-Button 
+  * *Reset* press and hold the BACK- and LEFT-Button
+
+
+#### Special Functions on Startup 
+USB-CDC is the default console.
+  * *Button UP* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
+  * *Button DOWN* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
+  * *Button RIGHT* do not include `0:/etc/rc.local`
+
+#### RGB LED as Status Indicator
+The RGB LED  displays the status
+  * *dimmed Green* LIPO fully charged
+  * *dimmed Red* LIPO charging
+  * *dimmed Blue* BLE connected
+  * *flashing Red* "disk" (serial flash or SD) write operation
+  * *flashing Yellow* "disk" (serial flash or SD) read operation
+
+
+### Flash the original Flipper Firmware
+
+If you want to go back to the original firmware, do the following
+
+   1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
+   1. Connect the Flipper Zero USB to the PC
+   1. Flash the Flipper firmware with [qFlipper](https://docs.flipper.net/qflipper) _REPAIR_
+   1. Reboot your device by pressing and holding the left and back buttons 
+
+
+## Installing Development Environment 
 
 A step by step series of examples that tell you how to get a development env running
 
@@ -75,7 +186,7 @@ you do not want to use the STM32CubeIDE.
 Get the sources from github:
 
 ```
-psi@homer:~> git clone https://github.com/spyren/Mecrisp-Cube
+psi@homer:~> git clone --branch Flipper https://github.com/spyren/Mecrisp-Cube
 Klone nach 'Mecrisp-Cube' ...
 remote: Enumerating objects: 106, done.
 remote: Counting objects: 100% (106/106), done.
