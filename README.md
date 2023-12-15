@@ -105,9 +105,9 @@ Flash the Mecrisp-Cube [binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipp
    1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
    1. Connect the Flipper Zero USB to the PC
    1. Program the binary (`MecrispCubeFlipper.bin` or `MecrispCubeFlipperFS.bin`) with 
-      A. the STMCubeProgrammer (select USB Device), for Linux %BR%
+      1. the STMCubeProgrammer (select USB Device), for Linux 
          `sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer`
-      A. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
+      1. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
    1. Reboot your device by pressing and holding the left and back buttons 
 
 

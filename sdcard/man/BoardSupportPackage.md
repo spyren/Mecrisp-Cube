@@ -80,7 +80,7 @@ cancel the operation.
 
 Single port pin variant (no side effects on port pins D8 to D15):
 
-
+```forth
     : left ( -- ) 
       7 0 do
         1 i dpin! 
@@ -88,7 +88,7 @@ Single port pin variant (no side effects on port pins D8 to D15):
         0 i dpin!
       loop 
     ;
-
+```
 
     : right ( -- )
       8 1 do  
