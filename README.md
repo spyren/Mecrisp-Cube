@@ -10,9 +10,9 @@ C & Forth in the 21st Century. C and Forth are both about 50 years old. To combi
 
 The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. There are three flavors available:
 
-  * MecrispCubeWB (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](../tree/firefly), [Katydid](../tree/katydid), [Discovery](../tree/WB5M) and the [STM32WB Feather](../tree/WBfeater) Dev Board. In work [STM32WB Flipper Zero](../tree/Flipper)
-  * [F405](../tree/F405) for Adafruit's Feather STM32F405.
-  * [H74x](../tree/H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+  * MecrispCubeWB (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](../firefly), [Katydid](../katydid), [Discovery](../WB5M) and the [STM32WB Feather](../WBfeater) Dev Board. In work [STM32WB Flipper Zero](../Flipper)
+  * [F405](../F405) for Adafruit's Feather STM32F405.
+  * [H74x](../H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
 
 ## Intro for the Flipper Zero
@@ -27,7 +27,7 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
   * 63 !KiB RAM dictionary 
   * 128 !KiB Flash Forth dictionary 
   * 50 !KiB for C code 
-  * Serial console UART / USB CDC / BLE
+  * Serial console UART / USB CDC / BLE [Terminal-IO](sdcard/man/TerminalIO.md)
   * [Filesystem](sdcard/man/FileSystem.md) (FAT)
     * Internal Flash drive 0:, 384 !KiB
     * microSD drive 1: 
@@ -50,6 +50,8 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
     * CMSIS-DSP 
   * [vi](sdcard/man/EditorVi.md) editor
   * Real Time Clock [RTC](sdcard/man/RealTimeClock.md)
+  * Watchdog
+  * Assertion and Logging
 
 ### Board Support Package [BSP](sdcard/man/BoardSupportPackage.md)
   * Control (5-button joystick, Back button, Reboot)
@@ -67,7 +69,7 @@ Not supported yet:
   * iButton
   * Buzzer/Speaker
 
-For more BSP details see BoardSupportPackageFlipper.
+For more BSP details see [BoardSupportPackage](sdcard/man/BoardSupportPackage.md).
 
 ### External Peripherals (e.g. Feather Wings) 
 
@@ -98,13 +100,13 @@ machine (Flipper Zero) for development and testing purposes.
 
 ### Flash the Mecrisp-Cube Firmware
 
-Flash the Mecrisp-Cube [binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipper/Release/MecrispCubeFlipper.bin) ```MecrispCubeFlipper.bin``` or better the [fs-util-binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipper/sdcard/boot/MecrispCubeFlipperFS.bin) (```MecrispCubeFlipperFS.bin```) to the Flipper Zero. Using the built-in USB DFU bootloader, see also [firmware recovery](https://docs.flipper.net/basics/firmware-update/firmware-recovery).
+Flash the Mecrisp-Cube [binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipper/Release/MecrispCubeFlipper.bin) `MecrispCubeFlipper.bin` or better the [fs-util-binary](https://github.com/spyren/Mecrisp-Cube/raw/Flipper/sdcard/boot/MecrispCubeFlipperFS.bin) (`MecrispCubeFlipperFS.bin`) to the Flipper Zero. Using the built-in USB DFU bootloader, see also [firmware recovery](https://docs.flipper.net/basics/firmware-update/firmware-recovery).
 
    1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
    1. Connect the Flipper Zero USB to the PC
-   1. Program the binary (```MecrispCubeFlipper.bin``` or ```MecrispCubeFlipperFS.bin```) with 
+   1. Program the binary (`MecrispCubeFlipper.bin` or `MecrispCubeFlipperFS.bin`) with 
       A. the STMCubeProgrammer (select USB Device), for Linux %BR%
-         ```sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer```
+         `sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer`
       A. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
    1. Reboot your device by pressing and holding the left and back buttons 
 
