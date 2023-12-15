@@ -10,9 +10,9 @@ C & Forth in the 21st Century. C and Forth are both about 50 years old. To combi
 
 The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. There are three flavors available:
 
-  * MecrispCubeWB (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](tree/firefly), [Katydid](tree/katydid), [Discovery](tree/WB5M) and the [STM32WB Feather](tree/WBfeater) Dev Board. In work [STM32WB Flipper Zero](tree/Flipper)
-  * [F405](tree/F405) for Adafruit's Feather STM32F405.
-  * [H74x](tree/H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+  * MecrispCubeWB (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](../tree/firefly), [Katydid](../tree/katydid), [Discovery](../tree/WB5M) and the [STM32WB Feather](../tree/WBfeater) Dev Board. In work [STM32WB Flipper Zero](../tree/Flipper)
+  * [F405](../tree/F405) for Adafruit's Feather STM32F405.
+  * [H74x](../tree/H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
 
 ## Intro for the Flipper Zero
@@ -33,7 +33,7 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
     * microSD drive 1: 
   * Integration in STM32 Cube Ecosystem. 
     * Create C code from CubeMX for internal peripherals and use it in Forth
-    * [Calling C Functions](sdcard/man/CallingCFunctions.md) from Forth and vice versa 
+    * [Calling C Functions](sdcard/man/CallingCFunction.md) from Forth and vice versa 
   * [RTOS](sdcard/man/CmsisRtos.md)
     * Forth as CMSIS-RTOS thread.
     * CMSIS-RTOS API to use FreeRTOS from Forth.
