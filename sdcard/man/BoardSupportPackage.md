@@ -54,59 +54,59 @@ program. `dport!` and `dport@` set and get all 16 digital pins (D0 to
 D15) at once. You have to press the *SW1* push button til D0 is set to
 cancel the operation.
 
-    : left ( -- ) 
-      7 0 do  
-        dport@ shl dport!  
-        100 osDelay drop  
-      loop 
-    ;
+```forth
+: left ( -- ) 
+  7 0 do  
+    dport@ shl dport!  
+    100 osDelay drop  
+  loop 
+;
 
-    : right ( -- )
-      7 0 do  
-        dport@ shr dport!
-        100 osDelay drop  
-      loop 
-    ;
+: right ( -- )
+  7 0 do  
+    dport@ shr dport!
+    100 osDelay drop  
+  loop 
+;
 
-    : knightrider ( -- )
-      1 dport! 
-      begin 
-        left right 
-        switch1? \ or key?
-      until 
-      0 dport!
-    ;
+: knightrider ( -- )
+  1 dport! 
+  begin 
+    left right 
+    switch1? \ or key?
+  until 
+  0 dport!
+;
+```
 
 
 Single port pin variant (no side effects on port pins D8 to D15):
 
 ```forth
-    : left ( -- ) 
-      7 0 do
-        1 i dpin! 
-        100 osDelay drop  
-        0 i dpin!
-      loop 
-    ;
+: left ( -- ) 
+  7 0 do
+    1 i dpin! 
+    100 osDelay drop  
+    0 i dpin!
+  loop 
+;
+
+: right ( -- )
+  8 1 do  
+    1 8 i - dpin! 
+    100 osDelay drop  
+    0 8 i - dpin!
+  loop 
+;
+
+: knigthrider ( -- )
+  begin 
+    left right 
+    switch1? 
+  until 
+  0 0 dpin!
+;
 ```
-
-    : right ( -- )
-      8 1 do  
-        1 8 i - dpin! 
-        100 osDelay drop  
-        0 8 i - dpin!
-      loop 
-    ;
-
-
-    : knigthrider ( -- )
-      begin 
-        left right 
-        switch1? 
-      until 
-      0 0 dpin!
-    ;
-
 
 Using the ADC (Analog Input Pins)
 =================================
@@ -115,21 +115,23 @@ Using the ADC (Analog Input Pins)
 the analog pins A0 to A5 (0 .. 5). Here I use the A0 to control the
 delay.
 
-    : left ( -- ) 
-      7 0 do
-        1 i dpin! 
-        0 apin@ 10 / osDelay drop  \ delay depends on A0
-        0 i dpin!
-      loop 
-    ;
+```forth
+: left ( -- ) 
+  7 0 do
+    1 i dpin! 
+    0 apin@ 10 / osDelay drop  \ delay depends on A0
+    0 i dpin!
+  loop 
+;
 
-    : right ( -- )
-      8 1 do  
-        1 8 i - dpin! 
-        0 apin@ 10 / osDelay drop  \ delay depends on A0
-        0 8 i - dpin!
-      loop 
-    ;
+: right ( -- )
+  8 1 do  
+    1 8 i - dpin! 
+    0 apin@ 10 / osDelay drop  \ delay depends on A0
+    0 8 i - dpin!
+  loop 
+;
+```
 
 
 To get an idea how fast the ADC, RTOS, and the Forth program are. The
@@ -153,15 +155,17 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 32). You can set the prescale with the word `pwmprescale` from 32 kHz
 (value 1) down to 0.5 Hz (64000).
 
-    5 3 dmod   \ set D3 to PWM
+```forth
+5 3 dmod   \ set D3 to PWM
 
-    : pwm ( -- )
-      begin 
-        0 apin@  4 /  3 pwmpin!
-        10 osDelay drop
-        switch1? 
-      until 
-    ;
+: pwm ( -- )
+  begin 
+    0 apin@  4 /  3 pwmpin!
+    10 osDelay drop
+    switch1? 
+  until 
+;
+```
 
 
 \-- [PeterSchmid - 2020-04-11]
