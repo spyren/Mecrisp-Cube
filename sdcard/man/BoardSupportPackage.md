@@ -90,7 +90,9 @@ Single port pin variant (no side effects on port pins D8 to D15):
     0 i dpin!
   loop 
 ;
+```
 
+```forth
 : right ( -- )
   8 1 do  
     1 8 i - dpin! 
@@ -98,7 +100,9 @@ Single port pin variant (no side effects on port pins D8 to D15):
     0 8 i - dpin!
   loop 
 ;
+```
 
+```forth
 : knigthrider ( -- )
   begin 
     left right 
