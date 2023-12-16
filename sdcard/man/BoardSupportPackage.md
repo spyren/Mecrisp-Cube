@@ -34,16 +34,16 @@ button       ( -- c )         wait for and fetch the pressed button (similar to 
 button?      ( -- ? )         Is there a button press?
 
 
-dport!       ( n -- )         sets the digital output port (D0=bit0 .. D15=bit15).
-dport@       ( -- n )         gets the digital input/output port (D0=bit0 .. D15=bit15).
-dpin!        ( n a -- )       sets the digital output port pin (D0=0 .. D15=15)
-dpin@        ( a -- n )       gets the digital input/output port pin 
-dmod         ( u a -- )       sets the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM 
+dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
+dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
+dpin!        ( n a -- )       set the digital output port pin (D0=0 .. D15=15)
+dpin@        ( a -- n )       get the digital input/output port pin 
+dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM 
 
-pwmpin!      ( u a -- )       sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
-pwmprescale  ( u --  )        Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
+pwmpin!      ( u a -- )       set the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
+pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D3=3, D6=6, D9=9). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-apin@        ( a -- u )       gets the analog input port pin (A0 .. A5). Returns a 12 bit value (0..4095)
+apin@        ( a -- u )       get the analog input port pin (A0 .. A5). Returns a 12 bit value (0..4095)
 
 EXTImod      ( u a -- )       set for pin a (D2, D4, D7, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
 EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D2, D4, D7, D10), timeout u in [ms]
@@ -101,16 +101,16 @@ vibro!       ( ? -- )         set vibro status, 0 switch off
 
 peripheral!  ( ? -- )         set peripheral supply status, 0 switch off
 
-lcd-emit     ( ? -- )         Emits a character (writes a character to the LCD display)
+lcd-emit     ( ? -- )         emit a character (writes a character to the LCD display)
 lcd-emit?    ( -- ? )         LCD ready to get a character (I2C not busy)
-lcdpos!      ( x y -- )       Set LCD cursor position, 
+lcdpos!      ( x y -- )       set LCD cursor position, 
                               x (column) horizontal position, max. 127  
                               y (row) vertical position (a line consists of 8 pixels), max. 7
-lcdpos@      (  -- x y )      Get the current LCD cursor position
-lcdclr       (  --  )         Clears the LCD display, sets the cursor to 0, 0
-lcdfont      ( u --  )        Select the font, u: 0 6x8, 1 8x8, 2 8X16 , 3 12X16
-lcdcolumn!   ( u -- )         Write a column (8 pixels) to the current position. Increment position. Bit 0 on top
-lcdcolumn@   ( -- u )         Read a column (8 pixels) from the current position
+lcdpos@      (  -- x y )      get the current LCD cursor position
+lcdclr       (  --  )         clear the LCD display, sets the cursor to 0, 0
+lcdfont      ( u --  )        select the font, u: 0 6x8, 1 8x8, 2 8X16 , 3 12X16
+lcdcolumn!   ( u -- )         write a column (8 pixels) to the current position. Increment position. Bit 0 on top
+lcdcolumn@   ( -- u )         read a column (8 pixels) from the current position
 ```
 
 
