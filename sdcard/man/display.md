@@ -8,7 +8,7 @@ The little displays use serial interfaces like I2C and SPI. Usually the display 
 Therefore you need a buffer in the MCU RAM.
 
 There are other displays with different technologies:
-  * LCD Liquid Crystall Display
+  * LCD Liquid Crystall Display (e.g. Flipper Zero)
   * EPD Electronic Paper Display
   * MIP
 
@@ -42,6 +42,8 @@ oledcolumn!  ( u -- )           Write a column (8 pixels) to the current positio
 oledcolumn@  ( -- u )           Read a column (8 pixels) from the current position
 
 >oled        ( -- a1 a2 )       redirect to oled *)
+>epd         ( -- a1 a2 )       redirect to epd *)
+>lcd         ( -- a1 a2 )       redirect to lcd *)
 >term        ( a1 a2 -- )       terminate redirection *)
 
 *) part of redirection.fs
