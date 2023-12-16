@@ -18,16 +18,15 @@ How to Create a Thread
 ======================
 
 A very simple thread could be like this one, a boring blinker:
-
-    : blink-thread  ( -- )
-      begin 
-        led1@ 0= led1!   \ toggle blue LED
-        200 osDelay drop  \ wait 200 ms
-        switch1? 
-      until 
-      0 led1! 
-    ;
-
+```forth
+: blink-thread  ( -- )
+  begin 
+    led1@ 0= led1!   \ toggle blue LED
+    200 osDelay drop  \ wait 200 ms
+  switch1? until 
+  0 led1! 
+;
+```
 If you type the word `blink-thread`, the blue LED blinks, after push the
 button SW1, the blinking stops an the `ok.` apears. But if you try to
 start the thread with
@@ -44,17 +43,17 @@ concurrent to the Forth interpreter and use the same data stack. This
 cannot work. Each thread must have its own data stack, the thread
 function can get one with `osNewDataStack` (see below for the assembler
 source).
-
-    : blink-thread  ( -- )
-      osNewDataStack
-      begin 
-        led1@ 0= led1!   \ toggle blue LED
-        200 osDelay drop  
-        switch1? 
-      until 
-      0 led1! 
-      osThreadExit
-    ;
+```forth
+: blink-thread  ( -- )
+  osNewDataStack
+  begin 
+    led1@ 0= led1!   \ toggle blue LED
+    200 osDelay drop  
+  switch1? until 
+  0 led1! 
+  osThreadExit
+;
+```
 
 `osThreadExit` is needed to exit the thread, otherwise the Forth system
 hangs after leaving the thread. These threads are very similar to the
