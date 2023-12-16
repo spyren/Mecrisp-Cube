@@ -245,7 +245,7 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 
    * [GPIO & modules](https://docs.flipper.net/gpio-and-modules)
 
-%IMAGE{"%ATTACHURLPATH%/flipper-gpio.jpg" type="thumb" caption="Arduino left"}%
+![Pinout Flipper GPIO](img/flipper-gpio.jpg)
 
 | Pin    | Label   | STM32WB55 pin    | Arduino   | Alternate Functions         |
 |--------|---------|------------------|-----------|-----------------------------|
