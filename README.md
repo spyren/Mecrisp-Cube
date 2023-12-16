@@ -262,11 +262,14 @@ Project -> Generate Code
 ```
 
 Restore changed source files
-
 ```
 $ git status
 {list of changed files}
 $ git restore {files to restore} 
+```
+alternative
+```
+$ git stash
 ```
 
 Select the Build Configuration (Debug if you want to debug the project) and Build the project:
