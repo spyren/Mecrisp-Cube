@@ -27,12 +27,12 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
 ## Features
 
 ### Standard Mecrisp-Cube features
-  * 63 !KiB RAM dictionary 
-  * 128 !KiB Flash Forth dictionary 
-  * 50 !KiB for C code 
+  * 63 KiB RAM dictionary 
+  * 128 KiB Flash Forth dictionary 
+  * 50 KiB for C code 
   * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
   * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
-    * Internal Flash drive 0:, 384 !KiB
+    * Internal Flash drive 0:, 384 KiB
     * microSD drive 1: 
   * Integration in STM32 Cube Ecosystem. 
     * Create C code from CubeMX for internal peripherals and use it in Forth
