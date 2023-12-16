@@ -239,5 +239,31 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 ;
 ```
 
+## GPIO Ports
+
+   * [[https://docs.flipper.net/gpio-and-modules][GPIO & modules]]
+
+%IMAGE{"%ATTACHURLPATH%/flipper-gpio.jpg" type="thumb" caption="Arduino left"}%
+
+| *Pin * | *Label* | *STM32WB55 pin*  | *Arduino* | *Alternate Functions*       |
+| 1      | +5V     |                  |           |                             |
+| 2      | A7      | PA7              | D11       | SPI1_MOSI, TIM1_CH1 (PWM)   |  
+| 3      | A6      | PA6              | D12       | SPI1_MISO                   |
+| 4      | A4      | PA4              | D10       | SPI1_CS                     |
+| 5      | B3      | PB3              | D13       | SPI1_CLK, SWO               |
+| 6      | B2      | PB2              | D9        | TIM2_CH2 (output capture)   |
+| 7      | C3      | PC3              | A2(D18)   |                             |
+| 8      | GND     |                  |           |                             |
+| 9      | 3V3     |                  |           |                             |
+| 10     | SWC     | PA14             | D3        | SWCLK                       |
+| 11     | GND     |                  |           |                             |
+| 12     | SIO     | PA13             | D2        | SWDIO                       |
+| 13     | TX      | PB6              | D1        |                             |
+| 14     | RX      | PB7              | D0        |                             |
+| 15     | C1      | PC1              | A1 (D17)  | I2C3_SDA                    |
+| 16     | C0      | PC0              | A0 (D16)  | I2C3_SCL                    |
+| 17     | 1W      | PB14             | D4        | TIM1_CH2 (PWM)              |
+| 18     | GND     |                  |           |                             |
+
 
 \-- [PeterSchmid - 2020-04-11]
