@@ -46,13 +46,14 @@ Mecrisp-Cube 1.4.4 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter
 
 Do not activate the watchdog in debugging mode.
 
+You can use this in `/etc/rc.local` to show how many times the watchdog has bitten:
 <pre>
 watchdog? [IF] .( Watchdog has bitten at ) watchdog@ hex. .( , # bites: ) watchdog# . cr [THEN]
 </pre>
 
 ## Implementation
 
-For !STM32WB55:
+For STM32WB55:
 <pre>
 WWDG clock (Hz) = PCLK1 / (4096 * Prescaler)
 
@@ -74,4 +75,4 @@ For implementation details see:
    * [watchdog.h](/peripherals/watchdog.h)
    * [wwdg.c](/Core/Src/wwdg.c)
    * [clock.h](/peripherals/clock.h)
-   * 
+
