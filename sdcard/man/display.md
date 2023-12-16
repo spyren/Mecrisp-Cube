@@ -2,6 +2,15 @@
 
 I really like the neat little OLED displays. They are crisp and draw only some miliamps. 
 Cheap OLED display have a resolution 128x32 that's enough for about 4 lines and 20 characters.
+The maximum resolution seems to be at about 128x64.
+
+The little displays use serial interfaces like I2C and SPI. Usually the display RAM is write only.
+Therefore you need a buffer in the MCU RAM.
+
+There are other displays with different technologies:
+  * LCD Liquid Crystall Display
+  * EPD Electronic Paper Display
+  * MIP
 
 Driver [oled.c](/peripherals/oled.c), fonts from https://www.mikrocontroller.net/topic/54860.
 
@@ -10,8 +19,8 @@ Driver [oled.c](/peripherals/oled.c), fonts from https://www.mikrocontroller.net
 # OLED Words
 
 `oled-emit` works like the standard word `emit`. It blocks the calling thread, 
-as long as the character is not written to the OLED display (less than 300 us $
-for a 6x8 character and 400 kHz !I2C). Horizontal (x) position is in pixel (0 to 127), 
+as long as the character is not written to the OLED display (less than 300 us 
+for a 6x8 character and 400 kHz I2C). Horizontal (x) position is in pixel (0 to 127), 
 vertical position (y) is in lines, a line consists of 8 pixels. 0, 0 is upper 
 left corner. Larger fonts takes more than one line.
 
