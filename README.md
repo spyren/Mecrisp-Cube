@@ -103,11 +103,11 @@ machine (Flipper Zero) for development and testing purposes.
 
 ### Flash the Mecrisp-Cube Firmware
 
-Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFlipper.bin) `MecrispCubeFlipper.bin` or better the [/sdcard/boot/MecrispCubeFlipperFS.bin) (`MecrispCubeFlipperFS.bin`) to the Flipper Zero. Using the built-in USB DFU bootloader, see also [firmware recovery](https://docs.flipper.net/basics/firmware-update/firmware-recovery).
+Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFlipper.bin) `MecrispCubeFlipper.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFlipperFS.bin) `MecrispCubeFlipperFS.bin` to the Flipper Zero. Using the built-in USB DFU bootloader, see also [firmware recovery](https://docs.flipper.net/basics/firmware-update/firmware-recovery).
 
    1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
    1. Connect the Flipper Zero USB to the PC
-   1. Program the binary (`MecrispCubeFlipper.bin` or `MecrispCubeFlipperFS.bin`) with 
+   1. Program the binary (`MecrispCubeFlipper.bin` or better `MecrispCubeFlipperFS.bin`) with 
       1. the STMCubeProgrammer (select USB Device), for Linux 
          `sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer`
       1. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
