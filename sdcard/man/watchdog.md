@@ -46,14 +46,14 @@ Mecrisp-Cube 1.4.4 for STM32WB55, 63/128 KiB RAM/FLASH dictionary (C) 2021 peter
 
 Do not activate the watchdog in debugging mode.
 
-<verbatim>
+<pre>
 watchdog? [IF] .( Watchdog has bitten at ) watchdog@ hex. .( , # bites: ) watchdog# . cr [THEN]
-</verbatim>
+</pre>
 
 ## Implementation
 
 For !STM32WB55:
-<verbatim>
+<pre>
 WWDG clock (Hz) = PCLK1 / (4096 * Prescaler)
 
 PCLK1 is 32 MHz, Prescaler is 64, 
@@ -63,7 +63,7 @@ WWDG timeout (mS) = 1000 * (T[5;0] + 1) / WWDG clock (Hz)
 
 timeout = 1000 * 64 / 122 = 524 ms
 window  = 1000 * 48 / 122 = 393 ms
-</verbatim>
+</pre>
 
 I choose 450 ms period to feed the watchdog.
 
