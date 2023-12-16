@@ -16,14 +16,14 @@ written to the log.
 
 ## How to use
 
-<verbatim>
+<pre>
 fatalassert  ( ? n u -- )     abort if flag is false, log n and u after restart       
 assert       ( ? n u -- )     abort if flag is false and assertion is activated, log n and u after restart
 assert?      ( -- ? )         Was there an assert?
 assert#      ( -- u )         How many asserts occurred since cold startup?
 assert@      ( -- u1 u2 )     Assert number u1 and parameter u2 e.g. address where the assert occurred
 .assert      ( u -- )         Print assert message
-</verbatim>
+</pre>
 
 If logging is activated (`CFG_LOG_MSG` defined) the logs are written to
 `0:/var/log/messages` (not implemented yet)
@@ -32,14 +32,14 @@ A cold restart is a CPU reset with RTC domain reset (power cycle, Power On Reset
 A warm restart is a CPU reset without RTC domain reset. 
 
 You can add following line to the `/etc/rc.local`
-<verbatim>
+<pre>
 assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert [THEN]
-</verbatim>
+</pre>
 
 After ^C following message will appear after the greeting:
-<verbatim>
+<pre>
 3 Assertations since cold startup, last one: ASSERT_CDC_SIGINT
-</verbatim>
+</pre>
 
 
 ## Implementation
@@ -67,14 +67,14 @@ https://en.wikipedia.org/wiki/Assertion_(software_development)
 
 ## Hardfaults
 
-<verbatim>
+<pre>
   /* activate divide by zero trap (usage fault) */
   SCB->CCR |= SCB_CCR_DIV_0_TRP_Msk;
   /* enable Usage-/Bus-/MPU Fault */
   SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk  
              |  SCB_SHCSR_BUSFAULTENA_Msk 
              |  SCB_SHCSR_MEMFAULTENA_Msk; 
-</verbatim>
+</pre>
 
 
 https://interrupt.memfault.com/blog/cortex-m-fault-debug
