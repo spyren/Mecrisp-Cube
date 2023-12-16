@@ -1,3 +1,5 @@
+![](img/flipper-header.jpg)
+
 Board Support Package
 =====================
 
