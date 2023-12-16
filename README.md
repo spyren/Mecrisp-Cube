@@ -142,7 +142,7 @@ This looks like this on your terminal:
 ```
 23 5 / .[CR] 4  ok.
 ```
-The `ok.` is the Forth prompt and apears at the end of the line (Forth does it differently). If you don't like it, [change it](sdcard/man/FileSystem.md#shell-prompt).
+The `ok.` is the Forth prompt and apears at the end of the line (Forth does it differently, like most things ;-). If you don't like it, [change it](sdcard/man/FileSystem.md#shell-prompt).
 Type in your first Forth program (create a word in the RAM dictionray):
 ```
 : hello ." World" ;
