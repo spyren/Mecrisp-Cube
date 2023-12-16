@@ -299,10 +299,10 @@ files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-fil
 I propose `.fs` extension for Forth source files the same as GForth
 does. But anyway you can use what you want (`.f`, `.4th`, `.fth`, etc).
 
-    include   ( any "name" -- any )      Interprets the content of the file &lt;name&gt;. 
+    include   ( any "name" -- any )      Interprets the content of the file <name>. 
     included  ( any c-addr u -- any )    Interprets the content of the file.
 
-    coredump  ( "name" -- )              Dumps the flash memory (core) into the file &lt;name&gt;.
+    coredump  ( "name" -- )              Dumps the flash memory (core) into the file <name>.
 
 
 Filesystem API
