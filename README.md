@@ -1,4 +1,4 @@
-![](sdcard/man/img/flipper-header.jpg)
+![](sdcard/man/img/flipper-header-logo.jpg)
 
 # Mecrisp-Cube
 
