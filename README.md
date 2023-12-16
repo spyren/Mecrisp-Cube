@@ -136,7 +136,7 @@ include 0:/etc/rc.local
 ```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
 ```
-23 5 /
+23 5 / .
 ```
 This looks like this on your terminal:
 ```
@@ -354,5 +354,9 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 * https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
 * https://forth-ev.de/ Forth-Gesellschaft e.V.
 * https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
+
+* [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/)
+* [Leo Brodie, Thinking Forth](https://www.forth.com/wp-content/uploads/2018/11/thinking-forth-color.pdf)
+  
 
 
