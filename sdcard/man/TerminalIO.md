@@ -46,9 +46,9 @@ Bluetooth LE Cable Replacement Service.
     hook-key
     hook-emit
 
-    uart         ( -- )             redirect console to serial interface (UART)
-    cdc          ( -- )             redirect console to USB-CDC
-    crs          ( -- )             redirect console to BLE CRS
+    uart         ( -- )         redirect console to serial interface (UART)
+    cdc          ( -- )         redirect console to USB-CDC
+    crs          ( -- )         redirect console to BLE CRS
 
     : ascii ( -- ) 
       127 32 do 
@@ -140,8 +140,7 @@ This Progressive Web App works in the Chrome browser on Linux, OSX, and
 Windows operating systems. It also works on Android devices, you can
 download the App and use it offline.
 
-[Serial Bluetooth
-Terminal](https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal)
+[Serial Bluetooth Terminal](https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal)
 works great. You have to configure the the STM CRS to Custom, choose the
 default UUIDs (Service `0000fe60-cc7a-482a-984a-7f2ed5b3e58f`, Read
 Characteristic `0000fe62-8e22-4541-9d4c-21edae82ed19`, Write
