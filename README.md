@@ -63,7 +63,7 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
 
 Not supported yet:
   * Sub-1 GHz Transceiver
-  * 125kHz RFID
+  * 125 kHz RFID
   * NFC
   * Infrared Transceiver
   * iButton
