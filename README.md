@@ -123,7 +123,8 @@ I set the putty terminal configuration to
   * Keyboard Backspace: Control-H
   * Keyboard Function: Keys VT100
   * Remote character set: CP850
-  
+
+The greeting screen should apear after startup:
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
@@ -133,7 +134,7 @@ Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 202
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
 include 0:/etc/rc.local
 ```
-Use the interpreter ([reverse polnisch notaion](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
+Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
 ```
 23 5 /
 ```
