@@ -160,8 +160,29 @@ But it is easy to add a word to the Flash dictionray:
 compiletoflash
 : hello ." World" ;
 ```
+The program source is not saved, only the executable machine code is compiled into the flash. 
 
-
+The following part is only for people who are interested how Forth works and have knowledge about 
+the ARM Assembler.
+There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but i is stored 
+as `00` `B5`):
+```
+see hello
+08043558: B500  push { lr }
+0804355A: F7BF  bl  08002BE4  -->  .' World'
+0804355C: FB43
+0804355E: 5705
+08043560: 726F
+08043562: 646C
+08043564: BD00  pop { pc }
+```
+The dictionray entry looks like this (you can see the 'hello' and the string constant 'World'):
+```
+$08043558 10 dump
+08043550 :  00 00 05 68 65 6C 6C 6F   00 B5 BF F7 43 FB 05 57  | ...hello  ....C..W |
+08043560 :  6F 72 6C 64 00 BD 00 00   FF FF FF FF FF FF FF FF  | orld....  ........ |
+```
+The compiled word `hello` needs only 14 bytes in the dictionary.
 
 ### Switch On/Off, Buttons, LED
 
