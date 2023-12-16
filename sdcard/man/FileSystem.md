@@ -285,9 +285,6 @@ Nucleo:
     20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
      ok.
 
-[]{.twiki-macro .DASHBOARD section="box_end"}
-
-[]{.twiki-macro .DASHBOARD section="box_start" width="992" height="250"}
 
 FAT Filesystem
 ==============
@@ -509,9 +506,6 @@ Volume Management and System Configuration Functions/Words
 -   [f_setlabel](http://elm-chan.org/fsw/ff/doc/setlabel.html)- Set
     volume label
 
-[]{.twiki-macro .DASHBOARD section="box_end"} []{.twiki-macro .DASHBOARD
-section="box_start" width="992" height="520"}
-
 UNIX like Shell Commands
 ========================
 
@@ -526,19 +520,21 @@ standard input/ouptut/err redirection.
 Shell Prompt
 ------------
 
-    : init ;
+```forth
+: init ;
 
-    : prompt ( -- ) 
-      begin 
-        tib 256 f_getcwd drop strlen type \ show current working directory
-        ."  > "    \ show ">" for prompt. Could show "OK."
-        query interpret cr 
-      again
-    ;
+: prompt ( -- ) 
+  begin 
+    tib 256 f_getcwd drop strlen type \ show current working directory
+    ."  > "    \ show ">" for prompt. Could show "OK."
+    query interpret cr 
+  again
+;
      
-    : init init ['] prompt hook-quit ! ; \ make new prompt 
+: init init ['] prompt hook-quit ! ; \ make new prompt 
      
-    init quit
+init quit
+```
 
 Forth String to 0-Terminated String and vice versa
 --------------------------------------------------
@@ -641,8 +637,6 @@ wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for ea
 -   ps -\> .threads
 -   kill
 
-[]{.twiki-macro .DASHBOARD section="box_end"} []{.twiki-macro .DASHBOARD
-section="box_start" width="992" height="250"}
 
 C-String Helpers
 ================
