@@ -356,7 +356,7 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 * https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
 
 * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/)
-* [Leo Brodie, Thinking Forth](https://www.forth.com/wp-content/uploads/2018/11/thinking-forth-color.pdf)
+* [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
   
 
 
