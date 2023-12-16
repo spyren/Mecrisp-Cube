@@ -133,17 +133,35 @@ Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 202
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
 include 0:/etc/rc.local
 ```
-Use the interpreter:
+Use the interpreter ([reverse polnisch notaion](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
+```
+23 5 /
+```
+This looks like this on your terminal:
 ```
 23 5 / .[CR] 4  ok.
+```
+Type in your first Forth program (create a word in the RAM dictionray):
+```
+: hello ." World" ;
+```
+and execute the the program
+```
+hello 
+```
+again the terminal output:
+```
 : hello ." World" ;[CR]  ok.
 hello[CR] World ok.
 ```
-Type in your first Forth program:
+The program `hello` ist not persistent, after power cycle or even reset the RAM dictionray is erased. 
+But it is easy to add a word to the Flash dictionray:
 ```
-: hello ." World" ;[CR]  ok.
-hello[CR] World ok.
+compiletoflash
+: hello ." World" ;
 ```
+
+
 
 ### Switch On/Off, Buttons, LED
 
