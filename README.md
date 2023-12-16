@@ -21,7 +21,7 @@ The goal of Mecrisp-Cube is to be a complete Forth programming environment for S
 
 Instant real-time programming with Forth. 
 The [Flipper Zero](https://flipperzero.one/) is an excellent portable tool for interaction with access control systems. 
-But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make it also an ideal tool for programming on the go.
+But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make Flipper Zero also an ideal tool for programming on the go.
 ![](/sdcard/man/img/flipper-stlink-2.jpg)
 
 ## Features
