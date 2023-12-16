@@ -122,7 +122,7 @@ Calculation of two [parallel resistors](https://en.wikipedia.org/wiki/Resistor#S
     2.2n 47k f* fm. 103u  ok.
 
 
-Mecrisp-Cube has the word =f.= defined as an assembler routine in [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s), but the example here is written in Forth. I use a dot for the [decimal separator](https://en.wikipedia.org/wiki/Decimal_separator). 
+Mecrisp-Cube has the word `f.` defined as an assembler routine in [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s), but the example here is written in Forth. I use a dot for the [decimal separator](https://en.wikipedia.org/wiki/Decimal_separator). 
 [Terry Porter](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html) "because those crazy Europeans use a comma instead of a decimal point". Not all europeans are crazy, at least the Swiss are an exception ;-), they use sometimes decimal points. 
 ```forth
 : f. ( r -- )  \ display, with a trailing space, the floating-point number r in fixed-point notation
