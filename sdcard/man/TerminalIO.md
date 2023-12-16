@@ -36,10 +36,10 @@ details see
 If you press button SW1 on reset, the console is redirected to the
 Bluetooth LE Cable Replacement Service.
 
-    emit?        ( -- Flag )    Ready to send a character?
-    key?         ( -- Flag )    Checks if a key is waiting
-    key          ( -- Char )    Waits for and fetches the pressed key
-    emit         ( Char -- )    Emits a character
+    emit?        ( -- ? )       Ready to send a character?
+    key?         ( -- ? )       Checks if a key is waiting
+    key          ( -- c )       Waits for and fetches the pressed key
+    emit         ( c -- )       Emits a character
 
     hook-emit?   ( -- a-addr )  Hooks for redirecting terminal IO on the fly
     hook-key?
