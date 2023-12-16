@@ -58,7 +58,7 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
   * Control (5-button joystick, Back button, Reboot)
-  * LCD display 128x64 pixel
+  * [LCD](/sdcard/man/display.md) display 128x64 pixel
   * RGB LED
   * Power (LIPO charger and fuel gauge)
   * Vibration Motor
