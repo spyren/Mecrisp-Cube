@@ -52,9 +52,9 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
     * Support for the floating-point unit FPU, single precision for M4F MPUs and double precision for M7 MPUs
     * CMSIS-DSP 
   * [vi](sdcard/man/EditorVi.md) editor
-  * Real Time Clock [RTC](sdcard/man/RealTimeClock.md)
-  * Watchdog
-  * Assertion and Logging
+  * Real Time Clock [RTC](/sdcard/man/RealTimeClock.md)
+  * [Watchdog](sdcard/man/watchdog.md)
+  * [Assertion and Logging](/sdcard/man/assert.md)
 
 ### Board Support Package [BSP](sdcard/man/BoardSupportPackage.md)
   * Control (5-button joystick, Back button, Reboot)
