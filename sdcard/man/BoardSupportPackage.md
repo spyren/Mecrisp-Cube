@@ -239,13 +239,16 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 ;
 ```
 
+# Pinouts
+
 ## GPIO Ports
 
-   * [[https://docs.flipper.net/gpio-and-modules][GPIO & modules]]
+   * [GPIO & modules](https://docs.flipper.net/gpio-and-modules)
 
 %IMAGE{"%ATTACHURLPATH%/flipper-gpio.jpg" type="thumb" caption="Arduino left"}%
 
-| *Pin * | *Label* | *STM32WB55 pin*  | *Arduino* | *Alternate Functions*       |
+| Pin    | Label   | STM32WB55 pin    | Arduino   | Alternate Functions         |
+|--------|---------|------------------|-----------|-----------------------------|
 | 1      | +5V     |                  |           |                             |
 | 2      | A7      | PA7              | D11       | SPI1_MOSI, TIM1_CH1 (PWM)   |  
 | 3      | A6      | PA6              | D12       | SPI1_MISO                   |
@@ -264,6 +267,108 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 | 16     | C0      | PC0              | A0 (D16)  | I2C3_SCL                    |
 | 17     | 1W      | PB14             | D4        | TIM1_CH2 (PWM)              |
 | 18     | GND     |                  |           |                             |
+
+
+## JTAG/SWD Adaptor
+
+| JTAG Pin    | JTAG STM 14pin   | Flipper Pin   | STLINK-V3MINI    | Description    |
+|-------------|------------------|---------------|------------------|----------------|
+|             | 1                |               |                  | NC             |
+|             | 2                |               |                  | NC             |
+| 1           | 3                | 9             | 30 (right)       | VDD            |
+| 2           | 4                | 12            | 4  (left)        | SWDIO          |
+| 3           | 5                | 8             | 8  (left)        | GND            |
+| 4           | 6                | 10            | 13 (left)        | SWCLK          |
+| 5           | 7                |               |                  | GND            |
+| 6           | 8                | 5             | 6  (left)        | SWO            |
+| 7           | 9                |               |                  | NC             |
+| 8           | 10               |               |                  | NC             |
+| 9           | 11               | 11            | 5  (left)        | GND_DETECT     |
+| 10          | 12               | -             | 31 (right)       | NRST           |
+|             | 13               | 14            | 15 (left)        | VCP_RX Target  |
+|             | 14               | 13            | 12 (left)        | VCP_TX Target  |
+
+   * [STLINK-V3MINI debugger/programmer](https://www.st.com/resource/en/user_manual/um2502-stlinkv3mods-and-stlinkv3mini-debuggerprogrammer-tiny-probes-for-stm32-microcontrollers-stmicroelectronics.pdf)
+   * [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3)
+
+
+## Push Buttons
+
+| Signal name   | STM32WB55 pin    | Comment                    | Numbering   |
+|---------------|------------------|----------------------------|-------------|
+| BUTTON_BACK   | PC13             | RESET, WKUP2               | 1           |
+| BUTTON_OK     | PH3              | BOOTP                      | 2           |
+| BUTTON_RIGHT  | PB12             |                            | 3           |
+| BUTTON_LEFT   | PB11             | RESET                      | 4           |
+| BUTTON_UP     | PB10             |                            | 5           |
+| BUTTON_DOWN   | PC6              |                            | 6           |
+
+
+## RGB LED, LCD Backlight LED
+
+| Signal name   | STM32WB55 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| IC2_SCL       | PA9              |                            |
+| IC2_SDA       | PA10             |                            |
+
+PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
+
+   * I2C Address write 60h, read 61h.
+   * PWM frequency is either 256 Hz or 558 Hz.
+   * max. 25.5 mA, 100 uA steps
+
+
+## UART VCP ST-LINK
+
+| Signal name   | STM32WB55 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| UART_TX       | PB6              | USART1_TX                  |
+| UART_RX       | PB7              | USART1_RX                  |
+
+
+## SPI LCD Display
+
+[Sitronix ST7567S](https://www.crystalfontz.com/controllers/Sitronix/ST7567/303/) (older devices ST7565R ?)
+
+| Signal name   | STM32W555 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| DISPLAY_RST   | PB0              |                            |
+| DISPLAY_DI    | PB1              |                            |
+| DISPLAY_CS    | PC11             | CS                         |
+| SPI_D_MOSI    | PB15             | SPI2_MOSI                  |
+| SPI_D_SCK     | PD1              | SPI2_SCK                   |
+| LCD_LED       | PC9              |                            | 
+
+
+## microSD Adapter (SD Drive)
+
+| Signal name   | STM32W555 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| SD_CS         | PC12             | Chip Select                |
+| SD_CD         | PC10             | Card Detect                |
+| SPI_D_MOSI    | PB15             | SPI2_MOSI                  |
+| SPI_D_MISO    | PC2              | SPI2_MISO                  |
+| SPI_D_SCK     | PD1              | SPI2_SCK                   |
+
+
+## LIPO Charger, Fuel Gauge
+
+   * [BQ25896RTWR](https://www.ti.com/lit/ds/symlink/bq25896.pdf) Charger, 0x6b (1101011B + R/W)
+   * [BQ27220YZFR](https://www.ti.com/lit/ds/symlink/bq27220.pdf) Fuel gauge, 0x55 (1010101 + R/W),
+
+| Signal name   | STM32WB55 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| IC2_SCL       | PA9              |                            |
+| IC2_SDA       | PA10             |                            |
+| PWR_INT       | -                |                            |
+
+
+## Vibro and Speaker
+
+| Signal name   | STM32WB55 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| SPEAKER       | PB8              | TIM16CH1, TIM1CH2N         |
+| VIBRO         | PA8              |                            |
 
 
 \-- [PeterSchmid - 2020-04-11]
