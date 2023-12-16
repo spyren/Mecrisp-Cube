@@ -107,13 +107,15 @@ How to Use
 ----------
 
 Calculation of two [parallel resistors](https://en.wikipedia.org/wiki/Resistor#Series_and_parallel_resistors):
+```forth
+: f|| ( r1 r2 -- r3) 
+  2dup f* -rot f+ f/ 
+;
+```
 
-    : f|| ( r1 r2 -- r3) 
-      2dup f* -rot f+ f/ 
-    ;
-
-    27k 100k f|| fm.  21.3k  ok.
-
+```
+27k 100k f|| fm.  21.3k  ok.
+```
 
 [RC time constant](https://en.wikipedia.org/wiki/RC_time_constant)
 
@@ -121,30 +123,30 @@ Calculation of two [parallel resistors](https://en.wikipedia.org/wiki/Resistor#S
 
 
 Mecrisp-Cube has the word =f.= defined as an assembler routine in [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s), but the example here is written in Forth. I use a dot for the [decimal separator](https://en.wikipedia.org/wiki/Decimal_separator). 
-[Terry Porter](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html) "because those crazy Europeans use a comma instead of a decimal point". Not all europeans are crazy, at least the Swiss are an exception ;-), they use sometimes decimal points.
-
-    : f. ( r -- )  \ display, with a trailing space, the floating-point number r in fixed-point notation
-      dup  f0< if
-        45 emit 
-        fabs
-      then
-      dup
-      $3F000000 \ .5
-      precision 0 do
-        $41200000 f/ \ 10.0 / 
-      loop
-      f+            \ round
-      f>x
-      <# 
-        0 #s 2drop    \ integer part
-        46 hold<       \ decimal point
-        precision 0 do
-          x#             \ fract digit
-        loop
-        dup
-      #> 
-      type space
-    ; 
+[Terry Porter](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html) "because those crazy Europeans use a comma instead of a decimal point". Not all europeans are crazy, at least the Swiss are an exception ;-), they use sometimes decimal points. 
+```forth
+: f. ( r -- )  \ display, with a trailing space, the floating-point number r in fixed-point notation
+  dup  f0< if
+    45 emit 
+    fabs
+  then
+  dup
+  $3F000000 \ .5
+  precision 0 do
+    $41200000 f/ \ 10.0 / 
+  loop
+  f+            \ round
+  f>x
+  <# 
+    0 #s 2drop    \ integer part
+    46 hold<       \ decimal point
+    precision 0 do
+      x#             \ fract digit
+    loop
+   dup
+  #> 
+  type space
+; 
 
 
 \-- [PeterSchmid - 2022-11-22]
