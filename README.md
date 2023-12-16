@@ -255,7 +255,7 @@ Copy project into workspace
 Browse to Mecrisp-Cube directory
 ```
 
-Generate code from the STM32CubeMX `MecrispCube.ioc` file:
+Generate code from the STM32CubeMX `MecrispCubeFlipper.ioc` file:
 
 ```
 Project -> Generate Code 
