@@ -125,62 +125,56 @@ D15) at once. You have to press the *SW1* push button til D0 is set to
 cancel the operation.
 
 ```forth
-: left ( -- ) 
-  7 0 do  
-    dport@ shl dport!  
-    100 osDelay drop  
-  loop 
+\ Flipper Zero portmap
+create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
+
+: pin ( n -- n )  \ gets the Dx pin number
+  cells port-map + @
 ;
 
-: right ( -- )
-  7 0 do  
-    dport@ shr dport!
-    100 osDelay drop  
-  loop 
+: init-port ( -- )
+  7 0 do
+    3 i pin dmod \ port is output
+  loop
 ;
 
-: knightrider ( -- )
-  1 dport! 
-  begin 
-    left right 
-    switch1? \ or key?
-  until 
-  0 dport!
+: delay ( -- )
+  0 apin@ 10 / osDelay drop  \ delay depends on A0
 ;
-```
 
-
-Single port pin variant (no side effects on port pins D8 to D15):
-
-```forth
 : left ( -- ) 
   7 0 do
-    1 i dpin! 
-    100 osDelay drop  
+    1 i pin dpin! 
+    delay
     0 i dpin!
   loop 
 ;
-```
 
-```forth
 : right ( -- )
   8 1 do  
-    1 8 i - dpin! 
-    100 osDelay drop  
+    1 8 i - pin dpin! 
+    delay
     0 8 i - dpin!
   loop 
 ;
-```
 
-```forth
 : knigthrider ( -- )
+  init-port
   begin 
     left right 
     switch1? 
   until 
   0 0 dpin!
 ;
-```
+
+: knightrider-thread ( -- )
+  osNewDataStack
+  knigthrider
+  osThreadExit
+;
+
+' knightrider-thread 0 0 osThreadNew
+
 
 Using the ADC (Analog Input Pins)
 =================================
