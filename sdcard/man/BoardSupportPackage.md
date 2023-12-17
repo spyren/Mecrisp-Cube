@@ -42,16 +42,11 @@ dpin!        ( n a -- )       set the digital output port pin (D0=0 .. D15=15)
 dpin@        ( a -- n )       get the digital input/output port pin 
 dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM 
 
-pwmpin!      ( u a -- )       set the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
-pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D3=3, D6=6, D9=9). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
-
-apin@        ( a -- u )       get the analog input port pin (A0 .. A5). Returns a 12 bit value (0..4095)
+pwmpin!      ( u a -- )       set the digital output port pin (D4=4, D11=11) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
+pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D4=4, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
 EXTImod      ( u a -- )       set for pin a (D2, D4, D7, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
 EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D2, D4, D7, D10), timeout u in [ms]
-
-pwmpin!      ( u a -- )       set the digital output port pin a (D4=4, D11=11) to a PWM value u (0..1000). Default frequency is 1 kHz, TIMER1
-pwmprescale  ( u --  )        Set the PWM prescale for TIMER1. 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -205,7 +200,7 @@ scale is from 0 (0 % duty cycle) to 1000 (100 % duty cycle), this
 results in a PWM frequency of 1 kHz. If you need higher PWM frequencies,
 decrease the divider and/or the scale.
 
-PWM port pins: D6 (TIM1CH1), D9 (TIM1CH2), D3 (TIM1CH3)
+PWM port pins: D4 (TIM1CH2), D11 (TIM1CH1)
 
 Simple test program to set brightness of a LED on pin D3 with a
 potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
@@ -213,11 +208,11 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 (value 1) down to 0.5 Hz (64000).
 
 ```forth
-5 3 dmod   \ set D3 to PWM
+5 4 dmod   \ set D4 to PWM
 
 : pwm ( -- )
   begin 
-    0 apin@  4 /  3 pwmpin!
+    0 apin@  4 /  4 pwmpin!
     10 osDelay drop
     switch1? 
   until 
