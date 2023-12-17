@@ -114,10 +114,8 @@ lcdcolumn@   ( -- u )         read a column (8 pixels) from the current position
 Using the Digital Port Pins (Input and Output)
 ==============================================
 
-This example is very similar to the Cosmac.McForth\#Knight_Rider
-program. `dport!` and `dport@` set and get all 16 digital pins (D0 to
-D15) at once. You have to press the *SW1* push button til D0 is set to
-cancel the operation.
+This example is a very simple chase lighting program iinspired by Knight Rider. 
+You need 8 LEDs and 8 resistors.
 
 ```forth
 \ Flipper Zero portmap
@@ -167,7 +165,7 @@ Using the ADC (Analog Input Pins)
 =================================
 
 `apin@ ( a -- u )` returns the ADC value (12 bit, 0 .. 4095) from one of
-the analog pins A0 to A5 (0 .. 5). Here I use the A0 to control the
+the analog pins A0 to A2 (0 .. 2). Here I use the A0 to control the
 delay.
 
 ```forth
