@@ -139,7 +139,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 ;
 
 : delay ( -- )
-  0 apin@ 10 / osDelay drop  \ delay depends on A0
+  200 osDelay drop  \ wait 200 ms
 ;
 
 : left ( -- ) 
@@ -166,15 +166,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
   until 
   0 0 dpin!
 ;
-
-: knightrider-thread ( -- )
-  osNewDataStack
-  knigthrider
-  osThreadExit
-;
-
-' knightrider-thread 0 0 osThreadNew
-
+```
 
 Using the ADC (Analog Input Pins)
 =================================
@@ -184,27 +176,24 @@ the analog pins A0 to A5 (0 .. 5). Here I use the A0 to control the
 delay.
 
 ```forth
-: left ( -- ) 
-  7 0 do
-    1 i dpin! 
-    0 apin@ 10 / osDelay drop  \ delay depends on A0
-    0 i dpin!
-  loop 
-;
-
-: right ( -- )
-  8 1 do  
-    1 8 i - dpin! 
-    0 apin@ 10 / osDelay drop  \ delay depends on A0
-    0 8 i - dpin!
-  loop 
+: delay ( -- )
+  0 apin@ 10 / osDelay drop  \ delay depends on A0
 ;
 ```
-
 
 To get an idea how fast the ADC, RTOS, and the Forth program are. The
 `left` or `right` word takes about 125 us, the `knightrider` loop about
 50 us (no osDelay). Pretty fast for my opinion.
+
+```forth
+: knightrider-thread ( -- )
+  osNewDataStack
+  knigthrider
+  osThreadExit
+;
+
+' knightrider-thread 0 0 osThreadNew
+```
 
 
 Using the PWM (Analog Output Pins)
