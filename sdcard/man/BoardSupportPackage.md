@@ -45,8 +45,8 @@ dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-do
 pwmpin!      ( u a -- )       set the digital output port pin (D4=4, D11=11) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D4=4, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-EXTImod      ( u a -- )       set for pin a (D0, D2, D4, D7) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D0, D2, D4, D7), timeout u in [ms]
+EXTImod      ( u a -- )       set for pin a (D0, D4, D9, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
+EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D0, D4, D9, D10), timeout u in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -231,9 +231,9 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 | 1      | +5V     |                  |           |                             |
 | 2      | A7      | PA7              | D11       | SPI1_MOSI, TIM1_CH1 (PWM)   |  
 | 3      | A6      | PA6              | D12       | SPI1_MISO                   |
-| 4      | A4      | PA4              | D10       | SPI1_CS                     |
+| 4      | A4      | PA4              | D10       | SPI1_CS, EXTI               |
 | 5      | B3      | PB3              | D13       | SPI1_CLK, SWO               |
-| 6      | B2      | PB2              | D9        | TIM2_CH2 (output capture)   |
+| 6      | B2      | PB2              | D9        | TIM2_CH2 (output capture), EXTI   |
 | 7      | C3      | PC3              | A2(D18)   |                             |
 | 8      | GND     |                  |           |                             |
 | 9      | 3V3     |                  |           |                             |
@@ -241,10 +241,10 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 | 11     | GND     |                  |           |                             |
 | 12     | SIO     | PA13             | D2        | SWDIO                       |
 | 13     | TX      | PB6              | D1        |                             |
-| 14     | RX      | PB7              | D0        |                             |
+| 14     | RX      | PB7              | D0        | EXTI                        |
 | 15     | C1      | PC1              | A1 (D17)  | I2C3_SDA                    |
 | 16     | C0      | PC0              | A0 (D16)  | I2C3_SCL                    |
-| 17     | 1W      | PB14             | D4        | TIM1_CH2 (PWM)              |
+| 17     | 1W      | PB14             | D4        | TIM1_CH2 (PWM), EXTI        |
 | 18     | GND     |                  |           |                             |
 
 
