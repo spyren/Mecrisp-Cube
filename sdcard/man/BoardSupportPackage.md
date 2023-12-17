@@ -128,7 +128,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 
 : init-port ( -- )
   7 0 do
-    0 i dpin!
+    0 i pin dpin!
     3 i pin dmod \ port is output
   loop
 ;
