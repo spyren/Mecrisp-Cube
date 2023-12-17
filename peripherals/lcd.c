@@ -590,7 +590,7 @@ static void putGlyph6x8(int ch) {
 
 	buf[0] = 0x40;  // write data
 
-	// copy into I2C array
+	// copy into SPI array
 	for (i = 0; i < 6; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
@@ -627,9 +627,7 @@ static void putGlyph8x8(int ch) {
 		display_buffer->rows[CurrentPosY][CurrentPosX+i] = FONT8X8_getColumn(ch, i);
 	}
 
-	buf[0] = 0x40;  // write data
-
-	// copy into I2C array
+	// copy into SPI array
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
@@ -666,9 +664,7 @@ static void putGlyph8x16(int ch) {
 		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = FONT8X14_getLowerColumn(ch, i);
 	}
 
-	buf[0] = 0x40;  // write data
-
-	// copy into I2C array
+	// copy into SPI array, first page
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
@@ -677,13 +673,12 @@ static void putGlyph8x16(int ch) {
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 8);
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
-	osMutexRelease(DSPI_MutexID);
 
+	// copy into SPI array, second page
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
+		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
-	osMutexAcquire(DSPI_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(DISPLAY_DI_GPIO_Port, DISPLAY_DI_Pin, GPIO_PIN_SET);	// data
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 8);
@@ -716,9 +711,7 @@ static void putGlyph12x16(int ch) {
 		display_buffer->rows[CurrentPosY+1][CurrentPosX+i] = FONT12X16_getLowerColumn(ch, i);
 	}
 
-	buf[0] = 0x40;  // write data
-
-	// copy into I2C array
+	// copy into SPI array, first page
 	for (i = 0; i < 12; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY][CurrentPosX+i];
 	}
@@ -727,13 +720,12 @@ static void putGlyph12x16(int ch) {
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 12);
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
-	osMutexRelease(DSPI_MutexID);
 
+	// copy into SPI array, second page
 	for (i = 0; i < 12; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
+		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
-	osMutexAcquire(DSPI_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(DISPLAY_DI_GPIO_Port, DISPLAY_DI_Pin, GPIO_PIN_SET);	// data
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 12);

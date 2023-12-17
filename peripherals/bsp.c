@@ -216,8 +216,8 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// Flipper Back button
-	if (HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == GPIO_PIN_RESET) {
+	// Flipper OK button
+	if (HAL_GPIO_ReadPin(BUTTON_OK_GPIO_Port, BUTTON_OK_Pin) == GPIO_PIN_SET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -241,8 +241,8 @@ int BSP_getSwitch2(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// Flipper OK button
-	if (HAL_GPIO_ReadPin(BUTTON_BACK_GPIO_Port, BUTTON_BACK_Pin) == GPIO_PIN_SET) {
+	// Flipper BACK button
+	if (HAL_GPIO_ReadPin(BUTTON_BACK_GPIO_Port, BUTTON_BACK_Pin) == GPIO_PIN_RESET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -266,7 +266,7 @@ int BSP_getSwitch3(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// Flipper Right button
+	// Flipper UP button
 	if (HAL_GPIO_ReadPin(BUTTON_UP_GPIO_Port, BUTTON_UP_Pin) == GPIO_PIN_RESET) {
 		return_value =  -1;
 	} else {
@@ -292,7 +292,7 @@ int BSP_getSwitch4(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// Flipper Right button
+	// Flipper DOWN button
 	if (HAL_GPIO_ReadPin(BUTTON_DOWN_GPIO_Port, BUTTON_DOWN_Pin) == GPIO_PIN_RESET) {
 		return_value =  -1;
 	} else {
@@ -318,7 +318,7 @@ int BSP_getSwitch5(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// Flipper Right button
+	// Flipper LEFT button
 	if (HAL_GPIO_ReadPin(BUTTON_LEFT_GPIO_Port, BUTTON_LEFT_Pin) == GPIO_PIN_RESET) {
 		return_value =  -1;
 	} else {
@@ -344,7 +344,7 @@ int BSP_getSwitch6(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	// Flipper Right button
+	// Flipper RIGHT button
 	if (HAL_GPIO_ReadPin(BUTTON_RIGHT_GPIO_Port, BUTTON_RIGHT_Pin) == GPIO_PIN_RESET) {
 		return_value =  -1;
 	} else {

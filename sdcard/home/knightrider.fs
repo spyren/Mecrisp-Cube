@@ -1,31 +1,40 @@
 CR .( knightrider.fs loading ... )
 
-3 0 dmod   \ set D0 to Output
-3 1 dmod   \ set D1 to Output
-3 2 dmod   \ set D2 to Output
-3 3 dmod   \ set D3 to Output
-3 4 dmod   \ set D4 to Output
-3 5 dmod   \ set D5 to Output
-3 6 dmod   \ set D6 to Output
-3 7 dmod   \ set D7 to Output
+\ Flipper Zero portmap
+create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
+
+: pin ( n -- n )  \ gets the Dx pin number
+  cells port-map + @
+;
+
+: init-port ( -- )
+  7 0 do
+    3 i pin dmod \ port is output
+  loop
+;
+
+: delay ( -- )
+  0 apin@ 10 / osDelay drop  \ delay depends on A0
+;
 
 : left ( -- ) 
   7 0 do
-    1 i dpin! 
-    0 apin@ 10 / osDelay drop  \ delay depends on A0
+    1 i pin dpin! 
+    delay
     0 i dpin!
   loop 
 ;
 
 : right ( -- )
   8 1 do  
-    1 8 i - dpin! 
-    0 apin@ 10 / osDelay drop  \ delay depends on A0
+    1 8 i - pin dpin! 
+    delay
     0 8 i - dpin!
   loop 
 ;
 
 : knigthrider ( -- )
+  init-port
   begin 
     left right 
     switch1? 
