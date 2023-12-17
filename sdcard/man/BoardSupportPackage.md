@@ -45,8 +45,8 @@ dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-do
 pwmpin!      ( u a -- )       set the digital output port pin (D4=4, D11=11) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D4=4, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-EXTImod      ( u a -- )       set for pin a (D2, D4, D7, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D2, D4, D7, D10), timeout u in [ms]
+EXTImod      ( u a -- )       set for pin a (D0, D2, D4, D7) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
+EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D0, D2, D4, D7), timeout u in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
