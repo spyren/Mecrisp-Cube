@@ -127,7 +127,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 ;
 
 : init-port ( -- )
-  7 0 do
+  6 0 do
     0 i pin dpin!
     3 i pin dmod \ port is output
   loop
@@ -138,7 +138,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 ;
 
 : left ( -- ) 
-  7 0 do
+  6 0 do
     1 i pin dpin! 
     delay
     0 i pin dpin!
@@ -146,10 +146,10 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 ;
 
 : right ( -- )
-  8 1 do  
-    1 8 i - pin dpin! 
+  7 1 do  
+    1 7 i - pin dpin! 
     delay
-    0 8 i - pin dpin!
+    0 7 i - pin dpin!
   loop 
 ;
 
