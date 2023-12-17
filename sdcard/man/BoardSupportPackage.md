@@ -119,7 +119,7 @@ You need 8 LEDs and 8 resistors.
 
 ```forth
 \ Flipper Zero portmap
-create port-map 4 , 2 , 3 , 9 , 13 , 10 , 12 , 11
+create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 
 : pin ( n -- n )  \ gets the Dx pin number
   cells port-map + @
