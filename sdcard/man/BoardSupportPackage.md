@@ -119,6 +119,7 @@ You need 8 LEDs and 8 resistors.
 
 ```forth
 \ Flipper Zero portmap
+\               0   1   2   3    4    5    6    7
 create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
 
 : pin ( n -- n )  \ gets the Dx pin number
@@ -140,7 +141,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
   7 0 do
     1 i pin dpin! 
     delay
-    0 i dpin!
+    0 i pin dpin!
   loop 
 ;
 
@@ -148,7 +149,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
   8 1 do  
     1 8 i - pin dpin! 
     delay
-    0 8 i - dpin!
+    0 8 i - pin dpin!
   loop 
 ;
 
