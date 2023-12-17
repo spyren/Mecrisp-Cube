@@ -157,7 +157,7 @@ create port-map 4 , 0 , 1 , 9 , 13 , 10 , 12 , 11
     left right 
     switch1? 
   until 
-  0 0 dpin!
+  0 0 pin dpin!
 ;
 ```
 
