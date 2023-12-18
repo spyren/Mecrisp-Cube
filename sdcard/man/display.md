@@ -81,13 +81,13 @@ or on a command line
 show date and time on OLED (see CmsisRtos#How_to_use_Tasks for a background task).
 ```forth
 : clock (  -- )
-  oledclr
-  3 oledfont
+  lcdclr
+  3 lcdfont
   -1 -1 -1 alarm!  \ set an alarm every second
   begin
     wait-alarm     \ wait a second
-    0 0 oledpos!
-    >oled .time >term
+    0 0 lcdpos!
+    >lcd .time >term
   key? until
   key drop
 ;
