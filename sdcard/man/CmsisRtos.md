@@ -30,8 +30,9 @@ A very simple thread could be like this one, a boring blinker:
 If you type the word `blink-thread`, the blue LED blinks, after push the
 button SW1, the blinking stops an the `ok.` apears. But if you try to
 start the thread with
-
-    ' blink-thread 0 0 osThreadNew
+```forth
+' blink-thread 0 0 osThreadNew
+```
 
 Nothing happens and probably the Forth system hangs. Restart the Forth
 system with the Reset button *SW4*.
@@ -66,79 +67,84 @@ Forth thread (terminal task) before.
 Now you can interactively play with the words `osThreadGetId`,
 `osThreadGetState`, `osThreadSuspend`, and `osThreadResume` without the
 tedious edit-compile-download-run-abort.
-
-    // -----------------------------------------------------------------------------
-            Wortbirne Flag_visible, "osNewDataStack"
-            @ (  --  ) Creates an new data stack for a Forth thread.
-    // -----------------------------------------------------------------------------
-    rtos_osNewDataStack:
-        push    {r0-r3, lr}
-        ldr r0, =256    // 64 levels should be more than enough
-        bl  pvPortMalloc
-        adds    r7, r0, #256    // stack grows down
-        movs    tos, 42
-        pop {r0-r3, pc}
-
+```assembly
+// -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "osNewDataStack"
+        @ (  --  ) Creates an new data stack for a Forth thread.
+// -----------------------------------------------------------------------------
+rtos_osNewDataStack:
+    push    {r0-r3, lr}
+    ldr     r0, =256    // 64 levels should be more than enough
+    bl      pvPortMalloc
+    adds    r7, r0, #256    // stack grows down
+    movs    tos, 42
+    pop     {r0-r3, pc}
+```
 
 CMSIS-RTOS API
 ==============
 
 The C function prototype for `osThreadNew` looks like this:
+```
+osThreadId_t osThreadNew (osThreadFunc_t func, void *argument, const osThreadAttr_t *attr);
 
-    osThreadId_t osThreadNew (osThreadFunc_t func, void *argument, const osThreadAttr_t *attr);
+param[in]     func          thread function.
+param[in]     argument      pointer that is passed to the thread function as start argument.
+param[in]     attr          thread attributes; NULL: default values.
 
-    param[in]     func          thread function.
-    param[in]     argument      pointer that is passed to the thread function as start argument.
-    param[in]     attr          thread attributes; NULL: default values.
-
-    return        thread ID for reference by other functions or NULL in case of error.
+return        thread ID for reference by other functions or NULL in case of error.
+```
 
 The parameter order for the Forth Word is the same: addr1 is func, addr2
 is argument, and addr3 is attr.
-
-    osThreadNew  ( addr1 addr2 addr3 -- u )   Create a thread and add it to Active Threads.
+```
+osThreadNew  ( addr1 addr2 addr3 -- u )   Create a thread and add it to Active Threads.
+```
 
 Start the knightrider thread with default parameters and print the
 thread ID:
-
-    ' knightrider-thread 0 0 osThreadNew .[RET] 536871016 ok.
+```
+' knightrider-thread 0 0 osThreadNew .[RET] 536871016 ok.
+```
 
 Stop the thread with pressing button SW1 or
-
-    536871016 osThreadTerminate drop[RET] ok.
+```
+536871016 osThreadTerminate drop[RET] ok.
+```
 
 Start the Knightrider thread with name=\"Knightrider\" priority=48,
 stack_size=256:
-
-    \ buffer for thread attributes
-    /osThreadAttr buffer: threadAttr[RET] ok.      
-    \ clear the buffer
-    threadAttr /osThreadAttr 0 fill[RET] ok.
-    \ set the thread name
-    16 buffer: threadString[RET] ok.
-    threadString .str" Knightrider"[RET] ok.
-    \ set the thread parameters
-    threadString threadAttr thName+ + ![RET] ok.
-    256 threadAttr thStackSize+ + ![RET] ok.
-     48 threadAttr thPriority+  + ![RET] ok.
-    \ start the thread
-    ' knightrider-thread 0 threadAttr osThreadNew .[RET] 0 ok.
-    \ print all threads
-    .threads[RET]
-    Name                State    Priority   Stack Space
-    MainThread          Running     24          0754
-    CDC_Thread          Blocked     24          0087
-    IDLE                Ready       00          0107
-    HRS_THREAD          Blocked     24          0380
-    Knightrider         Blocked     48          0023
-    UART_TxThread       Blocked     40          0217
-    HCI_USER_EVT_TH     Blocked     24          0217
-    ADV_UPDATE_THRE     Blocked     24          0217
-    CRS_Thread          Blocked     40          0207
-    SHCI_USER_EVT_T     Blocked     24          0071
-    Tmr Svc             Ready       02          0209
-    UART_RxThread       Blocked     40          0213
-     ok.
+```
+\ buffer for thread attributes
+/osThreadAttr buffer: threadAttr[RET] ok.      
+\ clear the buffer
+threadAttr /osThreadAttr 0 fill[RET] ok.
+\ set the thread name
+16 buffer: threadString[RET] ok.
+threadString .str" Knightrider"[RET] ok.
+\ set the thread parameters
+threadString threadAttr thName+ + ![RET] ok.
+256 threadAttr thStackSize+ + ![RET] ok.
+ 48 threadAttr thPriority+  + ![RET] ok.
+\ start the thread
+' knightrider-thread 0 threadAttr osThreadNew .[RET] 0 ok.
+\ print all threads
+.threads[RET]
+Name                State    Priority   Stack Space
+MainThread          Running     24          0754
+CDC_Thread          Blocked     24          0087
+IDLE                Ready       00          0107
+HRS_THREAD          Blocked     24          0380
+Knightrider         Blocked     48          0023
+UART_TxThread       Blocked     40          0217
+HCI_USER_EVT_TH     Blocked     24          0217
+ADV_UPDATE_THRE     Blocked     24          0217
+CRS_Thread          Blocked     40          0207
+SHCI_USER_EVT_T     Blocked     24          0071
+Tmr Svc             Ready       02          0209
+UART_RxThread       Blocked     40          0213
+ ok.
+```
 
 See also
 [osThreadNew](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html#ga48d68b8666d99d28fa646ee1d2182b8f)
@@ -146,26 +152,26 @@ and MicroSdBlocks\#C_String_Helpers
 
 RTOS Support Functions
 ----------------------
+```
+osNewDataStack       ( --   )       Creates an new data stack for a Forth thread.
+xPortGetFreeHeapSize ( -- u )       returns the total amount of heap space that remains
+pvPortMalloc         ( u -- addr )  allocate dynamic memory (thread save)
+vPortFree            ( addr -- )    free dynamic memory (thread save)
 
-    osNewDataStack       ( --   )       Creates an new data stack for a Forth thread.
-    xPortGetFreeHeapSize ( -- u )       returns the total amount of heap space that remains
-    pvPortMalloc         ( u -- addr )  allocate dynamic memory (thread save)
-    vPortFree            ( addr -- )    free dynamic memory (thread save)
-
-    /osThreadAttr        ( -- u ) Gets the osThreadAttr_t structure size
-    thName+              ( -- u ) Gets the osThreadAttr_t structure name attribut offset
-    thAttrBits+          ( -- u ) Gets the osThreadAttr_t structure attr_bits attribut offset
-    thCbMem+             ( -- u ) Gets the osThreadAttr_t structure size attribut offset
-    thCbSize+            ( -- u ) Gets the osThreadAttr_t structure cb_size attribut offset
-    thStackMem+          ( -- u ) Gets the osThreadAttr_t structure stack_mem attribut offset
-    thStackSize+         ( -- u ) Gets the osThreadAttr_t structure stack_size attribut offset
-    thPriority+          ( -- u ) Gets the osThreadAttr_t structure priority attribut offset
-    thTzModule+          ( -- u ) Gets the osThreadAttr_t structure tz_module attribut offset
-
-    /osEventFlagsAttr    ( -- u ) Gets the osEventFlagsAttr_t structure size
-    /osMessageQueueAttr  ( -- u ) Gets the osMessageQueueAttr_t structure size
-    /osMutexAttr         ( -- u ) Gets the osMutexAttr_t structure size
-    /osSemaphoreAttr     ( -- u ) Gets the osSemaphoreAttr_t structure size
+/osThreadAttr        ( -- u ) Gets the osThreadAttr_t structure size
+thName+              ( -- u ) Gets the osThreadAttr_t structure name attribut offset
+thAttrBits+          ( -- u ) Gets the osThreadAttr_t structure attr_bits attribut offset
+thCbMem+             ( -- u ) Gets the osThreadAttr_t structure size attribut offset
+thCbSize+            ( -- u ) Gets the osThreadAttr_t structure cb_size attribut offset
+thStackMem+          ( -- u ) Gets the osThreadAttr_t structure stack_mem attribut offset
+thStackSize+         ( -- u ) Gets the osThreadAttr_t structure stack_size attribut offset
+thPriority+          ( -- u ) Gets the osThreadAttr_t structure priority attribut offset
+thTzModule+          ( -- u ) Gets the osThreadAttr_t structure tz_module attribut offset
+/osEventFlagsAttr    ( -- u ) Gets the osEventFlagsAttr_t structure size
+/osMessageQueueAttr  ( -- u ) Gets the osMessageQueueAttr_t structure size
+/osMutexAttr         ( -- u ) Gets the osMutexAttr_t structure size
+/osSemaphoreAttr     ( -- u ) Gets the osSemaphoreAttr_t structure size
+```
 
 Kernel Management Functions
 ---------------------------
