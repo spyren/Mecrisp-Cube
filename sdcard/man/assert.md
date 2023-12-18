@@ -17,9 +17,9 @@ written to the log.
 ## How to use
 
 <pre>
-fatalassert  ( ? n u -- )     abort if flag is false, log n and u after restart       
-assert       ( ? n u -- )     abort if flag is false and assertion is activated, log n and u after restart
-assert?      ( -- ? )         Was there an assert?
+fatalassert  ( f n u -- )     abort if flag is false, log n and u after restart       
+assert       ( f n u -- )     abort if flag is false and assertion is activated, log n and u after restart
+assert?      ( -- f )         Was there an assert?
 assert#      ( -- u )         How many asserts occurred since cold startup?
 assert@      ( -- u1 u2 )     Assert number u1 and parameter u2 e.g. address where the assert occurred
 .assert      ( u -- )         Print assert message
