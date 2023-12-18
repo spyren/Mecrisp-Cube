@@ -68,48 +68,49 @@ parameter).
 C function `FS_include()` from
 [fs.c](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/Src/fs.c)
 calls the Forth words `FS_type` and `FS_evaluate`.
+```C
+/**
+ *  @brief
+ *      Interprets the content of the file.
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @param[in]
+ *      str   filename (w/ or w/o null termination)
+ *  @param[in]
+ *      count string length
+ *  @return
+ *      TOS (lower word) and SPS (higer word)
+ */
+uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
+    FIL fil;        /* File object */
+    FRESULT fr;     /* FatFs return code */
 
-    /**
-     *  @brief
-     *      Interprets the content of the file.
-     *  @param[in]
-     *      forth_stack   TOS (lower word) and SPS (higher word)
-     *  @param[in]
-     *      str   filename (w/ or w/o null termination)
-     *  @param[in]
-     *      count string length
-     *  @return
-     *      TOS (lower word) and SPS (higer word)
-     */
-    uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
-        FIL fil;        /* File object */
-        FRESULT fr;     /* FatFs return code */
+    uint64_t stack;
+    stack = forth_stack;
 
-        uint64_t stack;
-        stack = forth_stack;
+    memcpy(path, str, count);
+    line[count] = 0;
 
-        memcpy(path, str, count);
-        line[count] = 0;
-
-        /* Open a text file */
-        fr = f_open(&fil, path, FA_READ);
-        if (fr) {
-            // open failed
-            strcpy(line, "Err: file not found");
-            stack = FS_type(stack, (uint8_t*)line, strlen(line));
-        }
-
-        /* Read every line and interprets it */
-        while (f_gets(line, sizeof line, &fil)) {
-            // line without \n
-            stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
-        }
-
-        /* Close the file */
-        f_close(&fil);
-
-        return stack;
+    /* Open a text file */
+    fr = f_open(&fil, path, FA_READ);
+    if (fr) {
+        // open failed
+        strcpy(line, "Err: file not found");
+        stack = FS_type(stack, (uint8_t*)line, strlen(line));
     }
+
+    /* Read every line and interprets it */
+    while (f_gets(line, sizeof line, &fil)) {
+        // line without \n
+        stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
+    }
+
+    /* Close the file */
+    f_close(&fil);
+
+    return stack;
+}
+```
 
 Word `include` from
 [fs.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fs.s)
