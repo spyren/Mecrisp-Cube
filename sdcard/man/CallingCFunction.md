@@ -116,44 +116,46 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 Word `include` from
 [fs.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fs.s)
 calls the C function `FS_include()`.
-
-    @ -----------------------------------------------------------------------------
-            Wortbirne Flag_visible, "include"
-            @  ( any "filename" -- any ) Interprets the content of the file.
-    // uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
-    @ -----------------------------------------------------------------------------
-    include:
-        push    {lr}
-        bl  token       @ ( -- c-addr len )
-    incl:
-        movs    r3, tos     // len -> count
-        drop
-        movs    r2, tos     // c-addr -> str
-        drop
-        movs    r0, tos     // get tos
-        movs    r1, psp     // get psp
-        bl  FS_include
-        movs    tos, r0     // update tos
-        movs    psp, r1     // update psp
-        pop {pc}
+```assembly
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "include"
+        @  ( any "filename" -- any ) Interprets the content of the file.
+// uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
+@ -----------------------------------------------------------------------------
+include:
+    push    {lr}
+    bl  token       @ ( -- c-addr len )
+incl:
+    movs    r3, tos     // len -> count
+    drop
+    movs    r2, tos     // c-addr -> str
+    drop
+    movs    r0, tos     // get tos
+    movs    r1, psp     // get psp
+    bl  FS_include
+    movs    tos, r0     // update tos
+    movs    psp, r1     // update psp
+    pop {pc}
+```
 
 The C function `FS_include()` from
 [fs.c](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/Src/fs.c)
 calls the Forth word `evaluate` by the `FS_evaluate()` function.
-
-    // uint64_t FS_evaluate(uint64_t forth_stack, uint8_t* str, int count);
-    .global     FS_evaluate
-    FS_evaluate:
-        push    {r4-r7, lr}
-        movs    tos, r0     // get tos
-        movs    psp, r1     // get psp
-        pushdatos
-        movs    tos, r2     // str
-        pushdatos
-        movs    tos, r3     // count
-        bl  evaluate
-        movs    r0, tos     // update tos
-        movs    r1, psp     // update psp
-        pop {r4-r7, pc}
+```assembly
+// uint64_t FS_evaluate(uint64_t forth_stack, uint8_t* str, int count);
+.global     FS_evaluate
+FS_evaluate:
+    push    {r4-r7, lr}
+    movs    tos, r0     // get tos
+    movs    psp, r1     // get psp
+    pushdatos
+    movs    tos, r2     // str
+    pushdatos
+    movs    tos, r3     // count
+    bl      evaluate
+    movs    r0, tos     // update tos
+    movs    r1, psp     // update psp
+    pop {r4-r7, pc}
+```
 
 \-- [PeterSchmid - 2020-07-13]
