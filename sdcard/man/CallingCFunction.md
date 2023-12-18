@@ -40,20 +40,21 @@ Calling C Functions from Forth
 
 Word `osDelay` from
 [rtos.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/rtos.s)
-
-    // -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "osDelay"
-        @ ( u -- n ) Wait for Timeout (Time Delay).
-    /// \param[in]     ticks         \ref CMSIS_RTOS_TimeOutValue "time ticks" value
-    /// \return status code that indicates the execution status of the function.
-    // osStatus_t osDelay (uint32_t ticks);
-    // -----------------------------------------------------------------------------
-    rtos_osDelay:
-        push    {r0-r3, lr}
-        movs    r0, tos     // ticks
-        bl  osDelay
-        movs    tos, r0
-        pop {r0-r3, pc}
+```assembly
+// -----------------------------------------------------------------------------
+    Wortbirne Flag_visible, "osDelay"
+    @ ( u -- n ) Wait for Timeout (Time Delay).
+/// \param[in]     ticks         \ref CMSIS_RTOS_TimeOutValue "time ticks" value
+/// \return status code that indicates the execution status of the function.
+// osStatus_t osDelay (uint32_t ticks);
+// -----------------------------------------------------------------------------
+rtos_osDelay:
+    push    {r0-r3, lr}
+    movs    r0, tos     // ticks
+    bl      osDelay
+    movs    tos, r0
+    pop     {r0-r3, pc}
+```
 
 If the C function itself calls Forth words the Data Stack Pointer SPS
 and Top Of Stack TOS registers have to be passed to the Forth words. See
