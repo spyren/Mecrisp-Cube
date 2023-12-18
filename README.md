@@ -91,7 +91,7 @@ machine (Flipper Zero) for development and testing purposes.
 ### Prerequisites
 
   * [Flipper Zero](https://flipperzero.one/) with STM32WB55 MCU (Cortex ARM M4) runs at a 32 MHz (the Bluetooth stack runs on a Cortex ARM M0+ core). 
-  * Optional: [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) or you can build your own e.g. with a [STLINK-V3MINI](https://www.st.com/en/development-tools/stlink-v3mini.html) and some cables, see BoardSupportPackageFlipper#JTAG_SWD_Adaptor
+  * Optional: [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) or you can build your own e.g. with a [STLINK-V3MINI](https://www.st.com/en/development-tools/stlink-v3mini.html) and some cables, see [JTAG_SWD_Adaptor](/sdcard/man/BoardSupportPackage.md#jtagswd-adaptor)
   * Terminal emulator application for PC, e.g.: 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
