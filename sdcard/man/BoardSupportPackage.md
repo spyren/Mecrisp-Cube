@@ -24,16 +24,16 @@ rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000
 wled!        ( u -- )         set the W (LCD backlight) led
 wled@        ( -- u )         get the W (LCD backlight) led
 
-switch1?     ( -- ? )         get switch1 (BACK button), closed=TRUE
-switch2?     ( -- ? )         get switch2 (OK button), closed=TRUE
-switch3?     ( -- ? )         get switch3 (RIGHT button), closed=TRUE
-switch4?     ( -- ? )         get switch4 (LEFT), closed=TRUE
-switch5?     ( -- ? )         get switch5 (UP button), closed=TRUE
-switch6?     ( -- ? )         get switch6 (DOWN button), closed=TRUE
+switch1?     ( -- f )         get switch1 (BACK button), closed=TRUE
+switch2?     ( -- f )         get switch2 (OK button), closed=TRUE
+switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
+switch4?     ( -- f )         get switch4 (LEFT), closed=TRUE
+switch5?     ( -- f )         get switch5 (UP button), closed=TRUE
+switch6?     ( -- f )         get switch6 (DOWN button), closed=TRUE
 
 button       ( -- c )         wait for and fetch the pressed button (similar to the key word) 
                               char b BACK, o OK, r RIGHT, l LEFT, u UP, d DOWN
-button?      ( -- ? )         Is there a button press?
+button?      ( -- f )         Is there a button press?
 
 
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
@@ -93,13 +93,13 @@ LIPOgauge!   ( u1 u2 --  )    set fuel gauge register u2 with data u1
 LIPOcharger@ ( u -- u )       get charger register
 LIPOcharger! ( u1 u2 --  )    set charger register u2 with data u1
 
-vibro@       (  -- ? )        get vibro state
-vibro!       ( ? -- )         set vibro status, 0 switch off
+vibro@       (  -- f )        get vibro state
+vibro!       ( f -- )         set vibro status, 0 switch off
 
-peripheral!  ( ? -- )         set peripheral supply status, 0 switch off
+peripheral!  ( f -- )         set peripheral supply status, 0 switch off
 
-lcd-emit     ( ? -- )         emit a character (writes a character to the LCD display)
-lcd-emit?    ( -- ? )         LCD ready to get a character (I2C not busy)
+lcd-emit     ( f -- )         emit a character (writes a character to the LCD display)
+lcd-emit?    ( -- f )         LCD ready to get a character (I2C not busy)
 lcdpos!      ( x y -- )       set LCD cursor position, 
                               x (column) horizontal position, max. 127  
                               y (row) vertical position (a line consists of 8 pixels), max. 7
