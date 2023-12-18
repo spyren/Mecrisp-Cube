@@ -82,13 +82,15 @@ show date and time on OLED (see CmsisRtos#How_to_use_Tasks for a background task
 ```forth
 : clock (  -- )
   lcdclr
-  3 lcdfont
+  1 lcdfont
+  >lcd
   -1 -1 -1 alarm!  \ set an alarm every second
   begin
     wait-alarm     \ wait a second
     0 0 lcdpos!
-    >lcd .time >term
+    .time 
   key? until
+  >term
   key drop
 ;
 ```
