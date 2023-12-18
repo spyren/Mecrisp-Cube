@@ -673,17 +673,21 @@ static void putGlyph8x16(int ch) {
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 8);
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(DSPI_MutexID);
 
 	// copy into SPI array, second page
 	for (i = 0; i < 8; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
+	osMutexAcquire(DSPI_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(DISPLAY_DI_GPIO_Port, DISPLAY_DI_Pin, GPIO_PIN_SET);	// data
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 8);
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
 	osMutexRelease(DSPI_MutexID);
+
+	setPos(CurrentPosX+8, CurrentPosY);
 
 	postwrap(8, 2);
 }
@@ -720,17 +724,21 @@ static void putGlyph12x16(int ch) {
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 12);
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
+	osMutexRelease(DSPI_MutexID);
 
 	// copy into SPI array, second page
 	for (i = 0; i < 12; i++) {
 		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
+	osMutexAcquire(DSPI_MutexID, osWaitForever);
 	HAL_GPIO_WritePin(DISPLAY_DI_GPIO_Port, DISPLAY_DI_Pin, GPIO_PIN_SET);	// data
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_RESET);
 	DSPI_WriteData(buf+1, 12);
 	HAL_GPIO_WritePin(DISPLAY_CS_GPIO_Port, DISPLAY_CS_Pin, GPIO_PIN_SET);
 	osMutexRelease(DSPI_MutexID);
+
+	setPos(CurrentPosX+12, CurrentPosY);
 
 	postwrap(12, 2);
 }
