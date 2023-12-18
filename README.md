@@ -8,7 +8,7 @@ Forth is an interactive and extensible language, with built-in lexical analysis 
 
 Forth is perfect for embedded systems where some sort of user interactivity like CLI and extensibility (at runtime) are needed. 
 
-C & Forth in the 21st Century. C and Forth are both about 50 years old. To combine the strength of this two worlds results in a powerful system that outperforms other much newer systems like Python. Good design withstands the test of time.
+C & Forth in the 21st Century. C and Forth are both about 50 years old. The combination of the strength of this two worlds results in a powerful system that outperforms other much newer systems like Python. Good design withstands the test of time.
 
 The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. There are three flavors available:
 
