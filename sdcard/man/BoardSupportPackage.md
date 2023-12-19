@@ -193,7 +193,7 @@ To get an idea how fast the ADC, RTOS, and the Forth program are. The
 Using the PWM (Analog Output Pins)
 ==================================
 
-Only three port pins are supported so far. The TIMER1 is used for the
+Only two port pins are supported so far. The TIMER1 is used for the
 timebase, time resolution is 1 us (32 MHz SysClk divided by 32). The PWM
 scale is from 0 (0 % duty cycle) to 1000 (100 % duty cycle), this
 results in a PWM frequency of 1 kHz. If you need higher PWM frequencies,
@@ -235,7 +235,7 @@ of 90° – 180° and the neutral position (45° or 90°) is almost always at 1.
 
 The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider is therefore 32 * 20 = 640. 
 
-| angle | time   | f   | 
+| angle | time   | n   | 
 |-------|--------|-----|
 |   0°  | 1 ms   | 50  | 
 |  45°  | 1.5 ms | 75  | 
@@ -243,7 +243,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 | 180°  | 3 ms   | 150 | 
 | 270   | 4 ms   | 200 | 
 
-| angle | time   | f   | 
+| angle | time   | n   | 
 |-------|--------|-----|
 |   0°  | 1 ms   | 50  | 
 |  90°  | 1.5 ms | 75  | 
@@ -253,12 +253,12 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 ```forth
 640 pwmprescale 
-5 0 dmod   \ set D0 to PWM
+5 4 dmod   \ set D4 to PWM
 
 : servo ( -- ) 
   begin
     130 40 do
-      i 0 pwmpin! 
+      i 4 pwmpin! 
       i neopixel! 
       i 40 = if 
         1000 \ give some more time to get back
@@ -274,12 +274,12 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 ```forth
 640 pwmprescale 
-5 3 dmod   \ set D3 to PWM
+5 11 dmod   \ set D11 to PWM
 
 : slowservo ( -- ) 
   begin
     100 50 do
-      i 3 pwmpin! 
+      i 11 pwmpin! 
       50 osDelay drop
     1 +loop
     50 100 do
