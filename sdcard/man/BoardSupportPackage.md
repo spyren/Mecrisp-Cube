@@ -218,6 +218,77 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 ;
 ```
 
+## Control an RC Servo
+
+https://en.wikipedia.org/wiki/Servo_(radio_control): 
+The control signal is a digital PWM signal with a 50 Hz frame rate. Within each 20 ms timeframe, 
+an active-high digital pulse controls the position. The pulse nominally ranges from 1.0 ms to 
+2.0 ms with 1.5 ms always being center of range. Pulse widths outside this range can be used for 
+"overtravel" - moving the servo beyond its normal range. 
+
+A servo pulse of 1.5 ms width will typically set the servo to its "neutral" position (typically 
+half of the specified full range), a pulse of 1.0 ms will set it to 0°, and a pulse of 2.0 ms 
+to 90° (for a 90° servo). The physical limits and timings of the servo hardware varies between 
+brands and models, but a general servo's full angular motion will travel somewhere in the range 
+of 90° – 180° and the neutral position (45° or 90°) is almost always at 1.5 ms. This is the 
+"standard pulse servo mode" used by all hobby analog servos. 
+
+The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider is therefore 32 * 20 = 640. 
+| angle | time   | f   | 
+|   0°  | 1 ms   | 50  | 
+|  45°  | 1.5 ms | 75  | 
+|  90°  | 2 ms   | 100 | 
+| 180°  | 3 ms   | 150 | 
+| 270   | 4 ms   | 200 | 
+
+| angle | time   | f   | 
+|   0°  | 1 ms   | 50  | 
+|  90°  | 1.5 ms | 75  | 
+| 180°  | 2 ms   | 100 | 
+| 270°  | 2.5 ms | 150 | 
+
+
+```forth
+640 pwmprescale 
+5 0 dmod   \ set D0 to PWM
+
+: servo ( -- ) 
+  begin
+    130 40 do
+      i 0 pwmpin! 
+      i neopixel! 
+      i 40 = if 
+        1000 \ give some more time to get back
+      else
+        200
+      then 
+      osDelay drop
+    10 +loop
+  key? until 
+  key drop
+;
+```
+
+```forth
+640 pwmprescale 
+5 3 dmod   \ set D3 to PWM
+
+: slowservo ( -- ) 
+  begin
+    100 50 do
+      i 3 pwmpin! 
+      50 osDelay drop
+    1 +loop
+    50 100 do
+      i 3 pwmpin! 
+      50 osDelay drop
+    -1 +loop
+  key? until 
+  key drop
+;
+```
+
+
 # Pinouts
 
 ## GPIO Ports
