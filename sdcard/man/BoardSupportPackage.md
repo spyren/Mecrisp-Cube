@@ -234,7 +234,9 @@ of 90° – 180° and the neutral position (45° or 90°) is almost always at 1.
 "standard pulse servo mode" used by all hobby analog servos. 
 
 The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider is therefore 32 * 20 = 640. 
+
 | angle | time   | f   | 
+|-------|--------|-----|
 |   0°  | 1 ms   | 50  | 
 |  45°  | 1.5 ms | 75  | 
 |  90°  | 2 ms   | 100 | 
@@ -242,6 +244,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 | 270   | 4 ms   | 200 | 
 
 | angle | time   | f   | 
+|-------|--------|-----|
 |   0°  | 1 ms   | 50  | 
 |  90°  | 1.5 ms | 75  | 
 | 180°  | 2 ms   | 100 | 
