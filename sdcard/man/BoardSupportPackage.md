@@ -291,6 +291,113 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 ;
 ```
 
+# Using Input Capture and Output Compare
+
+## Time Base
+
+Default timer resolution is 1 us. The 32 bit TIMER2 is used as time base 
+for Input Capture / Output Compare. For a 5 s period 5'000'000 cycles are needed. 
+All channels (input capture / output compare) use the same time base.
+
+```forth
+: period ( -- )
+  5000000 ICOCperiod! \ 5 s period
+  ICOCstart
+  begin
+     waitperiod
+     cr .time
+  key? until
+  key drop 
+;
+```
+
+## Output Compare
+Output compare TIM2: D5, D6, and D13
+
+```forth
+7 5 dmod  \ output compare for D5
+7 6 dmod  \ output compare for D6
+7 13 dmod \ output compate for D13
+
+: oc-toggle ( -- )
+  5000000 ICOCperiod! \ 5 s period
+  ICOCstart
+  3 5  OCmod  1000000  5 OCstart \ toggle D5 after 1 s
+  3 6  OCmod  2000000  5 OCstart \ toggle D6 after 2 s
+  3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
+  begin
+     waitperiod
+     cr .time
+  key? until
+  key drop 
+;
+```
+
+When you abort (hit any key) the program, the timer still runs and controls 
+the port pins. To stop the port pins:
+<pre>
+5 OCstop  5 OCstop  13 OCstop  
+</pre>
+
+Or change the prescale to make it faster or slower:
+<pre>
+1 ICOCprescale
+</pre>
+
+
+## Input Capture
+
+This sample program measures the time between the edges on port A5. 
+If no event occurs within 2 seconds, "timeout" is issued. 
+Hit any key to abort program.
+```forth
+: ic-test ( -- )
+  6 21 dmod \ input capture on A5
+  ICOCstart
+  2 ICstart  \ both edges
+  ICOCcount@ ( -- count )
+  begin
+    2000 \ 2 s timeout
+    ICwait ( -- old-capture capture ) 
+    cr
+    dup 0= if
+      ." timeout" drop
+    else 
+      dup rot ( -- capture capture old-capture )
+      - 1000 / . ." ms"
+    then
+  key? until
+  key drop
+  drop
+  ICstop
+;
+```
+
+## Using EXTI line
+
+D5, D6, D11 and D13 can be used as an EXTI line. 
+EXTIs are external interrupt lines, D5 uses EXTI2 (EXTI Line2 interrupt), 
+D6 EXTI3, D11 EXIT8, and D13 EXTI1. 
+
+```forth
+: exti-test ( -- )
+  2 5 EXTImod \ both edges on D5
+  begin
+    2000 5 EXTIwait \ wait for edge on D5 (button C) with 2 s timeout
+    cr
+    0= if
+      5 dpin@ if
+        ." rising edge"
+      else
+        ." falling edge"
+      then 
+    else
+      ." timeout"
+    then
+  key? until
+  key drop
+```
+
 
 # Pinouts
 
