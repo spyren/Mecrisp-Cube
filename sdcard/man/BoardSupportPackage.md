@@ -373,7 +373,7 @@ Hit any key to abort program.
 ;
 ```
 
-## Using EXTI line
+# Using EXTI line
 
 D5, D6, D11 and D13 can be used as an EXTI line. 
 EXTIs are external interrupt lines, D5 uses EXTI2 (EXTI Line2 interrupt), 
