@@ -228,11 +228,18 @@ You can use RTOS threads direct without task management.
 A very simple thread could be like this one, a boring blinker:
 ```forth
 : blinker  ( -- )
+  $01 -sysled \ gain control over the RGB LED
+  $000000 rgbled!
   begin 
-    led1@ 0= led1!   \ toggle blue LED
+    rgbled@ 0= if
+      $0000ff
+    then
+      $000000
+    else
+    rgbled!
     200 osDelay drop  \ wait 200 ms
   switch1? until 
-  0 led1! 
+  $01 +sysled \ giving up control over the RGB LED
 ;
 ```
 
