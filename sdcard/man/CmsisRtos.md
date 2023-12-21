@@ -198,7 +198,7 @@ clock& construct
 
 For implementation details see:
    * [rtos.s](/Forth/cube/rtos.s)
-   * [rtos.c](/Forth/Src/rtos.c)
+   * [rtos.c](/peripherals/rtos.c)
 
 
 Show XT (execution token) for the task:
