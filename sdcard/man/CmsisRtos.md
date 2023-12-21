@@ -181,6 +181,7 @@ Another task to write date and time every second to the OLED:
 ```forth
 : clock (  -- )
   >oled            \ redirect terminal to oled-emit
+  oledclr
   3 oledfont
   -1 -1 -1 alarm!  \ set an alarm every second
   begin
