@@ -1,17 +1,161 @@
 Why a Preemptive Real Time Operating System?
 ============================================
 
-Forth systems traditionally make use of cooperative multitasking. It is
-very simple and clever. But it has its limits. If you write all your
-software by yourself, each software part can be cooperative. But if you
-want to benefit from middleware written by somebody else (and most
-probably not written in Forth), you can be sure that software is not
-cooperative (in the context of multitasking). Forth wants to rule your
-system. I would like to have a Forth system that is cooperative. It
-should extend the system, to make it interactive and easy to use.
+Forth systems traditionally make use of cooperative multitasking. 
+It is very simple and clever. But it has its limits. 
+If you write all your software by yourself, each software part can be cooperative. 
+But if you want to benefit from middleware written by somebody else 
+(and most probably not written in Forth), you can be sure that software is 
+not cooperative (in the context of multitasking). Forth wants to rule your system. 
+I would like to have a Forth system that is cooperative. 
+It should extend the system, to make it interactive and easy to use.
 
-The Forth itself is only a thread and can be used as some sort of CLI
-for testing purposes or could be the main part of the application.
+The Forth interpreter (called terminal task in Forth jargon) itself 
+is only a thread and can be used as some sort of CLI for testing purposes 
+or could be the main part of the application. 
+
+
+# Forth Multitasking
+
+Andrew Haley wrote "Forth has been multi-tasking for almost 50 years. 
+It's time to standardize it" and he is right. I will implement his 
+proposed API for Mecrisp-Cube described in 
+[A multi-tasking wordset for Standard Forth](http://www.complang.tuwien.ac.at/anton/euroforth/ef17/papers/haley-slides.pdf). 
+The multitasker wordset is very similar to the one in SwiftForth / PolyForth.
+
+I use the term task here because it is well known in the Forth world, 
+although Mecrisp-Cube make use of threads. Mecrisp-Cube tasks are CMSIS-RTOS 
+threads with user variables. The Mecrisp-Cube (CMSIS-RTOS / FreeRTOS) 
+scheduler is pre-emptive and not round robin (cooperative). Mecrisp-Cube 
+is always multi tasked, you can not switch off the scheduler and 
+therefore there is no `MULTI`, `SINGLE`, or `INIT-MULTI`.
+
+
+## Terminal Task
+
+Mecrisp-Cube has only one terminal task. Soleley this task is 
+allowed to define words for the dictionary. 
+
+Following variables / buffers are exclusively for the terminal task:
+   * User Input and Interpretation
+      * `Eingabepuffer` 200 Bytes (TIB)
+      * `Pufferstand` (>in)
+      * `current_source` double user variable
+   * Pictured Numerical Output
+      * `Zahlenpuffer` 64 Bytes 
+      * `Zahlenpufferlaenge`
+   * `PAD` Scratch storage e.g. for strings. 100 bytes
+
+
+## Background Task
+
+Background tasks have their own user variables (see below). 
+
+
+## User Variables
+
+One of a set of variables provided by Forth, whose values are 
+unique for each task. The defining word =user= behaves in the same
+way as `variable`. The difference is that it reserves space in 
+user (data) space rather than normal data space. In a Forth system 
+that has a multi-tasker, each task has its own set of user variables.
+
+
+### Words
+
+Dictionary commands like `user` and `+user` can be used only in the terminal task.
+<pre>
+user   ( n "name" -- )         Define a user variable at offset n in the user area
+#user  (  -- n )               Return the number of bytes currently allocated in a user area. 
+/user  (  -- n )               user variable area size
+his    ( addr1 n -- addr2 )    Given a task address addr1 (TCB) and user variable offset n, returns the address of 
+                               the referenced user variable in that task's user area. 
+not implemented:
++user  ( n1 n2 "name" -- n3 )  Define a user variable at offset n1 in the user area, and increment the offset 
+                               by the size n2 to give a new offset n3.
+</pre>
+
+
+### Predefined User Variables
+
+`hook-*` user variables are for terminal redirection, eg. to write 
+to a display or another serial channel. The user variables `stdin` 
+and `stdout` are used for file redirection, see 
+MicroSdBlocks#File_Redirection.
+
+<pre>
+Offset Variable
+0      threadid    CMSIS-RTOS thread ID
+4      argument    Argument for the CMSIS-RTOS thread creation
+8      attr        Attributes for CMSIS-RTOS thread creation 
+                      osThreadNew(osThreadFunc_t func, void <b>*argument</b>, const osThreadAttr_t <b>*attr</b>);
+12     XT          execution token for the task word
+16     R0          (R-zero) is the address of the bottom of the return stack
+20     S0          (S-zero) is the address of the bottom of the data stack
+24     base
+28     hook-emit
+32     hook-key
+36     hook-emit?
+40     hook-key?
+44     stdin
+48     stdout
+52     stderr
+56     user area, 17 cells (#user returns the offset of the user area)
+
+not implemented yet:
+pad tib >in in> blk hld dpl
+</pre>
+
+
+### Implementation
+
+CMSIS-RTOS does not support Thread Local Storage, but FreeRTOS does, 
+details see https://www.freertos.org/thread-local-storage-pointers.html 
+e.g `vTaskSetThreadLocalStoragePointer()` and `pvTaskGetThreadLocalStoragePointer()`. 
+Thread Flag 15 ($8000) is used for STOP/AWAKEN.
+
+
+## Task Management
+
+<pre>
+task       ( "name" -- )        Creates a task control block TCB. Invoking "name" returns the address of the task's Task Control Block (TCB).
+/task      ( -- n )             n is the size of a Task Control block. 
+                                This word allows arrays of tasks to be created without having to name each one.
+construct  ( addr -- )          Instantiate the task whose TCB is at addr. 
+                                This creates the TCB and initialize the user variables
+                                After this, user variables may be changed before the task is started
+start-task ( xt addr -- )       Start the task at addr asynchronously executing the word whose execution token is xt
+
+stop       ( -- )               blocks the current task unless or until AWAKEN has been issued, waits for thread flag 15
+awaken     ( addr -- )          wake up the task, sets the thread flag 15
+
+mutex-init ( addr -- )          Initialize a mutex. Set its state to released.
+/mutex     ( -– n)              n is the number of bytes in a mutex.
+
+get        ( addr -- )          Obtain control of the mutex at addr. If the mutex is owned by another task, 
+                                the task executing GET will wait until the mutex is available.
+release    ( addr –- )          Relinquish the mutex at addr
+
+
+[C         ( -- )               Begin a critical section. Other tasks cannot execute during a critical section, but interrupts can. !osKernelLock
+C]         ( -- )               Terminate a critical section. !osKernelRestoreLock 
+
+terminate  ( -- )               Causes the task executing this word to cease operation !osThreadTerminate
+suspend    ( addr -- ior)       Force the task whose TCB is at addr to suspend operation indefinitely. !osThreadSuspend
+resume     ( addr -- ior)       Cause the task whose TCB is at addr to resume operation at the point at which it !osThreadResume 
+                                was SUSPENDed (or where the task called STOP).
+halt       ( addr -- )          Cause the task whose TCB is at addr to cease operation permanently, but to remain instantiated. 
+                                The task may be reactivated (through start-task).
+kill       ( addr -- )          Cause the task whose TCB is at addr to cease operation and release all its TCB memory. 
+
+pause      ( -- )
+
+skeleton   ( -- )               skeleton for tasks (creates the stacks for the task)
+</pre>
+
+See also:
+   * FORTH MULTITASKING IN A NUTSHELL https://www.bradrodriguez.com/papers/mtasking.html
+   * https://theforth.net/package/multi-tasking
 
 
 How to Create a Thread
@@ -27,6 +171,7 @@ A very simple thread could be like this one, a boring blinker:
   0 led1! 
 ;
 ```
+
 If you type the word `blink-thread`, the blue LED blinks, after push the
 button SW1, the blinking stops an the `ok.` apears. But if you try to
 start the thread with
