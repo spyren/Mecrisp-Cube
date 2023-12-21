@@ -233,9 +233,9 @@ A very simple thread could be like this one, a boring blinker:
   begin 
     rgbled@ 0= if
       $0000ff
-    then
-      $000000
     else
+      $000000
+    then
     rgbled!
     200 osDelay drop  \ wait 200 ms
   switch1? until 
