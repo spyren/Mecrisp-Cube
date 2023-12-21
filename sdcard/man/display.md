@@ -78,20 +78,20 @@ or on a command line
 >oled .( Hallo Velo!) >term
 </pre>
 
-show date and time on OLED (see CmsisRtos#How_to_use_Tasks for a background task).
+show date and time on the Flipper LCD (see [How to Use Tasks](CmsisRtos.md#how-to-use-tasks) for a background task).
 ```forth
 : clock (  -- )
   lcdclr
   3 lcdfont
   >lcd
-  -1 -1 -1 alarm!  \ set an alarm every second
-  begin
-    wait-alarm     \ wait a second
-    0 0 lcdpos!
-    .time 
-  key? until
+    -1 -1 -1 alarm!  \ set an alarm every second
+    begin
+      wait-alarm     \ wait a second
+      0 0 lcdpos!
+      .time 
+    key? until
+    key drop
   >term
-  key drop
 ;
 ```
 
@@ -114,7 +114,7 @@ To change the display type you have to edit the
 
 # Links
 
-## SSD1306 Driver
+## SSD1306 Driver (OLED)
 
 ### Driver SW
    * U8g2 https://github.com/olikraus/
@@ -149,7 +149,7 @@ To change the display type you have to edit the
    * Octopus
       * https://www.distrelec.ch/de/octopus-128x64-oled-display-pi-supply-pis-1277/p/30163414 
 
-## SH1107 Driver
+## SH1107 Driver (OLED)
 
 Slave address bit (SA0), D/C pin acts as SA0. 
 
