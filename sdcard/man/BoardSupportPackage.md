@@ -177,10 +177,10 @@ delay.
 
 To get an idea how fast the ADC, RTOS, and the Forth program are. The
 `left` or `right` word takes about 125 us, the `knightrider` loop about
-50 us (no osDelay). Pretty fast for my opinion.
+50 us (no osDelay). Pretty fast for my opinion (STM32WB55 @ 32 MHz sysclock).
 
 Create a task for the knigthrider (details see [How to Use Tasks](CmsisRtos.md#how-to-use-tasks)) 
-to run it in the background,
+to run it in the background:
 ```
 task knigthrider&
 knigthrider& construct
