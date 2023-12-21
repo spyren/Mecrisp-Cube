@@ -158,6 +158,148 @@ See also:
    * https://theforth.net/package/multi-tasking
 
 
+# How to use Tasks
+
+Create a Task Control Block (TCB) with the name `blinker&` (the ampersand at 
+the end of the word is UNIX style, it means to start the process in the background 
+and the shell job control does not wait till the process terminates).
+<pre>
+task blinker&
+</pre>
+
+Initialize the TCB (user variables)
+<pre>
+blinker& construct
+</pre>
+
+Start the task 
+<pre>
+' blinker blinker& start-task
+</pre>
+
+Another task to write date and time every second to the OLED:
+```forth
+: clock (  -- )
+  >oled            \ redirect terminal to oled-emit
+  3 oledfont
+  -1 -1 -1 alarm!  \ set an alarm every second
+  begin
+    wait-alarm     \ wait a second
+    0 0 oledpos!
+    .time
+  again
+;
+
+task clock&
+clock& construct
+' clock clock& start-task
+```
+
+For implementation details see:
+   * [rtos.s](/Forth/cube/rtos.s)
+   * [rtos.c](/Forth/Src/rtos.c)
+
+
+Show XT (execution token) for the task:
+<pre>
+clock& xt threadid - + @ hex. 200004B0  ok.
+</pre>
+
+no suprise, it's the XT from the clock word:
+<pre>
+' clock hex. 200004B0
+</pre>
+
+look for the word in the dictionary
+<pre>
+$200004a0 10 dump
+200004A0 :  00 0B 06 00 80 01 00 08   00 00 <b>05 63 6C 6F 63 6B</b>  | ........  ...<b>clock</b> |
+</pre>
+
+>body 4780
+
+
+# Interrupts and Forth
+
+Mecrisp uses CPU register R7 as data stack pointer and R6 as TOS. 
+If Forth rules the system R7 is always the data stack pointer 
+and you can use the data stack pointer within a interrupt service routine. 
+But in a mixed system, where C routines are used, there is no guarantee 
+that the register R7 remains unchanged. When the interrupt occurs 
+while a C routine is executed, the data stack pointer is invalid and 
+Forth words can't be used in interrupt service routines. 
+A possible solution would be a separate data stack for the ISRs. 
+I don't do that and use C for the ISRs. 
+
+The Forth threads are synchronized by RTOS IPCs like semaphores, 
+e.g. the ISR Release a semaphore and the Forth thread aquire the 
+same semaphore, like the sample below.
+
+For details see [bsp.c](/Forth/Src/bsp.c).
+```C
+/**
+  * @brief  Output Compare callback in non-blocking mode
+  * @param  htim TIM OC handle
+  * @retval None
+  */
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Instance == TIM2) {
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			// D5, PA15
+			osSemaphoreRelease(ICOC_CH1_SemaphoreID);
+		}
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_3) {
+			// D1, PA2
+			osSemaphoreRelease(ICOC_CH3_SemaphoreID);
+		}
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4) {
+			// D0, PA3
+			osSemaphoreRelease(ICOC_CH4_SemaphoreID);
+		}
+	}
+}
+
+
+/**
+ *  @brief
+ *      Waits for Output Compare.
+ *	@param[in]
+ *      pin_number  port pin 0 D0, 1 D1, or 5 D5
+ *  @return
+ *      none
+ */
+void BSP_waitOC(int pin_number) {
+	switch (pin_number) {
+	case 0:
+		osSemaphoreAcquire(ICOC_CH4_SemaphoreID, osWaitForever);
+		break;
+	case 1:
+		osSemaphoreAcquire(ICOC_CH3_SemaphoreID, osWaitForever);
+		break;
+	case 5:
+		osSemaphoreAcquire(ICOC_CH1_SemaphoreID, osWaitForever);
+		break;
+	}
+}
+```
+
+`OCwait` Forth word waits for the event Output Compare, timer 
+interrupt assigned to a port pin. Details [bsp.s]](/Forth/cube/bsp.s).
+<pre>
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "OCwait"
+OCwait:
+		@ ( a -- )    wait for the end of output capture pin a
+// void BSP_waitOC(int pin_number);
+@ -----------------------------------------------------------------------------
+	push	{r0-r3, lr}
+	movs	r0, tos		// pin_number
+	drop
+	bl	BSP_waitOC
+	pop	{r0-r3, pc}
+</pre>
+
+
 How to Create a Thread
 ======================
 
