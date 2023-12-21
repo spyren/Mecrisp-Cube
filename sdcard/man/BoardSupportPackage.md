@@ -179,7 +179,8 @@ To get an idea how fast the ADC, RTOS, and the Forth program are. The
 `left` or `right` word takes about 125 us, the `knightrider` loop about
 50 us (no osDelay). Pretty fast for my opinion.
 
-Create a task for the knigthrider (details see [Hoe to Use Tasks](CmsisRtos.md#how-to-use-tasks))
+Create a task for the knigthrider (details see [How to Use Tasks](CmsisRtos.md#how-to-use-tasks)) 
+to run it in the background,
 ```
 task knigthrider&
 knigthrider& construct
@@ -287,6 +288,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
   key drop
 ;
 ```
+
 
 # Using Input Capture and Output Compare
 
