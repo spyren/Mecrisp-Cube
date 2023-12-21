@@ -23,6 +23,9 @@ rgbled!      ( u -- )         set the RGB led ($ff0000 red, $00ff00 green, $0000
 rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
 wled!        ( u -- )         set the W (LCD backlight) led
 wled@        ( -- u )         get the W (LCD backlight) led
++sysled      ( flags -- )     set sysled flags $01 ACTIVATE, $02 DISK_READ_OPERATION, $04 DISK_WRITE_OPERATION
+                              $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
+-sysled      ( flags -- )     clear sysled flags 
 
 switch1?     ( -- f )         get switch1 (BACK button), closed=TRUE
 switch2?     ( -- f )         get switch2 (OK button), closed=TRUE
