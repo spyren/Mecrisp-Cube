@@ -179,14 +179,11 @@ To get an idea how fast the ADC, RTOS, and the Forth program are. The
 `left` or `right` word takes about 125 us, the `knightrider` loop about
 50 us (no osDelay). Pretty fast for my opinion.
 
-```forth
-: knightrider-thread ( -- )
-  osNewDataStack
-  knigthrider
-  osThreadExit
-;
-
-' knightrider-thread 0 0 osThreadNew
+Create a task for the knigthrider (details see [Hoe to Use Tasks](CmsisRtos.md#how-to-use-tasks))
+```
+task knigthrider&
+knigthrider& construct
+' knigthrider knigthrider& start-task
 ```
 
 
