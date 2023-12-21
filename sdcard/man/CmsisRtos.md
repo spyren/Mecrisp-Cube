@@ -219,6 +219,72 @@ $200004a0 10 dump
 >body 4780
 
 
+How to Create a Thread
+======================
+
+You can use RTOS threads direct without task management. 
+
+A very simple thread could be like this one, a boring blinker:
+```forth
+: blinker  ( -- )
+  begin 
+    led1@ 0= led1!   \ toggle blue LED
+    200 osDelay drop  \ wait 200 ms
+  switch1? until 
+  0 led1! 
+;
+```
+
+If you type the word `blinker`, the blue LED blinks, after push the
+button SW1, the blinking stops an the `ok.` apears. But if you try to
+start the thread with
+```forth
+' blinker 0 0 osThreadNew
+```
+
+Nothing happens and probably the Forth system hangs. Restart the Forth
+system with the Reset button *SW4*.
+
+If you create a new RTOS Thread, CMSIS-RTOS (FreeRTOS) allocate some
+memory from the heap for the stack and the thread control block. But
+Forth thread needs another stack, the data stack. The blink-thread runs
+concurrent to the Forth interpreter and use the same data stack. This
+cannot work. Each thread must have its own data stack, the thread
+function can get one with `osNewDataStack` (see below for the assembler
+source).
+```forth
+: blink-thread  ( -- )
+  osNewDataStack
+  blinker
+  osThreadExit
+;
+```
+
+`osThreadExit` is needed to exit the thread, otherwise the Forth system
+hangs after leaving the thread. These threads are very similar to the
+*control tasks* described in Starting Forth, Leo Brodie. But without
+*user variables*. If a thread wants to use variables and share these
+variables with other threads, the variables have to be protected by a
+mutex or a semaphore. Anyway variables have to be created by the main
+Forth thread (terminal task) before.
+
+Now you can interactively play with the words `osThreadGetId`,
+`osThreadGetState`, `osThreadSuspend`, and `osThreadResume` without the
+tedious edit-compile-download-run-abort.
+```assembly
+// -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "osNewDataStack"
+        @ (  --  ) Creates an new data stack for a Forth thread.
+// -----------------------------------------------------------------------------
+rtos_osNewDataStack:
+    push    {r0-r3, lr}
+    ldr     r0, =256    // 64 levels should be more than enough
+    bl      pvPortMalloc
+    adds    r7, r0, #256    // stack grows down
+    movs    tos, 42
+    pop     {r0-r3, pc}
+```
+
 # Interrupts and Forth
 
 Mecrisp uses CPU register R7 as data stack pointer and R6 as TOS. 
@@ -300,73 +366,6 @@ OCwait:
 </pre>
 
 
-How to Create a Thread
-======================
-
-A very simple thread could be like this one, a boring blinker:
-```forth
-: blink-thread  ( -- )
-  begin 
-    led1@ 0= led1!   \ toggle blue LED
-    200 osDelay drop  \ wait 200 ms
-  switch1? until 
-  0 led1! 
-;
-```
-
-If you type the word `blink-thread`, the blue LED blinks, after push the
-button SW1, the blinking stops an the `ok.` apears. But if you try to
-start the thread with
-```forth
-' blink-thread 0 0 osThreadNew
-```
-
-Nothing happens and probably the Forth system hangs. Restart the Forth
-system with the Reset button *SW4*.
-
-If you create a new RTOS Thread, CMSIS-RTOS (FreeRTOS) allocate some
-memory from the heap for the stack and the thread control block. But
-Forth thread needs another stack, the data stack. The blink-thread runs
-concurrent to the Forth interpreter and use the same data stack. This
-cannot work. Each thread must have its own data stack, the thread
-function can get one with `osNewDataStack` (see below for the assembler
-source).
-```forth
-: blink-thread  ( -- )
-  osNewDataStack
-  begin 
-    led1@ 0= led1!   \ toggle blue LED
-    200 osDelay drop  
-  switch1? until 
-  0 led1! 
-  osThreadExit
-;
-```
-
-`osThreadExit` is needed to exit the thread, otherwise the Forth system
-hangs after leaving the thread. These threads are very similar to the
-*control tasks* described in Starting Forth, Leo Brodie. But without
-*user variables*. If a thread wants to use variables and share these
-variables with other threads, the variables have to be protected by a
-mutex or a semaphore. Anyway variables have to be created by the main
-Forth thread (terminal task) before.
-
-Now you can interactively play with the words `osThreadGetId`,
-`osThreadGetState`, `osThreadSuspend`, and `osThreadResume` without the
-tedious edit-compile-download-run-abort.
-```assembly
-// -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "osNewDataStack"
-        @ (  --  ) Creates an new data stack for a Forth thread.
-// -----------------------------------------------------------------------------
-rtos_osNewDataStack:
-    push    {r0-r3, lr}
-    ldr     r0, =256    // 64 levels should be more than enough
-    bl      pvPortMalloc
-    adds    r7, r0, #256    // stack grows down
-    movs    tos, 42
-    pop     {r0-r3, pc}
-```
 
 CMSIS-RTOS API
 ==============
