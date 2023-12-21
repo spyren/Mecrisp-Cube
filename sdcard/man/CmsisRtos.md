@@ -266,6 +266,8 @@ source).
   blinker
   osThreadExit
 ;
+
+' blink-thread 0 0 osThreadNew
 ```
 
 `osThreadExit` is needed to exit the thread, otherwise the Forth system
