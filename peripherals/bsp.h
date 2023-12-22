@@ -33,6 +33,16 @@
 #ifndef INC_BSP_H_
 #define INC_BSP_H_
 
+typedef enum {
+	SYSLED_ACTIVATE 			= 1 << 0,
+	SYSLED_DISK_READ_OPERATION 	= 1 << 1,
+	SYSLED_DISK_WRITE_OPERATION = 1 << 2,
+	SYSLED_CHARGING 			= 1 << 3,
+	SYSLED_FULLY_CHARGED 		= 1 << 4,
+	SYSLED_BLE_CONNECTED 		= 1 << 5,
+} BSP_sysled_t;
+
+
 void BSP_init(void);
 
 int BSP_getSwitch1(void);
@@ -75,5 +85,8 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len);
 
 void BSP_setVibro(int status);
 int BSP_getVibro(void);
+
+void BSP_setSysLED(int status);
+void BSP_clearSysLED(int status);
 
 #endif /* INC_BSP_H_ */

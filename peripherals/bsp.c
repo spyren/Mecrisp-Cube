@@ -52,10 +52,12 @@
 #include "main.h"
 #include "bsp.h"
 #include "power.h"
+#include "rgbw.h"
 
 
 // Private function prototypes
 // ***************************
+static void update_sysled(void);
 
 // Global Variables
 // ****************
@@ -107,7 +109,7 @@ uint32_t neo_pixel = 0;
 
 static uint32_t adc_calibration;
 
-
+static int sys_led_status = SYSLED_ACTIVATE;
 
 // Public Functions
 // ****************
@@ -1317,4 +1319,46 @@ int BSP_getVibro(void) {
 }
 
 
+/**
+ *  @brief
+ *	    Set the system LED.
+ *
+ *	@param[in]
+ *      status
+ *  @return
+ *      none
+ *
+ */
+void BSP_setSysLED(int status) {
+	sys_led_status |= status;
+	update_sysled();
+}
 
+void BSP_clearSysLED(int status) {
+	sys_led_status &= ~status;
+	update_sysled();
+}
+
+static void update_sysled(void) {
+	uint32_t rgb = 0;
+	if (sys_led_status & SYSLED_ACTIVATE) {
+		if (sys_led_status & SYSLED_DISK_READ_OPERATION) {
+			// bright yellow
+			rgb = 0xFFFF00;
+		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
+			// bright red
+			rgb = 0xFF0000;
+		} else if (sys_led_status & SYSLED_CHARGING) {
+			// red
+			rgb = 0x200000;
+		} else if (sys_led_status & SYSLED_FULLY_CHARGED) {
+			// green
+			rgb = 0x002000;
+		}
+		if (sys_led_status & SYSLED_BLE_CONNECTED) {
+			// add some blue
+			rgb |= 0x000020;
+		}
+		RGBW_setRGB(rgb);
+	}
+}

@@ -490,7 +490,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
       Adv_Request(APP_BLE_FAST_ADV);
 
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE */
-      RGBW_setRGB(RGBW_getRGB() & 0xFFFF00); // Clear blue LED
+      BSP_clearSysLED(SYSLED_BLE_CONNECTED); // Clear blue LED
       /* USER CODE END EVT_DISCONN_COMPLETE */
       break; /* HCI_DISCONNECTION_COMPLETE_EVT_CODE */
     }
@@ -588,7 +588,7 @@ SVCCTL_UserEvtFlowStatus_t SVCCTL_App_Notification(void *p_Pckt)
           }
           BleApplicationContext.BleApplicationContext_legacy.connectionHandle = p_connection_complete_event->Connection_Handle;
           /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-          RGBW_setRGB(RGBW_getRGB() | 0x000020); // set blue LED to 50 %
+          BSP_setSysLED(SYSLED_BLE_CONNECTED); // set blue LED
           osThreadFlagsSet(CRS_ThreadId, CRSAPP_CONNECTED);
           /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
           break; /* HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE */

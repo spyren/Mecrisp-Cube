@@ -42,6 +42,7 @@
 #include "myassert.h"
 #include "rgbw.h"
 #include "power.h"
+#include "bsp.h"
 
 // Buffer Length
 // **************
@@ -272,12 +273,12 @@ static void BUTTON_Thread(void *argument) {
 				measure_timeout = MEASURE_INTERVAL;
 				if (GAUGE_getCharge() == 100) {
 					// fully charged
-					RGBW_setRGB(0x001000);
+					BSP_setSysLED(SYSLED_FULLY_CHARGED);
 				} else if (GAUGE_getCurrent() > 0) {
 					// charging
-					RGBW_setRGB(0x100000);
+					BSP_setSysLED(SYSLED_CHARGING);
 				} else {
-					RGBW_setRGB(0x000000);
+					BSP_clearSysLED(SYSLED_CHARGING|SYSLED_FULLY_CHARGED);
 				}
 			}
 		}
