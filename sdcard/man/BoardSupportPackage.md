@@ -23,17 +23,20 @@ rgbled!      ( u -- )         set the RGB led ($ff0000 red, $00ff00 green, $0000
 rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
 wled!        ( u -- )         set the W (LCD backlight) led
 wled@        ( -- u )         get the W (LCD backlight) led
++sysled      ( flags -- )     set sysled flags $01 ACTIVATE, $02 DISK_READ_OPERATION, $04 DISK_WRITE_OPERATION
+                              $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
+-sysled      ( flags -- )     clear sysled flags 
 
-switch1?     ( -- ? )         get switch1 (BACK button), closed=TRUE
-switch2?     ( -- ? )         get switch2 (OK button), closed=TRUE
-switch3?     ( -- ? )         get switch3 (RIGHT button), closed=TRUE
-switch4?     ( -- ? )         get switch4 (LEFT), closed=TRUE
-switch5?     ( -- ? )         get switch5 (UP button), closed=TRUE
-switch6?     ( -- ? )         get switch6 (DOWN button), closed=TRUE
+switch1?     ( -- f )         get switch1 (BACK button), closed=TRUE
+switch2?     ( -- f )         get switch2 (OK button), closed=TRUE
+switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
+switch4?     ( -- f )         get switch4 (LEFT), closed=TRUE
+switch5?     ( -- f )         get switch5 (UP button), closed=TRUE
+switch6?     ( -- f )         get switch6 (DOWN button), closed=TRUE
 
 button       ( -- c )         wait for and fetch the pressed button (similar to the key word) 
                               char b BACK, o OK, r RIGHT, l LEFT, u UP, d DOWN
-button?      ( -- ? )         Is there a button press?
+button?      ( -- f )         Is there a button press?
 
 
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
@@ -93,13 +96,13 @@ LIPOgauge!   ( u1 u2 --  )    set fuel gauge register u2 with data u1
 LIPOcharger@ ( u -- u )       get charger register
 LIPOcharger! ( u1 u2 --  )    set charger register u2 with data u1
 
-vibro@       (  -- ? )        get vibro state
-vibro!       ( ? -- )         set vibro status, 0 switch off
+vibro@       (  -- f )        get vibro state
+vibro!       ( f -- )         set vibro status, 0 switch off
 
-peripheral!  ( ? -- )         set peripheral supply status, 0 switch off
+peripheral!  ( f -- )         set peripheral supply status, 0 switch off
 
-lcd-emit     ( ? -- )         emit a character (writes a character to the LCD display)
-lcd-emit?    ( -- ? )         LCD ready to get a character (I2C not busy)
+lcd-emit     ( f -- )         emit a character (writes a character to the LCD display)
+lcd-emit?    ( -- f )         LCD ready to get a character (I2C not busy)
 lcdpos!      ( x y -- )       set LCD cursor position, 
                               x (column) horizontal position, max. 127  
                               y (row) vertical position (a line consists of 8 pixels), max. 7
@@ -177,23 +180,21 @@ delay.
 
 To get an idea how fast the ADC, RTOS, and the Forth program are. The
 `left` or `right` word takes about 125 us, the `knightrider` loop about
-50 us (no osDelay). Pretty fast for my opinion.
+50 us (no osDelay). Pretty fast for my opinion (STM32WB55 @ 32 MHz sysclock).
 
-```forth
-: knightrider-thread ( -- )
-  osNewDataStack
-  knigthrider
-  osThreadExit
-;
-
-' knightrider-thread 0 0 osThreadNew
+Create a task for the knigthrider (details see [How to Use Tasks](CmsisRtos.md#how-to-use-tasks)) 
+to run it in the background:
+```
+task knigthrider&
+knigthrider& construct
+' knigthrider knigthrider& start-task
 ```
 
 
 Using the PWM (Analog Output Pins)
 ==================================
 
-Only three port pins are supported so far. The TIMER1 is used for the
+Only two port pins are supported so far. The TIMER1 is used for the
 timebase, time resolution is 1 us (32 MHz SysClk divided by 32). The PWM
 scale is from 0 (0 % duty cycle) to 1000 (100 % duty cycle), this
 results in a PWM frequency of 1 kHz. If you need higher PWM frequencies,
@@ -217,6 +218,188 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
   until 
 ;
 ```
+
+## Control an RC Servo
+
+https://en.wikipedia.org/wiki/Servo_(radio_control): 
+The control signal is a digital PWM signal with a 50 Hz frame rate. Within each 20 ms timeframe, 
+an active-high digital pulse controls the position. The pulse nominally ranges from 1.0 ms to 
+2.0 ms with 1.5 ms always being center of range. Pulse widths outside this range can be used for 
+"overtravel" - moving the servo beyond its normal range. 
+
+A servo pulse of 1.5 ms width will typically set the servo to its "neutral" position (typically 
+half of the specified full range), a pulse of 1.0 ms will set it to 0°, and a pulse of 2.0 ms 
+to 90° (for a 90° servo). The physical limits and timings of the servo hardware varies between 
+brands and models, but a general servo's full angular motion will travel somewhere in the range 
+of 90° – 180° and the neutral position (45° or 90°) is almost always at 1.5 ms. This is the 
+"standard pulse servo mode" used by all hobby analog servos. 
+
+The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider is therefore 32 * 20 = 640. 
+
+| angle | time   | n   | 
+|-------|--------|-----|
+|   0°  | 1 ms   | 50  | 
+|  45°  | 1.5 ms | 75  | 
+|  90°  | 2 ms   | 100 | 
+| 180°  | 3 ms   | 150 | 
+| 270   | 4 ms   | 200 | 
+
+| angle | time   | n   | 
+|-------|--------|-----|
+|   0°  | 1 ms   | 50  | 
+|  90°  | 1.5 ms | 75  | 
+| 180°  | 2 ms   | 100 | 
+| 270°  | 2.5 ms | 150 | 
+
+
+```forth
+640 pwmprescale 
+5 4 dmod   \ set D4 to PWM
+
+: servo ( -- ) 
+  begin
+    130 40 do
+      i 4 pwmpin! 
+      i neopixel! 
+      i 40 = if 
+        1000 \ give some more time to get back
+      else
+        200
+      then 
+      osDelay drop
+    10 +loop
+  key? until 
+  key drop
+;
+```
+
+```forth
+640 pwmprescale 
+5 11 dmod   \ set D11 to PWM
+
+: slowservo ( -- ) 
+  begin
+    100 50 do
+      i 11 pwmpin! 
+      50 osDelay drop
+    1 +loop
+    50 100 do
+      i 3 pwmpin! 
+      50 osDelay drop
+    -1 +loop
+  key? until 
+  key drop
+;
+```
+
+
+# Using Input Capture and Output Compare
+
+## Time Base
+
+Default timer resolution is 1 us. The 32 bit TIMER2 is used as time base 
+for Input Capture / Output Compare. For a 5 s period 5'000'000 cycles are needed. 
+All channels (input capture / output compare) use the same time base.
+
+```forth
+: period ( -- )
+  5000000 ICOCperiod! \ 5 s period
+  ICOCstart
+  begin
+     waitperiod
+     cr .time
+  key? until
+  key drop 
+;
+```
+
+## Output Compare
+Output compare TIM2: D5, D6, and D13
+
+```forth
+7 5 dmod  \ output compare for D5
+7 6 dmod  \ output compare for D6
+7 13 dmod \ output compate for D13
+
+: oc-toggle ( -- )
+  5000000 ICOCperiod! \ 5 s period
+  ICOCstart
+  3 5  OCmod  1000000  5 OCstart \ toggle D5 after 1 s
+  3 6  OCmod  2000000  5 OCstart \ toggle D6 after 2 s
+  3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
+  begin
+     waitperiod
+     cr .time
+  key? until
+  key drop 
+;
+```
+
+When you abort (hit any key) the program, the timer still runs and controls 
+the port pins. To stop the port pins:
+<pre>
+5 OCstop  5 OCstop  13 OCstop  
+</pre>
+
+Or change the prescale to make it faster or slower:
+<pre>
+1 ICOCprescale
+</pre>
+
+
+## Input Capture
+
+This sample program measures the time between the edges on port A5. 
+If no event occurs within 2 seconds, "timeout" is issued. 
+Hit any key to abort program.
+```forth
+: ic-test ( -- )
+  6 21 dmod \ input capture on A5
+  ICOCstart
+  2 ICstart  \ both edges
+  ICOCcount@ ( -- count )
+  begin
+    2000 \ 2 s timeout
+    ICwait ( -- old-capture capture ) 
+    cr
+    dup 0= if
+      ." timeout" drop
+    else 
+      dup rot ( -- capture capture old-capture )
+      - 1000 / . ." ms"
+    then
+  key? until
+  key drop
+  drop
+  ICstop
+;
+```
+
+# Using EXTI line
+
+D5, D6, D11 and D13 can be used as an EXTI line. 
+EXTIs are external interrupt lines, D5 uses EXTI2 (EXTI Line2 interrupt), 
+D6 EXTI3, D11 EXIT8, and D13 EXTI1. 
+
+```forth
+: exti-test ( -- )
+  2 5 EXTImod \ both edges on D5
+  begin
+    2000 5 EXTIwait \ wait for edge on D5 (button C) with 2 s timeout
+    cr
+    0= if
+      5 dpin@ if
+        ." rising edge"
+      else
+        ." falling edge"
+      then 
+    else
+      ." timeout"
+    then
+  key? until
+  key drop
+```
+
 
 # Pinouts
 

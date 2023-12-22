@@ -23,59 +23,61 @@ drive. No additional hardware is needed. 384 KiB is about the same as
 the old DD 5 1/4\" floppy from 1978 had.
 
 ### Flash Memory Layout
+```
+FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+   20 KiB Forth Core
+   140 KiB Middleware (debug 210 KiB)
 
-    FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
-       20 KiB Forth Core
-       140 KiB Middleware (debug 210 KiB)
+FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+   128 KiB Flash Dictionary
 
-    FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
-       128 KiB Flash Dictionary
+FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+   384 KiB future use for built in flash drive
 
-    FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
-       384 KiB future use for built in flash drive
-
-    FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
+FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
+```
 
 ### RAM Memory Layout
-
-     STM32WB55C: 256 KiB RAM
+```
+STM32WB55C: 256 KiB RAM
      
-     RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-         1 KiB Core
-        63 KiB RAM Dictionary
+RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
+    1 KiB Core
+   63 KiB RAM Dictionary
      
-     RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
-         1 KiB Stack         (only for startup)
-         1 KiB Heap          (maybe not needed)
-         1 KiB UART Tx Buffer
-         5 KiB UART Rx Buffer
-         4 KiB CDC Rx/Tx Buffer
-         2 KiB CDC RxQueue
-        10 KiB global variables
-        80 KiB RTOS Heap (about 9 KiB free)
-            Thread Stack size
-            4 KiB Forth (main)
-            1 KiB UART_Tx
-            1 KiB UART_Rx
-            1 KiB CDC
-            1 KiB CRS
-            1 KiB HRS
-            1 KiB HCI_USER_EVT
-            1 KiB ADV_UPDATE
-            1 KiB SHCI_USER_EVT
+RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
+    1 KiB Stack         (only for startup)
+    1 KiB Heap          (maybe not needed)
+    1 KiB UART Tx Buffer
+    5 KiB UART Rx Buffer
+    4 KiB CDC Rx/Tx Buffer
+    2 KiB CDC RxQueue
+   10 KiB global variables
+   80 KiB RTOS Heap (about 9 KiB free)
+       Thread Stack size
+       4 KiB Forth (main)
+       1 KiB UART_Tx
+       1 KiB UART_Rx
+       1 KiB CDC
+       1 KiB CRS
+       1 KiB HRS
+       1 KiB HCI_USER_EVT
+       1 KiB ADV_UPDATE
+       1 KiB SHCI_USER_EVT
      
-        40 KiB vi text buffer
+   40 KiB vi text buffer
      
-     RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
-        10 KiB communication between CPU1 and CPU2 (part of RAM2a)
+RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
+   10 KiB communication between CPU1 and CPU2 (part of RAM2a)
      
-     (RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
-        10 KiB shared between CPU1 and CPU2
-        22 KiB secure RAM for CPU2
+(RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
+   10 KiB shared between CPU1 and CPU2
+   22 KiB secure RAM for CPU2
      
-     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
-        16 KiB shared between CPU1 and CPU2
-        16 KiB secure RAM for CPU2
+(RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
+   16 KiB shared between CPU1 and CPU2
+   16 KiB secure RAM for CPU2
+```
 
 SD Drive
 --------
@@ -154,18 +156,19 @@ The blocks can be used as buffers. As long as you use less or equal than
 
 Block (Virtual Memory) Words
 ----------------------------
+```
+block          ( n -- a )      Return address of buffer for block n. 0 on error.
+buffer         ( n -- a )      Return address of buffer for block n. Does not get the block from disk. 0 on error.
+empty-buffers  ( -- )          Marks all block buffers as empty.
+update         ( -- )          Marks most recent block as updated (dirty).
+save-buffers   ( -- )          Transfers the contents of each updated block buffer to disk.
+flush          ( -- )          save-buffers empty-buffers
+list           ( n -- )        Display block n. The block is displayed as 16 numbered lines, each of 64 characters. 
+load           ( n -- )        Interprets the content of block n. 
 
-    block          ( n -- a )      Return address of buffer for block n. 0 on error.
-    buffer         ( n -- a )      Return address of buffer for block n. Does not get the block from disk. 0 on error.
-    empty-buffers  ( -- )          Marks all block buffers as empty.
-    update         ( -- )          Marks most recent block as updated (dirty).
-    save-buffers   ( -- )          Transfers the contents of each updated block buffer to disk.
-    flush          ( -- )          save-buffers empty-buffers
-    list           ( n -- )        Display block n. The block is displayed as 16 numbered lines, each of 64 characters. 
-    load           ( n -- )        Interprets the content of block n. 
-
-    drive          ( u -- )        Initializes the drive (0 flash drive, 1 SD drive) and makes it current, sets the block count.
-    #blocks        ( -- n )        Gets the block count from current drive.
+drive          ( u -- )        Initializes the drive (0 flash drive, 1 SD drive) and makes it current, sets the block count.
+#blocks        ( -- n )        Gets the block count from current drive.
+```
 
 Block Editor
 ------------
@@ -312,12 +315,13 @@ Filesystem API
 ==============
 
 The C function prototype for `f_open` looks like this:
-
-    FRESULT f_open (
-      FIL* fp,           /* [OUT] Pointer to the file object structure */
-      const TCHAR* path, /* [IN] File name */
-      BYTE mode          /* [IN] Mode flags */
-    );
+```C
+FRESULT f_open (
+  FIL* fp,           /* [OUT] Pointer to the file object structure */
+  const TCHAR* path, /* [IN] File name */
+  BYTE mode          /* [IN] Mode flags */
+);
+```
 
 The parameter order for the Forth Word is the same: `addr1` is address
 of the file object data structure
@@ -525,32 +529,34 @@ standard input/ouptut/err redirection.
 
 Shell Prompt
 ------------
+```forth
+: init ;
 
-    : init ;
-
-    : prompt ( -- ) 
-      begin 
-        tib 256 f_getcwd drop strlen type \ show current working directory
-        ."  > "    \ show ">" for prompt. Could show "OK."
-        query interpret cr 
-      again
-    ;
+: prompt ( -- ) 
+  begin 
+    tib 256 f_getcwd drop strlen type \ show current working directory
+    ."  > "    \ show ">" for prompt. Could show "OK."
+    query interpret cr 
+  again
+;
      
-    : init init ['] prompt hook-quit ! ; \ make new prompt 
+: init init ['] prompt hook-quit ! ; \ make new prompt 
      
-    init quit
+init quit
+```
 
 Forth String to 0-Terminated String and vice versa
 --------------------------------------------------
 
 Caution! There must be space for the 0 character at the end of the
 string.
+```forth
+: str0term ( cadr len -- cadr len )
+  + 0 swap c!
+;
 
-    : str0term ( cadr len -- cadr len )
-      + 0 swap c!
-    ;
-
-    strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
+strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
+```
 
 Commands
 --------

@@ -35,34 +35,36 @@ details see
 [mecrisp.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/mecrisp.s)).
 If you press button SW1 on reset, the console is redirected to the
 Bluetooth LE Cable Replacement Service.
+```
+emit?        ( -- f )       Ready to send a character?
+key?         ( -- f )       Checks if a key is waiting
+key          ( -- c )       Waits for and fetches the pressed key
+emit         ( c -- )       Emits a character
 
-    emit?        ( -- ? )       Ready to send a character?
-    key?         ( -- ? )       Checks if a key is waiting
-    key          ( -- c )       Waits for and fetches the pressed key
-    emit         ( c -- )       Emits a character
+hook-emit?   ( -- a-addr )  Hooks for redirecting terminal IO on the fly
+hook-key?
+hook-key
+hook-emit
 
-    hook-emit?   ( -- a-addr )  Hooks for redirecting terminal IO on the fly
-    hook-key?
-    hook-key
-    hook-emit
+uart         ( -- )         redirect console to serial interface (UART)
+cdc          ( -- )         redirect console to USB-CDC
+crs          ( -- )         redirect console to BLE CRS
+```
 
-    uart         ( -- )         redirect console to serial interface (UART)
-    cdc          ( -- )         redirect console to USB-CDC
-    crs          ( -- )         redirect console to BLE CRS
+```forth
+: ascii ( -- ) 
+  127 32 do 
+    i emit 
+  loop 
+;
 
-    : ascii ( -- ) 
-      127 32 do 
-        i emit 
-      loop 
-    ;
-
-    : crs-ascii ( -- ) 
-      127 32 do 
-        i crs-emit 
-      loop 
-      10 crs-emit / LF
-    ;
-
+: crs-ascii ( -- ) 
+  127 32 do 
+    i crs-emit 
+  loop 
+  10 crs-emit / LF
+;
+```
 
 USB-CDC Serial Communication (API)
 ==================================
@@ -79,12 +81,12 @@ After the first connect to the USB host the green LED is switched on.
 
 USB_USER CN1 Micro USB connector on the MB1355 Nucleo Board.
 USB_USER CN3 USB A plug on the MB1293 dongle.
-
-    cdc-emit   ( c -- ) Emits one character to the USB-CDC interface. Blocking if the Buffer is full.
-    cdc-key    ( -- c ) Waits and gets one character from the USB-CDC interface. Blocking if the buffer is empty.
-    cdc-emit?  ( -- ? ) Ready to send a character. Buffer is not full.
-    cdc-key?   ( -- ? ) Checks if a character is in the buffer.
-
+```
+cdc-emit   ( c -- ) Emits one character to the USB-CDC interface. Blocking if the Buffer is full.
+cdc-key    ( -- c ) Waits and gets one character from the USB-CDC interface. Blocking if the buffer is empty.
+cdc-emit?  ( -- f ) Ready to send a character. Buffer is not full.
+cdc-key?   ( -- f ) Checks if a character is in the buffer.
+```
 
 UART Serial Communication (API)
 ===============================
@@ -97,17 +99,17 @@ Serial port UART1 on PB6/PB7 (remove jumper SB2, close jumper SB6) on
 the MB1293 dongle. Do not forget to set the baud rate. The default baud
 rate for the MecrispCube is 115200 baud, e.g.
 `microcom -D /dev/ttyACM1 -s 115200` .
+```
+serial-emit  ( c -- ) Emits one character to the UART interface. Blocking if the Buffer is full.
+serial-key   ( -- c ) Waits and gets one character from the UART interface. Blocking if the buffer is empty.
+serial-emit? ( -- f ) Ready to send a character. Buffer is not full.
+serial-key?  ( -- f ) Checks if a character is in the buffer.
 
-    serial-emit  ( c -- ) Emits one character to the UART interface. Blocking if the Buffer is full.
-    serial-key   ( -- c ) Waits and gets one character from the UART interface. Blocking if the buffer is empty.
-    serial-emit? ( -- ? ) Ready to send a character. Buffer is not full.
-    serial-key?  ( -- ? ) Checks if a character is in the buffer.
-
-    baudrate!    ( u -- ) sets baud rate (e.g. 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200)
-    paritybit!   ( u -- ) sets parity bit 0 none, 1 odd, 2 even
-    wordlength!  ( u -- ) sets word length 7, 8, 9 (including parity)
-    stopbits!    ( u -- ) sets stop bits 0 1 bit, 1 1.5 bit, 2 2 bit
-
+baudrate!    ( u -- ) sets baud rate (e.g. 300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200)
+paritybit!   ( u -- ) sets parity bit 0 none, 1 odd, 2 even
+wordlength!  ( u -- ) sets word length 7, 8, 9 (including parity)
+stopbits!    ( u -- ) sets stop bits 0 1 bit, 1 1.5 bit, 2 2 bit
+```
 
 BLE Cable Replacement Serial Communication (API)
 ================================================
@@ -145,11 +147,12 @@ works great. You have to configure the the STM CRS to Custom, choose the
 default UUIDs (Service `0000fe60-cc7a-482a-984a-7f2ed5b3e58f`, Read
 Characteristic `0000fe62-8e22-4541-9d4c-21edae82ed19`, Write
 Characteristic `0000fe61-8e22-4541-9d4c-21edae82ed19`).
-
-    crs-emit   ( c -- ) Emits one character to the BLE Cable Replacement Service. Blocking if the Buffer is full.
-    crs-key    ( -- c ) Waits and gets one character from the BLE Cable Replacement Service. Blocking if the buffer is empty.
-    crs-emit?  ( -- ? ) Ready to send a character. Buffer is not full.
-    crs-key?   ( -- ? ) Checks if a character is in the buffer.
+```
+crs-emit   ( c -- ) Emits one character to the BLE Cable Replacement Service. Blocking if the Buffer is full.
+crs-key    ( -- c ) Waits and gets one character from the BLE Cable Replacement Service. Blocking if the buffer is empty.
+crs-emit?  ( -- f ) Ready to send a character. Buffer is not full.
+crs-key?   ( -- f ) Checks if a character is in the buffer.
+```
 
 The blue LED indicates a connection to a central device.
 

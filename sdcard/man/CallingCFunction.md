@@ -40,20 +40,21 @@ Calling C Functions from Forth
 
 Word `osDelay` from
 [rtos.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/rtos.s)
-
-    // -----------------------------------------------------------------------------
-        Wortbirne Flag_visible, "osDelay"
-        @ ( u -- n ) Wait for Timeout (Time Delay).
-    /// \param[in]     ticks         \ref CMSIS_RTOS_TimeOutValue "time ticks" value
-    /// \return status code that indicates the execution status of the function.
-    // osStatus_t osDelay (uint32_t ticks);
-    // -----------------------------------------------------------------------------
-    rtos_osDelay:
-        push    {r0-r3, lr}
-        movs    r0, tos     // ticks
-        bl  osDelay
-        movs    tos, r0
-        pop {r0-r3, pc}
+```assembly
+// -----------------------------------------------------------------------------
+    Wortbirne Flag_visible, "osDelay"
+    @ ( u -- n ) Wait for Timeout (Time Delay).
+/// \param[in]     ticks         \ref CMSIS_RTOS_TimeOutValue "time ticks" value
+/// \return status code that indicates the execution status of the function.
+// osStatus_t osDelay (uint32_t ticks);
+// -----------------------------------------------------------------------------
+rtos_osDelay:
+    push    {r0-r3, lr}
+    movs    r0, tos     // ticks
+    bl      osDelay
+    movs    tos, r0
+    pop     {r0-r3, pc}
+```
 
 If the C function itself calls Forth words the Data Stack Pointer SPS
 and Top Of Stack TOS registers have to be passed to the Forth words. See
@@ -68,90 +69,93 @@ parameter).
 C function `FS_include()` from
 [fs.c](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/Src/fs.c)
 calls the Forth words `FS_type` and `FS_evaluate`.
+```C
+/**
+ *  @brief
+ *      Interprets the content of the file.
+ *  @param[in]
+ *      forth_stack   TOS (lower word) and SPS (higher word)
+ *  @param[in]
+ *      str   filename (w/ or w/o null termination)
+ *  @param[in]
+ *      count string length
+ *  @return
+ *      TOS (lower word) and SPS (higer word)
+ */
+uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
+    FIL fil;        /* File object */
+    FRESULT fr;     /* FatFs return code */
 
-    /**
-     *  @brief
-     *      Interprets the content of the file.
-     *  @param[in]
-     *      forth_stack   TOS (lower word) and SPS (higher word)
-     *  @param[in]
-     *      str   filename (w/ or w/o null termination)
-     *  @param[in]
-     *      count string length
-     *  @return
-     *      TOS (lower word) and SPS (higer word)
-     */
-    uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
-        FIL fil;        /* File object */
-        FRESULT fr;     /* FatFs return code */
+    uint64_t stack;
+    stack = forth_stack;
 
-        uint64_t stack;
-        stack = forth_stack;
+    memcpy(path, str, count);
+    line[count] = 0;
 
-        memcpy(path, str, count);
-        line[count] = 0;
-
-        /* Open a text file */
-        fr = f_open(&fil, path, FA_READ);
-        if (fr) {
-            // open failed
-            strcpy(line, "Err: file not found");
-            stack = FS_type(stack, (uint8_t*)line, strlen(line));
-        }
-
-        /* Read every line and interprets it */
-        while (f_gets(line, sizeof line, &fil)) {
-            // line without \n
-            stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
-        }
-
-        /* Close the file */
-        f_close(&fil);
-
-        return stack;
+    /* Open a text file */
+    fr = f_open(&fil, path, FA_READ);
+    if (fr) {
+        // open failed
+        strcpy(line, "Err: file not found");
+        stack = FS_type(stack, (uint8_t*)line, strlen(line));
     }
+
+    /* Read every line and interprets it */
+    while (f_gets(line, sizeof line, &fil)) {
+        // line without \n
+        stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
+    }
+
+    /* Close the file */
+    f_close(&fil);
+
+    return stack;
+}
+```
 
 Word `include` from
 [fs.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fs.s)
 calls the C function `FS_include()`.
-
-    @ -----------------------------------------------------------------------------
-            Wortbirne Flag_visible, "include"
-            @  ( any "filename" -- any ) Interprets the content of the file.
-    // uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
-    @ -----------------------------------------------------------------------------
-    include:
-        push    {lr}
-        bl  token       @ ( -- c-addr len )
-    incl:
-        movs    r3, tos     // len -> count
-        drop
-        movs    r2, tos     // c-addr -> str
-        drop
-        movs    r0, tos     // get tos
-        movs    r1, psp     // get psp
-        bl  FS_include
-        movs    tos, r0     // update tos
-        movs    psp, r1     // update psp
-        pop {pc}
+```assembly
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "include"
+        @  ( any "filename" -- any ) Interprets the content of the file.
+// uint64_t FS_include  (uint64_t forth_stack, uint8_t *str, int count);
+@ -----------------------------------------------------------------------------
+include:
+    push    {lr}
+    bl  token       @ ( -- c-addr len )
+incl:
+    movs    r3, tos     // len -> count
+    drop
+    movs    r2, tos     // c-addr -> str
+    drop
+    movs    r0, tos     // get tos
+    movs    r1, psp     // get psp
+    bl  FS_include
+    movs    tos, r0     // update tos
+    movs    psp, r1     // update psp
+    pop {pc}
+```
 
 The C function `FS_include()` from
 [fs.c](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/Src/fs.c)
 calls the Forth word `evaluate` by the `FS_evaluate()` function.
-
-    // uint64_t FS_evaluate(uint64_t forth_stack, uint8_t* str, int count);
-    .global     FS_evaluate
-    FS_evaluate:
-        push    {r4-r7, lr}
-        movs    tos, r0     // get tos
-        movs    psp, r1     // get psp
-        pushdatos
-        movs    tos, r2     // str
-        pushdatos
-        movs    tos, r3     // count
-        bl  evaluate
-        movs    r0, tos     // update tos
-        movs    r1, psp     // update psp
-        pop {r4-r7, pc}
+```assembly
+// uint64_t FS_evaluate(uint64_t forth_stack, uint8_t* str, int count);
+.global     FS_evaluate
+FS_evaluate:
+    push    {r4-r7, lr}
+    movs    tos, r0     // get tos
+    movs    psp, r1     // get psp
+    pushdatos
+    movs    tos, r2     // str
+    pushdatos
+    movs    tos, r3     // count
+    bl      evaluate
+    movs    r0, tos     // update tos
+    movs    r1, psp     // update psp
+    pop {r4-r7, pc}
+```
 
 \-- [PeterSchmid - 2020-07-13]
