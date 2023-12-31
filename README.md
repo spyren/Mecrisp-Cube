@@ -16,6 +16,7 @@ The goal of Mecrisp-Cube is to be a complete Forth programming environment for S
   * [F405](../F405) for Adafruit's Feather STM32F405.
   * [H74x](../H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
+May the Forth Be With You!
 
 ## Intro for the Flipper Zero
 
