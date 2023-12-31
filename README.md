@@ -330,6 +330,10 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Support for Floating-Point Unit
 * EPD driver
 * Watchdog and Asserts
+### v1.5.1 Flipper Release
+* LCD driver (Flipper)
+* Docu on GitHub
+
 
 ## Authors
 
