@@ -1,7 +1,7 @@
 ![](img/flipper-header.jpg)
 
-Board Support Package
-=====================
+Board Support Package for the Flipper Zero
+==========================================
 
 The board support package for the STM32WB Nucleo Board is restricted to the
 Arduino UNO R3 pin header and the onboard LEDs and switches (buttons).
