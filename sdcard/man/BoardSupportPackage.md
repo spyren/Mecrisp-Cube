@@ -27,8 +27,8 @@ wled@        ( -- u )         get the W (LCD backlight) led
                               $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
 -sysled      ( flags -- )     clear sysled flags 
 
-switch1?     ( -- f )         get switch1 (BACK button), closed=TRUE
-switch2?     ( -- f )         get switch2 (OK button), closed=TRUE
+switch1?     ( -- f )         get switch2 (OK button), closed=TRUE
+switch2?     ( -- f )         get switch1 (BACK button), closed=TRUE
 switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
 switch4?     ( -- f )         get switch4 (LEFT), closed=TRUE
 switch5?     ( -- f )         get switch5 (UP button), closed=TRUE
@@ -458,8 +458,8 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 
 | Signal name   | STM32WB55 pin    | Comment                    | Numbering   |
 |---------------|------------------|----------------------------|-------------|
-| BUTTON_BACK   | PC13             | RESET, WKUP2               | 1           |
-| BUTTON_OK     | PH3              | BOOTP                      | 2           |
+| BUTTON_OK     | PH3              | BOOTP                      | 1           |
+| BUTTON_BACK   | PC13             | RESET, WKUP2               | 2           |
 | BUTTON_RIGHT  | PB12             |                            | 3           |
 | BUTTON_LEFT   | PB11             | RESET                      | 4           |
 | BUTTON_UP     | PB10             |                            | 5           |
