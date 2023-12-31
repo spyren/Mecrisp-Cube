@@ -470,8 +470,8 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| IC2_SCL       | PA9              |                            |
-| IC2_SDA       | PA10             |                            |
+| IC2_SCL       | PA9              | I2C1_SCL                   |
+| IC2_SDA       | PA10             | I2C1_SDA                   |
 
 PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 
@@ -520,8 +520,8 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| IC2_SCL       | PA9              |                            |
-| IC2_SDA       | PA10             |                            |
+| IC2_SCL       | PA9              | I2C1_SCL                   |
+| IC2_SDA       | PA10             | I2C1_SDA                   |
 | PWR_INT       | -                |                            |
 
 
