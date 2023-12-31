@@ -174,7 +174,7 @@ You can use the built-in editor [vi](sdcard/man/EditorVi.md) and save your sourc
 
 The following part is only for people who are interested how Forth works and have knowledge about 
 the ARM Assembler.
-There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but i is stored 
+There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but it is stored 
 as `00` `B5`):
 ```
 see hello
@@ -300,7 +300,7 @@ Project -> Build Project
 The STM tools work on Linux, Windows, and Mac.
 
 Tab size is 4 for C and assembler source files. 
-Append ?ts=4 to the URL to change the tab-size.
+Append `?ts=4` to the URL to change the tab-size.
 
 ## Versioning
 
