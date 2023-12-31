@@ -190,26 +190,54 @@ int FLASH_erasePage(uint32_t Address) {
 // for details see AN5289 chapter 4.7 Flash memory management
 
 int aquire_flash(uint8_t Erase) {
+	int tries = 0;
 
 	while (HAL_HSEM_FastTake(2)) {
-		; // busy wait for
+		; // busy wait
+		if (tries++ > 100) {
+			ASSERT_fatal(0, ASSERT_FLASH_UNLOCK, 0);
+		}
+		osDelay(1);
 	}
 
-	ASSERT_nonfatal(HAL_FLASH_Unlock() != HAL_ERROR, ASSERT_FLASH_UNLOCK, 0);
+	ASSERT_fatal(HAL_FLASH_Unlock() != HAL_ERROR, ASSERT_FLASH_UNLOCK, 0);
 
 	if (Erase) {
 		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
 	}
 
-	// enter critical section
-	os_state = osKernelLock();
-	while (HAL_HSEM_IsSemTaken(6)) {
-		; // busy wait
-	}
-	while (HAL_HSEM_FastTake(7)) {
-		; // busy wait for
-	}
+	tries = 0;
+	while (TRUE) {
+		if (tries++ > 100) {
+			ASSERT_fatal(0, ASSERT_FLASH_UNLOCK, 0);
+			tries = 0;
+		}
 
+		// PESD bit set?
+		if (LL_FLASH_IsActiveFlag_OperationSuspended()) {
+			// wait for PESD Flag
+			osDelay(1);
+			continue;
+		}
+
+		// enter critical section
+		os_state = osKernelLock();
+
+		if (HAL_HSEM_IsSemTaken(6)) {
+			// exit critical section
+			osKernelRestoreLock(os_state);
+			osDelay(1);
+			continue; // busy wait
+		}
+		if (HAL_HSEM_FastTake(7)) {
+			// exit critical section
+			osKernelRestoreLock(os_state);
+			osDelay(1);
+			continue; // busy wait
+		}
+
+		break;
+	}
 	return HAL_OK;
 }
 
