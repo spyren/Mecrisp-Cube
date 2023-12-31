@@ -535,4 +535,3 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | VIBRO         | PA8              |                            |
 
 
-\-- [PeterSchmid - 2020-04-11]
