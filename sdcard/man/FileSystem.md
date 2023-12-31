@@ -288,9 +288,6 @@ Nucleo:
     20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
      ok.
 
-[]{.twiki-macro .DASHBOARD section="box_end"}
-
-[]{.twiki-macro .DASHBOARD section="box_start" width="992" height="250"}
 
 FAT Filesystem
 ==============
@@ -513,8 +510,6 @@ Volume Management and System Configuration Functions/Words
 -   [f_setlabel](http://elm-chan.org/fsw/ff/doc/setlabel.html)- Set
     volume label
 
-[]{.twiki-macro .DASHBOARD section="box_end"} []{.twiki-macro .DASHBOARD
-section="box_start" width="992" height="520"}
 
 UNIX like Shell Commands
 ========================
@@ -647,8 +642,6 @@ wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for ea
 -   ps -\> .threads
 -   kill
 
-[]{.twiki-macro .DASHBOARD section="box_end"} []{.twiki-macro .DASHBOARD
-section="box_start" width="992" height="250"}
 
 C-String Helpers
 ================
@@ -665,5 +658,3 @@ and `u-count` is the number of characters in the string.
     s0"          ( "text" -- c-addr len )   Compiles a 0-terminated string and gives back its address and length when executed
     .(           ( "text) --  )             Mecrisp's ." is working only in compile mode
 
-
-\-- [PeterSchmid - 2020-06-03]
