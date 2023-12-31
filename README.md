@@ -169,6 +169,8 @@ compiletoflash
 : hello ." World" ;
 ```
 The program source is not saved, only the executable machine code is compiled into the flash. 
+You can use the built-in editor [vi](sdcard/man/EditorVi.md) and save your source to the 
+[filesystem](sdcard/man/FileSystem.md) either on internal flash drive `0:` or on the microSD card drive `1:`.
 
 The following part is only for people who are interested how Forth works and have knowledge about 
 the ARM Assembler.
