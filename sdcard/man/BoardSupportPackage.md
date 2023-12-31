@@ -41,9 +41,10 @@ button?      ( -- f )         Is there a button press?
 
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
 dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
-dpin!        ( n a -- )       set the digital output port pin (D0=0 .. D15=15)
+dpin!        ( n a -- )       set the digital output port pin (D0=0 .. D18=18)
 dpin@        ( a -- n )       get the digital input/output port pin 
-dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM 
+dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM
+                                                6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
 
 pwmpin!      ( u a -- )       set the digital output port pin (D4=4, D11=11) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D4=4, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
@@ -89,7 +90,7 @@ SPImutex     ( -- a )         get the SPI mutex address
 
 LIPOcharge@  ( -- u )         get LIPO charge [%]
 LIPOvoltage@ ( -- u )         get LIPO voltage [mV]
-LIPOcurrent@ ( -- n )         get LIPO current [mV]
+LIPOcurrent@ ( -- n )         get LIPO current [mA]
 
 LIPOgauge@   ( u -- u )       get fuel gauge register
 LIPOgauge!   ( u1 u2 --  )    set fuel gauge register u2 with data u1
