@@ -90,6 +90,7 @@ SPImutex     ( -- a )         get the SPI mutex address
 LIPOcharge@  ( -- u )         get LIPO charge [%]
 LIPOvoltage@ ( -- u )         get LIPO voltage [mV]
 LIPOcurrent@ ( -- n )         get LIPO current [mV]
+
 LIPOgauge@   ( u -- u )       get fuel gauge register
 LIPOgauge!   ( u1 u2 --  )    set fuel gauge register u2 with data u1
 
@@ -102,7 +103,7 @@ vibro!       ( f -- )         set vibro status, 0 switch off
 peripheral!  ( f -- )         set peripheral supply status, 0 switch off
 
 lcd-emit     ( f -- )         emit a character (writes a character to the LCD display)
-lcd-emit?    ( -- f )         LCD ready to get a character (I2C not busy)
+lcd-emit?    ( -- f )         LCD ready to get a character 
 lcdpos!      ( x y -- )       set LCD cursor position, 
                               x (column) horizontal position, max. 127  
                               y (row) vertical position (a line consists of 8 pixels), max. 7
@@ -117,7 +118,7 @@ lcdcolumn@   ( -- u )         read a column (8 pixels) from the current position
 Using the Digital Port Pins (Input and Output)
 ==============================================
 
-This example is a very simple chase lighting program iinspired by Knight Rider. 
+This example is a very simple chase lighting program inspired by Knight Rider. 
 You need 8 LEDs and 8 resistors.
 
 ```forth
