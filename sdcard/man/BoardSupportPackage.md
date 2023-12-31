@@ -3,9 +3,9 @@
 Board Support Package for the Flipper Zero
 ==========================================
 
-The board support package for the STM32WB Nucleo Board is restricted to the
-Arduino UNO R3 pin header and the onboard LEDs and switches (buttons).
-The STM32 has much more capabilities than 14 digital I/O pins, 6 analog
+The board support package for the STM32WB Flipper Zero is restricted to the
+pin header (Arduino numbering) and the onboard LEDs, switches (buttons), LCD, charger.
+The STM32 has much more capabilities than 10 digital I/O pins, 3 analog
 input pins, UART, SPI, and I2C interfaces. But if you want to use the
 more advanced features you can use the CubeMX to create source code for
 the internal peripherals. This project wants to show how to use the Cube
