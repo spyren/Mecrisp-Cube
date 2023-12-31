@@ -194,9 +194,9 @@ The compiled word `hello` needs only 14 bytes in the dictionary.
 
 ### Switch On/Off, Buttons, LED
 
-  * *Switch Off* press and hold the BACK-Button for 5 s or type in the command =halt=
+  * *Switch Off* press and hold the BACK-Button for 5 s or type in the command `shutdown`
   * *Switch On* press the BACK-Button 
-  * *Reset* press and hold the BACK- and LEFT-Button
+  * *Reset* press and hold the BACK- and LEFT-Button or Ctrl-C or `reset`
 
 
 #### Special Functions on Startup 
