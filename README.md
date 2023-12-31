@@ -238,13 +238,13 @@ Get the sources from github:
 
 ```
 psi@homer:~> git clone --branch Flipper https://github.com/spyren/Mecrisp-Cube
-Klone nach 'Mecrisp-Cube' ...
-remote: Enumerating objects: 106, done.
-remote: Counting objects: 100% (106/106), done.
-remote: Compressing objects: 100% (71/71), done.
-remote: Total 106 (delta 33), reused 106 (delta 33), pack-reused 0
-Empfange Objekte: 100% (106/106), 938.96 KiB | 2.39 MiB/s, Fertig.
-Löse Unterschiede auf: 100% (33/33), Fertig.
+Cloning into 'Mecrisp-Cube'...
+remote: Enumerating objects: 8334, done.
+remote: Counting objects: 100% (2220/2220), done.
+remote: Compressing objects: 100% (860/860), done.
+remote: Total 8334 (delta 1458), reused 2059 (delta 1335), pack-reused 6114
+Receiving objects: 100% (8334/8334), 108.93 MiB | 13.49 MiB/s, done.
+Resolving deltas: 100% (5788/5788), done.
 ```
 
 Import the project into the IDE:
