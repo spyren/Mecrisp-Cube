@@ -27,8 +27,8 @@ wled@        ( -- u )         get the W (LCD backlight) led
                               $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
 -sysled      ( flags -- )     clear sysled flags 
 
-switch1?     ( -- f )         get switch2 (OK button), closed=TRUE
-switch2?     ( -- f )         get switch1 (BACK button), closed=TRUE
+switch1?     ( -- f )         get switch1 (OK button), closed=TRUE
+switch2?     ( -- f )         get switch2 (BACK button), closed=TRUE
 switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
 switch4?     ( -- f )         get switch4 (LEFT), closed=TRUE
 switch5?     ( -- f )         get switch5 (UP button), closed=TRUE
@@ -397,8 +397,18 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
   key drop
 ```
 
-# Using Buttons ans the LED
+# Using Push Buttons and the RGB LED
 
+## Switches
+Most development boards have at least a switch or a button, the Flipper has 6 switches.
+
+```
+switch1? .
+```
+The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
+There is no debouncing for the `switchx?` words.
+
+## Push Buttons
 ```forth
 : joystick ( -- ) \ read button events till OK
   begin button? while
@@ -410,6 +420,7 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 ;
 ```
 
+## RGB LED
 Deactivate the sysled function (the LED is no longer used by the system e.g. 
 for battery charging state):
 ```
