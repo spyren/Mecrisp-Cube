@@ -243,15 +243,10 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 |   0°  | 1 ms   | 50  | 
 |  45°  | 1.5 ms | 75  | 
 |  90°  | 2 ms   | 100 | 
+| 135°  | 2.5 ms | 125 | 
 | 180°  | 3 ms   | 150 | 
-| 270   | 4 ms   | 200 | 
-
-| angle | time   | n   | 
-|-------|--------|-----|
-|   0°  | 1 ms   | 50  | 
-|  90°  | 1.5 ms | 75  | 
-| 180°  | 2 ms   | 100 | 
-| 270°  | 2.5 ms | 150 | 
+| 225°  | 3.5 ms | 175 | 
+| 270°  | 4 ms   | 200 | 
 
 
 ```forth
