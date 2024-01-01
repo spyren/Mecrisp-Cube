@@ -404,8 +404,6 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 
    * [GPIO & modules](https://docs.flipper.net/gpio-and-modules)
 
-<img src="img/flipper-gpio.jpg" width="800">
-
 ![](img/flipper-gpio.jpg)
 
 | Pin    | Label   | STM32WB55 pin    | Arduino   | Alternate Functions         |
