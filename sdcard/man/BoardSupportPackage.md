@@ -255,10 +255,10 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 : servo ( -- ) 
   begin
-    130 40 do
+    100 50 do
       i 4 pwmpin! 
       i neopixel! 
-      i 40 = if 
+      i 50 = if 
         1000 \ give some more time to get back
       else
         200
@@ -272,16 +272,16 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 ```forth
 640 pwmprescale 
-5 11 dmod   \ set D11 to PWM
+5 4 dmod   \ set D4 to PWM
 
 : slowservo ( -- ) 
   begin
     100 50 do
-      i 11 pwmpin! 
+      i 4 pwmpin! 
       50 osDelay drop
     1 +loop
     50 100 do
-      i 3 pwmpin! 
+      i 4 pwmpin! 
       50 osDelay drop
     -1 +loop
   key? until 
