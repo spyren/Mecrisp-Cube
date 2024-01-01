@@ -397,19 +397,54 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
   key drop
 ```
 
-# Using Buttons
+# Using Buttons ans the LED
 
 ```forth
-: joystick ( -- )
+: joystick ( -- ) \ read button events till OK
   begin button? while
     button drop \ empty the buffer
   repeat
   begin
     button dup emit
-    [char] o =
-  until 
+  [char] o = until 
 ;
 ```
+
+Deactivate the sysled function (the LED is no longer used by the system e.g. 
+for battery charging state):
+```
+1 -sysled
+```
+Switch off LED
+```
+0 rgbled!
+```
+Red LED 100 % brightness
+```
+$ff0000 rgbled!
+```
+Red LED 50 % brightness
+```
+$7f0000 rgbled!
+```
+Green LED 100 % brightness
+```
+$00ff00 rgbled!  ok.
+```
+Blue LED 100 % brightness
+```
+$0000ff rgbled!  ok.
+```
+White LED 100 % brightness
+```
+$ffffff rgbled!  ok.
+```
+Activate the sysled function 
+```
+1 +sysled  ok.
+```
+
+
 
 # Pinouts
 
