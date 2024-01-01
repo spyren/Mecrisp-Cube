@@ -366,23 +366,26 @@ typedef struct {
 	uint16_t pin;
 } PortPin_t;
 
-static const PortPin_t PortPin_a[16] = {
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D1_GPIO_Port, D1_Pin } ,
-		{ D2_GPIO_Port, D2_Pin } ,
-		{ D3_GPIO_Port, D3_Pin } ,
-		{ D4_GPIO_Port, D4_Pin } ,
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D9_GPIO_Port, D9_Pin } ,
-		{ D10_GPIO_Port, D10_Pin } ,
-		{ D11_GPIO_Port, D11_Pin } ,
-		{ D12_GPIO_Port, D12_Pin } ,
-		{ D13_GPIO_Port, D13_Pin } ,
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D0_GPIO_Port, D0_Pin }
+static const PortPin_t PortPin_a[19] = {
+		{ D0_GPIO_Port, D0_Pin } , 		// 0
+		{ D1_GPIO_Port, D1_Pin } ,		// 1
+		{ D2_GPIO_Port, D2_Pin } ,		// 2
+		{ D3_GPIO_Port, D3_Pin } ,		// 3
+		{ D4_GPIO_Port, D4_Pin } ,		// 4
+		{ D0_GPIO_Port, D0_Pin } ,		// 5
+		{ D0_GPIO_Port, D0_Pin } ,		// 6
+		{ D0_GPIO_Port, D0_Pin } ,		// 7
+		{ D0_GPIO_Port, D0_Pin } ,		// 8
+		{ D9_GPIO_Port, D9_Pin } ,		// 9
+		{ D10_GPIO_Port, D10_Pin } ,	// 10
+		{ D11_GPIO_Port, D11_Pin } ,	// 11
+		{ D12_GPIO_Port, D12_Pin } ,	// 12
+		{ D13_GPIO_Port, D13_Pin } ,	// 13
+		{ D0_GPIO_Port, D0_Pin } ,		// 14
+		{ D0_GPIO_Port, D0_Pin } , 		// 15
+		{ A0_GPIO_Port, A0_Pin } ,		// 16
+		{ A1_GPIO_Port, A1_Pin } ,		// 17
+		{ A2_GPIO_Port, A2_Pin }		// 18
 };
 
 /**
@@ -637,26 +640,30 @@ typedef struct {
 } PortPinMode_t;
 
 static const PortPinMode_t DigitalPortPinMode_a[] = {
-	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				// 0 in
-	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 pullup
-	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 pulldow
-	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 opendrain
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 }  	// 8 I2C opendrain pullup
+	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				//  0 in
+	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				//  1 pullup
+	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				//  2 pulldow
+	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				//  3 pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				//  4 opendrain
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	//  5 pwm pushpull
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  6 input capture in
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  7 output compare pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C3 } ,	//  8 I2C opendrain pullup
+	{ GPIO_MODE_AF_PP,     GPIO_PULLUP,   GPIO_AF7_USART1 },//  9 UART
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF5_SPI1 },	// 10 SPI
+	{ GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 }				// 11 analog
 };
+
 /**
  *  @brief
- *	    Sets the digital port pin mode (D0 .. D4, D9 .. D13).
+ *	    Sets the digital port pin mode (D0 .. D4, D9 .. D13, D16 .. D18).
  *
  *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
- *      5 out pwm, 6 input capture, 7 output compare, 8 I2C
+ *      5 out pwm, 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 18.
  *	@param[in]
- *      mode          0 to 8
+ *      mode          0 to 11
  *  @return
  *      none
  *
