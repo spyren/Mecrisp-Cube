@@ -397,6 +397,19 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
   key drop
 ```
 
+# Using Buttons
+
+```forth
+: joystick ( -- )
+  begin button? while
+    button drop \ empty the buffer
+  repeat
+  begin
+    button dup emit
+    [char] o =
+  until 
+;
+```
 
 # Pinouts
 
