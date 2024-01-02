@@ -535,7 +535,7 @@ EXTIwait:
 		Wortbirne Flag_visible, "I2Cget"
 I2Cget:
 		@ ( a size -- ) Get a message
-// int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev)
+// int IIC3_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r2, tos			// dev
@@ -544,14 +544,14 @@ I2Cget:
 	drop
 	movs	r0, tos			// *RxBuffer
 	drop
-	bl		IIC_getMessage
+	bl		IIC3_getMessage
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "I2Cput"
 I2Cput:
 		@ ( a size --  ) Put a message
-// int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
+// int IIC33_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r2, tos			// dev
@@ -560,14 +560,14 @@ I2Cput:
 	drop
 	movs	r0, tos			// *TxBuffer
 	drop
-	bl		IIC_putMessage
+	bl		IIC3_putMessage
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "I2Cputget"
 I2Cputget:
 		@ ( a size1 size2 dev --  ) Put and get a message
-// int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev)
+// int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r3, tos			// dev
@@ -578,7 +578,7 @@ I2Cputget:
 	drop
 	movs	r0, tos			// *TxRxBuffer
 	drop
-	bl		IIC_putGetMessage
+	bl		IIC3_putGetMessage
 	pop		{pc}
 
 

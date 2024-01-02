@@ -2,14 +2,15 @@
  *  @brief
  *      Buffered I2C (or IIC) communication.
  *
- *      Using interrupt and DMA for I2C1 peripheral.
+ *      Using interrupt and DMA for I2C3 peripheral.
  *      CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
+ *      For Flipper external (GPIO) devices-
  *  @file
  *      iic.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2020-12-29
+ *      2024-01-02
  *  @remark
  *      Language: C, STM32CubeIDE GCC
  *  @copyright
@@ -31,14 +32,17 @@
 
 
 
-#ifndef INC_IIC_H_
-#define INC_IIC_H_
+#ifndef INC_IIC3_H_
+#define INC_IIC3_H_
 
 
-void IIC_init(void);
-int IIC_ready(void);
-int IIC_getMessage(uint8_t *RxBuffer, uint32_t size, uint16_t dev);
-int IIC_putMessage(uint8_t *TxBuffer, uint32_t size, uint16_t dev);
-int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev);
+extern volatile int IIC3_Status;
+extern osSemaphoreId_t IIC3_SemaphoreID;
+
+void IIC3_init(void);
+int IIC3_ready(void);
+int IIC3_getMessage(uint8_t *RxBuffer, uint32_t size, uint16_t dev);
+int IIC3_putMessage(uint8_t *TxBuffer, uint32_t size, uint16_t dev);
+int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev);
 
 #endif /* INC_UART_H_ */

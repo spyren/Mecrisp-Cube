@@ -2,14 +2,15 @@
  *  @brief
  *      Buffered I2C (or IIC) communication.
  *
- *      Using interrupt and DMA for I2C1 peripheral.
+ *      Using interrupt and DMA for I2C3 peripheral.
  *      CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
+ *      For Flipper external (GPIO) devices-
  *  @file
- *      iic.c
+ *      iic3.c
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2020-12-29
+ *      2024-01-02
  *  @remark
  *      Language: C, STM32CubeIDE GCC
  *  @copyright
@@ -39,7 +40,6 @@
 #include "app_common.h"
 #include "main.h"
 #include "i2c.h"
-#include "iic.h"
 #include "iic3.h"
 #include "myassert.h"
 
@@ -49,7 +49,7 @@
 
 // Global Variables
 // ****************
-static volatile int IIC_Status;
+volatile int IIC3_Status;
 
 // Hardware resources
 // ******************
@@ -59,15 +59,15 @@ extern I2C_HandleTypeDef hi2c3;
 // RTOS resources
 // **************
 
-osMutexId_t IIC_MutexID;
-const osMutexAttr_t IIC_MutexAttr = {
+osMutexId_t IIC3_MutexID;
+const osMutexAttr_t IIC3_MutexAttr = {
 		NULL,				// no name required
 		osMutexPrioInherit,	// attr_bits
 		NULL,				// memory for control block
 		0U					// size for control block
 };
 
-static osSemaphoreId_t IIC_SemaphoreID;
+osSemaphoreId_t IIC3_SemaphoreID;
 
 
 // Public Functions
@@ -75,16 +75,16 @@ static osSemaphoreId_t IIC_SemaphoreID;
 
 /**
  *  @brief
- *      Initializes the IIC.
+ *      Initializes the IIC3.
  *  @return
  *      None
  */
-void IIC_init(void) {
-	IIC_MutexID = osMutexNew(&IIC_MutexAttr);
-	ASSERT_fatal(IIC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+void IIC3_init(void) {
+	IIC3_MutexID = osMutexNew(&IIC3_MutexAttr);
+	ASSERT_fatal(IIC3_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
-	IIC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(IIC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+	IIC3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	ASSERT_fatal(IIC3_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 
@@ -95,8 +95,8 @@ void IIC_init(void) {
  *      TRUE: ready, FALSE: transfer ongoing
  *      error.
  */
-int IIC_ready(void) {
-	if (osMutexGetOwner(IIC_MutexID) == NULL) {
+int IIC3_ready(void) {
+	if (osMutexGetOwner(IIC3_MutexID) == NULL) {
 		// ready for the next transfer
 		return TRUE;
 	} else {
@@ -108,7 +108,7 @@ int IIC_ready(void) {
 
 /**
  *  @brief
- *		Get a message from the IIC. Blocking until message is received.
+ *		Get a message from the IIC3. Blocking until message is received.
  *
  *      Do not use in ISRs.
  * @param[in]
@@ -120,33 +120,33 @@ int IIC_ready(void) {
  *  @return
  *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
  */
-int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
+int IIC3_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 
-	// only one thread is allowed to use the IIC
-	osMutexAcquire(IIC_MutexID, osWaitForever);
-	IIC_Status = 0;
+	// only one thread is allowed to use the IIC3
+	osMutexAcquire(IIC3_MutexID, osWaitForever);
+	IIC3_Status = 0;
 	// get the Message
 	hal_status = HAL_I2C_Master_Receive_DMA(&hi2c1, dev<<1, RxBuffer, RxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
 	} else {
 		// can't get Message
-		IIC_Status = -3;
+		IIC3_Status = -3;
 	}
-	osMutexRelease(IIC_MutexID);
-	if (IIC_Status != 0) {
+	osMutexRelease(IIC3_MutexID);
+	if (IIC3_Status != 0) {
 		Error_Handler();
 	}
 
-	return IIC_Status;
+	return IIC3_Status;
 }
 
 
 /**
  *  @brief
- *      Put a message to the IIC. Blocking until message is sent.
+ *      Put a message to the IIC3. Blocking until message is sent.
  *
  *      Do not use in ISRs.
  * @param[in]
@@ -158,33 +158,33 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
  *  @return
  *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
  */
-int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
+int IIC3_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 
-	// only one thread is allowed to use the IIC
-	osMutexAcquire(IIC_MutexID, osWaitForever);
-	IIC_Status = 0;
+	// only one thread is allowed to use the IIC3
+	osMutexAcquire(IIC3_MutexID, osWaitForever);
+	IIC3_Status = 0;
 	// send the Message
 	hal_status = HAL_I2C_Master_Transmit_DMA(&hi2c1, dev<<1, TxBuffer, TxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
 	} else {
 		// can't get Message
-		IIC_Status = -3;
+		IIC3_Status = -3;
 	}
-	osMutexRelease(IIC_MutexID);
-	if (IIC_Status != 0) {
+	osMutexRelease(IIC3_MutexID);
+	if (IIC3_Status != 0) {
 		Error_Handler();
 	}
 
-	return IIC_Status;
+	return IIC3_Status;
 }
 
 
 /**
  *  @brief
- *      Writes a char to the IIC. Blocking until char can be written into the queue.
+ *      Writes a char to the IIC3. Blocking until char can be written into the queue.
  *
  *		Transmit and receive in the same frame.
  *      Do not use in ISRs.
@@ -199,42 +199,42 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
  *  @return
  *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
  */
-int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev) {
+int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 
-	// only one thread is allowed to use the IIC
-	osMutexAcquire(IIC_MutexID, osWaitForever);
-	IIC_Status = 0;
+	// only one thread is allowed to use the IIC3
+	osMutexAcquire(IIC3_MutexID, osWaitForever);
+	IIC3_Status = 0;
 	// send the Message
 	hal_status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, dev<<1, TxRxBuffer, TxSize, I2C_FIRST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
 	} else {
 		// can't transmit Message
-		IIC_Status = -3;
+		IIC3_Status = -3;
 	}
-	osMutexRelease(IIC_MutexID);
-	if (IIC_Status != 0) {
+	osMutexRelease(IIC3_MutexID);
+	if (IIC3_Status != 0) {
 		Error_Handler();
-		return IIC_Status;
+		return IIC3_Status;
 	}
 
 	// get the Message
 	hal_status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, dev<<1, TxRxBuffer, RxSize, I2C_LAST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
 	} else {
 		// can't get Message
-		IIC_Status = -3;
+		IIC3_Status = -3;
 	}
-	osMutexRelease(IIC_MutexID);
-	if (IIC_Status != 0) {
+	osMutexRelease(IIC3_MutexID);
+	if (IIC3_Status != 0) {
 		Error_Handler();
 	}
 
-	return IIC_Status;
+	return IIC3_Status;
 }
 
 
@@ -246,64 +246,4 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 // Callbacks
 // *********
 
-/**
-  * @brief  Master Tx Transfer completed callback.
-  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
-  *                the configuration information for the specified I2C.
-  * @retval None
-  */
-void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
-	if (hi2c->Instance == I2C1) {
-		osSemaphoreRelease(IIC_SemaphoreID);
-	} else if (hi2c->Instance == I2C3) {
-		osSemaphoreRelease(IIC3_SemaphoreID);
-	}
-}
-
-/**
-  * @brief  Master Rx Transfer completed callback.
-  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
-  *                the configuration information for the specified I2C.
-  * @retval None
-  */
-void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-	if (hi2c->Instance == I2C1) {
-		osSemaphoreRelease(IIC_SemaphoreID);
-	} else if (hi2c->Instance == I2C3) {
-		osSemaphoreRelease(IIC3_SemaphoreID);
-	}
-}
-
-/**
-  * @brief  I2C error callback.
-  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
-  *                the configuration information for the specified I2C.
-  * @retval None
-  */
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
-	if (hi2c->Instance == I2C1) {
-		IIC_Status = -1;
-		osSemaphoreRelease(IIC_SemaphoreID);
-	} else if (hi2c->Instance == I2C3) {
-		IIC3_Status = -1;
-		osSemaphoreRelease(IIC3_SemaphoreID);
-	}
-}
-
-
-/**
-  * @brief  I2C abort callback.
-  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
-  *                the configuration information for the specified I2C.
-  * @retval None
-  */
-void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c) {
-	if (hi2c->Instance == I2C1) {
-		IIC_Status = -2;
-		osSemaphoreRelease(IIC_SemaphoreID);
-	} else if (hi2c->Instance == I2C3) {
-		IIC3_Status = -2;
-		osSemaphoreRelease(IIC3_SemaphoreID);
-	}
-}
-
+// callbacks are handled in iic module

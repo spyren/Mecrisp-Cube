@@ -42,6 +42,7 @@
 #include "shci.h"
 #include "clock.h"
 #include "iic.h"
+#include "iic3.h"
 #include "plex.h"
 #include "rgbw.h"
 #include "watchdog.h"
@@ -115,6 +116,7 @@ void MX_FREERTOS_Init(void) {
 	RTC_init();
 	UART_init();
 	IIC_init();
+	IIC3_init();
 	CDC_init();
 	FLASH_init();
 	DSPI_init();

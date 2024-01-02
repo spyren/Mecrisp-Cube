@@ -208,6 +208,7 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_I2C1_Init();
+  MX_I2C3_Init();
 //  MX_IPCC_Init(); // not needed, see hw_ipcc.c
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
