@@ -27,8 +27,8 @@ wled@        ( -- u )         get the W (LCD backlight) led
                               $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
 -sysled      ( flags -- )     clear sysled flags 
 
-switch1?     ( -- f )         get switch2 (OK button), closed=TRUE
-switch2?     ( -- f )         get switch1 (BACK button), closed=TRUE
+switch1?     ( -- f )         get switch1 (OK button), closed=TRUE
+switch2?     ( -- f )         get switch2 (BACK button), closed=TRUE
 switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
 switch4?     ( -- f )         get switch4 (LEFT), closed=TRUE
 switch5?     ( -- f )         get switch5 (UP button), closed=TRUE
@@ -243,15 +243,10 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 |   0°  | 1 ms   | 50  | 
 |  45°  | 1.5 ms | 75  | 
 |  90°  | 2 ms   | 100 | 
+| 135°  | 2.5 ms | 125 | 
 | 180°  | 3 ms   | 150 | 
-| 270   | 4 ms   | 200 | 
-
-| angle | time   | n   | 
-|-------|--------|-----|
-|   0°  | 1 ms   | 50  | 
-|  90°  | 1.5 ms | 75  | 
-| 180°  | 2 ms   | 100 | 
-| 270°  | 2.5 ms | 150 | 
+| 225°  | 3.5 ms | 175 | 
+| 270°  | 4 ms   | 200 | 
 
 
 ```forth
@@ -260,10 +255,10 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 : servo ( -- ) 
   begin
-    130 40 do
+    100 50 do
       i 4 pwmpin! 
       i neopixel! 
-      i 40 = if 
+      i 50 = if 
         1000 \ give some more time to get back
       else
         200
@@ -277,16 +272,16 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 ```forth
 640 pwmprescale 
-5 11 dmod   \ set D11 to PWM
+5 4 dmod   \ set D4 to PWM
 
 : slowservo ( -- ) 
   begin
     100 50 do
-      i 11 pwmpin! 
+      i 4 pwmpin! 
       50 osDelay drop
     1 +loop
     50 100 do
-      i 3 pwmpin! 
+      i 4 pwmpin! 
       50 osDelay drop
     -1 +loop
   key? until 
@@ -402,6 +397,65 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
   key drop
 ```
 
+# Using Push Buttons and the RGB LED
+
+## Switches
+Most development boards have at least a switch or a button, the Flipper has 6 switches.
+
+```
+switch1? .
+```
+The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
+There is no debouncing for the `switchx?` words.
+
+## Push Buttons
+```forth
+: joystick ( -- ) \ read button events till OK
+  begin button? while
+    button drop \ empty the buffer
+  repeat
+  begin
+    button dup emit
+  [char] o = until 
+;
+```
+
+## RGB LED
+Deactivate the sysled function (the LED is no longer used by the system e.g. 
+for battery charging state):
+```
+1 -sysled
+```
+Switch off LED
+```
+0 rgbled!
+```
+Red LED 100 % brightness
+```
+$ff0000 rgbled!
+```
+Red LED 50 % brightness
+```
+$7f0000 rgbled!
+```
+Green LED 100 % brightness
+```
+$00ff00 rgbled!  ok.
+```
+Blue LED 100 % brightness
+```
+$0000ff rgbled!  ok.
+```
+White LED 100 % brightness
+```
+$ffffff rgbled!  ok.
+```
+Activate the sysled function 
+```
+1 +sysled  ok.
+```
+
+
 
 # Pinouts
 
@@ -409,7 +463,7 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 
    * [GPIO & modules](https://docs.flipper.net/gpio-and-modules)
 
-<img src="img/flipper-gpio.jpg" width="400">
+![](img/flipper-gpio.jpg)
 
 | Pin    | Label   | STM32WB55 pin    | Arduino   | Alternate Functions         |
 |--------|---------|------------------|-----------|-----------------------------|
