@@ -440,19 +440,19 @@ $7f0000 rgbled!
 ```
 Green LED 100 % brightness
 ```
-$00ff00 rgbled!  ok.
+$00ff00 rgbled!
 ```
 Blue LED 100 % brightness
 ```
-$0000ff rgbled!  ok.
+$0000ff rgbled!
 ```
 White LED 100 % brightness
 ```
-$ffffff rgbled!  ok.
+$ffffff rgbled!
 ```
 Activate the sysled function 
 ```
-1 +sysled  ok.
+1 +sysled
 ```
 
 
