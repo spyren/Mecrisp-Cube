@@ -101,6 +101,8 @@ LIPOcharger! ( u1 u2 --  )    set charger register u2 with data u1
 vibro@       (  -- f )        get vibro state
 vibro!       ( f -- )         set vibro status, 0 switch off
 
+speaker!     ( u -- )         set speaker freqency, 0 = off, 20 .. 10000 Hz
+
 peripheral!  ( f -- )         set peripheral supply status, 0 switch off
 
 lcd-emit     ( f -- )         emit a character (writes a character to the LCD display)
