@@ -62,11 +62,12 @@ static void update_sysled(void);
 // Global Variables
 // ****************
 const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
-extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
 // ******************
 extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim16;
 
 // RTOS resources
 // **************
@@ -192,6 +193,16 @@ void BSP_init(void) {
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+
+	// speaker
+	TIM_OC_InitTypeDef sConfigOC = {0};
+	sConfigOC.Pulse = 100;
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+	if (HAL_TIM_OC_ConfigChannel(&htim16, &sConfigOC, TIM_CHANNEL_1) != HAL_OK) {
+		Error_Handler();
+	}
 
 }
 
@@ -1102,6 +1113,29 @@ int BSP_waitEXTI(int pin_number, int32_t timeout) {
 		// timeout or error
 		return -2;
 	}
+}
+
+/**
+ *  @brief
+ *      Set the speaker frequency
+ *	@param[in]
+ *	    frequency 20..10000, 0 switch off
+ *  @return
+ *      none
+ */
+void BSP_setSpeaker(int frequency) {
+	if (frequency == 0) {
+		// switch off speaker
+		HAL_TIM_OC_Stop(&htim16, TIM_CHANNEL_1);
+	} else if ((frequency >= 20) && (frequency <= 10000)) {
+		// base frequency is 100 kHz
+		__HAL_TIM_SET_AUTORELOAD(&htim16, 100000 / frequency); // set period
+		__HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, (100000 / frequency) / 2);
+		HAL_TIM_OC_Start(&htim16, TIM_CHANNEL_1);
+	} else {
+		// invalid freqency
+	}
+
 }
 
 

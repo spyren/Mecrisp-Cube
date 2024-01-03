@@ -85,6 +85,7 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len);
 
 void BSP_setVibro(int status);
 int BSP_getVibro(void);
+void BSP_setSpeaker(int frequency);
 
 void BSP_setSysLED(int status);
 void BSP_clearSysLED(int status);

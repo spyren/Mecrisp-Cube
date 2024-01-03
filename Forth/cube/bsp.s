@@ -982,3 +982,15 @@ clear_sysled:
 	bl		BSP_clearSysLED
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "speaker!"
+set_speaker:
+	@ ( u -- ) Set speaker frequency
+// void BSP_setSpeaker(int frequency)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		BSP_setSpeaker
+	pop		{pc}
+
