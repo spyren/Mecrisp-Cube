@@ -63,7 +63,8 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
   * RGB LED
   * Power (LIPO charger and fuel gauge)
   * Vibration Motor
-  * GPIO
+  * Buzzer/Speaker
+  * GPIO (Input and Output, PWM, Input Capture and Output compare, I2C, SPI, ADC)
 
 Not supported yet:
   * Sub-1 GHz Transceiver
@@ -71,7 +72,6 @@ Not supported yet:
   * NFC
   * Infrared Transceiver
   * iButton
-  * Buzzer/Speaker
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
