@@ -478,7 +478,9 @@ $ff0000 neopixel!   \ red LED 100 % brightness
 </pre>
 
 ### NeoPixel Wing with 32 Pixels
-NeoPixelWing uses the D6 as datapin for the Neopixels:
+NeoPixelWing uses the D6 as datapin for the Neopixels. 
+
+Switch on the first 4 NeoPixels
 ```forth
 3 6 dmod                       \ D6 output
 32 cells buffer: pixelbuffer    \ create buffer for the neopixels
@@ -487,7 +489,10 @@ $00ff00 pixelbuffer 1 cells + !   \ 2nd Neopixel green
 $0000ff pixelbuffer 2 cells + !    \ 3th Neopixel blue
 $7f7f7f pixelbuffer 3 cells + !     \ 4th Neopixel white 50 %
 pixelbuffer 4 neopixels
+```
 
+Switch on all 32 NeoPixels
+```forth
 create pixels 
 $010000 , $020000 , $040000 , $080000 , $100000 , $200000 , $400000 , $800000 , \ 1st row red
 $008000 , $004000 , $002000 , $001000 , $000800 , $000400 , $000200 , $000100 , \ 2nd row green
