@@ -544,9 +544,11 @@ to switch on `1 plexshutdown`.
 
 # Pinouts
 
-## GPIO Ports
+## External 
 
-   * [GPIO & modules](https://docs.flipper.net/gpio-and-modules)
+### GPIO Ports
+
+[GPIO & modules](https://docs.flipper.net/gpio-and-modules)
 
 ![](img/flipper-gpio.jpg)
 
@@ -572,7 +574,7 @@ to switch on `1 plexshutdown`.
 | 18     | GND     |                  |           | GND            |                             |
 
 
-## JTAG/SWD Adaptor
+### JTAG/SWD Adaptor
 
 | JTAG Pin    | JTAG STM 14pin   | Flipper Pin   | STLINK-V3MINI    | Description    |
 |-------------|------------------|---------------|------------------|----------------|
@@ -595,7 +597,9 @@ to switch on `1 plexshutdown`.
    * [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3)
 
 
-## Push Buttons
+##  Internal 
+
+### Push Buttons
 
 | Signal name   | STM32WB55 pin    | Comment                    | Numbering   |
 |---------------|------------------|----------------------------|-------------|
@@ -607,7 +611,7 @@ to switch on `1 plexshutdown`.
 | BUTTON_DOWN   | PC6              |                            | 6           |
 
 
-## RGB LED, LCD Backlight LED
+### RGB LED, LCD Backlight LED
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
@@ -621,7 +625,7 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
    * max. 25.5 mA, 100 uA steps
 
 
-## UART VCP ST-LINK
+### UART VCP ST-LINK
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
@@ -629,7 +633,7 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | UART_RX       | PB7              | USART1_RX                  |
 
 
-## SPI LCD Display
+### SPI LCD Display
 
 [Sitronix ST7567S](https://www.crystalfontz.com/controllers/Sitronix/ST7567/303/) (older devices ST7565R ?)
 
@@ -643,7 +647,7 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | LCD_LED       | PC9              |                            | 
 
 
-## microSD Adapter (SD Drive)
+### microSD Adapter (SD Drive)
 
 | Signal name   | STM32W555 pin    | Comment                    |
 |---------------|------------------|----------------------------|
@@ -654,7 +658,7 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | SPI_D_SCK     | PD1              | SPI2_SCK                   |
 
 
-## LIPO Charger, Fuel Gauge
+### LIPO Charger, Fuel Gauge
 
    * [BQ25896RTWR](https://www.ti.com/lit/ds/symlink/bq25896.pdf) Charger, 0x6b (1101011B + R/W)
    * [BQ27220YZFR](https://www.ti.com/lit/ds/symlink/bq27220.pdf) Fuel gauge, 0x55 (1010101 + R/W),
@@ -666,7 +670,7 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | PWR_INT       | -                |                            |
 
 
-## Vibro and Speaker
+### Vibro and Speaker
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
