@@ -467,26 +467,26 @@ Activate the sysled function
 
 ![](img/flipper-gpio.jpg)
 
-| Pin    | Label   | STM32WB55 pin    | Arduino   | Alternate Functions         |
-|--------|---------|------------------|-----------|-----------------------------|
-| 1      | +5V     |                  |           |                             |
-| 2      | A7      | PA7              | D11       | SPI1_MOSI, TIM1_CH1 (PWM)   |  
-| 3      | A6      | PA6              | D12       | SPI1_MISO                   |
-| 4      | A4      | PA4              | D10       | SPI1_CS, EXTI               |
-| 5      | B3      | PB3              | D13       | SPI1_CLK, SWO               |
-| 6      | B2      | PB2              | D9        | TIM2_CH2 (output capture), EXTI   |
-| 7      | C3      | PC3              | A2(D18)   |                             |
-| 8      | GND     |                  |           |                             |
-| 9      | 3V3     |                  |           |                             |
-| 10     | SWC     | PA14             | D3        | SWCLK                       |
-| 11     | GND     |                  |           |                             |
-| 12     | SIO     | PA13             | D2        | SWDIO                       |
-| 13     | TX      | PB6              | D1        |                             |
-| 14     | RX      | PB7              | D0        | EXTI                        |
-| 15     | C1      | PC1              | A1 (D17)  | I2C3_SDA                    |
-| 16     | C0      | PC0              | A0 (D16)  | I2C3_SCL                    |
-| 17     | 1W      | PB14             | D4        | TIM1_CH2 (PWM), EXTI        |
-| 18     | GND     |                  |           |                             |
+| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         |
+|--------|---------|------------------|-----------|----------------|-----------------------------|
+| 1      | +5V     |                  |           | VBUS           |                             |
+| 2      | A7      | PA7              | D11       | D11 MOSI       | SPI1_MOSI, TIM1_CH1 (PWM)   |  
+| 3      | A6      | PA6              | D12       | D12 MISO       | SPI1_MISO                   |
+| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               |
+| 5      | B3      | PB3              | D13       | D13 CLK        | SPI1_CLK, SWO               |
+| 6      | B2      | PB2              | D9        | D9             | TIM2_CH2 (output capture), EXTI   |
+| 7      | C3      | PC3              | A2(D18)   | A2             |                             |
+| 8      | GND     |                  |           | GND            |                             |
+| 9      | 3V3     |                  |           | 3.3V           |                             |
+| 10     | SWC     | PA14             | D3        | D3             | SWCLK                       |
+| 11     | GND     |                  |           | GND            |                             |
+| 12     | SIO     | PA13             | D2        | D2             | SWDIO                       |
+| 13     | TX      | PB6              | D1        | TX D1          |                             |
+| 14     | RX      | PB7              | D0        | RX D0          | EXTI                        |
+| 15     | C1      | PC1              | A1 (D17)  | A1 SDA         | I2C3_SDA                    |
+| 16     | C0      | PC0              | A0 (D16)  | A0 SCL         | I2C3_SCL                    |
+| 17     | 1W      | PB14             | D4        | D4             | TIM1_CH2 (PWM), EXTI        |
+| 18     | GND     |                  |           | GND            |                             |
 
 
 ## JTAG/SWD Adaptor
@@ -500,7 +500,7 @@ Activate the sysled function
 | 3           | 5                | 8             | 8  (left)        | GND            |
 | 4           | 6                | 10            | 13 (left)        | SWCLK          |
 | 5           | 7                |               |                  | GND            |
-| 6           | 8                | 5             | 6  (left)        | SWO            |
+| 6           | 8                | (5)           | 6  (left)        | SWO            |
 | 7           | 9                |               |                  | NC             |
 | 8           | 10               |               |                  | NC             |
 | 9           | 11               | 11            | 5  (left)        | GND_DETECT     |
