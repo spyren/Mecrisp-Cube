@@ -498,6 +498,45 @@ pixels 32 neopixels
 It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, during this time the interrupts are disabled. Consider this for RT programs and interrupt latency.
 
 
+## CharlieWing Plex LED Display
+
+Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
+Driver is !IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf)
+
+`plex-emit` works like the standard word `emit`. It blocks the calling thread, 
+as long as the character is not written to the Plex display (less than 300 us 
+for a 6x8 character and 400 kHz !I2C). 
+Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown, 
+to switch on `1 plexshutdown`. 
+```forth
+1 plexshutdown
+0 0 100 plexpixel!
+1 1 200 plexpixel!
+
+: count-down ( -- )
+  plexclr
+ -1 -1 -1 alarm!  \ an alarm every second
+  wait-alarm  
+  10 0 do
+    1 plexpos!
+    i 1 + 25 * plexpwm  \ set brightness
+    i 0 = if 
+      [char] 1 plex-emit
+      [char] 0 plex-emit
+    else
+      [char] 0 plex-emit
+      10 i - [char] 0 + plex-emit
+    then
+    wait-alarm  
+  loop
+   0 $ff -1 plexcolumn!
+  14 $ff -1 plexcolumn!
+  1 plexpos!
+  [char] 0 dup plex-emit plex-emit 
+  cr ." Launch!" cr
+;
+```
+
 # Pinouts
 
 ## GPIO Ports
