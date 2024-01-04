@@ -382,9 +382,9 @@ static const PortPin_t PortPin_a[19] = {
 		{ D1_GPIO_Port, D1_Pin } ,		// 1
 		{ D2_GPIO_Port, D2_Pin } ,		// 2
 		{ D3_GPIO_Port, D3_Pin } ,		// 3
-		{ D4_GPIO_Port, D4_Pin } ,		// 4
+		{ D0_GPIO_Port, D0_Pin } ,		// 4
 		{ D0_GPIO_Port, D0_Pin } ,		// 5
-		{ D0_GPIO_Port, D0_Pin } ,		// 6
+		{ D6_GPIO_Port, D6_Pin } ,		// 6
 		{ D0_GPIO_Port, D0_Pin } ,		// 7
 		{ D0_GPIO_Port, D0_Pin } ,		// 8
 		{ D9_GPIO_Port, D9_Pin } ,		// 9
@@ -1273,6 +1273,8 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
+	BSP_neopixelDataTx(D6_GPIO_Port, D6_Pin, rgb);
+
 	RESTORE_PRIMASK();
 
 	neo_pixel = rgb;
@@ -1315,7 +1317,7 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelBufferTx(D4_GPIO_Port, D4_Pin, buffer, len);
+	BSP_neopixelBufferTx(D6_GPIO_Port, D6_Pin, buffer, len);
 
 	RESTORE_PRIMASK();
 

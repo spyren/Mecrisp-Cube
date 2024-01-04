@@ -118,8 +118,8 @@ void Error_Handler(void);
 #define BUTTON_RIGHT_GPIO_Port GPIOB
 #define RFID_OUT_Pin GPIO_PIN_13
 #define RFID_OUT_GPIO_Port GPIOB
-#define D4_Pin GPIO_PIN_14
-#define D4_GPIO_Port GPIOB
+#define D6_Pin GPIO_PIN_14
+#define D6_GPIO_Port GPIOB
 #define SPI_D_MOSI_Pin GPIO_PIN_15
 #define SPI_D_MOSI_GPIO_Port GPIOB
 #define BUTTON_DOWN_Pin GPIO_PIN_6
