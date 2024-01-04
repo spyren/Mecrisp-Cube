@@ -465,7 +465,7 @@ NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LE
 They are based on the WS2812 LED and WS2811 driver, where the WS2811 is integrated 
 into the LED, for reduced footprint. Adafruit manufactures several products with 
 NeoPixels with form factors such as strips, rings, matrices, Arduino shields, traditional 
-five-millimeter cylinder LED and individual !NeoPixel with or without a PCB. 
+five-millimeter cylinder LED and individual NeoPixel with or without a PCB. 
 The control protocol for NeoPixels is based on only one communication wire. 
 
 ### Single NeoPixel
@@ -510,7 +510,7 @@ Driver is !IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf)
 
 `plex-emit` works like the standard word `emit`. It blocks the calling thread, 
 as long as the character is not written to the Plex display (less than 300 us 
-for a 6x8 character and 400 kHz !I2C). 
+for a 6x8 character and 400 kHz I2C). 
 Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown, 
 to switch on `1 plexshutdown`. 
 ```forth
@@ -552,26 +552,26 @@ to switch on `1 plexshutdown`.
 
 ![](img/flipper-gpio.jpg)
 
-| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         |
-|--------|---------|------------------|-----------|----------------|-----------------------------|
-| 1      | +5V     |                  |           | VBUS           |                             |
-| 2      | A7      | PA7              | D11       | D11 MOSI       | SPI1_MOSI, TIM1_CH1 (PWM)   |  
-| 3      | A6      | PA6              | D12       | D12 MISO       | SPI1_MISO                   |
-| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               |
-| 5      | B3      | PB3              | D13       | D13 CLK        | SPI1_CLK, SWO               |
-| 6      | B2      | PB2              | D9        | D9             | TIM2_CH2 (output capture), EXTI   |
-| 7      | C3      | PC3              | A2(D18)   | A2             |                             |
-| 8      | GND     |                  |           | GND            |                             |
-| 9      | 3V3     |                  |           | 3.3V           |                             |
-| 10     | SWC     | PA14             | D3        | D3             | SWCLK                       |
-| 11     | GND     |                  |           | GND            |                             |
-| 12     | SIO     | PA13             | D2        | D2             | SWDIO                       |
-| 13     | TX      | PB6              | D1        | TX D1          |                             |
-| 14     | RX      | PB7              | D0        | RX D0          | EXTI                        |
-| 15     | C1      | PC1              | A1 (D17)  | A1 SDA         | I2C3_SDA                    |
-| 16     | C0      | PC0              | A0 (D16)  | A0 SCL         | I2C3_SCL                    |
-| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        |
-| 18     | GND     |                  |           | GND            |                             |
+| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         | Default      |
+|--------|---------|------------------|-----------|----------------|-----------------------------|--------------|
+| 1      | +5V     |                  |           | VBUS           |                             |              |
+| 2      | A7      | PA7              | D11       | D11 MOSI       | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
+| 3      | A6      | PA6              | D12       | D12 MISO       | SPI1_MISO                   | in pull-up   |
+| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
+| 5      | B3      | PB3              | D13       | D13 CLK        | SPI1_CLK, SWO               | in pull-up   |
+| 6      | B2      | PB2              | D9        | D9             | TIM2_CH2 (output capture), EXTI   | in pull-up   |
+| 7      | C3      | PC3              | A2(D18)   | A2             |                             | analog       |
+| 8      | GND     |                  |           | GND            |                             |              |
+| 9      | 3V3     |                  |           | 3.3V           |                             |              |
+| 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
+| 11     | GND     |                  |           | GND            |                             |              |
+| 12     | SIO     | PA13             | D2        | D2             | SWDIO                       | debug        |
+| 13     | TX      | PB6              | D1        | TX D1          |                             | UART         |
+| 14     | RX      | PB7              | D0        | RX D0          | EXTI                        | UART         |
+| 15     | C1      | PC1              | A1 (D17)  | A1 SDA         | I2C3_SDA                    | I2C          |
+| 16     | C0      | PC0              | A0 (D16)  | A0 SCL         | I2C3_SCL                    | I2C          | 
+| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        | in pull-up   |
+| 18     | GND     |                  |           | GND            |                             |              |
 
 
 ### JTAG/SWD Adaptor
