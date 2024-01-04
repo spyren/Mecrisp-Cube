@@ -457,6 +457,45 @@ Activate the sysled function
 1 +sysled
 ```
 
+# Feather Wings
+
+## Neopixel
+
+NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
+They are based on the WS2812 LED and WS2811 driver, where the WS2811 is integrated 
+into the LED, for reduced footprint. Adafruit manufactures several products with 
+NeoPixels with form factors such as strips, rings, matrices, Arduino shields, traditional 
+five-millimeter cylinder LED and individual !NeoPixel with or without a PCB. 
+The control protocol for NeoPixels is based on only one communication wire. 
+
+### Single NeoPixel
+For the Flipper I use D6 for the Neopixel. It takes about 30 us to set one Neopixel, 
+during this time the interrupts are disabled. 
+
+<pre>
+3 6 dmod           \ D6 output
+$ff0000 neopixel!   \ red LED 100 % brightness
+</pre>
+
+### NeoPixel Wing with 32 Pixels
+NeoPixelWing uses the D6 as datapin for the Neopixels:
+```forth
+3 6 dmod                       \ D6 output
+32 cells buffer: pixelbuffer    \ create buffer for the neopixels
+$ff0000 pixelbuffer !            \ 1st Neopixel red
+$00ff00 pixelbuffer 1 cells + !   \ 2nd Neopixel green
+$0000ff pixelbuffer 2 cells + !    \ 3th Neopixel blue
+$7f7f7f pixelbuffer 3 cells + !     \ 4th Neopixel white 50 %
+pixelbuffer 4 neopixels
+
+create pixels 
+$010000 , $020000 , $040000 , $080000 , $100000 , $200000 , $400000 , $800000 , \ 1st row red
+$008000 , $004000 , $002000 , $001000 , $000800 , $000400 , $000200 , $000100 , \ 2nd row green
+$000001 , $000002 , $000004 , $000008 , $000010 , $000020 , $000040 , $000080 , \ 3th row blue
+$808080 , $404040 , $202020 , $101010 , $080808 , $040404 , $020202 , $010101 , \ 4th row white
+pixels 32 neopixels
+```
+It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, during this time the interrupts are disabled. Consider this for RT programs and interrupt latency.
 
 
 # Pinouts
