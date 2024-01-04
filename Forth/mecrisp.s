@@ -73,7 +73,7 @@
 
 .equ	OLED,				0
 .equ	MIP,				0
-.equ	PLEX,				0
+.equ	PLEX,				1
 .equ	EPD,				0
 .equ	LCD,				1
 .equ	FPU,				1

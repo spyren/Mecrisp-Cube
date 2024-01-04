@@ -43,7 +43,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "plex.h"
-#include "iic.h"
+#include "iic3.h"
 #include "font6x8.h"
 #include "font8x8.h"
 #include "oled.h"
@@ -87,7 +87,7 @@ static void sendChar8x8(int ch);
 
 // Hardware resources
 // ******************
-extern I2C_HandleTypeDef hi2c1;
+extern I2C_HandleTypeDef hi2c3;
 
 // RTOS resources
 // **************
@@ -118,7 +118,7 @@ static uint8_t frame_buffer[8][15];
  *      None
  */
 void PLEX_init(void) {
-	if (HAL_I2C_IsDeviceReady(&hi2c1, PLEX_I2C_ADR << 1, 5, 100) != HAL_OK) {
+	if (HAL_I2C_IsDeviceReady(&hi2c3, PLEX_I2C_ADR << 1, 5, 100) != HAL_OK) {
 		// PLEX is not ready
 		plexReady = FALSE;
 		return;
@@ -174,7 +174,7 @@ int PLEX_putc(int c) {
  *      FALSE if the transfer is ongoing.
  */
 int PLEX_Ready(void) {
-	return (IIC_ready());
+	return (IIC3_ready());
 }
 
 
@@ -284,14 +284,14 @@ void PLEX_clear(void) {
 			// no blinking
 			buf[0] = BLINK_REG+i;
 			buf[1] = 0;
-			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+			IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 		}
 
 		for (i=0; i<144; i++) {
 			// max. brightness
 			buf[0] = PWM_REG+i;
 			buf[1] = 0xff;
-			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+			IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 		}
 	}
 
@@ -319,7 +319,7 @@ void PLEX_shutdown(uint8_t status) {
 
 	buf[0] = SHUTDOWN_REG;
 	buf[1] = status;
-	IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+	IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 
 	PLEX_setFrame(old_frame);
 }
@@ -341,7 +341,7 @@ void PLEX_setFrame(uint8_t frame) {
 
 	buf[0] = COMMAND_REG;
 	buf[1] = frame;
-	IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+	IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 	CurrentFrame = frame;
 }
 
@@ -375,7 +375,7 @@ void PLEX_setDisplay(uint8_t frame) {
 
 	buf[0] = PICTURE_REG;
 	buf[1] = frame;
-	IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+	IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 
 	PLEX_setFrame(old_frame);
 	CurrentDisplay = frame;
@@ -425,13 +425,13 @@ void PLEX_setColumn(uint8_t col, uint8_t leds, int brightness) {
 	}
 	buf[0] = LED_REG+realcol;
 	buf[1] = realleds;
-	IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+	IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 
 	if (brightness >= 0) {
 		for (i=0; i<8; i++) {
 			buf[0] = PWM_REG + 8*realcol + i;
 			buf[1] = brightness;
-			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+			IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 		}
 	}
 }
@@ -494,7 +494,7 @@ void PLEX_setPixel(uint8_t col, uint8_t row, int brightness) {
 
 	if (brightness > 0) {
 		buf[0] = PWM_REG + 8*realcol + realrow;
-		IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+		IIC3_putMessage(buf, 2, PLEX_I2C_ADR);
 	}
 }
 

@@ -43,11 +43,13 @@
 #include "clock.h"
 #include "iic.h"
 #include "iic3.h"
-#include "plex.h"
 #include "rgbw.h"
 #include "watchdog.h"
 #include "myassert.h"
 #include "power.h"
+#if PLEX == 1
+#include "plex.h"
+#endif
 #if OLED == 1
 #include "oled.h"
 #endif

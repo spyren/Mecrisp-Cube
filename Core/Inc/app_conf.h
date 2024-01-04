@@ -759,7 +759,7 @@ typedef enum
 #define	OLED					0
 #define MIP						0
 #define LCDISPLAY				1
-#define PLEX					0
+#define PLEX					1
 #define EPD						0
 #define FPU_IP					1
 

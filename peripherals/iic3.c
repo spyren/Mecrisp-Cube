@@ -53,7 +53,6 @@ volatile int IIC3_Status;
 
 // Hardware resources
 // ******************
-extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
 
 // RTOS resources
@@ -127,7 +126,7 @@ int IIC3_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	osMutexAcquire(IIC3_MutexID, osWaitForever);
 	IIC3_Status = 0;
 	// get the Message
-	hal_status = HAL_I2C_Master_Receive_DMA(&hi2c1, dev<<1, RxBuffer, RxSize);
+	hal_status = HAL_I2C_Master_Receive_DMA(&hi2c3, dev<<1, RxBuffer, RxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
 		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
@@ -165,7 +164,7 @@ int IIC3_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	osMutexAcquire(IIC3_MutexID, osWaitForever);
 	IIC3_Status = 0;
 	// send the Message
-	hal_status = HAL_I2C_Master_Transmit_DMA(&hi2c1, dev<<1, TxBuffer, TxSize);
+	hal_status = HAL_I2C_Master_Transmit_DMA(&hi2c3, dev<<1, TxBuffer, TxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
 		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
@@ -206,7 +205,7 @@ int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, ui
 	osMutexAcquire(IIC3_MutexID, osWaitForever);
 	IIC3_Status = 0;
 	// send the Message
-	hal_status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, dev<<1, TxRxBuffer, TxSize, I2C_FIRST_FRAME);
+	hal_status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c3, dev<<1, TxRxBuffer, TxSize, I2C_FIRST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
 		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
@@ -221,7 +220,7 @@ int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, ui
 	}
 
 	// get the Message
-	hal_status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, dev<<1, TxRxBuffer, RxSize, I2C_LAST_FRAME);
+	hal_status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c3, dev<<1, TxRxBuffer, RxSize, I2C_LAST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
 		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
