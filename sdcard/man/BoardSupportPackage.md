@@ -459,6 +459,13 @@ Activate the sysled function
 
 # Feather Wings
 
+## Feather Adaptor
+
+![](flipper-feather-adaptor-top.jpg)
+
+![](flipper-feather-adaptor-bottom.jpg)
+
+
 ## Neopixel
 
 NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
