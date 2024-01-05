@@ -516,13 +516,15 @@ $000001 , $000002 , $000004 , $000008 , $000010 , $000020 , $000040 , $000080 , 
 $808080 , $404040 , $202020 , $101010 , $080808 , $040404 , $020202 , $010101 , \ 4th row white
 pixels 32 neopixels
 ```
-It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, during this time the interrupts are disabled. Consider this for RT programs and interrupt latency.
+It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, 
+during this time the interrupts are disabled. Consider this for RT programs 
+and interrupt latency.
 
 
 ## CharlieWing Plex LED Display
 
 Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
-Driver is !IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf)
+Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
 
 `plex-emit` works like the standard word `emit`. It blocks the calling thread, 
 as long as the character is not written to the Plex display (less than 300 us 
@@ -582,8 +584,8 @@ to switch on `1 plexshutdown`.
 | 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
 | 11     | GND     |                  |           | GND            |                             |              |
 | 12     | SIO     | PA13             | D2        | D2             | SWDIO                       | debug        |
-| 13     | TX      | PB6              | D1        | TX             |                             | UART         |
-| 14     | RX      | PB7              | D0        | RX             | EXTI                        | UART         |
+| 13     | TX      | PB6              | D1        | TX             | D1                          | UART         |
+| 14     | RX      | PB7              | D0        | RX             | D0, EXTI                    | UART         |
 | 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA                    | I2C          |
 | 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL                    | I2C          | 
 | 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        | in pull-up   |
