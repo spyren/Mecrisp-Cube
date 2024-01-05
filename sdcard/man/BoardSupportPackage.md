@@ -461,6 +461,13 @@ Activate the sysled function
 
 ## Feather Adaptor
 
+Feather Adaptor with ST-LINK and 8 LEDs (D6, D0, D1, D9, D13, D10, D12, D11). 
+There are jumpers for SCL, SCA, SCK, MO, and MI. 
+The ST-LINK pins SWDIO, SWCLK, VCP_RX, and VCP_TX
+are also jumpered.
+
+A two evening project (wiring instead of knitting). See below for knitting pattern.
+
 ![](img/flipper-feather-adaptor-top.jpg)
     
 ![](img/flipper-feather-adaptor-bottom.jpg)
