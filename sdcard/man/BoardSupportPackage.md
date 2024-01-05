@@ -465,6 +465,8 @@ Feather Adaptor with ST-LINK and 8 LEDs (D6, D0, D1, D9, D13, D10, D12, D11).
 There are jumpers for SCL, SCA, SCK, MO, and MI. 
 The ST-LINK pins SWDIO, SWCLK, VCP_RX, and VCP_TX
 are also jumpered.
+There is a [Grove](https://wiki.seeedstudio.com/Grove_System/) connector 
+(A0, A1, VCC, GND) for I2C/Analog/Digital too.
 
 A two evening project (wiring instead of knitting). See below for knitting pattern.
 
