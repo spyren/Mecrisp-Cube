@@ -562,10 +562,10 @@ to switch on `1 plexshutdown`.
 | Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         | Default      |
 |--------|---------|------------------|-----------|----------------|-----------------------------|--------------|
 | 1      | +5V     |                  |           | VBUS           |                             |              |
-| 2      | A7      | PA7              | D11       | D11 MOSI       | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
-| 3      | A6      | PA6              | D12       | D12 MISO       | SPI1_MISO                   | in pull-up   |
+| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
+| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                   | in pull-up   |
 | 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
-| 5      | B3      | PB3              | D13       | D13 CLK        | SPI1_CLK, SWO               | in pull-up   |
+| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, SWO               | in pull-up   |
 | 6      | B2      | PB2              | D9        | D9             | TIM2_CH2 (output capture), EXTI   | in pull-up   |
 | 7      | C3      | PC3              | A2(D18)   | A2             |                             | analog       |
 | 8      | GND     |                  |           | GND            |                             |              |
@@ -573,10 +573,10 @@ to switch on `1 plexshutdown`.
 | 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
 | 11     | GND     |                  |           | GND            |                             |              |
 | 12     | SIO     | PA13             | D2        | D2             | SWDIO                       | debug        |
-| 13     | TX      | PB6              | D1        | TX D1          |                             | UART         |
-| 14     | RX      | PB7              | D0        | RX D0          | EXTI                        | UART         |
-| 15     | C1      | PC1              | A1 (D17)  | A1 SDA         | I2C3_SDA                    | I2C          |
-| 16     | C0      | PC0              | A0 (D16)  | A0 SCL         | I2C3_SCL                    | I2C          | 
+| 13     | TX      | PB6              | D1        | TX             |                             | UART         |
+| 14     | RX      | PB7              | D0        | RX             | EXTI                        | UART         |
+| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA                    | I2C          |
+| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL                    | I2C          | 
 | 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        | in pull-up   |
 | 18     | GND     |                  |           | GND            |                             |              |
 
