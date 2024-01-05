@@ -461,9 +461,9 @@ Activate the sysled function
 
 ## Feather Adaptor
 
-![](flipper-feather-adaptor-top.jpg)
-
-![](flipper-feather-adaptor-bottom.jpg)
+![](img/flipper-feather-adaptor-top.jpg)
+    
+![](img/flipper-feather-adaptor-bottom.jpg)
 
 
 ## Neopixel
