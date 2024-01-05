@@ -38,9 +38,6 @@ button       ( -- c )         wait for and fetch the pressed button (similar to 
                               char b BACK, o OK, r RIGHT, l LEFT, u UP, d DOWN
 button?      ( -- f )         Is there a button press?
 
-
-dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
-dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
 dpin!        ( n a -- )       set the digital output port pin (D0=0 .. D18=18)
 dpin@        ( a -- n )       get the digital input/output port pin 
 dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM
@@ -213,6 +210,7 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 
 ```forth
 5 6 dmod   \ set D6 to PWM
+11 16 dmod   \ set A0/D16 to analog
 
 : pwm ( -- )
   begin 
@@ -254,6 +252,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 ```forth
 640 pwmprescale 
 5 6 dmod   \ set D6 to PWM
+11 16 dmod   \ set A0/D16 to analog
 
 : servo ( -- ) 
   begin
@@ -275,6 +274,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 ```forth
 640 pwmprescale 
 5 4 dmod   \ set D6 to PWM
+11 16 dmod   \ set A0/D16 to analog
 
 : slowservo ( -- ) 
   begin
