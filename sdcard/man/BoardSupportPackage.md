@@ -131,6 +131,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : init-port ( -- )
+  11 16 dmod   \ set A0/D16 to analog
   8 0 do
     0 i pin dpin!
     3 i pin dmod \ port is output
