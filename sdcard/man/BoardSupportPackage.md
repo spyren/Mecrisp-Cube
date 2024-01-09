@@ -475,6 +475,12 @@ A two evening project (wiring instead of knitting). See below for knitting patte
     
 ![](img/flipper-feather-adaptor-bottom.jpg)
 
+ <table>
+  <tr>
+    <td>![](img/flipper-feather-adaptor-top.jpg)</td>
+    <td>![](img/flipper-feather-adaptor-bottom.jpg)</td>
+  </tr>
+</table> 
 
 ## Neopixel
 
