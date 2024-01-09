@@ -578,6 +578,9 @@ to switch on `1 plexshutdown`.
 
 ![](img/flipper-gpio.jpg)
 
+
+### Arduino and Feather Assignments
+
 | Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         | Default      |
 |--------|---------|------------------|-----------|----------------|-----------------------------|--------------|
 | 1      | +5V     |                  |           | VBUS           |                             |              |
