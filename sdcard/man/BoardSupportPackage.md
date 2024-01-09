@@ -403,6 +403,7 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 # Using Push Buttons and the RGB LED
 
 ## Switches
+
 Most development boards have at least a switch or a button, the Flipper has 6 switches.
 
 ```
@@ -412,6 +413,7 @@ The result is _0_. But if you press and hold the OK Button, the result will be _
 There is no debouncing for the `switchx?` words.
 
 ## Push Buttons
+
 ```forth
 : joystick ( -- ) \ read button events till OK
   begin button? while
@@ -424,6 +426,7 @@ There is no debouncing for the `switchx?` words.
 ```
 
 ## RGB LED
+
 Deactivate the sysled function (the LED is no longer used by the system e.g. 
 for battery charging state):
 ```
@@ -471,10 +474,6 @@ There is a [Grove](https://wiki.seeedstudio.com/Grove_System/) connector
 
 A two evening project (wiring instead of knitting). See below for knitting pattern.
 
-![](img/flipper-feather-adaptor-top.jpg)
-    
-![](img/flipper-feather-adaptor-bottom.jpg)
-
  <table>
   <tr>
     <td><img src="img/flipper-feather-adaptor-top.jpg"  ></td>
@@ -492,6 +491,7 @@ five-millimeter cylinder LED and individual NeoPixel with or without a PCB.
 The control protocol for NeoPixels is based on only one communication wire. 
 
 ### Single NeoPixel
+
 For the Flipper I use D6 for the Neopixel. It takes about 30 us to set one Neopixel, 
 during this time the interrupts are disabled. 
 
@@ -501,6 +501,7 @@ $ff0000 neopixel!   \ red LED 100 % brightness
 </pre>
 
 ### NeoPixel Wing with 32 Pixels
+
 NeoPixelWing uses the D6 as datapin for the Neopixels. 
 
 Switch on the first 4 NeoPixels
