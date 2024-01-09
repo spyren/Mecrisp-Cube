@@ -477,8 +477,8 @@ A two evening project (wiring instead of knitting). See below for knitting patte
 
  <table>
   <tr>
-    <td>![](img/flipper-feather-adaptor-top.jpg)</td>
-    <td>![](img/flipper-feather-adaptor-bottom.jpg)</td>
+    <img src="img/flipper-feather-adaptor-top.jpg" width="200" ></td>
+    <img src="img/flipper-feather-adaptor-bottom.jpg" width="200" ></td>
   </tr>
 </table> 
 
