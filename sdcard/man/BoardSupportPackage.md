@@ -38,9 +38,6 @@ button       ( -- c )         wait for and fetch the pressed button (similar to 
                               char b BACK, o OK, r RIGHT, l LEFT, u UP, d DOWN
 button?      ( -- f )         Is there a button press?
 
-
-dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
-dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
 dpin!        ( n a -- )       set the digital output port pin (D0=0 .. D18=18)
 dpin@        ( a -- n )       get the digital input/output port pin 
 dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM
@@ -134,6 +131,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : init-port ( -- )
+  11 16 dmod   \ set A0/D16 to analog
   8 0 do
     0 i pin dpin!
     3 i pin dmod \ port is output
@@ -213,6 +211,7 @@ potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
 
 ```forth
 5 6 dmod   \ set D6 to PWM
+11 16 dmod   \ set A0/D16 to analog
 
 : pwm ( -- )
   begin 
@@ -254,6 +253,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 ```forth
 640 pwmprescale 
 5 6 dmod   \ set D6 to PWM
+11 16 dmod   \ set A0/D16 to analog
 
 : servo ( -- ) 
   begin
@@ -275,6 +275,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 ```forth
 640 pwmprescale 
 5 4 dmod   \ set D6 to PWM
+11 16 dmod   \ set A0/D16 to analog
 
 : slowservo ( -- ) 
   begin
@@ -402,6 +403,7 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 # Using Push Buttons and the RGB LED
 
 ## Switches
+
 Most development boards have at least a switch or a button, the Flipper has 6 switches.
 
 ```
@@ -411,6 +413,7 @@ The result is _0_. But if you press and hold the OK Button, the result will be _
 There is no debouncing for the `switchx?` words.
 
 ## Push Buttons
+
 ```forth
 : joystick ( -- ) \ read button events till OK
   begin button? while
@@ -423,6 +426,7 @@ There is no debouncing for the `switchx?` words.
 ```
 
 ## RGB LED
+
 Deactivate the sysled function (the LED is no longer used by the system e.g. 
 for battery charging state):
 ```
@@ -459,6 +463,24 @@ Activate the sysled function
 
 # Feather Wings
 
+## Feather Adaptor
+
+Feather Adaptor with ST-LINK and 8 LEDs (D6, D0, D1, D9, D13, D10, D12, D11). 
+There are jumpers for SCL, SCA, SCK, MO, and MI. 
+The ST-LINK pins SWDIO, SWCLK, VCP_RX, and VCP_TX
+are also jumpered.
+There is a [Grove](https://wiki.seeedstudio.com/Grove_System/) connector 
+(A0, A1, VCC, GND) for I2C/Analog/Digital too.
+
+A two evening project (wiring instead of knitting). See below for knitting pattern.
+
+ <table>
+  <tr>
+    <td><img src="img/flipper-feather-adaptor-top.jpg"  ></td>
+    <td><img src="img/flipper-feather-adaptor-bottom.jpg"  ></td>
+  </tr>
+</table> 
+
 ## Neopixel
 
 NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
@@ -469,6 +491,7 @@ five-millimeter cylinder LED and individual NeoPixel with or without a PCB.
 The control protocol for NeoPixels is based on only one communication wire. 
 
 ### Single NeoPixel
+
 For the Flipper I use D6 for the Neopixel. It takes about 30 us to set one Neopixel, 
 during this time the interrupts are disabled. 
 
@@ -478,6 +501,7 @@ $ff0000 neopixel!   \ red LED 100 % brightness
 </pre>
 
 ### NeoPixel Wing with 32 Pixels
+
 NeoPixelWing uses the D6 as datapin for the Neopixels. 
 
 Switch on the first 4 NeoPixels
@@ -500,13 +524,15 @@ $000001 , $000002 , $000004 , $000008 , $000010 , $000020 , $000040 , $000080 , 
 $808080 , $404040 , $202020 , $101010 , $080808 , $040404 , $020202 , $010101 , \ 4th row white
 pixels 32 neopixels
 ```
-It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, during this time the interrupts are disabled. Consider this for RT programs and interrupt latency.
+It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, 
+during this time the interrupts are disabled. Consider this for RT programs 
+and interrupt latency.
 
 
 ## CharlieWing Plex LED Display
 
 Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
-Driver is !IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf)
+Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
 
 `plex-emit` works like the standard word `emit`. It blocks the calling thread, 
 as long as the character is not written to the Plex display (less than 300 us 
@@ -552,13 +578,16 @@ to switch on `1 plexshutdown`.
 
 ![](img/flipper-gpio.jpg)
 
+
+### Arduino and Feather Assignments
+
 | Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         | Default      |
 |--------|---------|------------------|-----------|----------------|-----------------------------|--------------|
 | 1      | +5V     |                  |           | VBUS           |                             |              |
-| 2      | A7      | PA7              | D11       | D11 MOSI       | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
-| 3      | A6      | PA6              | D12       | D12 MISO       | SPI1_MISO                   | in pull-up   |
+| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
+| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                   | in pull-up   |
 | 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
-| 5      | B3      | PB3              | D13       | D13 CLK        | SPI1_CLK, SWO               | in pull-up   |
+| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, SWO               | in pull-up   |
 | 6      | B2      | PB2              | D9        | D9             | TIM2_CH2 (output capture), EXTI   | in pull-up   |
 | 7      | C3      | PC3              | A2(D18)   | A2             |                             | analog       |
 | 8      | GND     |                  |           | GND            |                             |              |
@@ -566,10 +595,10 @@ to switch on `1 plexshutdown`.
 | 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
 | 11     | GND     |                  |           | GND            |                             |              |
 | 12     | SIO     | PA13             | D2        | D2             | SWDIO                       | debug        |
-| 13     | TX      | PB6              | D1        | TX D1          |                             | UART         |
-| 14     | RX      | PB7              | D0        | RX D0          | EXTI                        | UART         |
-| 15     | C1      | PC1              | A1 (D17)  | A1 SDA         | I2C3_SDA                    | I2C          |
-| 16     | C0      | PC0              | A0 (D16)  | A0 SCL         | I2C3_SCL                    | I2C          | 
+| 13     | TX      | PB6              | D1        | TX             | D1                          | UART         |
+| 14     | RX      | PB7              | D0        | RX             | D0, EXTI                    | UART         |
+| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA                    | I2C          |
+| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL                    | I2C          | 
 | 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        | in pull-up   |
 | 18     | GND     |                  |           | GND            |                             |              |
 
