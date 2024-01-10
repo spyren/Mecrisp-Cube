@@ -295,6 +295,9 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 # Using Input Capture and Output Compare
 
+The Flipper expose only one port pin with a TIMER2 channel. 
+Therefore only one GPIO (D13) can be used as input capture or output compare. 
+
 ## Time Base
 
 Default timer resolution is 1 us. The 32 bit TIMER2 is used as time base 
@@ -314,6 +317,7 @@ All channels (input capture / output compare) use the same time base.
 ```
 
 ## Output Compare
+
 Output compare TIM2: D13
 
 ```forth
@@ -400,7 +404,7 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
 
 ## Switches
 
-Most development boards have at least a switch or a button, the Flipper has 6 switches.
+Most development boards have at least a switch or a push button, the Flipper has 6 switches.
 
 ```
 switch1? .
@@ -585,7 +589,7 @@ to switch on `1 plexshutdown`.
 | 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
 | 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO  | in pull-up   |
 | 6      | B2      | PB2              | D9        | D9             | EXTI                        | in pull-up   |
-| 7      | C3      | PC3              | A2(D18)   | A2             |                             | analog       |
+| 7      | C3      | PC3              | A2 (D18)  | A2             |                             | analog       |
 | 8      | GND     |                  |           | GND            |                             |              |
 | 9      | 3V3     |                  |           | 3.3V           |                             |              |
 | 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
