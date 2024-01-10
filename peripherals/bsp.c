@@ -9,7 +9,7 @@
  *          - PWM: D11 TIM1CH1, D6 TIM1CH2
  *          - SPI: D11 MOSI, D12 MISO, D13 SCK
  *          - I2C: A0 I2C3_SCL, A1 I2C3_SDA
- *          - Timer Capture/Compare D9 TIM2_CH2
+ *          - Timer Capture/Compare D13 TIM2_CH2
  *        - Vibro
  *        - NeoPixel D6
  *
@@ -858,7 +858,7 @@ void BSP_stopPeriodICOC(void) {
  *  @brief
  *	    Sets the Output Compare mode
  *	@param[in]
- *	    pin_number D9=9
+ *	    pin_number D13=13
  *	@param[in]
  *      mode  0 frozen, 1 active level on match, 2 inactive level on match, 3 toggle on match
  *	          4 forced active, 5 forced inactive
@@ -870,7 +870,7 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
 	uint32_t ch;
 
 	switch (pin_number) {
-	case 9:
+	case 13:
 		ch = TIM_CHANNEL_2;
 		break;
 	default:
@@ -913,7 +913,7 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
  *  @brief
  *	    Starts Output Compare
  *	@param[in]
- *	    pin_number D9
+ *	    pin_number D13
  *	@param[in]
  *	    pulse
  *  @return
@@ -921,7 +921,7 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
  */
 void BSP_startOC(int pin_number, uint32_t pulse) {
 	switch (pin_number) {
-	case 9:
+	case 13:
 		osSemaphoreAcquire(ICOC_CH2_SemaphoreID, 0);
 		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, pulse);
 		HAL_TIM_OC_Start_IT(&htim2, TIM_CHANNEL_2);
@@ -941,7 +941,7 @@ void BSP_startOC(int pin_number, uint32_t pulse) {
  */
 void BSP_stopOC(int pin_number) {
 	switch (pin_number) {
-	case 9:
+	case 13:
 		HAL_TIM_OC_Stop_IT(&htim2, TIM_CHANNEL_2);
 		break;
 	}
@@ -1019,13 +1019,13 @@ uint32_t BSP_waitIC(uint32_t timeout) {
  *  @brief
  *      Waits for Output Compare.
  *	@param[in]
- *      pin_number  port pin 9 D9
+ *      pin_number  port pin 13 D13
  *  @return
  *      none
  */
 void BSP_waitOC(int pin_number) {
 	switch (pin_number) {
-	case 9:
+	case 13:
 		osSemaphoreAcquire(ICOC_CH2_SemaphoreID, osWaitForever);
 		break;
 	}
@@ -1224,7 +1224,7 @@ void BSP_TIM2_PeriodElapsedCallback() {
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM2) {
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) {
-			// D9, PB2
+			// D13, PB2
 			osSemaphoreRelease(ICOC_CH2_SemaphoreID);
 		}
 	}
@@ -1239,7 +1239,7 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim) {
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	if (htim->Instance == TIM2) {
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) {
-			// A2, PA1
+			// D13, PB2
 			osSemaphoreRelease(ICOC_CH2_SemaphoreID);
 		}
 	}
