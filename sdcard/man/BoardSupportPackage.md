@@ -57,7 +57,7 @@ ICOCcount!   ( -- u )         set the input capture / output compare counter for
 ICOCcount@   ( u -- )         get the input capture / output compare counter for TIMER2
 ICOCstart    ( -- )           start the ICOC period
 ICOCstop     ( -- )           stop the ICOC period
-OCmod        ( u a -- )       set for pin a (D0, D1, D5) the Output Compare mode u: 0 frozen, 1 active level on match, 2 inactive level on match, 
+OCmod        ( u a -- )       set for pin a (D13) the Output Compare mode u: 0 frozen, 1 active level on match, 2 inactive level on match, 
                               3 toggle on match, 4 forced active, 5 forced inactive
     
 OCstart      ( u a -- )       start the output compare mode for pin a with pulse u
@@ -314,18 +314,14 @@ All channels (input capture / output compare) use the same time base.
 ```
 
 ## Output Compare
-Output compare TIM2: D5, D6, and D13
+Output compare TIM2: D13
 
 ```forth
-7 5 dmod  \ output compare for D5
-7 6 dmod  \ output compare for D6
-7 13 dmod \ output compate for D13
+7 13 dmod \ output compare for D13
 
 : oc-toggle ( -- )
   5000000 ICOCperiod! \ 5 s period
   ICOCstart
-  3 5  OCmod  1000000  5 OCstart \ toggle D5 after 1 s
-  3 6  OCmod  2000000  5 OCstart \ toggle D6 after 2 s
   3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
   begin
      waitperiod
@@ -338,7 +334,7 @@ Output compare TIM2: D5, D6, and D13
 When you abort (hit any key) the program, the timer still runs and controls 
 the port pins. To stop the port pins:
 <pre>
-5 OCstop  5 OCstop  13 OCstop  
+13 OCstop  
 </pre>
 
 Or change the prescale to make it faster or slower:
@@ -349,12 +345,12 @@ Or change the prescale to make it faster or slower:
 
 ## Input Capture
 
-This sample program measures the time between the edges on port A5. 
+This sample program measures the time between the edges on port D13. 
 If no event occurs within 2 seconds, "timeout" is issued. 
 Hit any key to abort program.
 ```forth
 : ic-test ( -- )
-  6 21 dmod \ input capture on A5
+  6 13 dmod \ input capture on D13
   ICOCstart
   2 ICstart  \ both edges
   ICOCcount@ ( -- count )
@@ -587,8 +583,8 @@ to switch on `1 plexshutdown`.
 | 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
 | 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                   | in pull-up   |
 | 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
-| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, SWO               | in pull-up   |
-| 6      | B2      | PB2              | D9        | D9             | TIM2_CH2 (output capture), EXTI   | in pull-up   |
+| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO  | in pull-up   |
+| 6      | B2      | PB2              | D9        | D9             | EXTI                        | in pull-up   |
 | 7      | C3      | PC3              | A2(D18)   | A2             |                             | analog       |
 | 8      | GND     |                  |           | GND            |                             |              |
 | 9      | 3V3     |                  |           | 3.3V           |                             |              |
