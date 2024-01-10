@@ -34,9 +34,9 @@
 #include "app_conf.h"
 #include "clock.h"
 
-//#ifndef CFG_ASSERT_ON
-//#define CFG_ASSERT_ON	1
-//#endif
+#ifndef CFG_ASSERT_ON
+#define CFG_ASSERT_ON	1
+#endif
 
 #define ASSERT_HARD_FAULT				1
 #define ASSERT_MEM_MANAGE_FAULT			2
@@ -65,6 +65,8 @@
 #define ASSERT_FREERTOS					20
 
 #define ASSERT_CRS_SIGINT				21
+
+#define ASSERT_UNKNOWN					99
 
 void ASSERT_init(void);
 int ASSERT_occurred(void);

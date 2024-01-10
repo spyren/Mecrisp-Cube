@@ -262,7 +262,7 @@ set_dmod:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "pwmpin!"
 set_pwmpin:
-		@ ( u a --  ) sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Frequency is 1 kHz
+		@ ( u a --  ) sets the digital output port pin (D6=6, D11=11) to a PWM value (0..1000). Frequency is 1 kHz
 // int BSP_setPwmPin(int pin_number, int value)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -277,7 +277,7 @@ set_pwmpin:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "pwmprescale"
 pwmprescale:
-		@ ( u --  ) Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
+		@ ( u --  ) Sets the PWM prescale for TIMER1
 // void BSP_setPwmPrescale(int16_t value)
 @ -----------------------------------------------------------------------------
 	push	{lr}

@@ -5,13 +5,13 @@
  *        - LEDs see rbgw.c module
  *        - Switches (SW1, SW2, SW3, SW4, SW5, S6)
  *        - Analog port pins A0 to A2
- *        - Digital port pins D0 to D4 and D9 to D13
- *          - PWM: D11 TIM1CH1, D4 TIM1CH2
+ *        - Digital port pins D0 to D3, D6 and D9 to D13
+ *          - PWM: D11 TIM1CH1, D6 TIM1CH2
  *          - SPI: D11 MOSI, D12 MISO, D13 SCK
  *          - I2C: A0 I2C3_SCL, A1 I2C3_SDA
  *          - Timer Capture/Compare D9 TIM2_CH2
  *        - Vibro
- *        - NeoPixel D4
+ *        - NeoPixel D6
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -68,6 +68,10 @@ const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CD
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim16;
+extern I2C_HandleTypeDef hi2c3;
+extern UART_HandleTypeDef huart1;
+extern SPI_HandleTypeDef hspi1;
+
 
 // RTOS resources
 // **************
@@ -91,10 +95,7 @@ static const osMutexAttr_t Adc_MutexAttr = {
 static osSemaphoreId_t Adc_SemaphoreID;
 
 static osSemaphoreId_t ICOC_period_SemaphoreID;
-static osSemaphoreId_t ICOC_CH1_SemaphoreID;
 static osSemaphoreId_t ICOC_CH2_SemaphoreID;
-static osSemaphoreId_t ICOC_CH3_SemaphoreID;
-static osSemaphoreId_t ICOC_CH4_SemaphoreID;
 
 static osSemaphoreId_t EXTI_2_SemaphoreID;
 static osSemaphoreId_t EXTI_3_SemaphoreID;
@@ -139,20 +140,8 @@ void BSP_init(void) {
 	if (ICOC_period_SemaphoreID == NULL) {
 		Error_Handler();
 	}
-	ICOC_CH1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH1_SemaphoreID == NULL) {
-		Error_Handler();
-	}
 	ICOC_CH2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	if (ICOC_CH2_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-	ICOC_CH3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH3_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-	ICOC_CH4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH4_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 
@@ -190,9 +179,8 @@ void BSP_init(void) {
 	}
 
 	// start PWM
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+	HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);
+	HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);
 
 	// speaker
 	TIM_OC_InitTypeDef sConfigOC = {0};
@@ -378,30 +366,30 @@ typedef struct {
 } PortPin_t;
 
 static const PortPin_t PortPin_a[19] = {
-		{ D0_GPIO_Port, D0_Pin } , 		// 0
-		{ D1_GPIO_Port, D1_Pin } ,		// 1
-		{ D2_GPIO_Port, D2_Pin } ,		// 2
-		{ D3_GPIO_Port, D3_Pin } ,		// 3
-		{ D0_GPIO_Port, D0_Pin } ,		// 4
-		{ D0_GPIO_Port, D0_Pin } ,		// 5
-		{ D6_GPIO_Port, D6_Pin } ,		// 6
-		{ D0_GPIO_Port, D0_Pin } ,		// 7
-		{ D0_GPIO_Port, D0_Pin } ,		// 8
-		{ D9_GPIO_Port, D9_Pin } ,		// 9
+		{ D0_GPIO_Port,  D0_Pin } , 	// 0
+		{ D1_GPIO_Port,  D1_Pin } ,		// 1
+		{ D2_GPIO_Port,  D2_Pin } ,		// 2
+		{ D3_GPIO_Port,  D3_Pin } ,		// 3
+		{ 0, 0 } ,						// (4)
+		{ 0, 0 } ,						// (5)
+		{ D6_GPIO_Port,  D6_Pin } ,		// 6
+		{ 0, 0 } ,						// (7)
+		{ 0, 0 } ,						// (8)
+		{ D9_GPIO_Port,  D9_Pin } ,		// 9
 		{ D10_GPIO_Port, D10_Pin } ,	// 10
 		{ D11_GPIO_Port, D11_Pin } ,	// 11
 		{ D12_GPIO_Port, D12_Pin } ,	// 12
 		{ D13_GPIO_Port, D13_Pin } ,	// 13
-		{ D0_GPIO_Port, D0_Pin } ,		// 14
-		{ D0_GPIO_Port, D0_Pin } , 		// 15
-		{ A0_GPIO_Port, A0_Pin } ,		// 16
-		{ A1_GPIO_Port, A1_Pin } ,		// 17
-		{ A2_GPIO_Port, A2_Pin }		// 18
+		{ 0, 0 } ,						// (14)
+		{ 0, 0 } , 						// (15)
+		{ A0_GPIO_Port,  A0_Pin } ,		// 16
+		{ A1_GPIO_Port,  A1_Pin } ,		// 17
+		{ A2_GPIO_Port,  A2_Pin }		// 18
 };
 
 /**
  *  @brief
- *	    Sets the digital output port pins (D0 .. D4, D9 .. D13).
+ *	    Sets the digital output port pins (D0 .. D3, D6, D9 .. D13, D16 .. D18).
  *
  *	@param[in]
  *      state    lower word sets the pins.
@@ -425,7 +413,7 @@ void BSP_setDigitalPort(int state) {
 
 /**
  *  @brief
- *	    Gets the digital output port pins (D0 .. D4, D9 .. D13).
+ *	    Gets the digital output port pins (D0 .. D3, D6, D9 .. D13, D16 .. D18).
  *
  *  @return
  *      state port pins
@@ -449,10 +437,10 @@ int BSP_getDigitalPort(void) {
 
 /**
  *  @brief
- *	    Sets the digital output port pin (D0 .. D4, D9 .. D13).
+ *	    Sets the digital output port pin (D0 .. D3, D6, D9 .. D13, D16 .. D18).
  *
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 18.
  *	@param[in]
  *      state         0/1
  *  @return
@@ -460,32 +448,39 @@ int BSP_getDigitalPort(void) {
  *
  */
 void BSP_setDigitalPin(int pin_number, int state) {
-	// only one thread is allowed to use the digital port
-	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+	if (PortPin_a[pin_number].pin) {
+		// valid pin
+		// only one thread is allowed to use the digital port
+		osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	HAL_GPIO_WritePin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin, state);
+		HAL_GPIO_WritePin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin, state);
 
-	osMutexRelease(DigitalPort_MutexID);
+		osMutexRelease(DigitalPort_MutexID);
+	}
 }
 
 
 /**
  *  @brief
- *	    Gets the digital input port pin (D0 .. D4, D9 .. D13).
+ *	    Gets the digital input port pin (D0 .. D3, D6, D9 .. D13, D16 .. D18).
  *
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 18.
  *  @return
  *      state         0/1
  *
  */
 int BSP_getDigitalPin(int pin_number) {
-	// only one thread is allowed to use the digital port
-	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+	int return_value = 0;
+	if (PortPin_a[pin_number].pin) {
+		// valid pin
+		// only one thread is allowed to use the digital port
+		osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	int return_value = HAL_GPIO_ReadPin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin);
+		return_value = HAL_GPIO_ReadPin(PortPin_a[pin_number].port, PortPin_a[pin_number].pin);
 
-	osMutexRelease(DigitalPort_MutexID);
+		osMutexRelease(DigitalPort_MutexID);
+	}
 	return return_value;
 }
 
@@ -513,6 +508,10 @@ int BSP_getAnalogPin(int pin_number) {
 
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
+
+	if (osSemaphoreGetCount(Adc_SemaphoreID)) {
+		osSemaphoreAcquire(Adc_SemaphoreID, 0);
+	}
 
 	sConfig.Channel = AnalogPortPin_a[pin_number];
 	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
@@ -667,7 +666,7 @@ static const PortPinMode_t DigitalPortPinMode_a[] = {
 
 /**
  *  @brief
- *	    Sets the digital port pin mode (D0 .. D4, D9 .. D13, D16 .. D18).
+ *	    Sets the digital port pin mode (D0 .. D3, D6, D9 .. D13, D16 .. D18).
  *
  *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
  *      5 out pwm, 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
@@ -685,6 +684,29 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
+	if (pin_number == 0) {
+		// UART Rx
+		if (mode == 9) {
+			HAL_UART_MspInit(&huart1);
+		} else {
+			HAL_UART_MspDeInit(&huart1);
+		}
+	}
+
+	if (pin_number == 16) {
+		// I2C3
+		if (mode == 8) {
+			HAL_I2C_MspInit(&hi2c3);
+		} else {
+			HAL_I2C_MspDeInit(&hi2c3);
+		}
+	}
+
+	if (pin_number == 11) {
+		// SPI
+		// TBC
+	}
+
     GPIO_InitStruct.Pin = PortPin_a[pin_number].pin;
     GPIO_InitStruct.Mode = DigitalPortPinMode_a[mode].mode;
     GPIO_InitStruct.Pull = DigitalPortPinMode_a[mode].pull;
@@ -701,10 +723,10 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 
 /**
  *  @brief
- *	    Sets the digital output port pin (D11=11, D4=4) to a PWM value (0..1000).
+ *	    Sets the digital output port pin (D11=11, D6=6) to a PWM value (0..1000).
  *
  *	@param[in]
- *      pin_number    D11=11, D4=4
+ *      pin_number    D11=11, D6=6
  *	@param[in]
  *      value         0 to 1000
  *  @return
@@ -719,11 +741,11 @@ void BSP_setPwmPin(int pin_number, int value) {
 	switch (pin_number) {
 	case 11:
 		// D11 TIM1CH1 N
-		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 1000 - value);
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, value);
 		break;
-	case 4:
-		// D4 TIM1CH2 N
-		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 1000 - value);
+	case 6:
+		// D6 TIM1CH2 N
+		__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, value);
 		break;
 	}
 
@@ -733,7 +755,7 @@ void BSP_setPwmPin(int pin_number, int value) {
 
 /**
  *  @brief
- *	    Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
+ *	    Sets the PWM prescale for TIMER1
  *
  *	@param[in]
  *      value         32 kHz / prescale, default 32 -> PWM frequency 1 kHz
