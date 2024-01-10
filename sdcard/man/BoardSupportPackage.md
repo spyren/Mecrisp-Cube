@@ -322,7 +322,7 @@ Output compare TIM2: D13
 : oc-toggle ( -- )
   5000000 ICOCperiod! \ 5 s period
   ICOCstart
-  3 13 OCmod  3000000 9 OCstart \ toggle D13 after 3 s
+  3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
   begin
      waitperiod
      cr .time
