@@ -57,7 +57,7 @@ ICOCcount!   ( -- u )         set the input capture / output compare counter for
 ICOCcount@   ( u -- )         get the input capture / output compare counter for TIMER2
 ICOCstart    ( -- )           start the ICOC period
 ICOCstop     ( -- )           stop the ICOC period
-OCmod        ( u a -- )       set for pin a (D13) the Output Compare mode u: 0 frozen, 1 active level on match, 2 inactive level on match, 
+OCmod        ( u a -- )       set for pin a (D9) the Output Compare mode u: 0 frozen, 1 active level on match, 2 inactive level on match, 
                               3 toggle on match, 4 forced active, 5 forced inactive
     
 OCstart      ( u a -- )       start the output compare mode for pin a with pulse u
@@ -314,15 +314,15 @@ All channels (input capture / output compare) use the same time base.
 ```
 
 ## Output Compare
-Output compare TIM2: D13
+Output compare TIM2: D9
 
 ```forth
-7 13 dmod \ output compare for D13
+7 9 dmod \ output compare for D9
 
 : oc-toggle ( -- )
   5000000 ICOCperiod! \ 5 s period
   ICOCstart
-  3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
+  3 9 OCmod  3000000 9 OCstart \ toggle D9 after 3 s
   begin
      waitperiod
      cr .time
@@ -345,12 +345,12 @@ Or change the prescale to make it faster or slower:
 
 ## Input Capture
 
-This sample program measures the time between the edges on port D13. 
+This sample program measures the time between the edges on port D9. 
 If no event occurs within 2 seconds, "timeout" is issued. 
 Hit any key to abort program.
 ```forth
 : ic-test ( -- )
-  6 13 dmod \ input capture on D13
+  6 9 dmod \ input capture on D9
   ICOCstart
   2 ICstart  \ both edges
   ICOCcount@ ( -- count )
