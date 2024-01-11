@@ -377,18 +377,18 @@ Hit any key to abort program.
 
 # Using EXTI line
 
-D5, D6, D11 and D13 can be used as an EXTI line. 
-EXTIs are external interrupt lines, D5 uses EXTI2 (EXTI Line2 interrupt), 
-D6 EXTI3, D11 EXIT8, and D13 EXTI1. 
+GPIO pins D9, D10, A0 and A1 can be used as an EXTI line. 
+EXTIs are external interrupt lines, D9 uses EXTI2 (EXTI Line2 interrupt), 
+D10 EXTI4, A0/D16 EXIT0, and A0/D17 EXTI1. 
 
 ```forth
 : exti-test ( -- )
-  2 5 EXTImod \ both edges on D5
+  2 9 EXTImod \ both edges on D9
   begin
-    2000 5 EXTIwait \ wait for edge on D5 (button C) with 2 s timeout
+    2000 9 EXTIwait \ wait for edge on D9 with 2 s timeout
     cr
     0= if
-      5 dpin@ if
+      9 dpin@ if
         ." rising edge"
       else
         ." falling edge"
