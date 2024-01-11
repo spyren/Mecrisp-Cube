@@ -365,7 +365,7 @@ Hit any key to abort program.
       ." timeout" drop
     else 
       dup rot ( -- capture capture old-capture )
-      - 1000 / . ." ms"
+      - . ." us"
     then
   key? until
   key drop
