@@ -16,8 +16,7 @@ for your project.
 Board Support Words
 ===================
 
-Defaults: Digital port pins D0 to D7 are push pull outputs, D8 to D15
-are inputs with pull-up resistors.
+For GPIO pin defaults see [table](#arduino-and-feather-assignments).
 ```
 rgbled!      ( u -- )         set the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
 rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
