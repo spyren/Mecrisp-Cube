@@ -721,6 +721,15 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 
 ### Sub-GHz
 
+| Signal name   | STM32W555 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| RF_SW_0       | PC4              |                            |
+| CC1101_CS     | PD0              | Chip Select                |
+| CC1101_G0     | PA1              |                            |
+| SPI_R_MOSI    | PB15             | SPI1_MOSI                  |
+| SPI_R_MISO    | PC2              | SPI1_MISO                  |
+| SPI_R_SCK     | PD1              | SPI1_SCK                   |
+
 
 ### 125 kHz RFID
 
