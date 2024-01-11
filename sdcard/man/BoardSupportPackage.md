@@ -719,3 +719,11 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | IR_TX         | PA0              | IR_OUT, TIM17CH1, _TIM1CH3_  |
 
 
+### Sub-GHz
+
+
+### 125 kHz RFID
+
+
+### NFC
+
