@@ -495,7 +495,6 @@ If you do not need the Feather Adaptor but want to have ST-Link and some LEDs th
 good choice.
 
 
-
 ## Neopixel
 
 NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
@@ -557,7 +556,6 @@ to switch on `1 plexshutdown`.
 Implentation [plex.c](/peripherals/plex.c).
 
 ```
-<pre>
 plex-emit    ( c -- )           Emit a character (writes a character to the Plex display)
 plex-emit?   ( -- f )           Plex ready to get a character (I2C not busy)
 
@@ -580,7 +578,7 @@ plexframe!   ( u -- )           Set the active frame u (0 .. 7) for write and re
 plexframe@   (  -- u )          Get the active frame u
 plexdisplay! ( u -- )           Show the display frame u
 plexdisplay@ (  -- u )          Which frame is showed
-</pre>
+```
 
 ### Sample Program
 
