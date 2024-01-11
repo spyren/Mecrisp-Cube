@@ -46,8 +46,8 @@ dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-do
 pwmpin!      ( u a -- )       set the digital output port pin (D6=6, D11=11) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D6=6, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-EXTImod      ( u a -- )       set for pin a (D0, D6, D9, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D0, D6, D9, D10), timeout u in [ms]
+EXTImod      ( u a -- )       set for pin a (A0, A1, D9, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
+EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (A0, A1, D9, D10), timeout u in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -581,26 +581,26 @@ to switch on `1 plexshutdown`.
 
 ### Arduino and Feather Assignments
 
-| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         | Default      |
-|--------|---------|------------------|-----------|----------------|-----------------------------|--------------|
-| 1      | +5V     |                  |           | VBUS           |                             |              |
-| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
-| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                   | in pull-up   |
-| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
-| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO  | in pull-up   |
-| 6      | B2      | PB2              | D9        | D9             | EXTI                        | in pull-up   |
-| 7      | C3      | PC3              | A2 (D18)  | A2             |                             | analog       |
-| 8      | GND     |                  |           | GND            |                             |              |
-| 9      | 3V3     |                  |           | 3.3V           |                             |              |
-| 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
-| 11     | GND     |                  |           | GND            |                             |              |
-| 12     | SIO     | PA13             | D2        | D2             | SWDIO                       | debug        |
-| 13     | TX      | PB6              | D1        | TX             | D1                          | UART         |
-| 14     | RX      | PB7              | D0        | RX             | D0, EXTI                    | UART         |
-| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA                    | I2C          |
-| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL                    | I2C          | 
-| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        | in pull-up   |
-| 18     | GND     |                  |           | GND            |                             |              |
+| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions                              | Default      |
+|--------|---------|------------------|-----------|----------------|--------------------------------------------------|--------------|
+| 1      | +5V     |                  |           | VBUS           |                                                  |              |
+| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)                        | in pull-up   |
+| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                                        | in pull-up   |
+| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI4                                   | in pull-up   |
+| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO         | in pull-up   |
+| 6      | B2      | PB2              | D9        | D9             | EXTI2                                            | in pull-up   |
+| 7      | C3      | PC3              | A2 (D18)  | A2             |                                                  | analog       |
+| 8      | GND     |                  |           | GND            |                                                  |              |
+| 9      | 3V3     |                  |           | 3.3V           |                                                  |              |
+| 10     | SWC     | PA14             | D3        | D3             | SWCLK                                            | debug        |
+| 11     | GND     |                  |           | GND            |                                                  |              |
+| 12     | SIO     | PA13             | D2        | D2             | SWDIO                                            | debug        |
+| 13     | TX      | PB6              | D1        | TX             | D1                                               | UART         |
+| 14     | RX      | PB7              | D0        | RX             | D0                                               | UART         |
+| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA, EXTI1                                  | I2C          |
+| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL, EXTI0                                  | I2C          | 
+| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM)                                   | in pull-up   |
+| 18     | GND     |                  |           | GND            |                                                  |              |
 
 
 ### JTAG/SWD Adaptor
