@@ -546,14 +546,47 @@ and interrupt latency.
 
 ## CharlieWing Plex LED Display
 
+### Plex Words
+
+`plex-emit` works like the standard word `emit`. It blocks the calling thread,
+as long as the character is not written to the Plex display (less than 300 us
+for a 6x8 character and 400 kHz !I2C).
+Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown,
+to switch on `1 plexshutdown`. 
+
+Implentation [plex.c](/peripherals/plex.c).
+
+```
+<pre>
+plex-emit    ( c -- )           Emit a character (writes a character to the Plex display)
+plex-emit?   ( -- f )           Plex ready to get a character (I2C not busy)
+
+hook-emit    ( -- a )           Hooks for redirecting terminal IO on the fly
+hook-emit?   ( -- a )    
+
+plexpos!     ( u -- )           Set Plex cursor position/column u
+plexpos@     (  -- u )          Get the current Plex cursor position
+plexclr      (  --  )           clear the Plex display, set the cursor to 0
+plexfont     ( u -- )           Select the font, u: 0 6x8, 1 8x8
+plexpwm      ( u -- )           default PWM 1 .. 255 (brightness)
+plexshutdown ( f -- )           1 activate Plex dispaly, 0 shutdown display
+
+plexcolumn!  ( u1 u2 n -- )     write LEDs (6 pixels) u2 at the position/column u1 (0 to 15) with the brightness n
+plexcolumn@  ( u1 -- u2 )       read LEDs at position/column u1   
+plexpixel!   ( u1 u2 n -- )     write one pixel at column u1 and row u2 with brightness n
+plexpixel@   ( u1 u2 -- f )     read one pixel at column u1 and row u2
+
+plexframe!   ( u -- )           Set the active frame u (0 .. 7) for write and read
+plexframe@   (  -- u )          Get the active frame u
+plexdisplay! ( u -- )           Show the display frame u
+plexdisplay@ (  -- u )          Which frame is showed
+</pre>
+
+### Sample Program
+
 Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
 Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
 
-`plex-emit` works like the standard word `emit`. It blocks the calling thread, 
-as long as the character is not written to the Plex display (less than 300 us 
-for a 6x8 character and 400 kHz I2C). 
-Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown, 
-to switch on `1 plexshutdown`. 
 ```forth
 1 plexshutdown
 0 0 100 plexpixel!
