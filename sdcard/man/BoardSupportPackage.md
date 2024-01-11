@@ -381,6 +381,10 @@ GPIO pins D9, D10, A0 and A1 can be used as an EXTI line.
 EXTIs are external interrupt lines, D9 uses EXTI2 (EXTI Line2 interrupt), 
 D10 EXTI4, A0/D16 EXIT0, and A0/D17 EXTI1. 
 
+If  you use a push button for D9, there could be several events on pressing the push button once.
+This is called bouncing. 
+For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
+
 ```forth
 : exti-test ( -- )
   2 9 EXTImod \ both edges on D9
