@@ -373,6 +373,10 @@ Hit any key to abort program.
   ICstop
 ;
 ```
+If  you use a push button for D13, there could be several events on pressing the push button once.
+This is called bouncing. 
+Bouncing time is about 250 us for my push button.
+
 
 # Using EXTI line
 
