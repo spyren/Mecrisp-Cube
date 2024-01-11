@@ -707,7 +707,15 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| SPEAKER       | PB8              | TIM16CH1, TIM1CH2N         |
+| SPEAKER       | PB8              | _TIM16CH1_, TIM1CH2N       |
 | VIBRO         | PA8              |                            |
+
+
+### Infrared
+
+| Signal name   | STM32WB55 pin    | Comment                      |
+|---------------|------------------|------------------------------|
+| IR_RX         | PB9              | _TIM2CH1_, TIM2ETR, EXTI0    |
+| IR_TX         | PA0              | IR_OUT, TIM17CH1, _TIM1CH3_  |
 
 
