@@ -485,6 +485,13 @@ A two evening project (wiring instead of knitting). See below for knitting patte
   </tr>
 </table> 
 
+It is easier to use the [Flipper Zero Breadboard](https://www.joom.com/geek/en/products/631b4ceb3dd2930180ea7f2b).
+If you do not need the Feather Adaptor but want to have ST-Link and some LEDs the 
+[ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) is a
+good choice.
+
+
+
 ## Neopixel
 
 NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
