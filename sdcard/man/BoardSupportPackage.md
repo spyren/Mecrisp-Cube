@@ -623,7 +623,7 @@ Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
   15 0 do \ write 15 charlie columns
     dup i + dup 126 mod swap 126 /  ( u -- u x y)
     lcdpos! lcdcolumn@  \ read LCD column
-    i swap -1 plexcolumn! \ write PLEX column
+    i swap 50 plexcolumn! \ write PLEX column
   loop
   drop
 ;
