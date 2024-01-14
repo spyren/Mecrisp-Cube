@@ -580,10 +580,12 @@ plexdisplay! ( u -- )           Show the display frame u
 plexdisplay@ (  -- u )          Which frame is showed
 ```
 
-### Sample Program
+### Sample Programs
 
 Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
 Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
+
+#### Count Down
 
 ```forth
 1 plexshutdown
@@ -612,6 +614,41 @@ Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
   [char] 0 dup plex-emit plex-emit 
   cr ." Launch!" cr
 ;
+```
+
+#### Marquee
+
+```forth
+: LCD>plex ( u -- ) \ copy LCD from column u to plex
+  15 0 do \ write 15 charlie columns
+    dup i + dup 126 mod swap 126 /  ( -- x y)
+    lcdpos! lcdcolumn@ \ get column
+    i swap -1 plexcolumn! 
+  loop
+  drop
+;
+
+: Marquee ( a u -- ) \ marquee a string on charlie plex
+  lcdclr  0 lcdfont 
+  2dup >lcd 2swap type >term
+  nip ( a u -- u )
+  3 - \ trailing spaces
+  begin
+    dup 6 *  0 do \ all string columns, a char is 6 pixels wide
+      i LCD>plex
+      40 osDelay drop
+      switch1? if leave then
+    loop 
+  switch1? until
+  drop ( u -- )
+;
+
+
+1 plexshutdown
+
+200 buffer: message
+message .str"    MECRISP-CUBE REAL-TIME FORTH ON THE GO!   "
+message strlen Marquee
 ```
 
 # Pinouts
