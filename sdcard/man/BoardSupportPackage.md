@@ -621,16 +621,16 @@ Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
 ```forth
 : LCD>plex ( u -- ) \ copy LCD from column u to plex
   15 0 do \ write 15 charlie columns
-    dup i + dup 126 mod swap 126 /  ( -- x y)
-    lcdpos! lcdcolumn@ \ get column
-    i swap -1 plexcolumn! 
+    dup i + dup 126 mod swap 126 /  ( u -- u x y)
+    lcdpos! lcdcolumn@  \ read LCD column
+    i swap -1 plexcolumn! \ write PLEX column
   loop
   drop
 ;
 
 : Marquee ( a u -- ) \ marquee a string on charlie plex
   lcdclr  0 lcdfont 
-  2dup >lcd 2swap type >term
+  2dup >lcd 2swap type >term  \ write string to LCD
   nip ( a u -- u )
   3 - \ trailing spaces
   begin
