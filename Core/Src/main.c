@@ -386,7 +386,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-//	ASSERT_nonfatal(0, ASSERT_UNKNOWN, 0);
+	ASSERT_nonfatal(0, ASSERT_UNKNOWN, 0);
 	// BSP_setLED3(TRUE);
   /* USER CODE END Error_Handler_Debug */
 }

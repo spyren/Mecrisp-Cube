@@ -190,11 +190,11 @@ DRESULT USER_SD_write (
 	/* USER CODE HERE */
 	DRESULT res = RES_ERROR;
 	// SD drive
-	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
+	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 	if (SD_WriteBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
-	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
+	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	return res;
   /* USER CODE END WRITE */
 }
@@ -319,11 +319,11 @@ DRESULT USER_FD_read (
   /* USER CODE BEGIN READ */
 	DRESULT res = RES_ERROR;
 	// flash drive
-	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
 	if( FD_ReadBlocks((uint8_t*)buff, (uint32_t) (sector), count) == SD_OK) {
 		res = RES_OK;
 	}
-	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	return res;
   /* USER CODE END READ */
 }
