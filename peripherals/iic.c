@@ -137,7 +137,7 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	}
 	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
 
 	return IIC_Status;
@@ -175,7 +175,7 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	}
 	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
 
 	return IIC_Status;
@@ -214,9 +214,9 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 		// can't transmit Message
 		IIC_Status = -3;
 	}
-	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
+		osMutexRelease(IIC_MutexID);
 		return IIC_Status;
 	}
 
@@ -231,7 +231,7 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 	}
 	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
 
 	return IIC_Status;
