@@ -16,8 +16,7 @@ for your project.
 Board Support Words
 ===================
 
-Defaults: Digital port pins D0 to D7 are push pull outputs, D8 to D15
-are inputs with pull-up resistors.
+For GPIO pin defaults see [table](#arduino-and-feather-assignments).
 ```
 rgbled!      ( u -- )         set the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
 rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
@@ -46,8 +45,8 @@ dmod         ( u a -- )       set the pin mode: 0 in, 1 in pull-up, 2 in pull-do
 pwmpin!      ( u a -- )       set the digital output port pin (D6=6, D11=11) to a PWM value (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D6=6, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-EXTImod      ( u a -- )       set for pin a (D0, D6, D9, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (D0, D6, D9, D10), timeout u in [ms]
+EXTImod      ( u a -- )       set for pin a (A0, A1, D9, D10) the EXTI mode u: 0 rising, 1 falling, 2 both edges, 3 none
+EXTIwait     ( u a -- )       wait for EXTI interrupt on pin a (A0, A1, D9, D10), timeout u in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -131,7 +130,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : init-port ( -- )
-  11 16 dmod   \ set A0/D16 to analog
+  11 18 dmod   \ set A2/D18 to analog
   8 0 do
     0 i pin dpin!
     3 i pin dmod \ port is output
@@ -139,7 +138,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : delay ( -- )
-  200 osDelay drop  \ wait 200 ms
+  50 osDelay drop  \ wait 200 ms
 ;
 
 : left ( -- ) 
@@ -295,6 +294,9 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 # Using Input Capture and Output Compare
 
+The Flipper expose only one port pin with a TIMER2 channel. 
+Therefore only one GPIO (D13) can be used as input capture or output compare. 
+
 ## Time Base
 
 Default timer resolution is 1 us. The 32 bit TIMER2 is used as time base 
@@ -314,6 +316,7 @@ All channels (input capture / output compare) use the same time base.
 ```
 
 ## Output Compare
+
 Output compare TIM2: D13
 
 ```forth
@@ -362,7 +365,7 @@ Hit any key to abort program.
       ." timeout" drop
     else 
       dup rot ( -- capture capture old-capture )
-      - 1000 / . ." ms"
+      - . ." us"
     then
   key? until
   key drop
@@ -370,21 +373,29 @@ Hit any key to abort program.
   ICstop
 ;
 ```
+If  you use a push button for D13, there could be several events on pressing the push button once.
+This is called bouncing. 
+Bouncing time is about 250 us for my push button.
+
 
 # Using EXTI line
 
-D5, D6, D11 and D13 can be used as an EXTI line. 
-EXTIs are external interrupt lines, D5 uses EXTI2 (EXTI Line2 interrupt), 
-D6 EXTI3, D11 EXIT8, and D13 EXTI1. 
+GPIO pins D9, D10, A0 and A1 can be used as an EXTI line. 
+EXTIs are external interrupt lines, D9 uses EXTI2 (EXTI Line2 interrupt), 
+D10 EXTI4, A0/D16 EXIT0, and A0/D17 EXTI1. 
+
+If  you use a push button for D9, there could be several events on pressing the push button once.
+This is called bouncing. 
+For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
 
 ```forth
 : exti-test ( -- )
-  2 5 EXTImod \ both edges on D5
+  2 9 EXTImod \ both edges on D9
   begin
-    2000 5 EXTIwait \ wait for edge on D5 (button C) with 2 s timeout
+    2000 9 EXTIwait \ wait for edge on D9 with 2 s timeout
     cr
     0= if
-      5 dpin@ if
+      9 dpin@ if
         ." rising edge"
       else
         ." falling edge"
@@ -394,13 +405,14 @@ D6 EXTI3, D11 EXIT8, and D13 EXTI1.
     then
   key? until
   key drop
+;
 ```
 
 # Using Push Buttons and the RGB LED
 
 ## Switches
 
-Most development boards have at least a switch or a button, the Flipper has 6 switches.
+Most development boards have at least a switch or a push button, the Flipper has 6 switches.
 
 ```
 switch1? .
@@ -477,6 +489,12 @@ A two evening project (wiring instead of knitting). See below for knitting patte
   </tr>
 </table> 
 
+It is easier to use the [Flipper Zero Breadboard](https://www.joom.com/geek/en/products/631b4ceb3dd2930180ea7f2b).
+If you do not need the Feather Adaptor but want to have ST-Link and some LEDs the 
+[ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) is a
+good choice.
+
+
 ## Neopixel
 
 NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
@@ -527,14 +545,48 @@ and interrupt latency.
 
 ## CharlieWing Plex LED Display
 
+### Plex Words
+
+`plex-emit` works like the standard word `emit`. It blocks the calling thread,
+as long as the character is not written to the Plex display (less than 300 us
+for a 6x8 character and 400 kHz I2C).
+Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown,
+to switch on `1 plexshutdown`. 
+
+Implentation [plex.c](/peripherals/plex.c).
+
+```
+plex-emit    ( c -- )           Emit a character (writes a character to the Plex display)
+plex-emit?   ( -- f )           Plex ready to get a character (I2C not busy)
+
+hook-emit    ( -- a )           Hooks for redirecting terminal IO on the fly
+hook-emit?   ( -- a )    
+
+plexpos!     ( u -- )           Set Plex cursor position/column u
+plexpos@     (  -- u )          Get the current Plex cursor position
+plexclr      (  --  )           clear the Plex display, set the cursor to 0
+plexfont     ( u -- )           Select the font, u: 0 6x8, 1 8x8
+plexpwm      ( u -- )           default PWM 1 .. 255 (brightness)
+plexshutdown ( f -- )           1 activate Plex dispaly, 0 shutdown display
+
+plexcolumn!  ( u1 u2 n -- )     write LEDs (7 pixels) u2 at the position/column u1 (0 to 15) with the brightness n
+plexcolumn@  ( u1 -- u2 )       read LEDs at position/column u1   
+plexpixel!   ( u1 u2 n -- )     write one pixel at column u1 and row u2 with brightness n
+plexpixel@   ( u1 u2 -- f )     read one pixel at column u1 and row u2
+
+plexframe!   ( u -- )           Set the active frame u (0 .. 7) for write and read
+plexframe@   (  -- u )          Get the active frame u
+plexdisplay! ( u -- )           Show the display frame u
+plexdisplay@ (  -- u )          Which frame is showed
+```
+
+### Sample Programs
+
 Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
 Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
 
-`plex-emit` works like the standard word `emit`. It blocks the calling thread, 
-as long as the character is not written to the Plex display (less than 300 us 
-for a 6x8 character and 400 kHz I2C). 
-Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown, 
-to switch on `1 plexshutdown`. 
+#### Count Down
+
 ```forth
 1 plexshutdown
 0 0 100 plexpixel!
@@ -564,6 +616,41 @@ to switch on `1 plexshutdown`.
 ;
 ```
 
+#### Marquee
+
+```forth
+: LCD>plex ( u -- ) \ copy LCD from column u to plex
+  15 0 do \ write 15 charlie columns
+    dup i + dup 126 mod swap 126 /  ( u -- u x y)
+    lcdpos! lcdcolumn@  \ read LCD column
+    i swap 50 plexcolumn! \ write PLEX column
+  loop
+  drop
+;
+
+: Marquee ( a u -- ) \ marquee a string on charlie plex
+  lcdclr  0 lcdfont 
+  2dup >lcd 2swap type >term  \ write string to LCD
+  nip ( a u -- u )
+  3 - \ trailing spaces
+  begin
+    dup 6 *  0 do \ all string columns, a char is 6 pixels wide
+      i LCD>plex
+      40 osDelay drop
+      switch1? if leave then
+    loop 
+  switch1? until
+  drop ( u -- )
+;
+
+
+1 plexshutdown
+
+200 buffer: message
+message .str"    MECRISP-CUBE REAL-TIME FORTH ON THE GO!   "
+message strlen Marquee
+```
+
 # Pinouts
 
 ## External 
@@ -577,26 +664,26 @@ to switch on `1 plexshutdown`.
 
 ### Arduino and Feather Assignments
 
-| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions         | Default      |
-|--------|---------|------------------|-----------|----------------|-----------------------------|--------------|
-| 1      | +5V     |                  |           | VBUS           |                             |              |
-| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)   | in pull-up   |
-| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                   | in pull-up   |
-| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI               | in pull-up   |
-| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO  | in pull-up   |
-| 6      | B2      | PB2              | D9        | D9             | EXTI                        | in pull-up   |
-| 7      | C3      | PC3              | A2(D18)   | A2             |                             | analog       |
-| 8      | GND     |                  |           | GND            |                             |              |
-| 9      | 3V3     |                  |           | 3.3V           |                             |              |
-| 10     | SWC     | PA14             | D3        | D3             | SWCLK                       | debug        |
-| 11     | GND     |                  |           | GND            |                             |              |
-| 12     | SIO     | PA13             | D2        | D2             | SWDIO                       | debug        |
-| 13     | TX      | PB6              | D1        | TX             | D1                          | UART         |
-| 14     | RX      | PB7              | D0        | RX             | D0, EXTI                    | UART         |
-| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA                    | I2C          |
-| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL                    | I2C          | 
-| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM), EXTI        | in pull-up   |
-| 18     | GND     |                  |           | GND            |                             |              |
+| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions                              | Default      |
+|--------|---------|------------------|-----------|----------------|--------------------------------------------------|--------------|
+| 1      | +5V     |                  |           | VBUS           |                                                  |              |
+| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)                        | in pull-up   |
+| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                                        | in pull-up   |
+| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI4                                   | in pull-up   |
+| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO         | in pull-up   |
+| 6      | B2      | PB2              | D9        | D9             | EXTI2                                            | in pull-up   |
+| 7      | C3      | PC3              | A2 (D18)  | A2             |                                                  | analog       |
+| 8      | GND     |                  |           | GND            |                                                  |              |
+| 9      | 3V3     |                  |           | 3.3V           |                                                  |              |
+| 10     | SWC     | PA14             | D3        | D3             | SWCLK                                            | debug        |
+| 11     | GND     |                  |           | GND            |                                                  |              |
+| 12     | SIO     | PA13             | D2        | D2             | SWDIO                                            | debug        |
+| 13     | TX      | PB6              | D1        | TX             | D1                                               | UART         |
+| 14     | RX      | PB7              | D0        | RX             | D0                                               | UART         |
+| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA, EXTI1                                  | I2C          |
+| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL, EXTI0                                  | I2C          | 
+| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM)                                   | in pull-up   |
+| 18     | GND     |                  |           | GND            |                                                  |              |
 
 
 ### JTAG/SWD Adaptor
@@ -699,7 +786,51 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| SPEAKER       | PB8              | TIM16CH1, TIM1CH2N         |
+| SPEAKER       | PB8              | _TIM16CH1_, TIM1CH2N       |
 | VIBRO         | PA8              |                            |
 
+
+### Infrared
+
+| Signal name   | STM32WB55 pin    | Comment                      |
+|---------------|------------------|------------------------------|
+| IR_RX         | PB9              | _TIM2CH1_, TIM2ETR, EXTI0    |
+| IR_TX         | PA0              | IR_OUT, TIM17CH1, _TIM1CH3_  |
+
+
+### Sub-GHz
+
+CC1101RGPR
+
+| Signal name   | STM32W555 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| RF_SW_0       | PC4              |                            |
+| CC1101_CS     | PD0              | Chip Select                |
+| CC1101_G0     | PA1              |                            |
+| SPI_R_MOSI    | PB15             | SPI1_MOSI                  |
+| SPI_R_MISO    | PC2              | SPI1_MISO                  |
+| SPI_R_SCK     | PD1              | SPI1_SCK                   |
+
+
+### 125 kHz RFID
+
+| Signal name   | STM32W555 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| RFID_PULL     | PA2              |                            |
+| RFFID_CARRIER | PA15             |                            |
+| RFID_OUT      | PB3              |                            |
+| RFID_RF_IN    | PC5              |                            |
+
+
+### NFC
+
+ST25R3916-AQWT
+
+| Signal name   | STM32W555 pin    | Comment                    |
+|---------------|------------------|----------------------------|
+| NFC_CS        | PE4              | Chip Select                |
+| NFC_IRQ       |                  |                            |
+| SPI_R_MOSI    | PB15             | SPI1_MOSI                  |
+| SPI_R_MISO    | PC2              | SPI1_MISO                  |
+| SPI_R_SCK     | PD1              | SPI1_SCK                   |
 
