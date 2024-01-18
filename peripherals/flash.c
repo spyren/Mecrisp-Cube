@@ -208,7 +208,7 @@ int aquire_flash(uint8_t Erase) {
 
 	tries = 0;
 	while (TRUE) {
-		if (tries++ > 100) {
+		if (tries++ > 10000) {
 			ASSERT_fatal(0, ASSERT_FLASH_UNLOCK, 0);
 			tries = 0;
 		}
@@ -216,7 +216,7 @@ int aquire_flash(uint8_t Erase) {
 		// PESD bit set?
 		if (LL_FLASH_IsActiveFlag_OperationSuspended()) {
 			// wait for PESD Flag
-			osDelay(1);
+			osDelay(2);
 			continue;
 		}
 
@@ -226,13 +226,13 @@ int aquire_flash(uint8_t Erase) {
 		if (HAL_HSEM_IsSemTaken(6)) {
 			// exit critical section
 			osKernelRestoreLock(os_state);
-			osDelay(1);
+			osDelay(2);
 			continue; // busy wait
 		}
 		if (HAL_HSEM_FastTake(7)) {
 			// exit critical section
 			osKernelRestoreLock(os_state);
-			osDelay(1);
+			osDelay(2);
 			continue; // busy wait
 		}
 
