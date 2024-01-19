@@ -20,12 +20,17 @@ Hardware
 Flash Drive
 -----------
 
-The built-in flash (STM32WB55C has 1 MiB FLASH) can be used as a flash
-drive. No additional hardware is needed. 384 KiB is about the same as
-the old DD 5 1/4\" floppy from 1978 had.
++++ Built-in Flash
 
-### Flash Memory Layout
-```
+The built-in flash (STM32WB55C has 1 MiB FLASH, page size 4 KiB) 
+can be used as a flash drive. 
+No additional hardware is needed. 
+384 KiB is about the same as the old DD 5 1/4" floppy from 1978 had. 
+The STM32F403 has also 1 MiB flash, but most sectors are 128 KiB, 
+and the built-in flash is therefore not suitable for a flash drive.
+
+_Flash Memory Layout_
+<pre>
 FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
    20 KiB Forth Core
    140 KiB Middleware (debug 210 KiB)
@@ -37,49 +42,198 @@ FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
    384 KiB future use for built in flash drive
 
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-```
+</pre>
 
-### RAM Memory Layout
-```
-STM32WB55C: 256 KiB RAM
-     
-RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
-    1 KiB Core
-   63 KiB RAM Dictionary
-     
-RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
-    1 KiB Stack         (only for startup)
-    1 KiB Heap          (maybe not needed)
-    1 KiB UART Tx Buffer
-    5 KiB UART Rx Buffer
-    4 KiB CDC Rx/Tx Buffer
-    2 KiB CDC RxQueue
-   10 KiB global variables
-   80 KiB RTOS Heap (about 9 KiB free)
-       Thread Stack size
-       4 KiB Forth (main)
-       1 KiB UART_Tx
-       1 KiB UART_Rx
-       1 KiB CDC
-       1 KiB CRS
-       1 KiB HRS
-       1 KiB HCI_USER_EVT
-       1 KiB ADV_UPDATE
-       1 KiB SHCI_USER_EVT
-     
-   40 KiB vi text buffer
-     
-RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
-   10 KiB communication between CPU1 and CPU2 (part of RAM2a)
-     
-(RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
-   10 KiB shared between CPU1 and CPU2
-   22 KiB secure RAM for CPU2
-     
-(RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
-   16 KiB shared between CPU1 and CPU2
-   16 KiB secure RAM for CPU2
-```
+   * /Forth/Src/fd.c
+   * /Forth/Src/flash.c
+
+Create a 384 KiB FAT filesystem as a loop device on Linux 
+(or use the already prepared [fd-384k.img](../boot/fd-384k.img)):
+<pre>
+$ dd if=/dev/zero of=fd-384k.img bs=512 count=768
+768+0 Datensätze ein
+768+0 Datensätze aus
+393216 bytes (393 kB, 384 KiB) copied, 0,00155426 s, 253 MB/s
+# losetup /dev/loop1 fd-384k.img
+# mkfs -t vfat /dev/loop1
+# mount -o loop /dev/loop1 /mnt
+</pre>
+
+Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
+<pre>
+# cd sdcard
+# tar cf - etc fsr home man README.md | tar xvf - -C /mnt
+# umount /mnt
+</pre>
+
+Umount the loop-device and copy the file to a SD-card. 
+
+Copy the filesystem to the flash disk on the target Mecrisp-Cube system:
+<pre>
+dd 1:/boot/fd-384k.img 0:
+</pre>
+
+
++++ Serial Flash 
+
+++++ STM32F405 Feather (SPI W25Q16)
+
+The STM32F405 Feather has a 2 !MiB Serial Flash 
+[W25Q16](https://www.mouser.ch/datasheet/2/949/w25q16jv_spi_revg_03222018_plus-1489727.pdf) 
+on board. The smallest erasable chunk of data is the 4 !KiB sector. 
+But the default FAT block is 512 Bytes, that means if you want to write something to a not erased block, 
+you have to erase the whole sector. For this the sector has to be buffered in RAM. For details see:
+
+   * /Forth/Src/fd.c
+   * /Forth/Src/fd_spi.c
+
+You can use the local CLI commands like `mkfs`, `mkdir` and `cp` to populate 
+the serial flash with files and directories. 
+But this is tedious job because there is no recursive copy. 
+It is easier to use a real GNU/Linux for this.
+
+Create a 2 MiB FAT filesystem as a loop device on Linux (or use the already prepared 
+[fd-2MiB.img](../boot/fd-2MiB.img)):
+<pre>
+$ dd if=/dev/zero of=fd-2MiB.img bs=512 count=4096
+# losetup /dev/loop1 fd-2MiB.img
+# mkfs -t vfat /dev/loop1
+# mount -o loop /dev/loop1 /mnt
+</pre>
+
+Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
+<pre>
+# cd sdcard
+# tar cf - etc fsr home man README.md | tar xvf - -C /mnt
+</pre>
+
+Umount the loop-device and copy the file to a SD-card. 
+
+Copy the filesystem to the flash disk on the target Mecrisp-Cube F405 system:
+<pre>
+dd 1:/boot/fd-2MiB.img 0:
+</pre>
+
+serial-flash.jpg 
+W25Q16.png"
+
+The SST25VF016B seems to be compatible.
+
+
+++++ STM32WB5MM Discovery Kit (QSPI S25FL128)
+
+16 MiB Quad SPI NOR Flash chip 
+[S25FL128SDSMFV001](https://www.cypress.com/file/448601/download). 
+Uniform 64-KB sectors with Hybrid 4-KB sectors.
+
+<blockquote>
+The main flash array is divided into erase units called sectors. 
+The sectors are organized either as a hybrid combination of 4-KB and 64-KB sectors, 
+or as uniform 256-KB sectors. 
+</blockquote>
+
+32 4 KiB sectors and 254 64 KiB sectors. What a pain, why use STM this Flash? 
+To simplify writing, only the first 4 KiB of the 64 KiB sectors are used. 
+That means (32 + 254) * 4 KiB = 1140 KiB are available for the volume. 
+To make it even simpler, I use only !64 KiB sectors, 
+that means there are 256 sectors and therefore 1 MiB available for the volume. 
+For implementation see [fd.c](/peripherals/fd.c) and [fd_spi.c]](/peripherals/fd_spi.c)
+
+Create a 1 MiB FAT filesystem as a loop device on Linux 
+(or use the already prepared 
+[fd-1MiB.img](../boot/fd-1MiB.img)):
+<pre>
+$ dd if=/dev/zero of=fd-1MiB.img bs=512 count=2048
+# losetup /dev/loop1 fd-1MiB.img
+# mkfs -t vfat /dev/loop1
+# mount -o loop /dev/loop1 /mnt
+</pre>
+
+Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
+<pre>
+# cd sdcard
+# tar cf - etc fsr home man README.md | tar xvf - -C /mnt
+</pre>
+
+Umount the loop-device and copy the file to a SD-card. 
+
+Copy the filesystem to the flash disk on the target Mecrisp-Cube WB5M Discovery system:
+<pre>
+dd 1:/boot/fd-1MiB.img 0:
+</pre>
+
+
+++++ STM32WB Feather (SPI W25Q128)
+
+The [W25Q128JVPIQ](https://www.mouser.ch/datasheet/2/949/w25q128jv_revf_03272018_plus-1489608.pdf). 
+There are 4,096 erasable 4 KiB sectors. That means 16 MiB are available for the volume.
+
+Create a 16 MiB FAT filesystem as a loop device on Linux (or use the already prepared 
+[fd-16MiB.img](https://github.com/spyren/Mecrisp-Cube/raw/WBfeather/sdcard/boot/fd-16MiB.img)):
+<pre>
+$ dd if=/dev/zero of=fd-16MiB.img bs=512 count=32768
+# losetup /dev/loop1 fd-16MiB.img
+# mkfs -t vfat /dev/loop1
+# mount -o loop /dev/loop1 /mnt
+</pre>
+
+Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
+<pre>
+# cd sdcard
+# tar cf - etc fsr home man README.md | tar xvf - -C /mnt
+</pre>
+
+Umount the loop-device and copy the file to a SD-card. 
+
+Copy the filesystem to the flash disk on the target Mecrisp-Cube WB Feather system:
+<pre>
+dd 1:/boot/fd-16MiB.img 0:
+</pre>
+
+
+++++ STM32H743 Nucleo (QSPI W25Q128)
+
+There is no serial NOR flash on board, but there is an QSPI interface on connector CN10.
+
+It is easy to connect a 
+[MIKROE-4067](https://www.farnell.com/datasheets/3109361.pdf) or 
+[Sparkfun SPX-17115](https://www.sparkfun.com/products/17115) 
+with a W25Q128JV (128M-bit) NOR flash memory on it. 
+See also [Winbond W25Q128JVPIQ](https://www.mouser.ch/datasheet/2/949/w25q128jv_revf_03272018_plus-1489608.pdf). 
+
+The driver ([fd_spi.c](https://github.com/spyren/Mecrisp-Cube/blob/H743/peripherals/fd_spi.c), 
+[fd.c](https://github.com/spyren/Mecrisp-Cube/blob/H743/peripherals/fd.c])) 
+is based on the STM example project for the 
+[N25Q128A](https://www.micron.com/-/media/client/global/documents/products/data-sheet/nor-flash/serial-nor/n25q/n25q_128mb_1_8v_65nm.pdf)
+
+There are 4,096 erasable 4 !KiB sectors. That means 16 MiB are available for the volume.
+
+| Name    | Port     | Nucleo     | MIKROE-4067    | SPX-17115   |
+|---------|----------|------------|----------------|-------------|
+| QS_CS   | PG6      | CN10.13    | CS             | 2 QSPI-CS   |
+| QS_CS   | PB10     | CN10.32    | CS             | 2 QSPI-CS   |
+| QS_CLK  | PB2      | CN10.15    | CLK            | 3 QSPI-CLK  |
+| GND     |          | CN10.17    | GND            | 8 GND       |
+| QS_D3   | PD13     | CN10.19    | IO3            | 7 QSPI3     |
+| QS_D1   | PD12     | CN10.21    | MISO SDO       | 5 QSPI1     |
+| QS_D0   | PD11     | CN10.23    | MOSI &#348;DI       | 4 QSPI0     |
+| QS_D2   | PE2      | CN10.25    | IO2            | 6 QSPI2     |
+| +3.3V   |          | CN8.7      | +3.3V          | 1 3.3V      |
+
+Copy the filesystem to the flash disk on the target Mecrisp-Cube STM32H743 Nucleo system:
+<pre>
+dd 1:/boot/fd-16MiB.img 0:
+</pre>
+
+See above (MicroSdBlocks#STM32WB_Feather_SPI_W25Q128) for creating the image `fd-16MiB.img`.
+
+
+++++ Arduino Portenta H7 (QSPI MX25L12833F)
+
+The [Macronix !MX25L12833F](https://www.macronix.com/Lists/Datasheet/Attachments/8682/MX25L12833F,%203V,%20128Mb,%20v1.0.pdf) 
+is compatible to the Winbond W25Q128JVPIQ. 
+See above STM32H743_Nucleo_QSPI_W25Q128 for details.
+
 
 SD Drive
 --------
