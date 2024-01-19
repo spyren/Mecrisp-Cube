@@ -20,7 +20,7 @@ Hardware
 Flash Drive
 -----------
 
-+++ Built-in Flash
+### Built-in Flash
 
 The built-in flash (STM32WB55C has 1 MiB FLASH, page size 4 KiB) 
 can be used as a flash drive. 
@@ -74,9 +74,9 @@ dd 1:/boot/fd-384k.img 0:
 </pre>
 
 
-+++ Serial Flash 
+### Serial Flash 
 
-++++ STM32F405 Feather (SPI W25Q16)
+#### STM32F405 Feather (SPI W25Q16)
 
 The STM32F405 Feather has a 2 !MiB Serial Flash 
 [W25Q16](https://www.mouser.ch/datasheet/2/949/w25q16jv_spi_revg_03222018_plus-1489727.pdf) 
@@ -84,8 +84,8 @@ on board. The smallest erasable chunk of data is the 4 !KiB sector.
 But the default FAT block is 512 Bytes, that means if you want to write something to a not erased block, 
 you have to erase the whole sector. For this the sector has to be buffered in RAM. For details see:
 
-   * /Forth/Src/fd.c
-   * /Forth/Src/fd_spi.c
+   * [fd.c](/peripherals/fd.c)
+   * [fd_spi.c](/peripherals/fd_spi.c)
 
 You can use the local CLI commands like `mkfs`, `mkdir` and `cp` to populate 
 the serial flash with files and directories. 
@@ -120,7 +120,7 @@ W25Q16.png"
 The SST25VF016B seems to be compatible.
 
 
-++++ STM32WB5MM Discovery Kit (QSPI S25FL128)
+#### STM32WB5MM Discovery Kit (QSPI S25FL128)
 
 16 MiB Quad SPI NOR Flash chip 
 [S25FL128SDSMFV001](https://www.cypress.com/file/448601/download). 
@@ -163,13 +163,13 @@ dd 1:/boot/fd-1MiB.img 0:
 </pre>
 
 
-++++ STM32WB Feather (SPI W25Q128)
+#### STM32WB Feather (SPI W25Q128)
 
 The [W25Q128JVPIQ](https://www.mouser.ch/datasheet/2/949/w25q128jv_revf_03272018_plus-1489608.pdf). 
 There are 4,096 erasable 4 KiB sectors. That means 16 MiB are available for the volume.
 
 Create a 16 MiB FAT filesystem as a loop device on Linux (or use the already prepared 
-[fd-16MiB.img](https://github.com/spyren/Mecrisp-Cube/raw/WBfeather/sdcard/boot/fd-16MiB.img)):
+[fd-16MiB.img](../boot/fd-16MiB.img)):
 <pre>
 $ dd if=/dev/zero of=fd-16MiB.img bs=512 count=32768
 # losetup /dev/loop1 fd-16MiB.img
@@ -191,7 +191,7 @@ dd 1:/boot/fd-16MiB.img 0:
 </pre>
 
 
-++++ STM32H743 Nucleo (QSPI W25Q128)
+#### STM32H743 Nucleo (QSPI W25Q128)
 
 There is no serial NOR flash on board, but there is an QSPI interface on connector CN10.
 
@@ -201,8 +201,8 @@ It is easy to connect a
 with a W25Q128JV (128M-bit) NOR flash memory on it. 
 See also [Winbond W25Q128JVPIQ](https://www.mouser.ch/datasheet/2/949/w25q128jv_revf_03272018_plus-1489608.pdf). 
 
-The driver ([fd_spi.c](https://github.com/spyren/Mecrisp-Cube/blob/H743/peripherals/fd_spi.c), 
-[fd.c](https://github.com/spyren/Mecrisp-Cube/blob/H743/peripherals/fd.c])) 
+The driver ([fd_spi.c](/H743/peripherals/fd_spi.c), 
+[fd.c](/H743/peripherals/fd.c])) 
 is based on the STM example project for the 
 [N25Q128A](https://www.micron.com/-/media/client/global/documents/products/data-sheet/nor-flash/serial-nor/n25q/n25q_128mb_1_8v_65nm.pdf)
 
@@ -216,7 +216,7 @@ There are 4,096 erasable 4 !KiB sectors. That means 16 MiB are available for the
 | GND     |          | CN10.17    | GND            | 8 GND       |
 | QS_D3   | PD13     | CN10.19    | IO3            | 7 QSPI3     |
 | QS_D1   | PD12     | CN10.21    | MISO SDO       | 5 QSPI1     |
-| QS_D0   | PD11     | CN10.23    | MOSI &#348;DI       | 4 QSPI0     |
+| QS_D0   | PD11     | CN10.23    | MOSI SDI       | 4 QSPI0     |
 | QS_D2   | PE2      | CN10.25    | IO2            | 6 QSPI2     |
 | +3.3V   |          | CN8.7      | +3.3V          | 1 3.3V      |
 
@@ -228,7 +228,7 @@ dd 1:/boot/fd-16MiB.img 0:
 See above (MicroSdBlocks#STM32WB_Feather_SPI_W25Q128) for creating the image `fd-16MiB.img`.
 
 
-++++ Arduino Portenta H7 (QSPI MX25L12833F)
+#### Arduino Portenta H7 (QSPI MX25L12833F)
 
 The [Macronix !MX25L12833F](https://www.macronix.com/Lists/Datasheet/Attachments/8682/MX25L12833F,%203V,%20128Mb,%20v1.0.pdf) 
 is compatible to the Winbond W25Q128JVPIQ. 
@@ -249,7 +249,7 @@ card.
 |--------|-------------|------|--------------------------|--------------------|---------------|
 | 1      | 2           | nCS  | Card Select \[CS\]       | D10 (1)            | PB2 CN1.7     |
 | 2      | 3           | DI   | Serial Data In \[MOSI\]  | D11 (2)            | PA7 CN1.10    |
-| 3      | \-          | VSS  | Ground                   | GND (5)            | GND CN1.1     |
+| 3      | -           | VSS  | Ground                   | GND (5)            | GND CN1.1     |
 | 4      | 4           | VDD  | Power 3.3 V              | 3V3 (6)            | 3V3 CN1.6     |
 | 5      | 5           | CLK  | Serial Clock \[SCLK\]    | D13 (4)            | PA5 CN1.8     |
 | 6      | 6           | VSS  | Ground                   | GND (5)            | GND CN1.1     |
