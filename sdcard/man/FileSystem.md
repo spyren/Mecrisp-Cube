@@ -12,6 +12,446 @@ For a stand-alone Forth system, especially a embedded system, a block
 storage (on internal Flash or external Media) or no mass storage at all
 fill the bill.
 
+FAT Filesystem
+==============
+
+FAT is the de-facto standard for embedded systems and mobile devices.
+The FAT filesystem for Mecrisp-Cube is based on [FatFs - Generic FAT
+Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html) and
+supports FAT (12, 16, and 32) and exFAT formatted SD cards.
+
+## Basic FS Words
+
+[Forth source
+files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-files.html#Forth-source-files).
+I propose `.fs` extension for Forth source files the same as GForth
+does. But anyway you can use what you want (`.f`, `.4th`, `.fth`, etc).
+<pre>
+include   ( i*x "name" -- j*x )      Interprets the content of the file &lt;name&gt;. 
+included  ( i*x c-addr u -- j*x )    Interprets the content of the file.
+
+coredump  ( "name" -- )      Dumps the flash memory (core) into the file &lt;name&gt;.
+</pre>
+
+Words from [redirection.fs](../fsr/redirection.fs)
+```
+>f_open   ( a1 a2 -- ior )   open a file a1 to redirect to a2 (emit, type, ...)
+>>f_open  ( a1 a2 -- ior )   open a file to redirect to (emit, type, ...). Append to file
+>file     ( -- a1 a2 )       redirect to a file (emit, type, ...)
+>f_close  ( -- ior )         close redirection to file 
+<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
+<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
+<f_close  ( -- ior )         close redirection from file 
+
+>term     ( a1 a2 -- )       terminate to-file redirection
+<term     ( a1 a2 -- )       terminate from-file redirection
+<>term    ( a1 a2 a3 a4 -- ) terminate redirection
+
+>uart     ( -- a1 a2 )       redirection to uart
+<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
+<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
+
+>cdc      ( -- a1 a2 )       redirection to cdc (USB serial)
+<cdc      ( -- a1 a2 )       redirection from cdc (key, accept, ...)
+<>cdc     ( -- a1 a2 a3 a4 ) redirection from and to cdc
+
+>crs      ( -- a1 a2 )       redirection to crs (BLE serial)
+<crs      ( -- a1 a2 )       redirection from crs(key, accept, ...)
+<>crs     ( -- a1 a2 a3 a4 ) redirection from and to crs
+
+>oled     ( -- a1 a2 )       redirection to oled
+
+>plex     ( -- a1 a2 )       redirection to plex LED display
+```
+
+user variables which contain file desciptor (pointer address a to file object structure)
+<pre>
+stdin     ( -- a )           for fs-emit and fs-emit?
+stdout    ( -- a )           for fs-key and fs-key?
+stderr    ( -- a )           not used yet
+
+fs-emit   ( c -- )           Emits a character c to a file (stdout)
+fs-emit?  ( -- ? )           Ready to send a character to a file? (stdout)
+fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
+fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
+</pre>
+
+Words from [conditional.fs](../fsr/conditional.fs). 
+See also https://forth-standard.org/standard/tools.
+
+`query` not working in include! All the conditionals have to be on the same line.
+<pre>
+[IF]        ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
+[ELSE]      ( "<spaces>name ..." -- )              Parse and discard words from the parse area
+[THEN]      ( -- )                                 Does nothing. [THEN] is an immediate word. 
+[ENDIF]     ( -- )                                 Does nothing. [ENDIF] is an immediate word. 
+[IFDEF]     ( "<spaces>name ..." -- )              If the name can be found, do nothing. Otherwise parse and discard words from the parse area
+[IFNDEF]    ( "<spaces>name ..." -- )              If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
+[DEFINED]   ( "<spaces>name ..." -- flag )         Return a true flag if name is the name of a word that can be found
+[UNDEFINED] ( "<spaces>name ..." -- flag )         Return a false flag if name is the name of a word that can be found
+</pre>
+
+
+## Filesystem API
+
+The API is the same as the [FatFs - Generic FAT
+Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html). 
+It is different from the optional File-Access word set proposed in https://forth-standard.org/standard/file.
+<blockquote>
+<pre>
+OPEN-FILE ( c-addr u fam -- fileid ior )
+</pre>
+Open the file named in the character string specified by c-addr u, with file access method indicated by fam. The meaning of values of fam is implementation defined.
+
+If the file is successfully opened, ior is zero, fileid is its identifier, and the file has been positioned to the start of the file.
+
+Otherwise, ior is the implementation-defined I/O result code and fileid is undefined.
+</blockquote>
+
+The C function prototype for `f_open` looks like this:
+```C
+FRESULT f_open (
+  FIL* fp,           /* [OUT] Pointer to the file object structure */
+  const TCHAR* path, /* [IN] File name */
+  BYTE mode          /* [IN] Mode flags */
+);
+```
+
+The parameter order for the Forth Word is the same: `addr1` is address
+of the file object data structure
+[FIL](http://elm-chan.org/fsw/ff/doc/sfile.html), `addr2` is the address
+of the filename array (0 terminated string).
+```
+f_open  ( addr1 addr2 b -- n )   opens a file.
+```
+
+The FIL data structure can be created as follows:
+<pre>
+<b>create fil /FIL allot[RET]</b> ok.
+</pre>
+
+See also [f_open](http://elm-chan.org/fsw/ff/doc/open.html).
+
+Print current directory:
+<pre>
+<b>256 buffer: path[RET]</b> ok.
+<b>path 256 f_getcwd drop strlen type[RET]</b> / ok.
+</pre>
+
+or easier with unix like command pwd:
+<pre>
+<b>pwd[RET]</b>
+0:/ ok.
+</pre>
+
+Change current directory
+<pre>
+<b>path 256 accept[RET] common[RET]</b>  ok.
+<b>path swap 2dup str0term drop f_chdir .[RET]</b> 0 ok.
+<b>pwd[RET]</b>
+0:/common ok.
+<b>path dup .str" /fsr" f_chdir .[RET]</b> 0 ok.
+<b>pwd[RET]</b>
+0:/fsr ok.
+</pre>
+
+Change drive (if you have a microSD connected):
+<pre>
+<b>chdrv 1:[RET]</b>
+ok.
+<b>pwd[RET]</b>
+1:/ ok.
+<b>cd home[RET]</b>
+ok.
+<b>pwd[RET]</b>
+1:/home ok.
+<b>0:[RET]</b>  ok.
+<b>pwd[RET]</b>
+0:/fsr ok.
+</pre>
+
+### Data Structures
+
+#### FATFS
+
+Only used in `FS_init()`. We have only one drive. For details see
+[FATFS](http://elm-chan.org/fsw/ff/doc/sfatfs.html)
+
+    /FATFS ( -- u )   Gets the FATFS structure size
+
+#### FIL
+
+For details see [FIL](http://elm-chan.org/fsw/ff/doc/sfile.html).
+
+    /FIL              ( -- u ) Gets the FIL structure size
+
+    FA_READ           ( -- u ) Gets the Mode Flag FA_READ
+    FA_WRITE          ( -- u ) Gets the Mode Flag FA_WRITE
+    FA_OPEN_EXISTING  ( -- u ) Gets the Mode Flag FA_OPEN_EXISTING
+    FA_CREATE_NEW     ( -- u ) Gets the Mode Flag FA_CREATE_NEW
+    FA_CREATE_ALWAYS  ( -- u ) Gets the Mode Flag FA_CREATE_ALWAYS
+    A_OPEN_ALWAYS     ( -- u ) Gets the Mode Flag FA_OPEN_ALWAYS
+    FA_OPEN_APPEND    ( -- u ) Gets the Mode Flag FA_OPEN_APPEND
+
+| POSIX   | FatFs                                   |
+|---------|-----------------------------------------|
+| "r"     | FA_READ                                 |
+| "r+"    | FA_READ FA_WRITE or                     |
+| "w"     | FA_CREATE_ALWAYS FA_WRITE or            |
+| "w+"    | FA_CREATE_ALWAYS FA_WRITE or FA_READ or |
+| "a"     | FA_OPEN_APPEND FA_WRITE or              |
+| "a+"    | FA_OPEN_APPEND FA_WRITE or FA_READ or   |
+| "wx"    | FA_CREATE_NEW FA_WRITE or               |
+| "w+x"   | FA_CREATE_NEW or FA_WRITE FA_READ or    |
+
+#### DIR
+
+For details see [DIR](http://elm-chan.org/fsw/ff/doc/sdir.html).
+
+    /DIR         ( -- u ) Gets the DIR structure size
+
+#### FILINFO
+
+For details see
+[FILINFO](http://elm-chan.org/fsw/ff/doc/sfileinfo.html).
+
+    /FILINFO     ( -- u ) Gets the FILINFO structure size
+
+    fsize+       ( -- u ) Gets the FILINFO structure fsize offset
+    fdate+       ( -- u ) Gets the FILINFO structure fdate offset
+    ftime+       ( -- u ) Gets the FILINFO structure ftime offset
+    fattrib+     ( -- u ) Gets the FILINFO structure fattrib offset
+    fname+       ( -- u ) Gets the FILINFO structure fname offset
+    altname+     ( -- u ) Gets the FILINFO structure altname offset
+
+
+### File Access Functions/Words
+
+-   [f_open](http://elm-chan.org/fsw/ff/doc/open.html) - Open/Create a
+    file
+-   [f_close](http://elm-chan.org/fsw/ff/doc/close.html) - Close an open
+    file
+-   [f_read](http://elm-chan.org/fsw/ff/doc/read.html) - Read data from
+    the file
+-   [f_write](http://elm-chan.org/fsw/ff/doc/write.html) - Write data to
+    the file
+-   [f_lseek](http://elm-chan.org/fsw/ff/doc/lseek.html) - Move
+    read/write pointer, Expand size
+-   [f_truncate](http://elm-chan.org/fsw/ff/doc/truncate.html) -
+    Truncate file size
+-   [f_sync](http://elm-chan.org/fsw/ff/doc/sync.html) - Flush cached
+    data
+-   [f_forward](http://elm-chan.org/fsw/ff/doc/forward.html) - Forward
+    data to the stream
+-   [f_expand](http://elm-chan.org/fsw/ff/doc/expand.html) - Allocate a
+    contiguous block to the file
+-   [f_gets](http://elm-chan.org/fsw/ff/doc/gets.html) - Read a string
+-   [f_putc](http://elm-chan.org/fsw/ff/doc/putc.html) - Write a
+    character
+-   [f_puts](http://elm-chan.org/fsw/ff/doc/puts.html) - Write a string
+-   [f_printf](http://elm-chan.org/fsw/ff/doc/printf.html) - (Write a
+    formatted string)
+-   [f_tell](http://elm-chan.org/fsw/ff/doc/tell.html) - (Get current
+    read/write pointer)
+-   [f_eof](http://elm-chan.org/fsw/ff/doc/eof.html) - Test for
+    end-of-file
+-   [f_size](http://elm-chan.org/fsw/ff/doc/size.html) - Get size
+-   [f_error](http://elm-chan.org/fsw/ff/doc/error.html) - Test for an
+    error
+
+
+### Directory Access Functions/Words
+
+-   [f_opendir](http://elm-chan.org/fsw/ff/doc/opendir.html) - Open a
+    directory
+-   [f_closedir](http://elm-chan.org/fsw/ff/doc/closedir.html) - Close
+    an open directory
+-   [f_readdir](http://elm-chan.org/fsw/ff/doc/readdir.html) - Read a
+    directory item
+-   [f_findfirst](http://elm-chan.org/fsw/ff/doc/findfirst.html) - Open
+    a directory and read the first item matched
+-   [f_findnext](http://elm-chan.org/fsw/ff/doc/findnext.html) - Read a
+    next item matched
+
+### File and Directory Management Functions/Words
+
+-   [f_stat](http://elm-chan.org/fsw/ff/doc/stat.html) - Check existance
+    of a file or sub-directory
+-   [f_unlink](http://elm-chan.org/fsw/ff/doc/unlink.html) - Remove a
+    file or sub-directory
+-   [f_rename](http://elm-chan.org/fsw/ff/doc/rename.html) - Rename/Move
+    a file or sub-directory
+-   [f_chmod](http://elm-chan.org/fsw/ff/doc/chmod.html) - Change
+    attribute of a file or sub-directory
+-   [f_utime](http://elm-chan.org/fsw/ff/doc/utime.html) - Change
+    timestamp of a file or sub-directory
+-   [f_mkdir](http://elm-chan.org/fsw/ff/doc/mkdir.html) - Create a
+    sub-directory
+-   [f_chdir](http://elm-chan.org/fsw/ff/doc/chdir.html) - Change
+    current directory
+-   [f_chdrive](http://elm-chan.org/fsw/ff/doc/chdrive) - Change current
+    drive
+-   [f_getcwd](http://elm-chan.org/fsw/ff/doc/getcwd.html) - Retrieve
+    the current directory and drive
+
+### Volume Management and System Configuration Functions/Words
+
+-   [f_mount](http://elm-chan.org/fsw/ff/doc/mount.html) -
+    Register/Unregister the work area of the volume
+-   [f_mkfs](http://elm-chan.org/fsw/ff/doc/mkfs.html) - Create an FAT
+    volume on the logical drive
+-   [f_fdisk](http://elm-chan.org/fsw/ff/doc/fdisk.html) - (Create
+    partitions on the physical drive)
+-   [f_getfree](http://elm-chan.org/fsw/ff/doc/getfree.html) - Get free
+    space on the volume
+-   [f_getlabel ](http://elm-chan.org/fsw/ff/doc/getlabel.html)- Get
+    volume label
+-   [f_setlabel](http://elm-chan.org/fsw/ff/doc/setlabel.html)- Set
+    volume label
+
+
+## UNIX like Shell Commands
+
+Do not expect real UNIX commands not even comparable to the Busybox
+commands. The UNIX like shell commands are parsing words. The parameters
+are parsed from the input stream till the end of line. These commands
+are not intended to use in other words, they are used in the interpreter
+mode, use `f_` words in compiler mode. Spaces in path und file names are
+not allowed. Verly limited wildcards (only \* and ?) for `ls`. No
+standard input/ouptut/err redirection.
+
+### Shell Prompt
+
+```forth
+: init ;
+
+: prompt ( -- ) 
+  begin 
+    tib 256 f_getcwd drop strlen type \ show current working directory
+    ."  > "    \ show ">" for prompt. Could show "OK."
+    query interpret cr 
+  again
+;
+     
+: init init ['] prompt hook-quit ! ; \ make new prompt 
+     
+init quit
+```
+
+### Forth String to 0-Terminated String and vice versa
+
+Caution! There must be space for the 0 character at the end of the
+string.
+```forth
+: str0term ( cadr len -- cadr len )
+  + 0 swap c!
+;
+
+strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
+```
+
+### Commands
+
+- **ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
+-a show hidden files  
+-l use a long listing format  
+-1 list one file per line  
+ls ( "line<EOL\>" \-- ) list directory contents 
+
+- **pwd**  
+pwd ( \-- ) print name of current/working directory 
+
+- **cd** \[DIR\]  
+cd ( "line<EOL\>" \-- ) change the working directory 
+
+- **cat** \[-n\] \[\> NEWFILE\] \[\>\> FILE\] \[<\< EOF\] FILES\...  
+-n line numbers  
+\> redirect output to NEWFILE  
+\>\> redirect output and append to FILE  
+<\< redirect input till EOF  
+cat ( "line<EOL\>" \-- ) concatenate files and print on the console
+
+- **mkdir** \[DIR\]\...  
+mkdir ( "line<EOL\>" \-- ) make directories
+
+- **rm** FILE\...  
+rm ( "line<EOL\>" \-- ) remove files or directories
+
+- **mv** SOURCE DEST  
+mv ( "line<EOL\>" \-- ) move (rename) files
+
+- **cp** SOURCE DEST  
+cp ( "line<EOL\>" \-- ) copy files 
+
+- **chmod** \[-a\] \[+l\] \[=1\] FILE\...  
+-rwa selected file mode bits removed  
++rwa selected file mode bits added  
+=rwa selected file mode bits  
+chmod ( "line<EOL\>" \-- ) change file mode bits
+
+- **touch** [-c] FILE\...  
+-c do not create any files  
+A FILE argument that does not exist is created empty.  
+touch ( "line<EOL\>" \-- ) change file timestamps 
+
+- **df** \[VOLUME\]  
+df ( "line<EOL\>" \-- ) report file system disk space usage (1 KiB
+blocks) 
+
+- **du** [-h] \[FILE\]  
+-h print sizes in powers of 1024 (e.g., 1023 MiB)  
+du ( "line<EOL\>" \-- ) estimate file space usage 
+
+- **vol** \[-d NUMBER\] \[-n NAME\]  
+-d drive number  
+-n change drive name to NAME  
+vol ( "line<EOL\>" \-- ) get and set volume label 
+
+- **mount** \[VOLUME\]  
+mount ( \-- ) mount default drive
+
+- **umount** \[VOLUME\]  
+mount ( \-- ) unmount default drive 
+
+- **vi** \[-R\] \[-h\] \[-c \<COLUMNS\>\] \[-r \<ROWS\>\] \[FILE\]  
+-h show features   
+-R Read-only mode. You can still edit the buffer, but will be prevented from overwriting a file.  
+-e erase the text buffer  
+-c <COLUMNS\> screen columns, range 40..128 default 80  
+-r <ROWS\> screen rows, range 16..30 default 24  
+vi ( "line<EOL\>" \-- ) a (Forth) programmer's text editor 
+
+- **split** \[-l NUMBER\] FILE  
+-l NUMBER put NUMBER lines/records per output fileline numbers (default 1000 lines)  
+suffix length is only 1, generated file names are like this: xa, xb, xc, \...  
+split ( "line\<EOL\>" \-- ) split a file into pieces
+
+- **wc** FILE\...  
+wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for each file
+
+- **mkfs**  \[VOLUME\]  
+
+-   less
+-   fdisk
+-   dd
+-   date
+-   ps -\> .threads
+-   kill
+
+
+## C-String Helpers
+
+Middleware like FatFs and RTOS expect C strings (see [null-terminated
+string](https://en.wikipedia.org/wiki/Null-terminated_string)). In
+Forth, the preferred representation of strings on the stack is
+`c-addr u-count`, where `c-addr` is the address of the first character
+and `u-count` is the number of characters in the string.
+
+    str0term     ( c-addr len -- )          make Forth string null-terminated, be sure the buffer is long enough to accept an additional 0 character.
+    strlen       ( c-addr -- c-addr len )   calculate the length of a C string, Forth string compatible
+    .str"        ( c-addr "text" --  )      copy string into buffer
+    s0"          ( "text" -- c-addr len )   Compiles a 0-terminated string and gives back its address and length when executed
+    .(           ( "text) --  )             Mecrisp's ." is working only in compile mode
 
 Hardware
 ========
@@ -354,447 +794,6 @@ JTAG/SWD
 |          | 14             |            | 6 (PB6)    | VCP_TX Target |
 
 
-FAT Filesystem
-==============
-
-FAT is the de-facto standard for embedded systems and mobile devices.
-The FAT filesystem for Mecrisp-Cube is based on [FatFs - Generic FAT
-Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html) and
-supports FAT (12, 16, and 32) and exFAT formatted SD cards.
-
-## Basic FS Words
-
-[Forth source
-files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-files.html#Forth-source-files).
-I propose `.fs` extension for Forth source files the same as GForth
-does. But anyway you can use what you want (`.f`, `.4th`, `.fth`, etc).
-<pre>
-include   ( i*x "name" -- j*x )      Interprets the content of the file &lt;name&gt;. 
-included  ( i*x c-addr u -- j*x )    Interprets the content of the file.
-
-coredump  ( "name" -- )      Dumps the flash memory (core) into the file &lt;name&gt;.
-</pre>
-
-Words from [redirection.fs](../fsr/redirection.fs)
-```
->f_open   ( a1 a2 -- ior )   open a file a1 to redirect to a2 (emit, type, ...)
->>f_open  ( a1 a2 -- ior )   open a file to redirect to (emit, type, ...). Append to file
->file     ( -- a1 a2 )       redirect to a file (emit, type, ...)
->f_close  ( -- ior )         close redirection to file 
-<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
-<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
-<f_close  ( -- ior )         close redirection from file 
-
->term     ( a1 a2 -- )       terminate to-file redirection
-<term     ( a1 a2 -- )       terminate from-file redirection
-<>term    ( a1 a2 a3 a4 -- ) terminate redirection
-
->uart     ( -- a1 a2 )       redirection to uart
-<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
-<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
-
->cdc      ( -- a1 a2 )       redirection to cdc (USB serial)
-<cdc      ( -- a1 a2 )       redirection from cdc (key, accept, ...)
-<>cdc     ( -- a1 a2 a3 a4 ) redirection from and to cdc
-
->crs      ( -- a1 a2 )       redirection to crs (BLE serial)
-<crs      ( -- a1 a2 )       redirection from crs(key, accept, ...)
-<>crs     ( -- a1 a2 a3 a4 ) redirection from and to crs
-
->oled     ( -- a1 a2 )       redirection to oled
-
->plex     ( -- a1 a2 )       redirection to plex LED display
-```
-
-user variables which contain file desciptor (pointer address a to file object structure)
-<pre>
-stdin     ( -- a )           for fs-emit and fs-emit?
-stdout    ( -- a )           for fs-key and fs-key?
-stderr    ( -- a )           not used yet
-
-fs-emit   ( c -- )           Emits a character c to a file (stdout)
-fs-emit?  ( -- ? )           Ready to send a character to a file? (stdout)
-fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
-fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
-</pre>
-
-Words from [conditional.fs](../fsr/conditional.fs). 
-See also https://forth-standard.org/standard/tools.
-
-`query` not working in include! All the conditionals have to be on the same line.
-<pre>
-[IF]        ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
-[ELSE]      ( "<spaces>name ..." -- )              Parse and discard words from the parse area
-[THEN]      ( -- )                                 Does nothing. [THEN] is an immediate word. 
-[ENDIF]     ( -- )                                 Does nothing. [ENDIF] is an immediate word. 
-[IFDEF]     ( "<spaces>name ..." -- )              If the name can be found, do nothing. Otherwise parse and discard words from the parse area
-[IFNDEF]    ( "<spaces>name ..." -- )              If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
-[DEFINED]   ( "<spaces>name ..." -- flag )         Return a true flag if name is the name of a word that can be found
-[UNDEFINED] ( "<spaces>name ..." -- flag )         Return a false flag if name is the name of a word that can be found
-</pre>
-
-
-## Filesystem API
-
-The API is the same as the [FatFs - Generic FAT
-Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html). 
-It is different from the optional File-Access word set proposed in https://forth-standard.org/standard/file.
-<blockquote>
-<pre>
-OPEN-FILE ( c-addr u fam -- fileid ior )
-</pre>
-Open the file named in the character string specified by c-addr u, with file access method indicated by fam. The meaning of values of fam is implementation defined.
-
-If the file is successfully opened, ior is zero, fileid is its identifier, and the file has been positioned to the start of the file.
-
-Otherwise, ior is the implementation-defined I/O result code and fileid is undefined.
-</blockquote>
-
-The C function prototype for `f_open` looks like this:
-```C
-FRESULT f_open (
-  FIL* fp,           /* [OUT] Pointer to the file object structure */
-  const TCHAR* path, /* [IN] File name */
-  BYTE mode          /* [IN] Mode flags */
-);
-```
-
-The parameter order for the Forth Word is the same: `addr1` is address
-of the file object data structure
-[FIL](http://elm-chan.org/fsw/ff/doc/sfile.html), `addr2` is the address
-of the filename array (0 terminated string).
-```
-f_open  ( addr1 addr2 b -- n )   opens a file.
-```
-
-The FIL data structure can be created as follows:
-<pre>
-create fil /FIL allot[RET] ok.
-</pre>
-
-See also [f_open](http://elm-chan.org/fsw/ff/doc/open.html).
-
-Print current directory:
-<pre>
-256 buffer: path[RET] ok.
-path 256 f_getcwd drop strlen type[RET] / ok.
-</pre>
-
-or easier with unix like command pwd:
-<pre>
-pwd[RET]
-0:/ ok.
-</pre>
-
-Change current directory
-<pre>
-<b>path 256 accept[RET] common[RET]</b>  ok.
-path swap 2dup str0term drop f_chdir .[RET] 0 ok.
-pwd[RET]
-0:/common ok.
-
-path dup .str" /fsr" f_chdir .[RET] 0 ok.
-pwd[RET]
-0:/fsr ok.
-</pre>
-
-Change drive (if you have a microSD connected):
-<pre>
-chdrv 1:[RET]
-ok.
-pwd[RET]
-1:/ ok.
-cd home[RET] 
-ok.
-pwd[RET] 
-1:/home ok.
-0:[RET]  ok.
-pwd[RET] 
-0:/fsr ok.
-</pre>
-
-### Data Structures
-
-#### FATFS
-
-Only used in `FS_init()`. We have only one drive. For details see
-[FATFS](http://elm-chan.org/fsw/ff/doc/sfatfs.html)
-
-    /FATFS ( -- u )   Gets the FATFS structure size
-
-#### FIL
-
-For details see [FIL](http://elm-chan.org/fsw/ff/doc/sfile.html).
-
-    /FIL              ( -- u ) Gets the FIL structure size
-
-    FA_READ           ( -- u ) Gets the Mode Flag FA_READ
-    FA_WRITE          ( -- u ) Gets the Mode Flag FA_WRITE
-    FA_OPEN_EXISTING  ( -- u ) Gets the Mode Flag FA_OPEN_EXISTING
-    FA_CREATE_NEW     ( -- u ) Gets the Mode Flag FA_CREATE_NEW
-    FA_CREATE_ALWAYS  ( -- u ) Gets the Mode Flag FA_CREATE_ALWAYS
-    A_OPEN_ALWAYS     ( -- u ) Gets the Mode Flag FA_OPEN_ALWAYS
-    FA_OPEN_APPEND    ( -- u ) Gets the Mode Flag FA_OPEN_APPEND
-
-| POSIX   | FatFs                                   |
-|---------|-----------------------------------------|
-| "r"     | FA_READ                                 |
-| "r+"    | FA_READ FA_WRITE or                     |
-| "w"     | FA_CREATE_ALWAYS FA_WRITE or            |
-| "w+"    | FA_CREATE_ALWAYS FA_WRITE or FA_READ or |
-| "a"     | FA_OPEN_APPEND FA_WRITE or              |
-| "a+"    | FA_OPEN_APPEND FA_WRITE or FA_READ or   |
-| "wx"    | FA_CREATE_NEW FA_WRITE or               |
-| "w+x"   | FA_CREATE_NEW or FA_WRITE FA_READ or    |
-
-#### DIR
-
-For details see [DIR](http://elm-chan.org/fsw/ff/doc/sdir.html).
-
-    /DIR         ( -- u ) Gets the DIR structure size
-
-#### FILINFO
-
-For details see
-[FILINFO](http://elm-chan.org/fsw/ff/doc/sfileinfo.html).
-
-    /FILINFO     ( -- u ) Gets the FILINFO structure size
-
-    fsize+       ( -- u ) Gets the FILINFO structure fsize offset
-    fdate+       ( -- u ) Gets the FILINFO structure fdate offset
-    ftime+       ( -- u ) Gets the FILINFO structure ftime offset
-    fattrib+     ( -- u ) Gets the FILINFO structure fattrib offset
-    fname+       ( -- u ) Gets the FILINFO structure fname offset
-    altname+     ( -- u ) Gets the FILINFO structure altname offset
-
-
-### File Access Functions/Words
-
--   [f_open](http://elm-chan.org/fsw/ff/doc/open.html) - Open/Create a
-    file
--   [f_close](http://elm-chan.org/fsw/ff/doc/close.html) - Close an open
-    file
--   [f_read](http://elm-chan.org/fsw/ff/doc/read.html) - Read data from
-    the file
--   [f_write](http://elm-chan.org/fsw/ff/doc/write.html) - Write data to
-    the file
--   [f_lseek](http://elm-chan.org/fsw/ff/doc/lseek.html) - Move
-    read/write pointer, Expand size
--   [f_truncate](http://elm-chan.org/fsw/ff/doc/truncate.html) -
-    Truncate file size
--   [f_sync](http://elm-chan.org/fsw/ff/doc/sync.html) - Flush cached
-    data
--   [f_forward](http://elm-chan.org/fsw/ff/doc/forward.html) - Forward
-    data to the stream
--   [f_expand](http://elm-chan.org/fsw/ff/doc/expand.html) - Allocate a
-    contiguous block to the file
--   [f_gets](http://elm-chan.org/fsw/ff/doc/gets.html) - Read a string
--   [f_putc](http://elm-chan.org/fsw/ff/doc/putc.html) - Write a
-    character
--   [f_puts](http://elm-chan.org/fsw/ff/doc/puts.html) - Write a string
--   [f_printf](http://elm-chan.org/fsw/ff/doc/printf.html) - (Write a
-    formatted string)
--   [f_tell](http://elm-chan.org/fsw/ff/doc/tell.html) - (Get current
-    read/write pointer)
--   [f_eof](http://elm-chan.org/fsw/ff/doc/eof.html) - Test for
-    end-of-file
--   [f_size](http://elm-chan.org/fsw/ff/doc/size.html) - Get size
--   [f_error](http://elm-chan.org/fsw/ff/doc/error.html) - Test for an
-    error
-
-
-### Directory Access Functions/Words
-
--   [f_opendir](http://elm-chan.org/fsw/ff/doc/opendir.html) - Open a
-    directory
--   [f_closedir](http://elm-chan.org/fsw/ff/doc/closedir.html) - Close
-    an open directory
--   [f_readdir](http://elm-chan.org/fsw/ff/doc/readdir.html) - Read a
-    directory item
--   [f_findfirst](http://elm-chan.org/fsw/ff/doc/findfirst.html) - Open
-    a directory and read the first item matched
--   [f_findnext](http://elm-chan.org/fsw/ff/doc/findnext.html) - Read a
-    next item matched
-
-### File and Directory Management Functions/Words
-
--   [f_stat](http://elm-chan.org/fsw/ff/doc/stat.html) - Check existance
-    of a file or sub-directory
--   [f_unlink](http://elm-chan.org/fsw/ff/doc/unlink.html) - Remove a
-    file or sub-directory
--   [f_rename](http://elm-chan.org/fsw/ff/doc/rename.html) - Rename/Move
-    a file or sub-directory
--   [f_chmod](http://elm-chan.org/fsw/ff/doc/chmod.html) - Change
-    attribute of a file or sub-directory
--   [f_utime](http://elm-chan.org/fsw/ff/doc/utime.html) - Change
-    timestamp of a file or sub-directory
--   [f_mkdir](http://elm-chan.org/fsw/ff/doc/mkdir.html) - Create a
-    sub-directory
--   [f_chdir](http://elm-chan.org/fsw/ff/doc/chdir.html) - Change
-    current directory
--   [f_chdrive](http://elm-chan.org/fsw/ff/doc/chdrive) - Change current
-    drive
--   [f_getcwd](http://elm-chan.org/fsw/ff/doc/getcwd.html) - Retrieve
-    the current directory and drive
-
-### Volume Management and System Configuration Functions/Words
-
--   [f_mount](http://elm-chan.org/fsw/ff/doc/mount.html) -
-    Register/Unregister the work area of the volume
--   [f_mkfs](http://elm-chan.org/fsw/ff/doc/mkfs.html) - Create an FAT
-    volume on the logical drive
--   [f_fdisk](http://elm-chan.org/fsw/ff/doc/fdisk.html) - (Create
-    partitions on the physical drive)
--   [f_getfree](http://elm-chan.org/fsw/ff/doc/getfree.html) - Get free
-    space on the volume
--   [f_getlabel ](http://elm-chan.org/fsw/ff/doc/getlabel.html)- Get
-    volume label
--   [f_setlabel](http://elm-chan.org/fsw/ff/doc/setlabel.html)- Set
-    volume label
-
-
-## UNIX like Shell Commands
-
-Do not expect real UNIX commands not even comparable to the Busybox
-commands. The UNIX like shell commands are parsing words. The parameters
-are parsed from the input stream till the end of line. These commands
-are not intended to use in other words, they are used in the interpreter
-mode, use `f_` words in compiler mode. Spaces in path und file names are
-not allowed. Verly limited wildcards (only \* and ?) for `ls`. No
-standard input/ouptut/err redirection.
-
-### Shell Prompt
-
-```forth
-: init ;
-
-: prompt ( -- ) 
-  begin 
-    tib 256 f_getcwd drop strlen type \ show current working directory
-    ."  > "    \ show ">" for prompt. Could show "OK."
-    query interpret cr 
-  again
-;
-     
-: init init ['] prompt hook-quit ! ; \ make new prompt 
-     
-init quit
-```
-
-### Forth String to 0-Terminated String and vice versa
-
-Caution! There must be space for the 0 character at the end of the
-string.
-```forth
-: str0term ( cadr len -- cadr len )
-  + 0 swap c!
-;
-
-strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
-```
-
-### Commands
-
-- **ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
--a show hidden files  
--l use a long listing format  
--1 list one file per line  
-ls ( "line<EOL\>" \-- ) list directory contents 
-
-- **pwd**  
-pwd ( \-- ) print name of current/working directory 
-
-- **cd** \[DIR\]  
-cd ( "line<EOL\>" \-- ) change the working directory 
-
-- **cat** \[-n\] \[\> NEWFILE\] \[\>\> FILE\] \[<\< EOF\] FILES\...  
--n line numbers  
-\> redirect output to NEWFILE  
-\>\> redirect output and append to FILE  
-<\< redirect input till EOF  
-cat ( "line<EOL\>" \-- ) concatenate files and print on the console
-
-- **mkdir** \[DIR\]\...  
-mkdir ( "line<EOL\>" \-- ) make directories
-
-- **rm** FILE\...  
-rm ( "line<EOL\>" \-- ) remove files or directories
-
-- **mv** SOURCE DEST  
-mv ( "line<EOL\>" \-- ) move (rename) files
-
-- **cp** SOURCE DEST  
-cp ( "line<EOL\>" \-- ) copy files 
-
-- **chmod** \[-a\] \[+l\] \[=1\] FILE\...  
--rwa selected file mode bits removed  
-+rwa selected file mode bits added  
-=rwa selected file mode bits  
-chmod ( "line<EOL\>" \-- ) change file mode bits
-
-- **touch** [-c] FILE\...  
--c do not create any files  
-A FILE argument that does not exist is created empty.  
-touch ( "line<EOL\>" \-- ) change file timestamps 
-
-- **df** \[VOLUME\]  
-df ( "line<EOL\>" \-- ) report file system disk space usage (1 KiB
-blocks) 
-
-- **du** [-h] \[FILE\]  
--h print sizes in powers of 1024 (e.g., 1023 MiB)  
-du ( "line<EOL\>" \-- ) estimate file space usage 
-
-- **vol** \[-d NUMBER\] \[-n NAME\]  
--d drive number  
--n change drive name to NAME  
-vol ( "line<EOL\>" \-- ) get and set volume label 
-
-- **mount** \[VOLUME\]  
-mount ( \-- ) mount default drive
-
-- **umount** \[VOLUME\]  
-mount ( \-- ) unmount default drive 
-
-- **vi** \[-R\] \[-h\] \[-c \<COLUMNS\>\] \[-r \<ROWS\>\] \[FILE\]  
--h show features   
--R Read-only mode. You can still edit the buffer, but will be prevented from overwriting a file.  
--e erase the text buffer  
--c <COLUMNS\> screen columns, range 40..128 default 80  
--r <ROWS\> screen rows, range 16..30 default 24  
-vi ( "line<EOL\>" \-- ) a (Forth) programmer's text editor 
-
-- **split** \[-l NUMBER\] FILE  
--l NUMBER put NUMBER lines/records per output fileline numbers (default 1000 lines)  
-suffix length is only 1, generated file names are like this: xa, xb, xc, \...  
-split ( "line\<EOL\>" \-- ) split a file into pieces
-
-- **wc** FILE\...  
-wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for each file
-
-- **mkfs**  \[VOLUME\]  
-
--   less
--   fdisk
--   dd
--   date
--   ps -\> .threads
--   kill
-
-
-## C-String Helpers
-
-Middleware like FatFs and RTOS expect C strings (see [null-terminated
-string](https://en.wikipedia.org/wiki/Null-terminated_string)). In
-Forth, the preferred representation of strings on the stack is
-`c-addr u-count`, where `c-addr` is the address of the first character
-and `u-count` is the number of characters in the string.
-
-    str0term     ( c-addr len -- )          make Forth string null-terminated, be sure the buffer is long enough to accept an additional 0 character.
-    strlen       ( c-addr -- c-addr len )   calculate the length of a C string, Forth string compatible
-    .str"        ( c-addr "text" --  )      copy string into buffer
-    s0"          ( "text" -- c-addr len )   Compiles a 0-terminated string and gives back its address and length when executed
-    .(           ( "text) --  )             Mecrisp's ." is working only in compile mode
 
 
 Raw Blocks
