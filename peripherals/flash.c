@@ -209,6 +209,7 @@ int aquire_flash(uint8_t Erase) {
 	tries = 0;
 	while (TRUE) {
 		if (tries++ > 10000) {
+			// more than 20 s
 			ASSERT_fatal(0, ASSERT_FLASH_UNLOCK, 0);
 			tries = 0;
 		}
@@ -222,6 +223,7 @@ int aquire_flash(uint8_t Erase) {
 
 		// enter critical section
 		os_state = osKernelLock();
+//		taskENTER_CRITICAL();
 
 		if (HAL_HSEM_IsSemTaken(6)) {
 			// exit critical section

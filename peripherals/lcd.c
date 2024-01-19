@@ -195,7 +195,7 @@ void LCD_init(void) {
 	LCD_puts(BOARD "\r\n");
 	LCD_puts("Forth for\r\n");
 	LCD_puts("the STM32WB \r\n");
-	LCD_puts("(c)2023\r\n");
+	LCD_puts("(c)2024\r\n");
 	LCD_puts("peter@spyr.ch");
 
 	for (i = 0; i < membersof(st7567_on_sequence); i++) {
