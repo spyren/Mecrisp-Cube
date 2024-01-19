@@ -436,6 +436,20 @@ See also https://forth-standard.org/standard/tools.
 
 ## Filesystem API
 
+The API is the same as the [FatFs - Generic FAT
+Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html). 
+It is different from the optional File-Access word set proposed in https://forth-standard.org/standard/file.
+<blockquote>
+<pre>
+OPEN-FILE ( c-addr u fam -- fileid ior )
+</pre>
+Open the file named in the character string specified by c-addr u, with file access method indicated by fam. The meaning of values of fam is implementation defined.
+
+If the file is successfully opened, ior is zero, fileid is its identifier, and the file has been positioned to the start of the file.
+
+Otherwise, ior is the implementation-defined I/O result code and fileid is undefined.
+</blockquote>
+
 The C function prototype for `f_open` looks like this:
 ```C
 FRESULT f_open (
@@ -449,50 +463,55 @@ The parameter order for the Forth Word is the same: `addr1` is address
 of the file object data structure
 [FIL](http://elm-chan.org/fsw/ff/doc/sfile.html), `addr2` is the address
 of the filename array (0 terminated string).
-
-    f_open  ( addr1 addr2 b -- n )   opens a file.
+```
+f_open  ( addr1 addr2 b -- n )   opens a file.
+```
 
 The FIL data structure can be created as follows:
-
-    create fil /FIL allot ok.
+<pre>
+create fil /FIL allot[RET] ok.
+</pre>
 
 See also [f_open](http://elm-chan.org/fsw/ff/doc/open.html).
 
 Print current directory:
-
-    256 buffer: path[RET] ok.
-    path 256 f_getcwd drop strlen type[RET] / ok.
+<pre>
+256 buffer: path[RET] ok.
+path 256 f_getcwd drop strlen type[RET] / ok.
+</pre>
 
 or easier with unix like command pwd:
-
-    pwd[RET]
-    0:/ ok.
+<pre>
+pwd[RET]
+0:/ ok.
+</pre>
 
 Change current directory
+<pre>
+<b>path 256 accept[RET] common[RET]</b>  ok.
+path swap 2dup str0term drop f_chdir .[RET] 0 ok.
+pwd[RET]
+0:/common ok.
 
-    path 256 accept[RET] common[RET]  ok.
-    path swap 2dup str0term drop f_chdir .[RET] 0 ok.
-    pwd[RET]
-    0:/common ok.
-
-    path dup .str" /fsr" f_chdir .[RET] 0 ok.
-    pwd[RET]
-    0:/fsr ok.
+path dup .str" /fsr" f_chdir .[RET] 0 ok.
+pwd[RET]
+0:/fsr ok.
+</pre>
 
 Change drive (if you have a microSD connected):
-
-    chdrv 1:[RET]
-    ok.
-    pwd[RET]
-    1:/ ok.
-    cd home[RET] 
-    ok.
-    pwd[RET] 
-    1:/home ok.
-    0:[RET]  ok.
-    pwd[RET] 
-    0:/fsr ok.
-
+<pre>
+chdrv 1:[RET]
+ok.
+pwd[RET]
+1:/ ok.
+cd home[RET] 
+ok.
+pwd[RET] 
+1:/home ok.
+0:[RET]  ok.
+pwd[RET] 
+0:/fsr ok.
+</pre>
 
 ### Data Structures
 
