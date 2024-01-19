@@ -127,9 +127,11 @@ The SST25VF016B seems to be compatible.
 
 #### STM32WB5MM Discovery Kit (QSPI S25FL128)
 
+<blockquote>
 16 MiB Quad SPI NOR Flash chip 
 [S25FL128SDSMFV001](https://www.cypress.com/file/448601/download). 
 Uniform 64-KB sectors with Hybrid 4-KB sectors.
+</blockquote>
 
 <blockquote>
 The main flash array is divided into erase units called sectors. 
@@ -189,7 +191,6 @@ Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
 </pre>
 
 Umount the loop-device and copy the file to a SD-card. 
-
 Copy the filesystem to the flash disk on the target Mecrisp-Cube WB Feather system:
 <pre>
 dd 1:/boot/fd-16MiB.img 0:
@@ -243,12 +244,21 @@ See [above](#stm32h743-nucleo-qspi-w25q128) for details.
 SD Drive
 --------
 
-You can build a very cheap microSD adapter by yourself with a microSD to
-SD adapter. You have to solder only 7 wires to a pin header. The
-breakout board for microSD cards from Adafruit have a level shifter, but
-this is not needed because the levels on the Nucleo are already 3.3 V.
-Only the CD pin is missing, this could be handy to detect a microSD
+### Home Brewed microSD Adapter for STM32WB55 Nucleo/Dongle (SPI)
+
+You can build a very cheap microSD adapter by yourself with a microSD to 
+SD adapter. You have to solder only 7 wires to a pin header. The 
+breakout board for microSD cards from Adafruit have a level shifter, but 
+this is not needed because the levels on the Nucleo are already 3.3 V. 
+Only the CD pin is missing, this could be handy to detect a microSD 
 card.
+
+<table>
+  <tr>
+    <td><img src="img/MMC-SD-miniSD-microSD-Color-Numbers-Names.gif"  ></td>
+    <td><img src="img/nucleo-sd-adapter.jpg"  ></td>
+  </tr>
+</table>
 
 | SD pin | microSD pin | Name | Description              | Arduino/Nucleo Pin | Nucleo Dongle |
 |--------|-------------|------|--------------------------|--------------------|---------------|
@@ -262,10 +272,33 @@ card.
 | 8      | 8           | NC   | Unused                   |                    |               |
 | 9      | 1           | NC   | Unused                   |                    |               |
 
-
-<http://elm-chan.org/docs/mmc/mmc_e.html>
+   * http://elm-chan.org/docs/mmc/mmc_e.html
+   * https://en.wikipedia.org/wiki/SD_card
 
 Block size 512 Bytes, SPI mode 0 (CPHA=0, CPOL=0), Pull-up on MISO.
+
+<table>
+  <tr>
+    <td><img src="img/nucleo-dongle-sdcard.jpg"  ></td>
+    <td><img src="img/nucleo-dongle-sdcard2.jpg"  ></td>
+  </tr>
+</table>
+
+   * https://github.com/spyren/Mecrisp-Cube/master/Forth/Src/sd.c
+   * https://github.com/spyren/Mecrisp-Cube/master/Forth/Src/sd_spi.c
+
+
+### microSD Adapter on STM32F405 Feather (SDIO)
+
+SDIO Interface is well supported by the STM32F405, there is no need to use the slower SPI. 
+   * https://github.com/spyren/Mecrisp-Cube/tree/F405/Forth/Src/sd.c
+
+<table>
+  <tr>
+    <td><img src="img/sd-socket.jpg"  ></td>
+    <td><img src="img/sdio-schematic.png"  ></td>
+  </tr>
+</table>
 
 
 JTAG/SWD
