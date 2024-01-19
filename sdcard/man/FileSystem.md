@@ -230,14 +230,14 @@ Copy the filesystem to the flash disk on the target Mecrisp-Cube STM32H743 Nucle
 dd 1:/boot/fd-16MiB.img 0:
 </pre>
 
-See above (MicroSdBlocks#STM32WB_Feather_SPI_W25Q128) for creating the image `fd-16MiB.img`.
+See [above](#stm32f405-feather-spi-w25q16) for creating the image `fd-16MiB.img`.
 
 
 #### Arduino Portenta H7 (QSPI MX25L12833F)
 
 The [Macronix MX25L12833F](https://www.macronix.com/Lists/Datasheet/Attachments/8682/MX25L12833F,%203V,%20128Mb,%20v1.0.pdf) 
 is compatible to the Winbond W25Q128JVPIQ. 
-See above STM32H743_Nucleo_QSPI_W25Q128 for details.
+See [above]() for details.
 
 
 SD Drive
