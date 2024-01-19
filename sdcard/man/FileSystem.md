@@ -44,8 +44,8 @@ FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 </pre>
 
-   * /Forth/Src/fd.c
-   * /Forth/Src/flash.c
+   * [fd.c](/peripherals/Src/fd.c)
+   * [flash.c](/peripherals/flash.c)
 
 Create a 384 KiB FAT filesystem as a loop device on Linux 
 (or use the already prepared [fd-384k.img](../boot/fd-384k.img)):
@@ -81,8 +81,9 @@ dd 1:/boot/fd-384k.img 0:
 The STM32F405 Feather has a 2 !MiB Serial Flash 
 [W25Q16](https://www.mouser.ch/datasheet/2/949/w25q16jv_spi_revg_03222018_plus-1489727.pdf) 
 on board. The smallest erasable chunk of data is the 4 !KiB sector. 
-But the default FAT block is 512 Bytes, that means if you want to write something to a not erased block, 
-you have to erase the whole sector. For this the sector has to be buffered in RAM. For details see:
+But the default FAT block is 512 Bytes, that means if you want to write 
+something to a not erased block, you have to erase the whole sector. 
+For this the sector has to be buffered in RAM. For details see:
 
    * [fd.c](/peripherals/fd.c)
    * [fd_spi.c](/peripherals/fd_spi.c)
@@ -114,8 +115,8 @@ Copy the filesystem to the flash disk on the target Mecrisp-Cube F405 system:
 dd 1:/boot/fd-2MiB.img 0:
 </pre>
 
-serial-flash.jpg 
-W25Q16.png"
+![](img/serial-flash.jpg)
+![](img/W25Q16.png)
 
 The SST25VF016B seems to be compatible.
 
