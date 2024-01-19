@@ -127,7 +127,7 @@ f_open  ( addr1 addr2 b -- n )   opens a file.
 
 The FIL data structure can be created as follows:
 <pre>
-create fil /FIL allot[RET]<b> ok.</b>b>
+create fil /FIL allot[RET]<b> ok.</b>
 </pre>
 
 See also [f_open](http://elm-chan.org/fsw/ff/doc/open.html).
