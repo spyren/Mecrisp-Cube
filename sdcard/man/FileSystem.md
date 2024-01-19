@@ -1,3 +1,5 @@
+![](img/sd-header.jpg)
+
 microSD and internal Flash Mass Storage for Blockheads and Fatties
 ==================================================================
 
