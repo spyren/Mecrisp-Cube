@@ -78,6 +78,3 @@ Stop the alarms:
 1 
 0 Launch! ok. 
 </pre>
-
-
-\-- [PeterSchmid - 2020-10-11]
