@@ -372,16 +372,6 @@ include   ( i*x "name" -- j*x )      Interprets the content of the file &lt;name
 included  ( i*x c-addr u -- j*x )    Interprets the content of the file.
 
 coredump  ( "name" -- )      Dumps the flash memory (core) into the file &lt;name&gt;.
-
-user variables which contain file desciptor (pointer address a to file object structure)
-stdin     ( -- a )           for fs-emit and fs-emit?
-stdout    ( -- a )           for fs-key and fs-key?
-stderr    ( -- a )           not used yet
-
-fs-emit   ( c -- )           Emits a character c to a file (stdout)
-fs-emit?  ( -- ? )           Ready to send a character to a file? (stdout)
-fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
-fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
 </pre>
 
 Words from [redirection.fs](../fsr/redirection.fs)
@@ -414,6 +404,18 @@ Words from [redirection.fs](../fsr/redirection.fs)
 
 >plex     ( -- a1 a2 )       redirection to plex LED display
 ```
+
+user variables which contain file desciptor (pointer address a to file object structure)
+<pre>
+stdin     ( -- a )           for fs-emit and fs-emit?
+stdout    ( -- a )           for fs-key and fs-key?
+stderr    ( -- a )           not used yet
+
+fs-emit   ( c -- )           Emits a character c to a file (stdout)
+fs-emit?  ( -- ? )           Ready to send a character to a file? (stdout)
+fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
+fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
+</pre>
 
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
