@@ -301,6 +301,39 @@ SDIO Interface is well supported by the STM32F405, there is no need to use the s
 </table>
 
 
+### Home Brewed microSD Adapter for the STM32H743 Nucleo (SDMMC)
+
+SDIO (SDMMC) Interface is well supported by the STM32H74x, there is no need to use the slower SPI. 
+   * https://github.com/spyren/Mecrisp-Cube/tree/H743/Forth/Src/sd.c
+
+| SD pin    | microSD pin     |  Name SPI   | Name SDMMC   | Nucleo Pin CN8   |
+|-----------|-----------------|-------------|--------------|------------------|
+| 1         | 2               | nCS         | SDIO_D3      | 8                | 
+| 2         | 3               | DI          | SDIO_CMD     | 12               |
+| 3         | -               | VSS         | GND          | 11               |
+| 4         | 4               | VDD         | VDD          | 7                |
+| 5         | 5               | CLK         | SDIO_CLK     | 10               |
+| 6         | 6               | VSS         | GND          | 11               |
+| 7         | 7               | DO          | SDIO_D0      | 2                |
+| 8         | 8               | NC          | SDIO_D1      | 4                |
+| 9         | 1               | NC          | SDIO_D2      | 6                |
+
+
+### Home Brewed microSD Adapter for the Feather Boards
+
+| SD pin    | microSD pin     | Name      | Description            | Feather Pin   | 
+|-----------|-----------------|-----------|------------------------|---------------|
+| 1         | 2               | nCS       | Card Select [CS]       | D10           |
+| 2         | 3               | DI        | Serial Data In [MOSI]  | MO (D4)       |
+| 3         | -               | VSS       | Ground                 | GND           |
+| 4         | 4               | VDD       | Power 3.3 V            | 3V3           |
+| 5         | 5               | CLK       | Serial Clock [SCLK]    | SCK (D2)      |
+| 6         | 6               | VSS       | Ground                 | GND           |
+| 7         | 7               | DO        | Serial Data Out [MISO] | MI (D3)       |
+| 8         | 8               | NC        | Unused                 |               |
+| 9         | 1               | NC        | Unused                 |               |
+
+
 JTAG/SWD
 --------
 
@@ -495,12 +528,68 @@ supports FAT (12, 16, and 32) and exFAT formatted SD cards.
 files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-files.html#Forth-source-files).
 I propose `.fs` extension for Forth source files the same as GForth
 does. But anyway you can use what you want (`.f`, `.4th`, `.fth`, etc).
+<pre>
+include   ( i*x "name" -- j*x )      Interprets the content of the file &lt;name&gt;. 
+included  ( i*x c-addr u -- j*x )    Interprets the content of the file.
 
-    include   ( any "name" -- any )      Interprets the content of the file <name>
-    included  ( any c-addr u -- any )    Interprets the content of the file
+coredump  ( "name" -- )      Dumps the flash memory (core) into the file &lt;name&gt;.
 
-    coredump  ( "name" -- )              Dumps the flash memory (core) into the file <name>
+user variables which contain file desciptor (pointer address a to file object structure)
+stdin     ( -- a )           for fs-emit and fs-emit?
+stdout    ( -- a )           for fs-key and fs-key?
+stderr    ( -- a )           not used yet
 
+fs-emit   ( c -- )           Emits a character c to a file (stdout)
+fs-emit?  ( -- ? )           Ready to send a character to a file? (stdout)
+fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
+fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
+</pre>
+
+Words from [[https://github.com/spyren/Mecrisp-Cube/blob/F405/sdcard/fsr/redirection.fs][redirection.fs]]
+<pre>
+>f_open   ( a1 a2 -- ior )   open a file a1 to redirect to a2 (emit, type, ...)
+>>f_open  ( a1 a2 -- ior )   open a file to redirect to (emit, type, ...). Append to file
+>file     ( -- a1 a2 )       redirect to a file (emit, type, ...)
+>f_close  ( -- ior )         close redirection to file 
+<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
+<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
+<f_close  ( -- ior )         close redirection from file 
+
+>term     ( a1 a2 -- )       terminate to-file redirection
+<term     ( a1 a2 -- )       terminate from-file redirection
+<>term    ( a1 a2 a3 a4 -- ) terminate redirection
+
+>uart     ( -- a1 a2 )       redirection to uart
+<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
+<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
+
+>cdc      ( -- a1 a2 )       redirection to cdc (USB serial)
+<cdc      ( -- a1 a2 )       redirection from cdc (key, accept, ...)
+<>cdc     ( -- a1 a2 a3 a4 ) redirection from and to cdc
+
+>crs      ( -- a1 a2 )       redirection to crs (BLE serial)
+<crs      ( -- a1 a2 )       redirection from crs(key, accept, ...)
+<>crs     ( -- a1 a2 a3 a4 ) redirection from and to crs
+
+>oled     ( -- a1 a2 )       redirection to oled
+
+>plex     ( -- a1 a2 )       redirection to plex LED display
+</pre>
+
+Words from [conditional.fs](../fsr/conditional.fs). 
+See also https://forth-standard.org/standard/tools.
+
+`query` not working in include! All the conditionals have to be on the same line.
+<pre>
+[IF]      ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
+[ELSE]    ( "<spaces>name ..." -- )              Parse and discard words from the parse area
+[THEN]    ( -- )                                 Does nothing. [THEN] is an immediate word. 
+[ENDIF]   ( -- )                                 Does nothing. [ENDIF] is an immediate word. 
+[IFDEF]   ( "<spaces>name ..." -- )              If the name can be found, do nothing. Otherwise parse and discard words from the parse area
+[IFNDEF]  ( "<spaces>name ..." -- )              If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
+[DEFINED] ( "<spaces>name ..." -- flag )         Return a true flag if name is the name of a word that can be found
+[UNDEFINED] ( "<spaces>name ..." -- flag )       Return a false flag if name is the name of a word that can be found
+</pre>
 
 Filesystem API
 ==============
