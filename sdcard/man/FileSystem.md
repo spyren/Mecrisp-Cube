@@ -78,9 +78,9 @@ dd 1:/boot/fd-384k.img 0:
 
 #### STM32F405 Feather (SPI W25Q16)
 
-The STM32F405 Feather has a 2 !MiB Serial Flash 
+The STM32F405 Feather has a 2 MiB Serial Flash 
 [W25Q16](https://www.mouser.ch/datasheet/2/949/w25q16jv_spi_revg_03222018_plus-1489727.pdf) 
-on board. The smallest erasable chunk of data is the 4 !KiB sector. 
+on board. The smallest erasable chunk of data is the 4 KiB sector. 
 But the default FAT block is 512 Bytes, that means if you want to write 
 something to a not erased block, you have to erase the whole sector. 
 For this the sector has to be buffered in RAM. For details see:
@@ -140,7 +140,7 @@ or as uniform 256-KB sectors.
 32 4 KiB sectors and 254 64 KiB sectors. What a pain, why use STM this Flash? 
 To simplify writing, only the first 4 KiB of the 64 KiB sectors are used. 
 That means (32 + 254) * 4 KiB = 1140 KiB are available for the volume. 
-To make it even simpler, I use only !64 KiB sectors, 
+To make it even simpler, I use only 64 KiB sectors, 
 that means there are 256 sectors and therefore 1 MiB available for the volume. 
 For implementation see [fd.c](/peripherals/fd.c) and [fd_spi.c]](/peripherals/fd_spi.c)
 
