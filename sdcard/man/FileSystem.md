@@ -237,7 +237,7 @@ See [above](#stm32f405-feather-spi-w25q16) for creating the image `fd-16MiB.img`
 
 The [Macronix MX25L12833F](https://www.macronix.com/Lists/Datasheet/Attachments/8682/MX25L12833F,%203V,%20128Mb,%20v1.0.pdf) 
 is compatible to the Winbond W25Q128JVPIQ. 
-See [above]() for details.
+See [above](#stm32h743-nucleo-qspi-w25q128) for details.
 
 
 SD Drive
