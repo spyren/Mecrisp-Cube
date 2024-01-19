@@ -1,7 +1,7 @@
 ![](img/sd-header.jpg)
-<font size="+12"><center>
+<center><font size="+12">
 microSD and internal Flash Mass Storage for Blockheads and Fatties
-</center></font>
+</font></center>
 
 Raw blocks or filesystem? A real filesystem is hefty and several times larger than
 the Forth kernel itself. But if you really want to exchange data with
