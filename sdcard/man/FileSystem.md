@@ -385,22 +385,22 @@ fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
 </pre>
 
 Words from [redirection.fs](../fsr/redirection.fs)
-<pre>
+```
 >f_open   ( a1 a2 -- ior )   open a file a1 to redirect to a2 (emit, type, ...)
 >>f_open  ( a1 a2 -- ior )   open a file to redirect to (emit, type, ...). Append to file
 >file     ( -- a1 a2 )       redirect to a file (emit, type, ...)
 >f_close  ( -- ior )         close redirection to file 
-\<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
-\<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
-\<f_close  ( -- ior )         close redirection from file 
+<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
+<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
+<f_close  ( -- ior )         close redirection from file 
 
 >term     ( a1 a2 -- )       terminate to-file redirection
-\<term     ( a1 a2 -- )       terminate from-file redirection
-\<>term    ( a1 a2 a3 a4 -- ) terminate redirection
+<term     ( a1 a2 -- )       terminate from-file redirection
+<>term    ( a1 a2 a3 a4 -- ) terminate redirection
 
 >uart     ( -- a1 a2 )       redirection to uart
-\<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
-\<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
+<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
+<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
 
 >cdc      ( -- a1 a2 )       redirection to cdc (USB serial)
 <cdc      ( -- a1 a2 )       redirection from cdc (key, accept, ...)
@@ -413,21 +413,21 @@ Words from [redirection.fs](../fsr/redirection.fs)
 >oled     ( -- a1 a2 )       redirection to oled
 
 >plex     ( -- a1 a2 )       redirection to plex LED display
-</pre>
+```
 
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
 
 `query` not working in include! All the conditionals have to be on the same line.
 <pre>
-[IF]      ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
-[ELSE]    ( "<spaces>name ..." -- )              Parse and discard words from the parse area
-[THEN]    ( -- )                                 Does nothing. [THEN] is an immediate word. 
-[ENDIF]   ( -- )                                 Does nothing. [ENDIF] is an immediate word. 
-[IFDEF]   ( "<spaces>name ..." -- )              If the name can be found, do nothing. Otherwise parse and discard words from the parse area
-[IFNDEF]  ( "<spaces>name ..." -- )              If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
-[DEFINED] ( "<spaces>name ..." -- flag )         Return a true flag if name is the name of a word that can be found
-[UNDEFINED] ( "<spaces>name ..." -- flag )       Return a false flag if name is the name of a word that can be found
+[IF]        ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
+[ELSE]      ( "<spaces>name ..." -- )              Parse and discard words from the parse area
+[THEN]      ( -- )                                 Does nothing. [THEN] is an immediate word. 
+[ENDIF]     ( -- )                                 Does nothing. [ENDIF] is an immediate word. 
+[IFDEF]     ( "<spaces>name ..." -- )              If the name can be found, do nothing. Otherwise parse and discard words from the parse area
+[IFNDEF]    ( "<spaces>name ..." -- )              If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
+[DEFINED]   ( "<spaces>name ..." -- flag )         Return a true flag if name is the name of a word that can be found
+[UNDEFINED] ( "<spaces>name ..." -- flag )         Return a false flag if name is the name of a word that can be found
 </pre>
 
 Filesystem API
