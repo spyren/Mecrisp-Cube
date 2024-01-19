@@ -127,47 +127,47 @@ f_open  ( addr1 addr2 b -- n )   opens a file.
 
 The FIL data structure can be created as follows:
 <pre>
-<b>create fil /FIL allot[RET]</b> ok.
+create fil /FIL allot[RET]<b> ok.</b>b>
 </pre>
 
 See also [f_open](http://elm-chan.org/fsw/ff/doc/open.html).
 
 Print current directory:
 <pre>
-<b>256 buffer: path[RET]</b> ok.
-<b>path 256 f_getcwd drop strlen type[RET]</b> / ok.
+256 buffer: path[RET]<b> ok.</b>
+path 256 f_getcwd drop strlen type[RET]<b> / ok.</b>
 </pre>
 
 or easier with unix like command pwd:
 <pre>
-<b>pwd[RET]</b>
-0:/ ok.
+pwd[RET]
+<b>0:/ ok.</b>
 </pre>
 
 Change current directory
 <pre>
-<b>path 256 accept[RET] common[RET]</b>  ok.
-<b>path swap 2dup str0term drop f_chdir .[RET]</b> 0 ok.
-<b>pwd[RET]</b>
-0:/common ok.
-<b>path dup .str" /fsr" f_chdir .[RET]</b> 0 ok.
-<b>pwd[RET]</b>
-0:/fsr ok.
+path 256 accept[RET] common[RET]<b>  ok.</b>
+path swap 2dup str0term drop f_chdir .[RET]<b> 0 ok.</b>
+pwd[RET]
+<b>:/common ok.</b>
+path dup .str" /fsr" f_chdir .[RET]<b> 0 ok.</b>
+pwd[RET]
+<b>0:/fsr ok.</b>
 </pre>
 
 Change drive (if you have a microSD connected):
 <pre>
-<b>chdrv 1:[RET]</b>
-ok.
-<b>pwd[RET]</b>
-1:/ ok.
-<b>cd home[RET]</b>
-ok.
-<b>pwd[RET]</b>
-1:/home ok.
-<b>0:[RET]</b>  ok.
-<b>pwd[RET]</b>
-0:/fsr ok.
+chdrv 1:[RET]
+<b>ok.</b>
+pwd[RET]
+<b>1:/ ok.</b>
+cd home[RET]
+<b>ok.</b>
+pwd[RET]
+<b>1:/home ok.</b>
+0:[RET]<b> ok.</b> 
+pwd[RET]
+<b>0:/fsr ok.</b>
 </pre>
 
 ### Data Structures
