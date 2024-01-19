@@ -44,7 +44,7 @@ FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
 FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
 </pre>
 
-   * [fd.c](/peripherals/Src/fd.c)
+   * [fd.c](/peripherals/fd.c)
    * [flash.c](/peripherals/flash.c)
 
 Create a 384 KiB FAT filesystem as a loop device on Linux 
@@ -115,8 +115,12 @@ Copy the filesystem to the flash disk on the target Mecrisp-Cube F405 system:
 dd 1:/boot/fd-2MiB.img 0:
 </pre>
 
-![](img/serial-flash.jpg)
-![](img/W25Q16.png)
+<table>
+  <tr>
+    <td><img src="img/img/W25Q16.png"  ></td>
+    <td><img src="img/serial-flash.jpg"  ></td>
+  </tr>
+</table> 
 
 The SST25VF016B seems to be compatible.
 
@@ -207,7 +211,7 @@ The driver ([fd_spi.c](/H743/peripherals/fd_spi.c),
 is based on the STM example project for the 
 [N25Q128A](https://www.micron.com/-/media/client/global/documents/products/data-sheet/nor-flash/serial-nor/n25q/n25q_128mb_1_8v_65nm.pdf)
 
-There are 4,096 erasable 4 !KiB sectors. That means 16 MiB are available for the volume.
+There are 4,096 erasable 4 KiB sectors. That means 16 MiB are available for the volume.
 
 | Name    | Port     | Nucleo     | MIKROE-4067    | SPX-17115   |
 |---------|----------|------------|----------------|-------------|
@@ -231,7 +235,7 @@ See above (MicroSdBlocks#STM32WB_Feather_SPI_W25Q128) for creating the image `fd
 
 #### Arduino Portenta H7 (QSPI MX25L12833F)
 
-The [Macronix !MX25L12833F](https://www.macronix.com/Lists/Datasheet/Attachments/8682/MX25L12833F,%203V,%20128Mb,%20v1.0.pdf) 
+The [Macronix MX25L12833F](https://www.macronix.com/Lists/Datasheet/Attachments/8682/MX25L12833F,%203V,%20128Mb,%20v1.0.pdf) 
 is compatible to the Winbond W25Q128JVPIQ. 
 See above STM32H743_Nucleo_QSPI_W25Q128 for details.
 
