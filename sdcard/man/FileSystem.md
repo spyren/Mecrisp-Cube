@@ -355,167 +355,6 @@ JTAG/SWD
 |          | 14             |            | 6 (PB6)    | VCP_TX Target |
 
 
-Raw Blocks
-==========
-
-Flash Drive
------------
-
-The Flash on the STM32WB is divided in 4 KiB pages. For 1 KiB blocks the
-other 3 KiB in the page have to be buffered.
-
-SD Drive
---------
-
-One Forth block consists of two microSD sectors. No filesystem is
-involved, blocks are mapped direct to the sectors: block_number =
-sector_number / 2. Caution! If you write a block on a formatted disk you
-will destroy the filesystem. Block 0 for example is the Master Boot
-Sector, to overwrite this sector/block would end in a disaster. If you
-really want to share blocks and filesystem on the same disk you have to
-create an additional partition for the Forth blocks. Or if you only want
-to play with some toy blocks, you can abuse the boot loader, because it
-is usually not required and you can therefore use blocks from 10 to 100.
-But be warned, do not do this on the SD card with the vacation pictures!
-
-The blocks can be used as buffers. As long as you use less or equal than
-4 blocks, nothing is stored on the SD card.
-
-Block (Virtual Memory) Words
-----------------------------
-```
-block          ( n -- a )      Return address of buffer for block n. 0 on error.
-buffer         ( n -- a )      Return address of buffer for block n. Does not get the block from disk. 0 on error.
-empty-buffers  ( -- )          Marks all block buffers as empty.
-update         ( -- )          Marks most recent block as updated (dirty).
-save-buffers   ( -- )          Transfers the contents of each updated block buffer to disk.
-flush          ( -- )          save-buffers empty-buffers
-list           ( n -- )        Display block n. The block is displayed as 16 numbered lines, each of 64 characters. 
-load           ( n -- )        Interprets the content of block n. 
-
-drive          ( u -- )        Initializes the drive (0 flash drive, 1 SD drive) and makes it current, sets the block count.
-#blocks        ( -- n )        Gets the block count from current drive.
-```
-
-Block Editor
-------------
-
-VI or EMACS keybindings? VI has a line editing mode too, fine for really
-dumb terminals.
-
--   VIBE <https://www.complang.tuwien.ac.at/forth/vibe-2.1ans.fs>
-    <http://kestrelcomputer.github.io/kestrel/2016/03/29/vibe-2.2>
--   Standard Mecrisp [block
-    editor](https://github.com/spyren/Mecrisp-Cube/blob/master/sdcard/fsr/editor.fs)
--   <https://github.com/larsbrinkhoff/fmacs>
-
-Raw Blocks and GNU/Linux
-------------------------
-
-Example 2 GiB microSD FAT16 formatted, show the disk parameter with
-fdisk:
-
-    # fdisk /dev/sdf
-    ...
-    Befehl (m für Hilfe): p
-    Festplatte /dev/sdf: 1,91 GiB, 2032664576 Bytes, 3970048 Sektoren
-    Festplattenmodell: FCR-HS219/1     
-    Einheiten: Sektoren von 1 * 512 = 512 Bytes
-    Sektorgröße (logisch/physikalisch): 512 Bytes / 512 Bytes
-    E/A-Größe (minimal/optimal): 512 Bytes / 512 Bytes
-    Festplattenbezeichnungstyp: dos
-    Festplattenbezeichner: 0x00000000
-
-    Gerät      Boot Anfang    Ende Sektoren Größe Kn Typ
-    /dev/sdf1          249 3967487  3967239  1,9G  6 FAT16
-
-Fill the SD with zeros (1\'000\'000 sectors à 512 Bytes), that takes
-about 5 Minutes:
-
-    # dd if=/dev/zero of=/dev/sdf  count=1000000
-    1000000+0 Datensätze ein
-    1000000+0 Datensätze aus
-    512000000 Bytes (512 MB, 488 MiB) kopiert, 271,43 s, 1,9 MB/s
-
-Write the first block with the famous F example
-[letter-f.block](%ATTACHURLPATH%/letter-f.block) from [Starting
-Forth](https://www.forth.com/starting-forth/1-forth-stacks-dictionary/),
-*Leo Brodie*:
-
-    # dd if=letter-f.block of=/dev/sdf
-    2+0 Datensätze ein
-    2+0 Datensätze aus
-    1024 Bytes (1,0 kB, 1,0 KiB) kopiert, 0,00226272 s, 453 kB/s
-
-Put the microSD card into the SD adapter and startup the Mecrisp-Cube
-Nucleo:
-
-    Mecrisp-Cube 1.2.0 for STM32WB55 (C) peter@spyr.ch.
-    Based on Mecrisp-Stellaris 2.5.2 by Matthias Koch. 
-    0 list 
-    Block# 0 
-      0 \ Large letter F                                                
-      1 : STAR    [CHAR] * EMIT ;                                       
-      2 : STARS   0 DO  STAR  LOOP ;                                    
-      3 : MARGIN  CR 30 SPACES ;                                        
-      4 : BLIP    MARGIN STAR ;                                         
-      5 : BAR     MARGIN 5 STARS ;                                      
-      6 : F       BAR BLIP BAR BLIP BLIP CR ;                           
-      7                                                                 
-      8 F                                                               
-      9                                                                 
-     10                                                                 
-     11                                                                 
-     12                                                                 
-     13                                                                 
-     14                                                                 
-     15                                                                 
-     ok.
-    0 load 
-                                  *****
-                                  *
-                                  *****
-                                  *
-                                  *
-     ok.
-     ok.
-    0 block hex. 200216F8  ok.
-    0 block 1200 dump 
-    200216F0 :  00 01 00 00 D9 86 03 00   5C 20 4C 61 72 67 65 20  | ........  \ Large  |
-    20021700 :  6C 65 74 74 65 72 20 46   20 20 20 20 20 20 20 20  | letter F           |
-    20021710 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    20021720 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    20021730 :  20 20 20 20 20 20 20 20   3A 20 53 54 41 52 20 20  |           : STAR   |
-    20021740 :  20 20 5B 43 48 41 52 5D   20 2A 20 45 4D 49 54 20  |   [CHAR]   * EMIT  |
-    20021750 :  3B 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  | ;                  |
-    20021760 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    20021770 :  20 20 20 20 20 20 20 20   3A 20 53 54 41 52 53 20  |           : STARS  |
-    20021780 :  20 20 30 20 44 4F 20 20   53 54 41 52 20 20 4C 4F  |   0 DO    STAR  LO |
-    20021790 :  4F 50 20 3B 20 20 20 20   20 20 20 20 20 20 20 20  | OP ;               |
-    200217A0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    200217B0 :  20 20 20 20 20 20 20 20   3A 20 4D 41 52 47 49 4E  |           : MARGIN |
-    200217C0 :  20 20 43 52 20 33 30 20   53 50 41 43 45 53 20 3B  |   CR 30   SPACES ; |
-    200217D0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    200217E0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    200217F0 :  20 20 20 20 20 20 20 20   3A 20 42 4C 49 50 20 20  |           : BLIP   |
-    20021800 :  20 20 4D 41 52 47 49 4E   20 53 54 41 52 20 3B 20  |   MARGIN   STAR ;  |
-    20021810 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    20021820 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    20021830 :  20 20 20 20 20 20 20 20   3A 20 42 41 52 20 20 20  |           : BAR    |
-    20021840 :  20 20 4D 41 52 47 49 4E   20 35 20 53 54 41 52 53  |   MARGIN   5 STARS |
-    20021850 :  20 3B 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |  ;                 |
-    20021860 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    20021870 :  20 20 20 20 20 20 20 20   3A 20 46 20 20 20 20 20  |           : F      |
-    20021880 :  20 20 42 41 52 20 42 4C   49 50 20 42 41 52 20 42  |   BAR BL  IP BAR B |
-    20021890 :  4C 49 50 20 42 4C 49 50   20 43 52 20 3B 20 20 20  | LIP BLIP   CR ;    |
-    200218A0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
-    ...
-    20021AF0 :  20 20 20 20 20 20 20 20   00 00 00 00 01 00 00 00  |           ........ |
-    ...
-    20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
-     ok.
-
-
 FAT Filesystem
 ==============
 
@@ -545,23 +384,23 @@ fs-key    ( -- c )           Waits for and fetches a character from file. <0 for
 fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
 </pre>
 
-Words from [[https://github.com/spyren/Mecrisp-Cube/blob/F405/sdcard/fsr/redirection.fs][redirection.fs]]
+Words from [redirection.fs](../fsr/redirection.fs)
 <pre>
 >f_open   ( a1 a2 -- ior )   open a file a1 to redirect to a2 (emit, type, ...)
 >>f_open  ( a1 a2 -- ior )   open a file to redirect to (emit, type, ...). Append to file
 >file     ( -- a1 a2 )       redirect to a file (emit, type, ...)
 >f_close  ( -- ior )         close redirection to file 
-<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
-<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
-<f_close  ( -- ior )         close redirection from file 
+\<f_open   ( a1 a2 -- ior )   open a file to redirect from (key, accept, ...)
+\<file     ( -- a1 a2)        redirection from a file (key, accept, ...)
+\<f_close  ( -- ior )         close redirection from file 
 
 >term     ( a1 a2 -- )       terminate to-file redirection
-<term     ( a1 a2 -- )       terminate from-file redirection
-<>term    ( a1 a2 a3 a4 -- ) terminate redirection
+\<term     ( a1 a2 -- )       terminate from-file redirection
+\<>term    ( a1 a2 a3 a4 -- ) terminate redirection
 
 >uart     ( -- a1 a2 )       redirection to uart
-<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
-<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
+\<uart     ( -- a1 a2 )       redirection from uart (key, accept, ...)
+\<>uart    ( -- a1 a2 a3 a4 ) redirection from and to uart
 
 >cdc      ( -- a1 a2 )       redirection to cdc (USB serial)
 <cdc      ( -- a1 a2 )       redirection from cdc (key, accept, ...)
@@ -941,3 +780,162 @@ and `u-count` is the number of characters in the string.
     s0"          ( "text" -- c-addr len )   Compiles a 0-terminated string and gives back its address and length when executed
     .(           ( "text) --  )             Mecrisp's ." is working only in compile mode
 
+Raw Blocks
+==========
+
+Flash Drive
+-----------
+
+The Flash on the STM32WB is divided in 4 KiB pages. For 1 KiB blocks the
+other 3 KiB in the page have to be buffered.
+
+SD Drive
+--------
+
+One Forth block consists of two microSD sectors. No filesystem is
+involved, blocks are mapped direct to the sectors: block_number =
+sector_number / 2. Caution! If you write a block on a formatted disk you
+will destroy the filesystem. Block 0 for example is the Master Boot
+Sector, to overwrite this sector/block would end in a disaster. If you
+really want to share blocks and filesystem on the same disk you have to
+create an additional partition for the Forth blocks. Or if you only want
+to play with some toy blocks, you can abuse the boot loader, because it
+is usually not required and you can therefore use blocks from 10 to 100.
+But be warned, do not do this on the SD card with the vacation pictures!
+
+The blocks can be used as buffers. As long as you use less or equal than
+4 blocks, nothing is stored on the SD card.
+
+Block (Virtual Memory) Words
+----------------------------
+```
+block          ( n -- a )      Return address of buffer for block n. 0 on error.
+buffer         ( n -- a )      Return address of buffer for block n. Does not get the block from disk. 0 on error.
+empty-buffers  ( -- )          Marks all block buffers as empty.
+update         ( -- )          Marks most recent block as updated (dirty).
+save-buffers   ( -- )          Transfers the contents of each updated block buffer to disk.
+flush          ( -- )          save-buffers empty-buffers
+list           ( n -- )        Display block n. The block is displayed as 16 numbered lines, each of 64 characters. 
+load           ( n -- )        Interprets the content of block n. 
+
+drive          ( u -- )        Initializes the drive (0 flash drive, 1 SD drive) and makes it current, sets the block count.
+#blocks        ( -- n )        Gets the block count from current drive.
+```
+
+Block Editor
+------------
+
+VI or EMACS keybindings? VI has a line editing mode too, fine for really
+dumb terminals.
+
+-   VIBE <https://www.complang.tuwien.ac.at/forth/vibe-2.1ans.fs>
+    <http://kestrelcomputer.github.io/kestrel/2016/03/29/vibe-2.2>
+-   Standard Mecrisp [block
+    editor](https://github.com/spyren/Mecrisp-Cube/blob/master/sdcard/fsr/editor.fs)
+-   <https://github.com/larsbrinkhoff/fmacs>
+
+Raw Blocks and GNU/Linux
+------------------------
+
+Example 2 GiB microSD FAT16 formatted, show the disk parameter with
+fdisk:
+
+    # fdisk /dev/sdf
+    ...
+    Befehl (m für Hilfe): p
+    Festplatte /dev/sdf: 1,91 GiB, 2032664576 Bytes, 3970048 Sektoren
+    Festplattenmodell: FCR-HS219/1     
+    Einheiten: Sektoren von 1 * 512 = 512 Bytes
+    Sektorgröße (logisch/physikalisch): 512 Bytes / 512 Bytes
+    E/A-Größe (minimal/optimal): 512 Bytes / 512 Bytes
+    Festplattenbezeichnungstyp: dos
+    Festplattenbezeichner: 0x00000000
+
+    Gerät      Boot Anfang    Ende Sektoren Größe Kn Typ
+    /dev/sdf1          249 3967487  3967239  1,9G  6 FAT16
+
+Fill the SD with zeros (1\'000\'000 sectors à 512 Bytes), that takes
+about 5 Minutes:
+
+    # dd if=/dev/zero of=/dev/sdf  count=1000000
+    1000000+0 Datensätze ein
+    1000000+0 Datensätze aus
+    512000000 Bytes (512 MB, 488 MiB) kopiert, 271,43 s, 1,9 MB/s
+
+Write the first block with the famous F example
+[letter-f.block](%ATTACHURLPATH%/letter-f.block) from [Starting
+Forth](https://www.forth.com/starting-forth/1-forth-stacks-dictionary/),
+*Leo Brodie*:
+
+    # dd if=letter-f.block of=/dev/sdf
+    2+0 Datensätze ein
+    2+0 Datensätze aus
+    1024 Bytes (1,0 kB, 1,0 KiB) kopiert, 0,00226272 s, 453 kB/s
+
+Put the microSD card into the SD adapter and startup the Mecrisp-Cube
+Nucleo:
+
+    Mecrisp-Cube 1.2.0 for STM32WB55 (C) peter@spyr.ch.
+    Based on Mecrisp-Stellaris 2.5.2 by Matthias Koch. 
+    0 list 
+    Block# 0 
+      0 \ Large letter F                                                
+      1 : STAR    [CHAR] * EMIT ;                                       
+      2 : STARS   0 DO  STAR  LOOP ;                                    
+      3 : MARGIN  CR 30 SPACES ;                                        
+      4 : BLIP    MARGIN STAR ;                                         
+      5 : BAR     MARGIN 5 STARS ;                                      
+      6 : F       BAR BLIP BAR BLIP BLIP CR ;                           
+      7                                                                 
+      8 F                                                               
+      9                                                                 
+     10                                                                 
+     11                                                                 
+     12                                                                 
+     13                                                                 
+     14                                                                 
+     15                                                                 
+     ok.
+    0 load 
+                                  *****
+                                  *
+                                  *****
+                                  *
+                                  *
+     ok.
+     ok.
+    0 block hex. 200216F8  ok.
+    0 block 1200 dump 
+    200216F0 :  00 01 00 00 D9 86 03 00   5C 20 4C 61 72 67 65 20  | ........  \ Large  |
+    20021700 :  6C 65 74 74 65 72 20 46   20 20 20 20 20 20 20 20  | letter F           |
+    20021710 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    20021720 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    20021730 :  20 20 20 20 20 20 20 20   3A 20 53 54 41 52 20 20  |           : STAR   |
+    20021740 :  20 20 5B 43 48 41 52 5D   20 2A 20 45 4D 49 54 20  |   [CHAR]   * EMIT  |
+    20021750 :  3B 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  | ;                  |
+    20021760 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    20021770 :  20 20 20 20 20 20 20 20   3A 20 53 54 41 52 53 20  |           : STARS  |
+    20021780 :  20 20 30 20 44 4F 20 20   53 54 41 52 20 20 4C 4F  |   0 DO    STAR  LO |
+    20021790 :  4F 50 20 3B 20 20 20 20   20 20 20 20 20 20 20 20  | OP ;               |
+    200217A0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    200217B0 :  20 20 20 20 20 20 20 20   3A 20 4D 41 52 47 49 4E  |           : MARGIN |
+    200217C0 :  20 20 43 52 20 33 30 20   53 50 41 43 45 53 20 3B  |   CR 30   SPACES ; |
+    200217D0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    200217E0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    200217F0 :  20 20 20 20 20 20 20 20   3A 20 42 4C 49 50 20 20  |           : BLIP   |
+    20021800 :  20 20 4D 41 52 47 49 4E   20 53 54 41 52 20 3B 20  |   MARGIN   STAR ;  |
+    20021810 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    20021820 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    20021830 :  20 20 20 20 20 20 20 20   3A 20 42 41 52 20 20 20  |           : BAR    |
+    20021840 :  20 20 4D 41 52 47 49 4E   20 35 20 53 54 41 52 53  |   MARGIN   5 STARS |
+    20021850 :  20 3B 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |  ;                 |
+    20021860 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    20021870 :  20 20 20 20 20 20 20 20   3A 20 46 20 20 20 20 20  |           : F      |
+    20021880 :  20 20 42 41 52 20 42 4C   49 50 20 42 41 52 20 42  |   BAR BL  IP BAR B |
+    20021890 :  4C 49 50 20 42 4C 49 50   20 43 52 20 3B 20 20 20  | LIP BLIP   CR ;    |
+    200218A0 :  20 20 20 20 20 20 20 20   20 20 20 20 20 20 20 20  |                    |
+    ...
+    20021AF0 :  20 20 20 20 20 20 20 20   00 00 00 00 01 00 00 00  |           ........ |
+    ...
+    20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
+     ok.
