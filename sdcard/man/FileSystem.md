@@ -1,7 +1,7 @@
 ![](img/sd-header.jpg)
-<center><font size="+12">
+
 microSD and internal Flash Mass Storage for Blockheads and Fatties
-</font></center>
+==================================================================
 
 Raw blocks or filesystem? A real filesystem is hefty and several times larger than
 the Forth kernel itself. But if you really want to exchange data with
@@ -13,13 +13,13 @@ For a stand-alone Forth system, especially a embedded system, a block
 storage (on internal Flash or external Media) or no mass storage at all
 fill the bill.
 
-FAT Filesystem
-==============
+# FAT Filesystem
 
 FAT is the de-facto standard for embedded systems and mobile devices.
 The FAT filesystem for Mecrisp-Cube is based on [FatFs - Generic FAT
 Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html) and
 supports FAT (12, 16, and 32) and exFAT formatted SD cards.
+
 
 ## Basic FS Words
 
