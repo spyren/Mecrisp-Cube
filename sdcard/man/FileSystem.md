@@ -117,7 +117,7 @@ dd 1:/boot/fd-2MiB.img 0:
 
 <table>
   <tr>
-    <td><img src="img/img/W25Q16.png"  ></td>
+    <td><img src="img/W25Q16.png"  ></td>
     <td><img src="img/serial-flash.jpg"  ></td>
   </tr>
 </table> 
