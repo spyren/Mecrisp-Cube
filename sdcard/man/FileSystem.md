@@ -102,11 +102,11 @@ It is different from the optional File-Access word set proposed in https://forth
 <pre>
 OPEN-FILE ( c-addr u fam -- fileid ior )
 </pre>
-Open the file named in the character string specified by c-addr u, with file access method indicated by fam. The meaning of values of fam is implementation defined.
+Open the file named in the character string specified by _c-addr_ _u_, with file access method indicated by _fam_. The meaning of values of _fam_ is implementation defined.
 
-If the file is successfully opened, ior is zero, fileid is its identifier, and the file has been positioned to the start of the file.
+If the file is successfully opened, ior is zero, _fileid_ is its identifier, and the file has been positioned to the start of the file.
 
-Otherwise, ior is the implementation-defined I/O result code and fileid is undefined.
+Otherwise, _ior_ is the implementation-defined I/O result code and _fileid_ is undefined.
 </blockquote>
 
 The C function prototype for `f_open` looks like this:
