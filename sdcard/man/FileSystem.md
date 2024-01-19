@@ -362,6 +362,8 @@ The FAT filesystem for Mecrisp-Cube is based on [FatFs - Generic FAT
 Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html) and
 supports FAT (12, 16, and 32) and exFAT formatted SD cards.
 
+## Basic FS Words
+
 [Forth source
 files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-files.html#Forth-source-files).
 I propose `.fs` extension for Forth source files the same as GForth
@@ -431,8 +433,8 @@ See also https://forth-standard.org/standard/tools.
 [UNDEFINED] ( "<spaces>name ..." -- flag )         Return a false flag if name is the name of a word that can be found
 </pre>
 
-Filesystem API
-==============
+
+## Filesystem API
 
 The C function prototype for `f_open` looks like this:
 ```C
@@ -491,17 +493,17 @@ Change drive (if you have a microSD connected):
     pwd[RET] 
     0:/fsr ok.
 
-Data Structures
----------------
 
-### FATFS
+### Data Structures
+
+#### FATFS
 
 Only used in `FS_init()`. We have only one drive. For details see
 [FATFS](http://elm-chan.org/fsw/ff/doc/sfatfs.html)
 
     /FATFS ( -- u )   Gets the FATFS structure size
 
-### FIL
+#### FIL
 
 For details see [FIL](http://elm-chan.org/fsw/ff/doc/sfile.html).
 
@@ -526,13 +528,13 @@ For details see [FIL](http://elm-chan.org/fsw/ff/doc/sfile.html).
 | "wx"    | FA_CREATE_NEW FA_WRITE or               |
 | "w+x"   | FA_CREATE_NEW or FA_WRITE FA_READ or    |
 
-### DIR
+#### DIR
 
 For details see [DIR](http://elm-chan.org/fsw/ff/doc/sdir.html).
 
     /DIR         ( -- u ) Gets the DIR structure size
 
-### FILINFO
+#### FILINFO
 
 For details see
 [FILINFO](http://elm-chan.org/fsw/ff/doc/sfileinfo.html).
@@ -546,8 +548,8 @@ For details see
     fname+       ( -- u ) Gets the FILINFO structure fname offset
     altname+     ( -- u ) Gets the FILINFO structure altname offset
 
-File Access Functions/Words
----------------------------
+
+### File Access Functions/Words
 
 -   [f_open](http://elm-chan.org/fsw/ff/doc/open.html) - Open/Create a
     file
@@ -581,8 +583,8 @@ File Access Functions/Words
 -   [f_error](http://elm-chan.org/fsw/ff/doc/error.html) - Test for an
     error
 
-Directory Access Functions/Words
---------------------------------
+
+### Directory Access Functions/Words
 
 -   [f_opendir](http://elm-chan.org/fsw/ff/doc/opendir.html) - Open a
     directory
@@ -595,8 +597,7 @@ Directory Access Functions/Words
 -   [f_findnext](http://elm-chan.org/fsw/ff/doc/findnext.html) - Read a
     next item matched
 
-File and Directory Management Functions/Words
----------------------------------------------
+### File and Directory Management Functions/Words
 
 -   [f_stat](http://elm-chan.org/fsw/ff/doc/stat.html) - Check existance
     of a file or sub-directory
@@ -617,8 +618,7 @@ File and Directory Management Functions/Words
 -   [f_getcwd](http://elm-chan.org/fsw/ff/doc/getcwd.html) - Retrieve
     the current directory and drive
 
-Volume Management and System Configuration Functions/Words
-----------------------------------------------------------
+### Volume Management and System Configuration Functions/Words
 
 -   [f_mount](http://elm-chan.org/fsw/ff/doc/mount.html) -
     Register/Unregister the work area of the volume
@@ -634,8 +634,7 @@ Volume Management and System Configuration Functions/Words
     volume label
 
 
-UNIX like Shell Commands
-========================
+## UNIX like Shell Commands
 
 Do not expect real UNIX commands not even comparable to the Busybox
 commands. The UNIX like shell commands are parsing words. The parameters
@@ -645,8 +644,8 @@ mode, use `f_` words in compiler mode. Spaces in path und file names are
 not allowed. Verly limited wildcards (only \* and ?) for `ls`. No
 standard input/ouptut/err redirection.
 
-Shell Prompt
-------------
+### Shell Prompt
+
 ```forth
 : init ;
 
@@ -663,8 +662,7 @@ Shell Prompt
 init quit
 ```
 
-Forth String to 0-Terminated String and vice versa
---------------------------------------------------
+### Forth String to 0-Terminated String and vice versa
 
 Caution! There must be space for the 0 character at the end of the
 string.
@@ -676,8 +674,7 @@ string.
 strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
 ```
 
-Commands
---------
+### Commands
 
 - **ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
 -a show hidden files  
@@ -766,8 +763,7 @@ wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for ea
 -   kill
 
 
-C-String Helpers
-================
+## C-String Helpers
 
 Middleware like FatFs and RTOS expect C strings (see [null-terminated
 string](https://en.wikipedia.org/wiki/Null-terminated_string)). In
@@ -780,6 +776,7 @@ and `u-count` is the number of characters in the string.
     .str"        ( c-addr "text" --  )      copy string into buffer
     s0"          ( "text" -- c-addr len )   Compiles a 0-terminated string and gives back its address and length when executed
     .(           ( "text) --  )             Mecrisp's ." is working only in compile mode
+
 
 Raw Blocks
 ==========
