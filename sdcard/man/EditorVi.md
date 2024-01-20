@@ -1,3 +1,5 @@
+![](img/Mecrisp-Cube-vi-header2.jpg)
+
 Intro
 =====
 
@@ -97,6 +99,9 @@ Emacs, Vim, Atom, Visual Studio Code.
 Visual Studio Code with
 [Forth](https://marketplace.visualstudio.com/items?itemName=fttx.language-forth)
 extension:
+
+![](img/VSCode-forth.png)
+
 
 
 
