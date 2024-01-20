@@ -395,25 +395,37 @@ unused          ( -- u )        Displays memory depending on compile mode (Ram o
 
 Subtle differences to ANS, special cpu-specific extensions. Fetch-Modify-Store operations like +! or bic! are NOT ATOMIC.
 ```
-move            ( c-1 c-2 u -- )    Moves u Bytes in Memory
-fill            ( c- u c ) 	    Fill u Bytes of Memory with value c
-2constant name  ( ud|d -- ) 	    Makes a double constant.
-constant name   ( u|n -- )          Makes a single constant. i.e. “$1024 constant one-kb”
-2variable name  ( ud|d -- )         Makes an initialized double variable
-variable name   ( n|n -- )          Makes an initialized single variable. i.e. “0 variable one-kb”
-nvariable name  ( n1*u|n n1 -- )    Makes an initialized variable with specified size of n1 words Maximum is 15 words
-buffer: name    ( u -- )            Creates a buffer in RAM u bytes in length
-2@              ( a- -- ud|d )      Fetches double number from memory
-2!              ( ud|d a- -- )      Stores double number in memory
-@               ( a- -- u|n )       Fetches single number from memory
-!               ( u|n a- -- )       Stores single number in memory
-+!              ( u|n a- -- )       Plus Store, use to increment a variable, register etc
-h@              ( c- -- c )         Fetches halfword from memory
-h!              ( c c- -- )         Stores halfword in memory
-h+!             ( u|n a- -- )       Add to halfword memory location
-c@              ( c- -- c )         Fetches byte from memory
-c!              ( c c- )            Stores byte in memory
-c+!             ( u|n a- -- )       Add to byte memory location
+move            ( c-1 c-2 u -- )         Moves u Bytes in Memory
+fill            ( c- u c ) 	         Fill u Bytes of Memory with value c
+
+constant        ( u|n "name"  -- )       Makes a single constant. i.e. “$1024 constant one-kb”
+  name          ( -- u|n )
+variable        ( u|n "name"  -- )       Makes an initialized single variable. i.e. “0 variable one-kb”
+  name          ( -- a- )
+nvariable       ( n1*u|n n1 "name"  -- ) Makes an initialized variable with specified size of n1 words Maximum is 15 words
+buffer:         ( u "name" -- )          Creates a buffer in RAM u bytes in length
+@               ( a- -- u|n )            Fetches single number from memory
+!               ( u|n a- -- )            Stores single number in memory
++!              ( u|n a- -- )            Plus Store, use to increment a variable, register etc
+
+2constant       ( ud|d "name" -- )       Makes a double constant.
+2variable       ( ud|d "name" -- )       Makes an initialized double variable
+2@              ( a- -- ud|d )           Fetches double number from memory
+2!              ( ud|d a- -- )           Stores double number in memory
+
+h@              ( c- -- c )              Fetches halfword from memory
+h!              ( c c- -- )              Stores halfword in memory
+h+!             ( u|n a- -- )            Add to halfword memory location
+
+c@              ( c- -- c )              Fetches byte from memory
+c!              ( c c- )                 Stores byte in memory
+c+!             ( u|n a- -- )            Add to byte memory location
+```
+
+ANS (see [ansification.fs](/sdcard/fsr/ansification.fs)). Default is Mecrisp style.
+```
+variable        ( "name" -- )           Makes an uninitialized single variable
+2variable       ( "name" -- )           Makes an uninitialized double variable
 ```
 
 String Formatting
@@ -518,8 +530,8 @@ here            ( -- a-|c- )    Gives current position in Dictionary
 ><,             ( u|n -- )      reverses high and low-halfword, then appends it to dictionary
 h,              ( u|n -- )      appends a halfword to dictionary
 
-compiletoram? 	 ( -- f )        currently compiling into ram?
-compiletoram 	 ( -- )          makes ram the target for compiling
+compiletoram? 	( -- f )        currently compiling into ram?
+compiletoram 	( -- )          makes ram the target for compiling
 compiletoflash  ( -- )          makes flash memory the target for compiling
 forgetram       ( -- )          Forget definitions in ram without a reset
 ```
@@ -556,7 +568,7 @@ flashpageerase  ( a- -- )        Erase one 4 KiB flash page only. Take care: No 
 hflash!         ( u|n a- -- )    Writes halfword to flash
    
 movwmovt,       ( x u -- )       Generate a movw/movt-Sequence to get x into any given Register u. M3/M4 only
-registerliteral,  ( x u -- ) 	   Generate shortest possible sequenceto get x into given low Register u. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
+registerliteral,  ( x u -- ) 	 Generate shortest possible sequenceto get x into given low Register u. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
 12bitencoding   ( x -- x false | bitmask true )     Can x be encoded as 12-bit immediate ?
 ```
 
