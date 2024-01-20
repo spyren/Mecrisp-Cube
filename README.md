@@ -364,9 +364,6 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 * http://mecrisp.sourceforge.net/ Original Mecrisp project, **Matthias Koch**
 * https://mecrisp-stellaris-folkdoc.sourceforge.io/ Mecrisp Stellaris Unofficial UserDoc, **Terry Porter**
-* https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
-* https://forth-ev.de/ Forth-Gesellschaft e.V.
-* https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
 
 ## Documentation
 
@@ -388,6 +385,9 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
 * [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
+* https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
+* https://forth-ev.de/ Forth-Gesellschaft e.V.
+* https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
 
 * https://forth-standard.org/standard/words, Forth 2012 Standard Words
 * https://gforth.org/manual/, GForth Manual
