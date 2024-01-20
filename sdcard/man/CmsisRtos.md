@@ -1,3 +1,11 @@
+<table>
+  <tr>
+    <td><img src="img/CMSIS_Logo_Final.png"  ></td>
+    <td><img src="img/fFreeRTOS.jpg"  ></td>
+  </tr>
+</table> 
+
+
 Why a Preemptive Real Time Operating System?
 ============================================
 
@@ -492,8 +500,9 @@ Functions](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS_
 Thread Management
 -----------------
 
-[Thread
-Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html)
+![](img/threadstatus.png)
+
+[Thread Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__ThreadMgmt.html)
 
 -   osThreadNew default Attributes if attr==NULL: name=\"\", priority=24
     (osPriorityNormal), stack_size=128
@@ -514,8 +523,7 @@ Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS
 Timer Management Functions
 --------------------------
 
-[Timer
-Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__TimerMgmt.html)
+[Timer Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__TimerMgmt.html)
 
 -   osTimerNew
 -   osTimerGetName
@@ -527,8 +535,7 @@ Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS
 Event Flags Management Functions
 --------------------------------
 
-[Event
-Flags](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__EventFlags.html)
+[Event Flags](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__EventFlags.html)
 
 -   osEventFlagsNew
 -   osEventFlagsSet
@@ -540,8 +547,9 @@ Flags](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__Eve
 Mutex Management Functions
 --------------------------
 
-[Mutex
-Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__MutexMgmt.html)
+![](img/mutex.png)
+
+[Mutex Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__MutexMgmt.html)
 
 -   osMutexNew
 -   osMutexAcquire
@@ -551,6 +559,8 @@ Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS
 
 Semaphore Management Functions
 ------------------------------
+
+![](img/semaphore.png)
 
 [Semaphores](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__SemaphoreMgmt.html)
 
@@ -563,8 +573,9 @@ Semaphore Management Functions
 Message Queue Management Functions
 ----------------------------------
 
-[Message
-Queue](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__Message.html)
+![](img/messagequeue.png)
+
+[Message Queue](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__Message.html)
 
 -   osMessageQueueNew
 -   osMessageQueuePut
@@ -578,6 +589,4 @@ Queue](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__Mes
 
 A multi-tasking wordset for Standard Forth, Andrew Haley
 <http://www.complang.tuwien.ac.at/anton/euroforth/ef17/papers/haley-slides.pdf>
-
-\-- [PeterSchmid - 2020-04-07]
 
