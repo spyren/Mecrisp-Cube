@@ -1,7 +1,7 @@
 Mecrisp-Stellaris Core Forth Words
 ==================================
 
-[!](img/felix.webp)
+![](img/felix.webp)
 
 ## Stack-Effect Comments
 
@@ -324,7 +324,7 @@ case of ... endof endcase   (switch) case function
 
 ### Decisions
 
-[!](img/ch4-else.gif)
+![](img/ch4-else.gif)
 
 Exactly ANS.
 ```
@@ -369,7 +369,7 @@ A loop structure in which the words contained within the loop repeat a definite 
 In Forth, this number depends on the starting and ending counts (index and limit) which are 
 placed on the stack prior to the execution of the word DO.
 
-[!](img/ch6-do-loop.gif)
+![](img/ch6-do-loop.gif)
 
 Exactly ANS.
 
