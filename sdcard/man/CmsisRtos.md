@@ -5,7 +5,6 @@
   </tr>
 </table> 
 
-
 Why a Preemptive Real Time Operating System?
 ============================================
 
