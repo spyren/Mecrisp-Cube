@@ -360,83 +360,83 @@ strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
 ls ( "line<EOL>" -- ) list directory contents 
 
 - **pwd**  
-pwd ( \-- ) print name of current/working directory 
+pwd ( -- ) print name of current/working directory 
 
-- **cd** \[DIR\]  
-cd ( "line<EOL\>" \-- ) change the working directory 
+- **cd** [DIR]  
+cd ( "line<EOL>" -- ) change the working directory 
 
-- **cat** \[-n\] \[\> NEWFILE\] \[\>\> FILE\] \[<\< EOF\] FILES\...  
+- **cat** [-n] [> NEWFILE] [>> FILE] [<< EOF] FILES...  
 -n line numbers  
-\> redirect output to NEWFILE  
-\>\> redirect output and append to FILE  
-<\< redirect input till EOF  
-cat ( "line<EOL\>" \-- ) concatenate files and print on the console
+> redirect output to NEWFILE  
+>> redirect output and append to FILE  
+<< redirect input till EOF  
+cat ( "line<EOL>" -- ) concatenate files and print on the console
 
-- **mkdir** \[DIR\]\...  
-mkdir ( "line<EOL\>" \-- ) make directories
+- **mkdir** [DIR]...  
+mkdir ( "line<EOL>" -- ) make directories
 
-- **rm** FILE\...  
-rm ( "line<EOL\>" \-- ) remove files or directories
+- **rm** FILE...  
+rm ( "line<EOL>" -- ) remove files or directories
 
 - **mv** SOURCE DEST  
-mv ( "line<EOL\>" \-- ) move (rename) files
+mv ( "line<EOL>" -- ) move (rename) files
 
 - **cp** SOURCE DEST  
-cp ( "line<EOL\>" \-- ) copy files 
+cp ( "line<EOL>" -- ) copy files 
 
-- **chmod** \[-a\] \[+l\] \[=1\] FILE\...  
+- **chmod** [-a] [+l] [=1] FILE...  
 -rwa selected file mode bits removed  
 +rwa selected file mode bits added  
 =rwa selected file mode bits  
-chmod ( "line<EOL\>" \-- ) change file mode bits
+chmod ( "line<EOL>" -- ) change file mode bits
 
-- **touch** [-c] FILE\...  
+- **touch** [-c] FILE...  
 -c do not create any files  
 A FILE argument that does not exist is created empty.  
-touch ( "line<EOL\>" \-- ) change file timestamps 
+touch ( "line<EOL>" -- ) change file timestamps 
 
-- **df** \[VOLUME\]  
-df ( "line<EOL\>" \-- ) report file system disk space usage (1 KiB
+- **df** [VOLUME]  
+df ( "line<EOL>" -- ) report file system disk space usage (1 KiB
 blocks) 
 
-- **du** [-h] \[FILE\]  
+- **du** [-h] [FILE]  
 -h print sizes in powers of 1024 (e.g., 1023 MiB)  
-du ( "line<EOL\>" \-- ) estimate file space usage 
+du ( "line<EOL>" -- ) estimate file space usage 
 
-- **vol** \[-d NUMBER\] \[-n NAME\]  
+- **vol** [-d NUMBER] [-n NAME]  
 -d drive number  
 -n change drive name to NAME  
-vol ( "line<EOL\>" \-- ) get and set volume label 
+vol ( "line<EOL>" -- ) get and set volume label 
 
-- **mount** \[VOLUME\]  
-mount ( \-- ) mount default drive
+- **mount** [VOLUME]  
+mount ( -- ) mount default drive
 
-- **umount** \[VOLUME\]  
-mount ( \-- ) unmount default drive 
+- **umount** [VOLUME]  
+mount ( -- ) unmount default drive 
 
-- **vi** \[-R\] \[-h\] \[-c \<COLUMNS\>\] \[-r \<ROWS\>\] \[FILE\]  
+- **vi** [-R] [-h] [-c <COLUMNS>] [-r <ROWS>] [FILE]  
 -h show features   
 -R Read-only mode. You can still edit the buffer, but will be prevented from overwriting a file.  
 -e erase the text buffer  
--c <COLUMNS\> screen columns, range 40..128 default 80  
--r <ROWS\> screen rows, range 16..30 default 24  
-vi ( "line<EOL\>" \-- ) a (Forth) programmer's text editor 
+-c <COLUMNS> screen columns, range 40..128 default 80  
+-r <ROWS> screen rows, range 16..30 default 24  
+vi ( "line<EOL>" -- ) a (Forth) programmer's text editor 
 
-- **split** \[-l NUMBER\] FILE  
+- **split** [-l NUMBER] FILE  
 -l NUMBER put NUMBER lines/records per output fileline numbers (default 1000 lines)  
-suffix length is only 1, generated file names are like this: xa, xb, xc, \...  
-split ( "line\<EOL\>" \-- ) split a file into pieces
+suffix length is only 1, generated file names are like this: xa, xb, xc, ...  
+split ( "line<EOL>" -- ) split a file into pieces
 
-- **wc** FILE\...  
-wc ( "line\<EOL\>" \-- ) Word count, print newline, word, and byte counts for each file
+- **wc** FILE...  
+wc ( "line<EOL>" -- ) Word count, print newline, word, and byte counts for each file
 
-- **mkfs**  \[VOLUME\]  
+- **mkfs**  [VOLUME]  
 
 -   less
 -   fdisk
 -   dd
 -   date
--   ps -\> .threads
+-   ps -> .threads
 -   kill
 
 
