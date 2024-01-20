@@ -695,8 +695,8 @@ card.
 
 <table>
   <tr>
-    <td><img src="img/MMC-SD-miniSD-microSD-Color-Numbers-Names.gif"  ></td>
-    <td><img src="img/nucleo-sd-adapter.jpg"  ></td>
+    <td><img src="img/MMC-SD-miniSD-microSD-Color-Numbers-Names.gif"></td>
+    <td><img src="img/nucleo-sd-adapter.jpg"></td>
   </tr>
 </table>
 
