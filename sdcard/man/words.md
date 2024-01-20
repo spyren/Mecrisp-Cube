@@ -71,20 +71,23 @@ Exactly ANS, some logical extension. See also [TerminalIO](TerminalIO.md)
 ```
 Words           Stack Comment   Description
 
-emit?           ( -- f )        Ready to send a character ?
-key?            ( -- f )        Checks if a key is waiting
-key             ( -- c )        Waits for and fetches the pressed key
 emit            ( c -- )        Emits a character
-hook-emit?      ( -- a- )       Hooks for redirecting terminal IO on the fly
-hook-key?       ( -- a- )
+emit?           ( -- f )        Ready to send a character
+key             ( -- c )        Waits for and fetches the pressed key
+key?            ( -- f )        Checks if a key is waiting
+
+hook-emit       ( -- a- )       Hooks for redirecting terminal IO on the fly
+hook-emit?      ( -- a- )       
 hook-key        ( -- a- )
-hook-emit       ( -- a- )
-serial-emit?    ( -- f )        Serial interface terminal routines as default communications
-serial-key?     ( -- f ) 
-serial-key      ( -- c )        Waits for and fetches the pressed key
-serial-emit     ( c -- )        Emits a character
-hook-pause      ( -- a- )       Hook for a multitasker
-pause           ( -- ) 	    Task switch, none for default
+hook-key?       ( -- a- )
+
+serial-emit     ( c -- )        Emits a character to the serial tx buffer
+serial-emit?    ( -- f )        Ready to send a characters to the serial tx buffer
+serial-key      ( -- c )        Waits for and fetches character drom the serial rx buffer
+serial-key?     ( -- f )        Checks if a character is in the serial rx buffer
+
+hook-pause      ( -- a- )       Hook for a multitasker, default 1 osDelay
+pause           ( -- ) 	    	Task switch, use hook-pause
 ```
 
 ### Character Manipulation
@@ -228,6 +231,12 @@ dnegate         ( d1 -- d2 )            Negate
 d-              ( ud1|d1 ud2|d2 -- ud3|d3 )     Subtraction
 ```
 
+Floating Point Math
+-------------------
+
+See [FPU](fpu.md)
+
+
 Decision Making
 ---------------
 
@@ -304,7 +313,9 @@ do ... +loop                Finite loop incrementing by X
 begin ... until             Indefinite loop terminating when is ‘true’
 begin ... while ... repeat  Indefinite loop terminating when is ‘false’
 begin ... again             Infinite loop
-if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’ and words following ELSE if it is ‘false’. THEN marks the point at which the paths merge.
+if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’
+                            and words following ELSE if it is ‘false’.
+                            THEN marks the point at which the paths merge.
 if ... then                 Like the two-branch conditional, but with only a ‘true’ clause.
 case of ... endof endcase   (switch) case function
 ```
@@ -370,6 +381,17 @@ leave           ( -- )          Leaves current innermost loop promptly, (R: old-
 ?do             ( n1 n2 -- )    Begins a loop if limit n1 and index n2 are not equal, (R: unchanged | -- old-limit old-index ) 
 ```
 
+Syntax
+```forth
+limit index do
+  ...
+loop
+
+limit index do
+  ...
+increment +loop
+```
+
 ### Indefinite Loops
 
 A loop structure in which the words contained within the loop continue to repeat until some truth condition changes state.
@@ -379,6 +401,23 @@ while           ( f -- )        Check a flag in the middle of a loop
 until           ( f -- )        begin ... flag until loops as long flag is true
 again           ( -- )          begin ... again is an endless loop
 begin           ( -- ) 	 
+```
+
+Syntax
+```forth
+begin
+  ...
+again
+
+begin
+  ...
+flag until
+
+begin
+  ...
+flag while
+  ...
+repeat
 ```
 
 Memory
