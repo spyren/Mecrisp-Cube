@@ -353,11 +353,11 @@ strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
 
 ### Commands
 
-**ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
-: -a show hidden files  
-: -l use a long listing format  
-: -1 list one file per line  
-: ls ( "line<EOL\>" \-- ) list directory contents 
+- **ls** [-a] [-l] [-1] [FILE]  
+-a show hidden files  
+-l use a long listing format  
+-1 list one file per line  
+ls ( "line<EOL>" -- ) list directory contents 
 
 - **pwd**  
 pwd ( \-- ) print name of current/working directory 
