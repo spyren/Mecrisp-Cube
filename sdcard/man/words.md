@@ -91,9 +91,9 @@ pause           ( -- ) 	    Task switch, none for default
 
 How to convert numbers to characters and convert characters to numbers.
 ```
-[char] *        ( -- c )       Compiles code of following char when executed 
-char *          ( -- c )       Gives code of following char 
-emit            ( c -- )       Emits a character
+char            ( "name" -- c ) Skip leading space delimiters. Parse name delimited by a space. Put the value of its first character onto the stack 
+[char]          ( "name" -- c ) like char but also in compile mode  
+emit            ( c -- )        Emits a character
 ```
 
 Stack Jugglers
@@ -146,10 +146,10 @@ They perform the same for double numbers
 ### Stack pointers
 
 ```
-sp@ 	        ( -- a-addr )   Fetch data stack pointer
-sp! 	        ( a-addr -- ) 	Store data stack pointer
-rp@ 	        ( -- a-addr ) 	Fetch return stack pointer
-rp! 	        ( a-addr -- ) 	Store return stack pointer
+sp@             ( S:... -- a- )  Fetch data stack pointer
+sp!             ( a- -- S:... )  Store data stack pointer
+rp@             ( -- a- )        Fetch return stack pointer
+rp!             ( a- -- )        Store return stack pointer
 ```
 
 Logic
@@ -331,28 +331,29 @@ String Formatting
 
 Exactly ANS, some logical extensions.
 ```
-type            ( c- u -- )         Prints a string.
-s" Hello"       ( -- c- u )         Compiles a string and gives back its address and length u when executed
-." Hello"       ( -- ) 	            Compiles a string and prints it when executed.
-( Comment ) 	                    Ignore Comment 	 
-\ Comment                           Comment to end of line 	 
-cr              ( -- )              Emits line feed 	 
-bl              ( -- 32 )           ASCII for Space 	 
-space           ( -- )              Emits space 	 
-spaces          ( n -- )            Emits n spaces if n is positive
+type            ( c- u -- )           Prints a string.
+s"              ( "<quote>"-- c- u )  Compiles a string and gives back its address and length u when executed
+."              ( "ccc<quote>" -- )   Compiles a string and prints it when executed.
+.(              ( "ccc<paren>" -- )   Parse and display ccc delimited by )
+(               ( "ccc<paren>" -- )   Ignore Comment 	 
+\               ( "ccc<eol>" -- )     Comment to end of line 	 
+cr              ( -- )                Emits line feed 	 
+bl              ( -- c )              ASCII (32) for Space 	 
+space           ( -- )                Emits space 	 
+spaces          ( n -- )              Emits n spaces if n is positive
 compare         ( c-1 u-1 c-2 u-2 -- f )    Compares two strings
-accept          ( c- u1 -- u2 )     Read input into a string.
+accept          ( c- u1 -- u2 )       Read input into a string.
 ```
 
 ### Counted String Routines
 
 Exactly ANS, some logical extensions.
 ```
-    ctype           ( cstr-addr -- )                Prints a counted string.
-    c” Hello”       ( -- cstr-addr )                Compiles a counted string and gives back its address when executed.
-    cexpect         ( cstr-addr maxlength -- )      Read input into a counted string.
-    count           ( cstr-addr -- c-addr length ) 	Convert counted string into addr-length string
-    skipstring      ( cstr-addr -- a-addr )         Increases the pointer to the aligned end of the string.
+ctype           ( c- -- )             Prints a counted string.
+c"              ( "ccc<quote>" -- c- ) Compiles a counted string and gives back its address when executed.
+cexpect         ( c- n -- )           read input into a counted string, n max length.
+count           ( c- -- c- u ) 	      Convert counted string into addr-length string
+skipstring      ( c- -- a- )          Increases the pointer to the aligned end of the string.
 ```
 
 ### Pictured Numerical Output
@@ -360,35 +361,35 @@ Exactly ANS, some logical extensions.
 #### Pictured Numerical output
 
 ```
-    .digit 	        ( u -- char )               Converts a digit to a char
-    digit           ( char -- u true | false )  Converts a char to a digit
-    [char] *        ( -- char )                 Compiles code of following char when executed
-    char *          ( -- char )                 gives code of following char
-    hold            ( char -- )                 Adds character to pictured number output buffer from the front.
-    hold<           ( char -- )                 Adds character to pictured number output buffer from behind
-    sign            ( n -- )                    Add a minus sign to pictured number output buffer, if n is negative
-    #S              ( ud1|d1 -- 0 0 )           Add all remaining digits from the double length number to output buffer
-    f#S             ( n-comma1 -- n-comma2 )    Adds 32 comma-digits to number output
-    #               ( ud1|d1 -- ud2|d2 )        Add one digit from the double length number to output buffer
-    f#              ( n-comma1 -- n-comma2 )    Adds one comma-digit to number output
-    #>              ( ud|d -- c-addr len )      Drops double-length number and finishes pictured numeric output ready for type
-    <#              ( -- )                      Prepare pictured number output buffer
-    u.              ( u -- )                    Print unsigned single number
-    .               ( n -- )                    Print single number
-    ud.             ( ud -- )                   Print unsigned double number
-	d.              ( d -- )                    Print double number
+.digit 	        ( u -- c )                  Converts a digit to a char
+digit           ( c -- u f )                Converts a char to a digit
+char            ( "name" -- c )             Skip leading space delimiters. Parse name delimited by a space. Put the value of its first character onto the stack 
+[char]          ( "name" -- c )             like char but compiles
+hold            ( c -- )                    Adds character to pictured number output buffer from the front.
+hold<           ( c -- )                    Adds character to pictured number output buffer from behind
+sign            ( n -- )                    Add a minus sign to pictured number output buffer, if n is negative
+#S              ( ud1|d1 -- 0 0 )           Add all remaining digits from the double length number to output buffer
+f#S             ( n-comma1 -- n-comma2 )    Adds 32 comma-digits to number output
+#               ( ud1|d1 -- ud2|d2 )        Add one digit from the double length number to output buffer
+f#              ( n-comma1 -- n-comma2 )    Adds one comma-digit to number output
+#>              ( ud|d -- c- n )            Drops double-length number and finishes pictured numeric output ready for type
+<#              ( -- )                      Prepare pictured number output buffer
+u.              ( u -- )                    Print unsigned single number
+.               ( n -- )                    Print single number
+ud.             ( ud -- )                   Print unsigned double number
+d.              ( d -- )                    Print double number
 ```
 
 Deep Insights
 -------------
 
 ```
-    words           ( -- )              Prints list of defined words and properties
-    list            ( -- )              Prints all defined words. From; dissasembler-mx.txt
-    .s              ( many -- many )    Prints stack contents, signed
-    u.s             ( many -- many )    Prints stack contents, unsigned
-    h.s             ( many -- many )    Prints stack contents, unsigned, hex
-    hex.            ( u -- )            Prints 32 bit unsigned in hex base, needs emit only. This is independent of number subsystem.
+words           ( -- )        Prints list of defined words and properties
+list            ( -- )        Prints all defined words. From; dissasembler-mx.txt
+.s              ( -- )        Prints stack contents, signed
+u.s             ( -- )        Prints stack contents, unsigned
+h.s             ( -- )        Prints stack contents, unsigned, hex
+hex.            ( u -- )      Prints 32 bit unsigned in hex base, needs emit only. This is independent of number subsystem.
 ```
 
 User Input and Interpretation
@@ -396,18 +397,18 @@ User Input and Interpretation
 
 Exactly ANS, some logical extensions.
 ```
-    query           ( -- )                  Fetches user input to input buffer
-    tib             ( -- cstr-addr )        Input buffer
-    current-source  ( -- addr )             Double-Variable which contains source
-    tsource         ( c-addr len -- )       Change source
-    source          ( -- c-addr len )       Current source
-    >in             ( -- addr )             Variable with current offset into source
-    token           ( -- c-addr len )       Cuts one token out of input buffer
-    parse           ( char -- c-addr len )  Cuts anything delimited by char out of input buffer
-    evaluate        ( any addr len -- any ) Interpret given string
-    interpret       ( any -- any )          Execute, compile, fold, optimize…
-    quit            ( many -- ) (R: many -- ) Resets Stacks
-    hook-quit       ( -- a-addr )           Hook for changing the inner quit loop
+query           ( -- )                     Fetches user input to input buffer
+tib             ( -- c- )                  Input buffer
+current-source  ( -- a- )                  Double-Variable which contains source
+tsource         ( c- n -- )                Change source
+source          ( -- c- u )                Current source
+>in             ( -- a- )                  Variable with current offset into source
+token           ( -- c- u )                Cuts one token out of input buffer
+parse           ( c "ccc<char>" -- c- u )  Cuts anything delimited by char out of input buffer
+evaluate        ( i*x c- u -- j*x  )       Interpret given string
+interpret       ( i*x -- j*x )             Execute, compile, fold, optimize…
+quit            ( i*x -- ) (R: j*x -- )    Resets Stacks
+hook-quit       ( -- a- )                  Hook for changing the inner quit loop
 ```
 
 Dictionary Expansion
@@ -415,54 +416,54 @@ Dictionary Expansion
 
 Exactly ANS, some logical extension.
 ```
-    align           ( -- )                  Aligns dictionary pointer
-    aligned         ( c-addr -- a-addr )    Advances to next aligned address
-    cell+           ( x -- x+4 )            Add size of one cell
-    cells           ( n -- 4*n )            Calculate size of n cells
-    allot           ( n -- )                tries to advance Dictionary Pointer by n bytes, aborts, if not enough space available
-    here            ( -- a-addr|c-addr )    Gives current position in Dictionary
-    ,               ( u|n -- )              appends a single number to dictionary
-    ><,             ( u|n -- )              reverses high and low-halfword, then appends it to dictionary
-    h,              ( u|n -- )              appends a halfword to dictionary
+align           ( -- )          Aligns dictionary pointer
+aligned         ( c- -- a- )    Advances to next aligned address
+cell+           ( a-1 -- a-2 )  Add size of one cell
+cells           ( n1 -- n2 )    Calculate size of n cells
+allot           ( n -- )        tries to advance Dictionary Pointer by n bytes, aborts, if not enough space available
+here            ( -- a-|c- )    Gives current position in Dictionary
+,               ( u|n -- )      appends a single number to dictionary
+><,             ( u|n -- )      reverses high and low-halfword, then appends it to dictionary
+h,              ( u|n -- )      appends a halfword to dictionary
 
-    compiletoram? 	( -- ? )    currently compiling into ram ?
-    compiletoram 	( -- )      makes ram the target for compiling
-    compiletoflash 	( -- )      makes flash memory the target for compiling
-    forgetram       ( -- )      Forget definitions in ram without a reset
+compiletoram? 	( -- f )        currently compiling into ram?
+compiletoram 	( -- )          makes ram the target for compiling
+compiletoflash 	( -- )          makes flash memory the target for compiling
+forgetram       ( -- )          Forget definitions in ram without a reset
 ```
 
 Speciality!
 -----------
 
 ```
-    string,         ( c-addr len -- )   Inserts a string of maximum 255 characters without runtime
-    literal,        ( u|n -- )          Compiles a literal with runtime
-    inline,         ( a-addr -- )       Inlines the choosen subroutine
-    call,           ( a-addr -- )       Compiles a call to a subroutine
-    ret,            ( -- )              compiles a ret opcode
-    flashvar-here   ( -- a-addr )       Gives current RAM management pointer
-    dictionarystart ( -- a-addr )       Current entry point for dictionary search
-    dictionarynext
+string,         ( c- u -- )     Inserts a string of maximum 255 characters without runtime
+literal,        ( u|n -- )      Compiles a literal with runtime
+inline,         ( a- -- )       Inlines the choosen subroutine
+call,           ( a- -- )       Compiles a call to a subroutine
+ret,            ( -- )          compiles a ret opcode
+flashvar-here   ( -- a- )       Gives current RAM management pointer
+dictionarystart ( -- a- )       Current entry point for dictionary search
+dictionarynext
 
-    jump,           ( Hole-for-Opcode Destination )         Writes an unconditional Jump to a-addr-Destination with the given Bitmask as Opcode into the halfword sized h-addr-Hole
-    cjump, 	        ( Hole-for-Opcode Destination Bitmask ) Writes a conditional Jump to a-addr-Destination with the given Bitmask as Opcode into the halfword sized h-addr-Hole
+jump,           ( Hole-for-Opcode Destination )         Writes an unconditional Jump to a-addr-Destination with the given Bitmask as Opcode into the halfword sized h-addr-Hole
+cjump, 	        ( Hole-for-Opcode Destination Bitmask ) Writes a conditional Jump to a-addr-Destination with the given Bitmask as Opcode into the halfword sized h-addr-Hole
 ```
 
 Special Words Depending on MCU Capabilities
 -------------------------------------------
 
 ```
-    c,              ( char -- )         Appends a byte to dictionary. NOT AVAILABLE ON ALL MCU’S. Check with ‘ c, or just look in ‘words’.
-    halign          ( -- ) 	            Makes Dictionary Pointer even, if uneven.
+c,              ( c -- )         Appends a byte to dictionary. NOT AVAILABLE ON ALL MCU’S. Check with ‘ c, or just look in ‘words’.
+halign          ( -- ) 	         Makes Dictionary Pointer even, if uneven.
 
-    eraseflash      ( -- )              Erases everything after — Flash Dictionary — Clears Ram, Restarts Forth. Does not erase Mecrisp-Stellaris
-    eraseflashfrom  ( a-addr – )        Starts erasing at this address. Clears Ram. Restarts Forth.
-    flashpageerase  ( a-addr – )        Erase one 1k flash page only. Take care: No Reset, no dictionary reinitialisation.
-    hflash!         ( u|n a-addr – )    Writes halfword to flash
+eraseflash      ( -- )           Erases everything after — Flash Dictionary — Clears Ram, Restarts Forth. Does not erase Mecrisp-Stellaris
+eraseflashfrom  ( a- -- )        Starts erasing at this address. Clears Ram. Restarts Forth.
+flashpageerase  ( a- -- )        Erase one 4 KiB flash page only. Take care: No Reset, no dictionary reinitialisation.
+hflash!         ( u|n a- -- )    Writes halfword to flash
    
-    movwmovt,       ( x Register -- )   Generate a movw/movt-Sequence to get x into any given Register. M3/M4 only
-    registerliteral,    ( x Register -- ) 	Generate shortest possible sequenceto get x into given low Register. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
-    12bitencoding   ( x -- x false | bitmask true )     Can x be encoded as 12-bit immediate ?
+movwmovt,       ( x u -- )       Generate a movw/movt-Sequence to get x into any given Register u. M3/M4 only
+registerliteral,  ( x u -- ) 	 Generate shortest possible sequenceto get x into given low Register u. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
+12bitencoding   ( x -- x false | bitmask true )     Can x be encoded as 12-bit immediate ?
 ```
 
 Flags and Inventory
@@ -470,13 +471,14 @@ Flags and Inventory
 
 Speciality!
 ```
-    smudge          ( -- )          Makes current definition visible, burns collected flags to flash and takes care of proper ending
-    inline          ( -- )          Takes the code of a word, and puts it in place of a call to this word
-    immediate       ( -- )          Will not compile this word into the dictionary but execute the word immediately
-    compileonly     ( -- )          Makes current definition compileonly
-    setflags        ( char -- )     Sets Flags with a mask. This isn’t immediate,
-    (create) name   ( -- )          Names a location; space may be allocated at this location, or it can be set to contain a string or other initialized value. Instance behavior returns the address of the beginning of this space. Use FIG-style <builds .. does> !
-    find            ( c-addr len -- a-addr flags) 	Searches for a String in Dictionary. Gives back flags, which are different to ANS!
+smudge          ( -- )          Makes current definition visible, burns collected flags to flash and takes care of proper ending
+inline          ( -- )          Takes the code of a word, and puts it in place of a call to this word
+immediate       ( -- )          Will not compile this word into the dictionary but execute the word immediately
+compileonly     ( -- )          Makes current definition compileonly
+setflags        ( c -- )        Sets Flags with a mask. This isn’t immediate,
+(create) name   ( -- )          Names a location; space may be allocated at this location, or it can be set to contain a string or other initialized value.
+                                Instance behavior returns the address of the beginning of this space. Use FIG-style <builds .. does> !
+find            ( c- u -- a- f ) Searches for a String in Dictionary. Gives back flags, which are different to ANS!
 ```
 
 Folding
@@ -484,14 +486,14 @@ Folding
 Speciality!
 
 ```
-    0-foldable      ( -- )          Current word becomes foldable with 0 constants 	constants variables [‘] [char]
-    1-foldable      ( -- )          1 constant      ?dup drop negate
-    2-foldable      ( -- )          2 constants     + - * swap nip
-    3-foldable      ( -- )          3 constants     rot 
-    4-foldable      ( -- )          4 constants     d+ d- 2swap
-    5-foldable      ( -- )          5 constants 	 
-    6-foldable      ( -- )          6 constants 	 
-    7-foldable      ( -- )          7 constants 	 
+0-foldable      ( -- )          Current word becomes foldable with 0 constants 	constants variables [‘] [char]
+1-foldable      ( -- )          1 constant      ?dup drop negate
+2-foldable      ( -- )          2 constants     + - * swap nip
+3-foldable      ( -- )          3 constants     rot 
+4-foldable      ( -- )          4 constants     d+ d- 2swap
+5-foldable      ( -- )          5 constants 	 
+6-foldable      ( -- )          6 constants 	 
+7-foldable      ( -- )          7 constants 	 
 ```
 
 Compiler Essentials
@@ -501,19 +503,19 @@ The true POWER of Forth resides in the Words listed in this table.
 Subtle differences to ANS.
 
 ```
-    execute         ( a-addr -- )   Calls subroutine
-    recurse         ( -- )          Lets the current definition call itself
-    ‘ name          ( -- a-addr )   Tries to find name in dictionary gives back executable address
-    [‘] name        ( -- a-addr)    Tick that compiles the executable address of found word as literal
-    postpone        ( -- )          See Glossary
-    does>           ( -- )          executes: ( --a-addr ) Gives address to where you have stored data.
-    <builds         ( -- )          Makes Dictionary header and reserves space for special call.
-    create name     ( -- )          Create a definition with default action which cannot be changed later. Use <builds does> instead. Equivalent to : create <builds does> ;
-    state           ( -- a-addr )   Address of state variable
-    ]               ( -- ) 	        Switch to compile state
-    [               ( -- )          Switch to execute state
-    ;               ( -- )          Finishes new definition
-    : name          ( -- )          Opens new definition
+execute         ( a- -- )                 Calls subroutine
+recurse         ( -- )                    Lets the current definition call itself
+'               ( "<spaces>name" -- xt )  Tries to find name in dictionary gives back executable address
+[']             ( "<spaces>name" -- xt)   Tick that compiles the executable address of found word as literal
+postpone        ( -- )                    See Glossary
+does>           ( -- )                    executes: ( --a-addr ) Gives address to where you have stored data.
+<builds         ( -- )                    Makes Dictionary header and reserves space for special call.
+create          ( "<spaces>name" -- a- )  Create a definition with default action which cannot be changed later. Use <builds does> instead. Equivalent to : create <builds does> ;
+state           ( -- a- )                 Address of state variable
+]               ( -- ) 	                  Switch to compile state
+[               ( -- )                    Switch to execute state
+:               ( "<spaces>name" --  )    Opens new definition
+;               ( -- )                    Finishes new definition
 ```
 
 Control Structures
@@ -524,47 +526,52 @@ Internally, they have complicated compile-time stack effects.
 ### Summary
 
 ```
-    do ... loop                 Finite loop incrementing by 1
-    do ... +loop                Finite loop incrementing by X
-    begin ... until             Indefinite loop terminating when is ‘true’
-    begin ... while ... repeat  Indefinite loop terminating when is ‘false’
-    begin ... again             Infinite loop
-    if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’ and words following ELSE if it is ‘false’. THEN marks the point at which the paths merge.
-    if ... then                 Like the two-branch conditional, but with only a ‘true’ clause.
+do ... loop                 Finite loop incrementing by 1
+do ... +loop                Finite loop incrementing by X
+begin ... until             Indefinite loop terminating when is ‘true’
+begin ... while ... repeat  Indefinite loop terminating when is ‘false’
+begin ... again             Infinite loop
+if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’ and words following ELSE if it is ‘false’. THEN marks the point at which the paths merge.
+if ... then                 Like the two-branch conditional, but with only a ‘true’ clause.
 ```
 
 ### Decisions
 
 Exactly ANS.
 ```
-    if              ( flag -- )     structure.
-    else            ( -- )          flag if ... [else ...] then
-    then            ( -- )          This is the common flag if ... [else ...] then structure.
+if              ( f -- )          structure.
+else            ( -- )            flag if ... [else ...] then
+then            ( -- )            This is the common flag if ... [else ...] then structure.
 
-“IF that’s the case, do this, ELSE do that ... and THEN continue with ...” 
+case            ( -- )            Begins case structure
+of              ( x1 x2 -- | x1 ) If the two values on the stack are not equal, discard the top value and continue execution
+                                  at the location specified by the consumer of of-sys, e.g., following the next ENDOF.
+                                  Otherwise, discard both values and continue execution in line. 
+?of             ( f -- )          Flag-of, for custom comparisions
+endof           ( -- )            End of one possibility
+endcase         ( x -- )          Ends case structure, discards x
+```
 
-    flag if 
-        ... 
-    then
+"IF that’s the case, do this, ELSE do that ... and THEN continue with ..." 
+```forth
+f if 
+  ... 
+then
 
-    flag if 
-        ...
-    else 
-        ... 
-    then
+f if 
+  ...
+else 
+  ... 
+then
+```
 
-    case            ( n --n )       Begins case structure
-    of              ( m -- )        Compares m with n, choose this if n=m
-    ?of             ( flag -- )     Flag-of, for custom comparisions
-    endof           ( -- )          End of one possibility
-    endcase         ( n -- )        Ends case structure, discards n
-
-    n case
-        m1    of  ... endof
-        m2    of  ... endof
-        flag  ?of ... endof
-        all others
-    endcase
+```forth
+n case
+    m1    of  ... endof
+    m2    of  ... endof
+    flag  ?of ... endof
+    all others
+endcase
 ```
 
 ### Definite Loops
