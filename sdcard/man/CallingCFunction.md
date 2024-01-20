@@ -1,3 +1,5 @@
+![](img/forth-logo.png)
+
 Calling C Functions from Forth and Vice Versa
 =============================================
 
