@@ -1,5 +1,5 @@
-Mecrisp-Stellaris Forth Words
-=============================
+Mecrisp-Stellaris Core Forth Words
+==================================
 
 ## Stack-Effect Comments
 
