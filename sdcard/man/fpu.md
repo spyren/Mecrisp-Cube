@@ -45,10 +45,10 @@ Bare FPU Words (Without C Math Library)
     fflags@ ( -- u )            get the current value of the Floating Point Status/Control register FPSCR
     fflags! ( u -- )            assign the given value to the Floating Point Status/Control register FPSCR
 
-    f0=     ( r -- ? )          flag is true if r is equal to zero
-    f0<     ( r -- ? )          flag is true if r is less than zero
-    f<      ( r1 r2 -- ? )      flag is true if r1 is less than r2
-    f~      ( r1 r2 r3 -- ? )   If r3 is positive, flag is true if the absolute value of (r1 minus r2) is less than r3
+    f0=     ( r -- f )          flag is true if r is equal to zero
+    f0<     ( r -- f )          flag is true if r is less than zero
+    f<      ( r1 r2 -- f )      flag is true if r1 is less than r2
+    f~      ( r1 r2 r3 -- f )   If r3 is positive, flag is true if the absolute value of (r1 minus r2) is less than r3
                                 If r3 is zero, flag is true if the implementation-dependent encoding of r1 and r2 are exactly identical 
                                 (positive and negative zero are unequal if they have distinct encodings).
                                 If r3 is negative, flag is true if the absolute value of (r1 minus r2) is less than the absolute value 
@@ -63,7 +63,7 @@ Bare FPU Words (Without C Math Library)
     e       (  -- r )           r is e, approx. 2.7182818
 
     fnumber (a # -- r u )       convert the specified string by a and # to float r, on success u is 1, otherwise 0
-    >float  (a # -- r ? )       convert the specified string by a and # to float r, on success flag is true
+    >float  (a # -- r f )       convert the specified string by a and # to float r, on success flag is true
 
     f.      ( r --  )           display, with a trailing space, the floating-point number r in fixed-point notation
     fs.     ( r --  )           display, with a trailing space, the floating-point number r in scientific notation
@@ -149,4 +149,3 @@ Mecrisp-Cube has the word `f.` defined as an assembler routine in [fpu.s](https:
 ; 
 ```
 
-\-- [PeterSchmid - 2022-11-22]
