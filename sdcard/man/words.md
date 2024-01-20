@@ -64,6 +64,98 @@ r          Float (single precision
 You can find a more complete list in [Notation](https://gforth.org/manual/Notation.html). 
 
 
+Control Structures
+------------------
+
+Internally, they have complicated compile-time stack effects.
+
+### Summary
+
+```
+do ... loop                 Finite loop incrementing by 1
+do ... +loop                Finite loop incrementing by X
+begin ... until             Indefinite loop terminating when is ‘true’
+begin ... while ... repeat  Indefinite loop terminating when is ‘false’
+begin ... again             Infinite loop
+if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’ and words following ELSE if it is ‘false’. THEN marks the point at which the paths merge.
+if ... then                 Like the two-branch conditional, but with only a ‘true’ clause.
+case of ... endof endcase   (switch) case function
+```
+
+### Decisions
+
+Exactly ANS.
+```
+if              ( f -- )          structure.
+else            ( -- )            flag if ... [else ...] then
+then            ( -- )            This is the common flag if ... [else ...] then structure.
+
+case            ( -- )            Begins case structure
+of              ( x1 x2 -- | x1 ) If the two values on the stack are not equal, discard the top value and continue execution
+                                  at the location specified by the consumer of of-sys, e.g., following the next ENDOF.
+                                  Otherwise, discard both values and continue execution in line. 
+?of             ( f -- )          Flag-of, for custom comparisions
+endof           ( -- )            End of one possibility
+endcase         ( x -- )          Ends case structure, discards x
+```
+
+"IF that’s the case, do this, ELSE do that ... and THEN continue with ..." 
+```forth
+f if 
+  ... 
+then
+
+f if 
+  ...
+else 
+  ... 
+then
+```
+
+```forth
+n case
+    m1    of  ... endof
+    m2    of  ... endof
+    flag  ?of ... endof
+    all others
+endcase
+```
+
+### Definite Loops
+
+A loop structure in which the words contained within the loop repeat a definite number of times. 
+In Forth, this number depends on the starting and ending counts (index and limit) which are 
+placed on the stack prior to the execution of the word DO.
+
+Exactly ANS.
+
+```
+i               ( -- u|n )      Gives innermost loop index
+j               ( -- u|n )      Gives second loop index
+k               ( -- u|n )      Gives third loop index
+exit            ( -- )          Returns from current definition. Compiles a ret opcode.
+
+do              ( n1 n2 -- )    limit n1, index n2, return stack (R: -- old-limit old-index ) 
+loop            ( -- )          Increments current loop index register by one and checks whether to continue or not, (R: unchanged | old-limit old-index -- ) 
++loop           ( u|n -- )      If you want the index to go up by some number other than one each time around, (R: unchanged | old-limit old-index -- )
+unloop          ( -- )          Drops innermost loop structure, pops back old loop structures to loop registers, (R: old-limit old-index -- )
+leave           ( -- )          Leaves current innermost loop promptly, (R: old-limit old-index -- )   
+?do             ( n1 n2 -- )    Begins a loop if limit n1 and index n2 are not equal, (R: unchanged | -- old-limit old-index ) 
+```
+
+### Indefinite Loops
+
+A loop structure in which the words contained within the loop continue to repeat until some truth condition changes state.
+```
+repeat          ( -- )          Finish of a middle-flag-checking loop.
+while           ( f -- )        Check a flag in the middle of a loop
+until           ( f -- )        begin ... flag until loops as long flag is true
+again           ( -- )          begin ... again is an endless loop
+begin           ( -- ) 	 
+```
+
+
+
 Terminal-IO
 -----------
 
@@ -462,7 +554,7 @@ flashpageerase  ( a- -- )        Erase one 4 KiB flash page only. Take care: No 
 hflash!         ( u|n a- -- )    Writes halfword to flash
    
 movwmovt,       ( x u -- )       Generate a movw/movt-Sequence to get x into any given Register u. M3/M4 only
-registerliteral,  ( x u -- ) 	 Generate shortest possible sequenceto get x into given low Register u. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
+registerliteral,  ( x u -- ) 	   Generate shortest possible sequenceto get x into given low Register u. On M0: A movs-lsls-adds… sequence M3/M4: movs / movs-mvns / movw / movw-movt
 12bitencoding   ( x -- x false | bitmask true )     Can x be encoded as 12-bit immediate ?
 ```
 
@@ -471,14 +563,12 @@ Flags and Inventory
 
 Speciality!
 ```
-smudge          ( -- )          Makes current definition visible, burns collected flags to flash and takes care of proper ending
-inline          ( -- )          Takes the code of a word, and puts it in place of a call to this word
-immediate       ( -- )          Will not compile this word into the dictionary but execute the word immediately
-compileonly     ( -- )          Makes current definition compileonly
-setflags        ( c -- )        Sets Flags with a mask. This isn’t immediate,
-(create) name   ( -- )          Names a location; space may be allocated at this location, or it can be set to contain a string or other initialized value.
-                                Instance behavior returns the address of the beginning of this space. Use FIG-style <builds .. does> !
-find            ( c- u -- a- f ) Searches for a String in Dictionary. Gives back flags, which are different to ANS!
+smudge          ( -- )                Makes current definition visible, burns collected flags to flash and takes care of proper ending
+inline          ( -- )                Takes the code of a word, and puts it in place of a call to this word
+immediate       ( -- )                Will not compile this word into the dictionary but execute the word immediately
+compileonly     ( -- )                Makes current definition compileonly
+setflags        ( c -- )              Sets Flags with a mask. This isn’t immediate,
+find            ( c- u -- a- f )      Searches for a String in Dictionary. Gives back flags, which are different to ANS!
 ```
 
 Folding
@@ -510,101 +600,13 @@ recurse         ( -- )                    Lets the current definition call itsel
 postpone        ( -- )                    See Glossary
 does>           ( -- )                    executes: ( --a-addr ) Gives address to where you have stored data.
 <builds         ( -- )                    Makes Dictionary header and reserves space for special call.
-create          ( "<spaces>name" -- a- )  Create a definition with default action which cannot be changed later. Use <builds does> instead. Equivalent to : create <builds does> ;
+create          ( "<spaces>name" -- )     Names a location; space may be allocated at this location, or it can be set to contain a string or other initialized value.
+  name          ( -- a- )                 Instance behavior returns the address of the beginning of this space. Use FIG-style <builds .. does> !
 state           ( -- a- )                 Address of state variable
 ]               ( -- ) 	                  Switch to compile state
 [               ( -- )                    Switch to execute state
 :               ( "<spaces>name" --  )    Opens new definition
 ;               ( -- )                    Finishes new definition
-```
-
-Control Structures
-------------------
-
-Internally, they have complicated compile-time stack effects.
-
-### Summary
-
-```
-do ... loop                 Finite loop incrementing by 1
-do ... +loop                Finite loop incrementing by X
-begin ... until             Indefinite loop terminating when is ‘true’
-begin ... while ... repeat  Indefinite loop terminating when is ‘false’
-begin ... again             Infinite loop
-if ... else ... then        Two-branch conditional; performs words following IF it is ‘true’ and words following ELSE if it is ‘false’. THEN marks the point at which the paths merge.
-if ... then                 Like the two-branch conditional, but with only a ‘true’ clause.
-```
-
-### Decisions
-
-Exactly ANS.
-```
-if              ( f -- )          structure.
-else            ( -- )            flag if ... [else ...] then
-then            ( -- )            This is the common flag if ... [else ...] then structure.
-
-case            ( -- )            Begins case structure
-of              ( x1 x2 -- | x1 ) If the two values on the stack are not equal, discard the top value and continue execution
-                                  at the location specified by the consumer of of-sys, e.g., following the next ENDOF.
-                                  Otherwise, discard both values and continue execution in line. 
-?of             ( f -- )          Flag-of, for custom comparisions
-endof           ( -- )            End of one possibility
-endcase         ( x -- )          Ends case structure, discards x
-```
-
-"IF that’s the case, do this, ELSE do that ... and THEN continue with ..." 
-```forth
-f if 
-  ... 
-then
-
-f if 
-  ...
-else 
-  ... 
-then
-```
-
-```forth
-n case
-    m1    of  ... endof
-    m2    of  ... endof
-    flag  ?of ... endof
-    all others
-endcase
-```
-
-### Definite Loops
-
-A loop structure in which the words contained within the loop repeat a definite number of times. 
-In Forth, this number depends on the starting and ending counts (index and limit) which are 
-placed on the stack prior to the execution of the word DO.
-
-Exactly ANS.
-
-```
-i               ( -- u|n )      Gives innermost loop index
-j               ( -- u|n )      Gives second loop index
-k               ( -- u|n )      Gives third loop index
-exit            ( -- )          Returns from current definition. Compiles a ret opcode.
-
-do              ( n1 n2 -- )    limit n1, index n2, return stack (R: -- old-limit old-index ) 
-loop            ( -- )          Increments current loop index register by one and checks whether to continue or not, (R: unchanged | old-limit old-index -- ) 
-+loop           ( u|n -- )      If you want the index to go up by some number other than one each time around, (R: unchanged | old-limit old-index -- )
-unloop          ( -- )          Drops innermost loop structure, pops back old loop structures to loop registers, (R: old-limit old-index -- )
-leave           ( -- )          Leaves current innermost loop promptly, (R: old-limit old-index -- )   
-?do             ( n1 n2 -- )    Begins a loop if limit n1 and index n2 are not equal, (R: unchanged | -- old-limit old-index ) 
-```
-
-### Indefinite Loops
-
-A loop structure in which the words contained within the loop continue to repeat until some truth condition changes state.
-```
-repeat          ( -- )          Finish of a middle-flag-checking loop.
-while           ( f -- )        Check a flag in the middle of a loop
-until           ( f -- )        begin ... flag until loops as long flag is true
-again           ( -- )          begin ... again is an endless loop
-begin           ( -- ) 	 
 ```
 
 Common Hardware Access
