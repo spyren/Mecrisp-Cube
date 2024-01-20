@@ -23,8 +23,7 @@ supports FAT (12, 16, and 32) and exFAT formatted SD cards.
 
 ## Basic FS Words
 
-[Forth source
-files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-files.html#Forth-source-files).
+[Forth source files](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Forth-source-files.html#Forth-source-files).
 I propose `.fs` extension for Forth source files the same as GForth
 does. But anyway you can use what you want (`.f`, `.4th`, `.fth`, etc).
 <pre>
@@ -95,8 +94,8 @@ See also https://forth-standard.org/standard/tools.
 
 ## Filesystem API
 
-The API is the same as the [FatFs - Generic FAT
-Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html). 
+The API is the same as the 
+[FatFs - Generic FAT Filesystem Module](http://elm-chan.org/fsw/ff/00index_e.html). 
 It is different from the optional File-Access word set proposed in https://forth-standard.org/standard/file.
 <blockquote>
 <pre>
@@ -354,11 +353,11 @@ strlen ( cadr -- cadr len )  \ 0-Terminated String to Forth String
 
 ### Commands
 
-- **ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
--a show hidden files  
--l use a long listing format  
--1 list one file per line  
-ls ( "line<EOL\>" \-- ) list directory contents 
+**ls** \[-a\] \[-l\] \[-1\] \[FILE\]  
+: -a show hidden files  
+: -l use a long listing format  
+: -1 list one file per line  
+: ls ( "line<EOL\>" \-- ) list directory contents 
 
 - **pwd**  
 pwd ( \-- ) print name of current/working directory 
