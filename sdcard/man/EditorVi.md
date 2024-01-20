@@ -102,7 +102,3 @@ extension:
 
 ![](img/VSCode-forth.png)
 
-
-
-
-\-- [PeterSchmid - 2020-08-29]
