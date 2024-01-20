@@ -1,6 +1,8 @@
 Mecrisp-Stellaris Core Forth Words
 ==================================
 
+[!](img/felix.webp)
+
 ## Stack-Effect Comments
 
 From [GForth Manual](https://gforth.org/manual/Stack_002dEffect-Comments-Tutorial.html)
@@ -322,6 +324,8 @@ case of ... endof endcase   (switch) case function
 
 ### Decisions
 
+[!](img/ch4-else.gif)
+
 Exactly ANS.
 ```
 if              ( f -- )          structure.
@@ -364,6 +368,8 @@ endcase
 A loop structure in which the words contained within the loop repeat a definite number of times. 
 In Forth, this number depends on the starting and ending counts (index and limit) which are 
 placed on the stack prior to the execution of the word DO.
+
+[!](img/ch6-do-loop.gif)
 
 Exactly ANS.
 
