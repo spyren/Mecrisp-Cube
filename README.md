@@ -142,10 +142,10 @@ Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Re
 ```
 23 5 / .
 ```
-This looks like this on your terminal:
-```
-23 5 / .[CR] 4  ok.
-```
+This looks like this on your terminal (**bold** is the Forth answer):
+<pre>
+23 5 / .[CR] <b>4  ok.</b>
+</pre>
 The `ok.` is the Forth prompt and apears at the end of the line (Forth does it differently, like most things ;-). 
 If you don't like it, [change it](/sdcard/man/FileSystem.md#shell-prompt). 
 `[CR]` is the Enter-key.
@@ -159,10 +159,10 @@ and execute the the program
 hello 
 ```
 again the terminal output:
-```
-: hello ." World" ;[CR]  ok.
-hello[CR] World ok.
-```
+<pre>
+: hello ." World" ;[CR]  <b>ok.</b>
+hello[CR] <b>World ok.</b>
+</pre>
 The program `hello` ist not persistent, after power cycle or even reset the RAM dictionray is erased. 
 But it is easy to add a word to the Flash dictionray:
 ```
@@ -371,5 +371,5 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/)
 * [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
   
-
+* https://gforth.org/manual/
 
