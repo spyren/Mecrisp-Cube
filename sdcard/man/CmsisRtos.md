@@ -456,6 +456,7 @@ and MicroSdBlocks\#C_String_Helpers
 
 RTOS Support Functions
 ----------------------
+
 ```
 osNewDataStack       ( --   )       Creates an new data stack for a Forth thread.
 xPortGetFreeHeapSize ( -- u )       returns the total amount of heap space that remains
@@ -480,8 +481,7 @@ thTzModule+          ( -- u ) Gets the osThreadAttr_t structure tz_module attrib
 Kernel Management Functions
 ---------------------------
 
-[Kernel Information and
-Control](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__KernelCtrl.html)
+[Kernel Information and Control](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__KernelCtrl.html)
 
 -   osKernelGetTickCount
 -   osKernelGetTickFreq
@@ -491,8 +491,7 @@ Control](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__K
 Generic Wait Functions
 ----------------------
 
-[Generic Wait
-Functions](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__Wait.html)
+[Generic Wait Functions](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__Wait.html)
 
 -   osDelay
 -   osDelayUntil
@@ -523,6 +522,8 @@ Thread Management
 Timer Management Functions
 --------------------------
 
+![](img/Timer.png)
+
 [Timer Management](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__TimerMgmt.html)
 
 -   osTimerNew
@@ -534,6 +535,8 @@ Timer Management Functions
 
 Event Flags Management Functions
 --------------------------------
+
+![](img/simple_signal.png)
 
 [Event Flags](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__EventFlags.html)
 
@@ -560,7 +563,7 @@ Mutex Management Functions
 Semaphore Management Functions
 ------------------------------
 
-![](img/semaphore.png)
+![](img/Semaphore.png)
 
 [Semaphores](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS__SemaphoreMgmt.html)
 
