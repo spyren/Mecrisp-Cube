@@ -436,13 +436,13 @@ String Formatting
 Exactly ANS, some logical extensions.
 ```
 type            ( c- u -- )           Prints a string.
-s"              ( "<quote>"-- c- u )  Compiles a string and gives back its address and length u when executed
-."              ( "ccc<quote>" -- )   Compiles a string and prints it when executed.
+s"              ( "ccc<quote>" -- c- u )  Compiles a string ccc and gives back its address c- and length u when executed
+."              ( "ccc<quote>" -- )   Compiles a string ccc and prints it when executed.
 .(              ( "ccc<paren>" -- )   Parse and display ccc delimited by )
-(               ( "ccc<paren>" -- )   Ignore Comment 	 
+(               ( "ccc<paren>" -- )   Ignore comment ccc 
 \               ( "ccc<eol>" -- )     Comment to end of line 	 
 cr              ( -- )                Emits line feed 	 
-bl              ( -- c )              ASCII (32) for Space 	 
+bl              ( -- c )              ASCII (32) for space 	 
 space           ( -- )                Emits space 	 
 spaces          ( n -- )              Emits n spaces if n is positive
 compare         ( c-1 u-1 c-2 u-2 -- f )    Compares two strings
@@ -454,8 +454,8 @@ accept          ( c- u1 -- u2 )       Read input into a string.
 Exactly ANS, some logical extensions.
 ```
 ctype           ( c- -- )             Prints a counted string.
-c"              ( "ccc<quote>" -- c- ) Compiles a counted string and gives back its address when executed.
-cexpect         ( c- n -- )           read input into a counted string, n max length.
+c"              ( "ccc<quote>" -- c- ) Compiles a counted string ccc and gives back its address c- when executed.
+cexpect         ( c- n -- )           read input into a counted string c-, n max length.
 count           ( c- -- c- u ) 	      Convert counted string into addr-length string
 skipstring      ( c- -- a- )          Increases the pointer to the aligned end of the string.
 ```
