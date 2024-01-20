@@ -1,4 +1,9 @@
-![](img/forth-logo.png)
+<table>
+  <tr>
+    <td><img src="img/C_Programming_Language.svg"  ></td>
+    <td><img src="img/forth-logo.png"  ></td>
+  </tr>
+</table> 
 
 Calling C Functions from Forth and Vice Versa
 =============================================
