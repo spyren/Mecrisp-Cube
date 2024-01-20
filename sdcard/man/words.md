@@ -576,48 +576,53 @@ endcase
 
 ### Definite Loops
 
-A loop structure in which the words contained within the loop repeat a definite number of times. In Forth, this number depends on the starting and ending counts (index and limit) which are placed on the stack prior to the execution of the word DO.
+A loop structure in which the words contained within the loop repeat a definite number of times. 
+In Forth, this number depends on the starting and ending counts (index and limit) which are 
+placed on the stack prior to the execution of the word DO.
+
 Exactly ANS.
 
 ```
-    i               ( -- u|n )      Gives innermost loop index
-    j               ( -- u|n )      Gives second loop index
-    k               ( -- u|n )      Gives third loop index
-    exit            ( -- )          Returns from current definition. Compiles a ret opcode.
+i               ( -- u|n )      Gives innermost loop index
+j               ( -- u|n )      Gives second loop index
+k               ( -- u|n )      Gives third loop index
+exit            ( -- )          Returns from current definition. Compiles a ret opcode.
 
-    do              ( Limit Index -- ) (R: -- old-limit old-index )     Begins a loop
-    loop            ( -- ) (R: unchanged | old-limit old-index -- )     Increments current loop index register by one and checks whether to continue or not.
-    +loop           ( u|n -- ) (R: unchanged | old-limit old-index -- ) If you want the index to go up by some number other than one each time around.
-    unloop          (R: old-limit old-index -- ) 	                    Drops innermost loop structure, pops back old loop structures to loop registers
-    leave           ( -- ) (R: old-limit old-index -- )                 Leaves current innermost loop promptly
-    ?do             ( Limit Index -- ) (R: unchanged | -- old-limit old-index )     Begins a loop if limit and index are not equal
+do              ( n1 n2 -- )    limit n1, index n2, return stack (R: -- old-limit old-index ) 
+loop            ( -- )          Increments current loop index register by one and checks whether to continue or not, (R: unchanged | old-limit old-index -- ) 
++loop           ( u|n -- )      If you want the index to go up by some number other than one each time around, (R: unchanged | old-limit old-index -- )
+unloop          ( -- )          Drops innermost loop structure, pops back old loop structures to loop registers, (R: old-limit old-index -- )
+leave           ( -- )          Leaves current innermost loop promptly, (R: old-limit old-index -- )   
+?do             ( n1 n2 -- )    Begins a loop if limit n1 and index n2 are not equal, (R: unchanged | -- old-limit old-index ) 
 ```
 
 ### Indefinite Loops
 
 A loop structure in which the words contained within the loop continue to repeat until some truth condition changes state.
 ```
-    repeat          ( -- )          Finish of a middle-flag-checking loop.
-    while           ( flag -- )     Check a flag in the middle of a loop
-    until           ( flag -- )     begin ... flag until loops as long flag is true
-    again           ( -- )          begin ... again is an endless loop
-    begin           ( -- ) 	 
+repeat          ( -- )          Finish of a middle-flag-checking loop.
+while           ( f -- )        Check a flag in the middle of a loop
+until           ( f -- )        begin ... flag until loops as long flag is true
+again           ( -- )          begin ... again is an endless loop
+begin           ( -- ) 	 
 ```
 
 Common Hardware Access
 ----------------------
 
+For interrupt handling see [Interrupts and Forth](CmsisRtos.md#interrupts-and-forth).
+
 ```
-    reset           ( -- )          Reset on hardware level
-    dint            ( -- )          Disables Interrupts
-    eint            ( -- )          Enables Interrupts
-    eint?           ( -- )          Are Interrupts enabled ?
-    nop             ( -- )          No Operation. Hook for unused handlers !
-    ipsr            ( -- ipsr )     Interrupt Program Status Register
-    unhandled       ( -- )          Message for unhandled interrupts.
-    irq-systick     ( -- a-addr )   Memory locations for IRQ-Hooks
-    irq-fault       ( -- a-addr )   For all faults
-    irq-collection  ( -- a-addr )   Collection of all unhandled interrupts
+reset           ( -- )          Reset on hardware level
+dint            ( -- )          Disables Interrupts, do not use!
+eint            ( -- )          Enables Interrupts
+eint?           ( -- )          Are Interrupts enabled ?
+nop             ( -- )          No Operation. Hook for unused handlers !
+ipsr            ( -- u )        Interrupt Program Status Register
+unhandled       ( -- )          Message for unhandled interrupts.
+irq-systick     ( -- a- )       Memory locations for IRQ-Hooks
+irq-fault       ( -- a- )       For all faults
+irq-collection  ( -- a- )       Collection of all unhandled interrupts
 ```
 
 The original of this document can be found at https://mecrisp-stellaris-folkdoc.sourceforge.io
