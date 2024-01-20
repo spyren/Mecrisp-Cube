@@ -165,4 +165,3 @@ FS_evaluate:
     pop {r4-r7, pc}
 ```
 
-\-- [PeterSchmid - 2020-07-13]
