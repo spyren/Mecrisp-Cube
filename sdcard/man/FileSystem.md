@@ -151,7 +151,7 @@ Change current directory
 path 256 accept[RET] common[RET]<b>  ok.</b>
 path swap 2dup str0term drop f_chdir .[RET]<b> 0 ok.</b>
 pwd[RET]
-<b>:/common ok.</b>
+<b>0:/common ok.</b>
 path dup .str" /fsr" f_chdir .[RET]<b> 0 ok.</b>
 pwd[RET]
 <b>0:/fsr ok.</b>
