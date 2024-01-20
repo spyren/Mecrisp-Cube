@@ -1,36 +1,97 @@
 Mecrisp-Stellaris Forth Words
 =============================
 
+## Stack-Effect Comments
+
+From [GForth Manual](https://gforth.org/manual/Stack_002dEffect-Comments-Tutorial.html)
+
+By convention the comment after the name of a definition describes the stack effect: 
+The part in front of the ‘--’ describes the state of the stack before the execution 
+of the definition, i.e., the parameters that are passed into the colon definition; 
+the part behind the ‘--’ is the state of the stack after the execution of the definition, 
+i.e., the results of the definition. The stack comment only shows the top stack 
+items that the definition accesses and/or changes.
+
+You should put a correct stack effect on every definition, even if it is just ( -- ). 
+You should also add some descriptive comment to more complicated words 
+(I usually do this in the lines following :). 
+If you don’t do this, your code becomes unreadable (because you have to work 
+through every definition before you can understand any).
+
+>  Assignment: The stack effect of swap can be written like this:
+>  x1 x2 -- x2 x1. Describe the stack effect of -, drop, dup, over, rot, nip, and tuck.
+>  Hint: When you are done, you can compare your stack effects to those in this
+>  manual (see Word Index). 
+
+Sometimes programmers put comments at various places in colon definitions 
+that describe the contents of the stack at that place (stack comments); i.e., 
+they are like the first part of a stack-effect comment. E.g.,
+
+```forth
+: cubed ( n -- n^3 )
+   dup squared  ( n n^2 ) * ;
+```
+
+In this case the stack comment is pretty superfluous, because the word is 
+simple enough. If you think it would be a good idea to add such a comment 
+to increase readability, you should also consider factoring the word into 
+several simpler words (see Factoring), which typically eliminates the need 
+for the stack comment; however, if you decide not to refactor it, 
+then having such a comment is better than not having it.
+
+The names of the stack items in stack-effect and stack comments in the 
+standard, in this manual, and in many programs specify the type through a 
+type prefix, similar to Fortran and Hungarian notation. The most frequent 
+prefixes are:
+
+```
+n          signed integer 
+u          unsigned integer 
+c          character 
+f          Boolean flags, i.e. false or true. 
+a-addr,a-  Cell-aligned address 
+c-addr,c-  Char-aligned address (note that a Char may have two bytes in Windows NT) 
+xt         Execution token, same size as Cell 
+w,x        Cell, can contain an integer or an address. It takes 32 bits
+           A cell is more commonly known as machine word, but the term word already means something different in Forth. 
+d          signed double-cell integer 
+ud         unsigned double-cell integer 
+r          Float 
+```
+
+You can find a more complete list in [Notation](https://gforth.org/manual/Notation.html). 
+
+
 Terminal-IO
 -----------
 
 Exactly ANS, some logical extension. See also [TerminalIO](TerminalIO.md)
 
-    Words 	        Stack Comment 	Description
+    Words           Stack Comment   Description
 
-    emit? 	        ( -- Flag )     Ready to send a character ?
-    key?            ( -- Flag )     Checks if a key is waiting
-    key             ( -- Char )     Waits for and fetches the pressed key
-    emit            ( Char -- )     Emits a character
-    hook-emit?      ( -- a-addr )   Hooks for redirecting terminal IO on the fly
-    hook-key?
-    hook-key
-    hook-emit
-    serial-emit?    ( -- Flag )     Serial interface terminal routines as default communications
-    serial-key?
-    serial-key      ( -- Char )     Waits for and fetches the pressed key
-    serial-emit     ( Char -- )     Emits a character
-    hook-pause      ( -- a-addr )   Hook for a multitasker
-    pause           ( -- ) 	        Task switch, none for default
+    emit?           ( -- f )        Ready to send a character ?
+    key?            ( -- f )        Checks if a key is waiting
+    key             ( -- c )        Waits for and fetches the pressed key
+    emit            ( c -- )        Emits a character
+    hook-emit?      ( -- a- )       Hooks for redirecting terminal IO on the fly
+    hook-key?       ( -- a- )
+    hook-key        ( -- a- )
+    hook-emit       ( -- a- )
+    serial-emit?    ( -- f )        Serial interface terminal routines as default communications
+    serial-key?     ( -- f ) 
+    serial-key      ( -- c )        Waits for and fetches the pressed key
+    serial-emit     ( c -- )        Emits a character
+    hook-pause      ( -- a- )       Hook for a multitasker
+    pause           ( -- ) 	    Task switch, none for default
 
 
 ### Character Manipulation
 
 How to convert numbers to characters and convert characters to numbers.
 
-    [char] *        ( -- char )     Compiles code of following char when executed 
-    char *          ( -- char )     Gives code of following char 
-    emit            ( char -- )     Emits a character
+    [char] *        ( -- c )       Compiles code of following char when executed 
+    char *          ( -- c )       Gives code of following char 
+    emit            ( c -- )       Emits a character
 
 
 Stack Jugglers
@@ -56,27 +117,27 @@ Exactly ANS, some logical extension.
     rdrop           ( -- ) (R: x -- ) 	  	 
     rdepth          ( -- +n )               Gives number of return stack items. 
 
-    roll            ( xu xu-1 ... x0 u -- xu-1 ... x0 xu ) 	        Remove u. Rotate u+1 items on the top of the stack.
-    pick            ( ... xi+1 xi ... x1 x0 i -- ... x1 x0 xi )     Copy a element X levels down the stack to the top of the stack 	 
+    roll            ( xu xu-1 ... x0 u -- xu-1 ... x0 xu )            Remove u. Rotate u+1 items on the top of the stack.
+    pick            ( ... xi+1 xi ... x1 x0 i -- ... x1 x0 xi )       Copy a element X levels down the stack to the top of the stack 	 
     rpick           ( i -- xi ) R: ( ... xi ... x0 -- ... xi ... x0 ) 	  	 
-    -roll 	        ( xu-1 ... x0 xu u – xu xu-1 ... x0 u ) 
+    -roll 	    ( xu-1 ... x0 xu u – xu xu-1 ... x0 u ) 
 
 ### Double-Jugglers
 
 They perform the same for double numbers
 
-    2nip 	        ( x1 x2 x3 x4 --x3 x4 )
-    2drop 	        ( x1 x2 -- )
-    2rot 	        ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
-    2-rot 	        ( x1 x2 x3 x4 x5 x6 -- x5 x6 x1 x2 x3 x4 )
-    2swap 	        ( x1 x2 x3 x4 -- x3 x4 x1 x2 )
-    2tuck 	        ( x1 x2 x3 x4 -- x3 x4 x1 x2 x3 x4 )
-    2over 	        ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
-    2dup 	        ( x1 x2 -- x1 x2 x1 x2 )
-    2>r 	        ( x1 x2 -- ) (R: --x1 x2 )
-    2r> 	        ( -- x1 x2 ) (R: x1 x2 -- )
-    2r@ 	        ( -- x1 x2 ) (R: x1 x2 --x1 x2 )
-    2rdrop 	        ( -- ) (R: x1 x2 -- )
+    2nip            ( x1 x2 x3 x4 --x3 x4 )
+    2drop           ( x1 x2 -- )
+    2rot            ( x1 x2 x3 x4 x5 x6 -- x3 x4 x5 x6 x1 x2 )
+    2-rot           ( x1 x2 x3 x4 x5 x6 -- x5 x6 x1 x2 x3 x4 )
+    2swap           ( x1 x2 x3 x4 -- x3 x4 x1 x2 )
+    2tuck           ( x1 x2 x3 x4 -- x3 x4 x1 x2 x3 x4 )
+    2over           ( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 x2 )
+    2dup            ( x1 x2 -- x1 x2 x1 x2 )
+    2>r             ( x1 x2 -- ) (R: --x1 x2 )
+    2r>             ( -- x1 x2 ) (R: x1 x2 -- )
+    2r@             ( -- x1 x2 ) (R: x1 x2 --x1 x2 )
+    2rdrop          ( -- ) (R: x1 x2 -- )
 
 ### Stack pointers
 
@@ -529,8 +590,6 @@ Common Hardware Access
     irq-fault       ( -- a-addr )   For all faults
     irq-collection  ( -- a-addr )   Collection of all unhandled interrupts
 
-
-\-- [PeterSchmid - 2020-11-15]
 
 The original of this document can be found at https://mecrisp-stellaris-folkdoc.sourceforge.io
 Copyright 2016-2020, Terry Porter, released under the GPL V3.
