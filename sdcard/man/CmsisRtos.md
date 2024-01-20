@@ -1,7 +1,7 @@
 <table>
   <tr>
     <td><img src="img/CMSIS_Logo_Final.png"  ></td>
-    <td><img src="img/fFreeRTOS.jpg"  ></td>
+    <td><img src="img/FreeRTOS.jpg"  ></td>
   </tr>
 </table> 
 
