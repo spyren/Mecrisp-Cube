@@ -44,8 +44,8 @@ fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
 [user variables](CmsisRtos.md#user-variables) which contain a file desciptor 
 (pointer address a- to file object structure).
 <pre>
-stdin     ( -- a- )          for fs-emit and fs-emit?
-stdout    ( -- a- )          for fs-key and fs-key?
+stdin     ( -- a- )          for fs-key and fs-key?
+stdout    ( -- a- )          for fs-emit and fs-emit?
 stderr    ( -- a- )          not used yet
 </pre>
 
