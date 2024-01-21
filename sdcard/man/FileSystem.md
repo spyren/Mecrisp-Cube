@@ -27,13 +27,30 @@ supports FAT (12, 16, and 32) and exFAT formatted SD cards.
 I propose `.fs` extension for Forth source files the same as GForth
 does. But anyway you can use what you want (`.f`, `.4th`, `.fth`, etc).
 <pre>
-include   ( i*x "name" -- j*x )      Interprets the content of the file &lt;name&gt;. 
+include   ( i*x "name" -- j*x )      Interprets the content of the file "name" 
 included  ( i*x c-addr u -- j*x )    Interprets the content of the file.
 
-coredump  ( "name" -- )      Dumps the flash memory (core) into the file &lt;name&gt;.
+coredump  ( "name" -- )      Dumps the flash memory (core) into the file "name"
+
+fs-emit   ( c -- )           Emits a character c to a file (stdout)
+fs-emit?  ( -- ? )           Ready to send a character to a file (stdout)
+fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
+fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
 </pre>
 
-Words from [redirection.fs](../fsr/redirection.fs)
+[user variables](CmsisRtos.md#user-variables) which contain a file desciptor 
+(pointer address a- to file object structure).
+<pre>
+stdin     ( -- a- )          for fs-emit and fs-emit?
+stdout    ( -- a- )          for fs-key and fs-key?
+stderr    ( -- a- )          not used yet
+</pre>
+
+Words from [redirection.fs](../fsr/redirection.fs). 
+Redirection for the words `emit`, `emit?`, `key`, and `key?`.
+You can use the core words like `type` (and other 
+[string formating](words.md#string-formatting))
+to write to other devices like OLED, LCD, file etc.  
 ```
 >f_open   ( a1 a2 -- ior )   open a file a1 to redirect to a2 (emit, type, ...)
 >>f_open  ( a1 a2 -- ior )   open a file to redirect to (emit, type, ...). Append to file
@@ -59,22 +76,11 @@ Words from [redirection.fs](../fsr/redirection.fs)
 <crs      ( -- a1 a2 )       redirection from crs(key, accept, ...)
 <>crs     ( -- a1 a2 a3 a4 ) redirection from and to crs
 
->oled     ( -- a1 a2 )       redirection to oled
+>oled     ( -- a1 a2 )       redirection to OLED
+>lcd      ( -- a1 a2 )       redirection to LCD
 
 >plex     ( -- a1 a2 )       redirection to plex LED display
 ```
-
-user variables which contain file desciptor (pointer address a to file object structure)
-<pre>
-stdin     ( -- a )           for fs-emit and fs-emit?
-stdout    ( -- a )           for fs-key and fs-key?
-stderr    ( -- a )           not used yet
-
-fs-emit   ( c -- )           Emits a character c to a file (stdout)
-fs-emit?  ( -- ? )           Ready to send a character to a file? (stdout)
-fs-key    ( -- c )           Waits for and fetches a character from file. <0 for EOF or error. (stdin)
-fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
-</pre>
 
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
