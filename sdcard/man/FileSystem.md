@@ -373,8 +373,8 @@ cd ( "line<EOL>" -- ) change the working directory
 
 - **cat** [-n] [> NEWFILE] [>> FILE] [<< EOF] FILES...  
 -n line numbers  
-> redirect output to NEWFILE  
->> redirect output and append to FILE  
+\> redirect output to NEWFILE  
+\>> redirect output and append to FILE  
 << redirect input till EOF  
 cat ( "line<EOL>" -- ) concatenate files and print on the console
 
