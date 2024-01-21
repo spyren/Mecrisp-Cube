@@ -100,16 +100,16 @@ See also https://forth-standard.org/standard/tools.
 
 `query` not working in include! All the conditionals have to be on the same line.
 
-<pre>
-[IF]        ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
-[ELSE]      ( "<spaces>name ..." -- )              Parse and discard words from the parse area
-[THEN]      ( -- )                                 Does nothing. [THEN] is an immediate word. 
-[ENDIF]     ( -- )                                 Does nothing. [ENDIF] is an immediate word. 
-[IFDEF]     ( "<spaces>name ..." -- )              If the name can be found, do nothing. Otherwise parse and discard words from the parse area
-[IFNDEF]    ( "<spaces>name ..." -- )              If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
-[DEFINED]   ( "<spaces>name ..." -- flag )         Return a true flag if name is the name of a word that can be found
-[UNDEFINED] ( "<spaces>name ..." -- flag )         Return a false flag if name is the name of a word that can be found
-</pre>
+```
+[IF]        ( f | f "<spaces>name ..." -- )  If f is true, do nothing. Otherwise parse and discard words from the parse area 
+[ELSE]      ( "<spaces>name ..." -- )        Parse and discard words from the parse area
+[THEN]      ( -- )                           Does nothing. [THEN] is an immediate word. 
+[ENDIF]     ( -- )                           Does nothing. [ENDIF] is an immediate word. 
+[IFDEF]     ( "<spaces>name ..." -- )        If the name can be found, do nothing. Otherwise parse and discard words from the parse area
+[IFNDEF]    ( "<spaces>name ..." -- )        If the name can´t be found, do nothing. Otherwise parse and discard words from the parse area
+[DEFINED]   ( "<spaces>name ..." -- f )      Return a true flag if name is the name of a word that can be found
+[UNDEFINED] ( "<spaces>name ..." -- f )      Return a false flag if name is the name of a word that can be found
+```
 
 
 ## Filesystem API
