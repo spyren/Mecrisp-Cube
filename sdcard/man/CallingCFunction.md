@@ -1,7 +1,7 @@
 <table>
   <tr>
     <td><img src="img/C_Programming_Language.svg"  ></td>
-    <td><img src="img/forth-logo.png"  ></td>
+    <td><img src="img/mecrisp-cube-logo.png"  ></td>
   </tr>
 </table> 
 
