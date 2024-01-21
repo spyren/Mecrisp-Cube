@@ -38,6 +38,9 @@ fs-key    ( -- c )           Waits for and fetches a character from file. <0 for
 fs-key?   ( -- ? )           Checks if a character is remaining (stdin)
 </pre>
 
+
+## Redirection
+
 [user variables](CmsisRtos.md#user-variables) which contain a file desciptor 
 (pointer address a- to file object structure).
 <pre>
@@ -82,10 +85,21 @@ to write to other devices like OLED, LCD, file etc.
 >plex     ( -- a1 a2 )       redirection to plex LED display
 ```
 
+## Interpreter Directives
+
+Quote [Gforth](https://gforth.org/manual/Interpreter-Directives.html)
+
+> These words are usually used in interpret state; typically to control which parts
+> of a source file are processed by the text interpreter. There are only a few
+> Standard Forth Standard words, but Gforth supplements these with a rich set of
+> immediate control structure words to compensate for the fact that the
+> non-immediate versions can only be used in compile state (see Control Structures).
+
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
 
 `query` not working in include! All the conditionals have to be on the same line.
+
 <pre>
 [IF]        ( flag | flag "<spaces>name ..." -- )  If flag is true, do nothing. Otherwise parse and discard words from the parse area 
 [ELSE]      ( "<spaces>name ..." -- )              Parse and discard words from the parse area
