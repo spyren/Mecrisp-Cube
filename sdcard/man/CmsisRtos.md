@@ -1,3 +1,4 @@
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <table>
   <tr>
     <td><img src="img/CMSIS_Logo_Final.png" ></td>
