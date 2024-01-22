@@ -1,3 +1,5 @@
+![](img/mecrisp-cube-4th-logo-red-h.svg)
+
 # Watchdog
 
 For serious real time systems you need a [watchdog](https://en.wikipedia.org/wiki/Watchdog_timer)
