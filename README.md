@@ -1,5 +1,5 @@
 ![](/sdcard/man/img/flipper-header-logo.jpg)
-![](/sdcard/man/img/mecrisp-cube-logo-red-h.svg)
+![](/sdcard/man/img/mecrisp-cube-4th-logo-red-h.svg)
 
 # Mecrisp-Cube
 
