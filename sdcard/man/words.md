@@ -1,4 +1,4 @@
-<img src="img/mecrisp-cube-logo-txt.svg" height="100">
+<img src="img/mecrisp-cube-4th-logo-red.svg" >
 
 Mecrisp-Stellaris Core Forth Words
 ==================================
