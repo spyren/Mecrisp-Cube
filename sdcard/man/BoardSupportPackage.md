@@ -1,5 +1,3 @@
-![](img/flipper-header.jpg)
-
 <table>
   <tr>
     <td><img src="img/flipper-header.jpg"  ></td>
