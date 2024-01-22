@@ -1,8 +1,8 @@
 <table>
   <tr>
-    <td><img src="img/CMSIS_Logo_Final.png" height=200 ></td>
+    <td><img src="img/CMSIS_Logo_Final.png" ></td>
     <td><img src="img/FreeRTOS.jpg"  ></td>
-    <td><img src="img/mecrisp-cube-logo-txt.png"  height=200 ></td>
+    <td><img src="img/mecrisp-cube-4th-logo-red.png"  ></td>
   </tr>
 </table> 
 
