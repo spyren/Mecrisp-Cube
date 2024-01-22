@@ -1,3 +1,5 @@
+![](img/mecrisp-cube-4th-logo-red-h.svg)
+
 Floating-Point Unit FPU
 =======================
 
