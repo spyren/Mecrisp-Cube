@@ -1,7 +1,7 @@
 <table>
   <tr>
-    <td><img src="sdcard/man/img/flipper-header-logo"  ></td>
-    <td><img src="sdcard/man/img/mecrisp-cube-logo-red-h.svg"  ></td>
+    <td><img src="/sdcard/man/img/flipper-header-logo"  ></td>
+    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"  ></td>
   </tr>
 </table> 
 
