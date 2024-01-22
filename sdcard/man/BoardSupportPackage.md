@@ -1,5 +1,12 @@
 ![](img/flipper-header.jpg)
 
+<table>
+  <tr>
+    <td><img src="img/flipper-header.jpg"  ></td>
+    <td><img src="img/mecrisp-cube-log-red-q.png"  ></td>
+  </tr>
+</table> 
+
 Board Support Package for the Flipper Zero
 ==========================================
 
@@ -463,7 +470,7 @@ There is a [Grove](https://wiki.seeedstudio.com/Grove_System/) connector
 
 A two evening project (wiring instead of knitting). See below for knitting pattern.
 
- <table>
+<table>
   <tr>
     <td><img src="img/flipper-feather-adaptor-top.jpg"  ></td>
     <td><img src="img/flipper-feather-adaptor-bottom.jpg"  ></td>
