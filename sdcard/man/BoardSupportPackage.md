@@ -3,7 +3,7 @@
 <table>
   <tr>
     <td><img src="img/flipper-header.jpg"  ></td>
-    <td><img src="img/mecrisp-cube-logo-red-q.svg"  ></td>
+    <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
   </tr>
 </table> 
 
