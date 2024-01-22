@@ -1,5 +1,9 @@
-![](img/Mecrisp-Cube-vi-header2.jpg)
-![](/sdcard/man/img/mecrisp-cube-logo-red-q.svg)
+<table>
+  <tr>
+    <td><img src="img/Mecrisp-Cube-vi-header2.jpg"  ></td>
+    <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
+  </tr>
+</table> 
 
 Intro
 =====
