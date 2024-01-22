@@ -1,4 +1,4 @@
-![](img/mecrisp-cube-4th-logo-red.svg)
+![](img/mecrisp-cube-4th-logo-red-h.svg)
 
 Mecrisp-Stellaris Core Forth Words
 ==================================
