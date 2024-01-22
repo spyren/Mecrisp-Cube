@@ -1,4 +1,5 @@
 ![](img/Mecrisp-Cube-vi-header2.jpg)
+![](/sdcard/man/img/mecrisp-cube-logo-red-q.svg)
 
 Intro
 =====
