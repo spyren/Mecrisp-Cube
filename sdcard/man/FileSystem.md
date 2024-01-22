@@ -1,4 +1,9 @@
-![](img/sd-header.jpg)
+<table>
+  <tr>
+    <td><img src="img/sd-header.jpg"  ></td>
+    <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
+  </tr>
+</table> 
 
 microSD and internal Flash Mass Storage for Blockheads and Fatties
 ==================================================================
