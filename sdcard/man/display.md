@@ -1,3 +1,5 @@
+![](img/mecrisp-cube-4th-logo-red-h.svg)
+
 # Displays
 
 I really like the neat little OLED displays. They are crisp and draw only some miliamps. 
