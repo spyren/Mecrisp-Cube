@@ -4,7 +4,7 @@
    width="1059.0839"
    version="1.1"
    id="svg3"
-   sodipodi:docname="mecrisp-cube-4th-logo-red.svg"
+   sodipodi:docname="mecrisp-cube-4th-logo-bw.svg"
    inkscape:version="1.3.1 (9b9bdc1480, 2023-11-25, custom)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -38,7 +38,7 @@
      width="300"
      x="0"
      id="rect1"
-     style="fill:#ff0000"
+     style="fill:#000000"
      y="1.202356" />
   <rect
      fill="#ffffff"
@@ -47,7 +47,7 @@
      x="50"
      y="121.20235"
      id="rect2"
-     style="fill:#ff0000" />
+     style="fill:#000000" />
   <rect
      fill="#ffffff"
      height="200"
@@ -55,30 +55,30 @@
      x="120"
      y="51.202354"
      id="rect3"
-     style="fill:#ff0000" />
+     style="fill:#000000" />
   <rect
-     style="fill:#2b0000;stroke-width:1.00139"
+     style="fill:#ffffff;stroke-width:1.00139"
      id="rect4"
      width="69.975014"
      height="70.094208"
      x="179.96324"
      y="51.093925" />
   <rect
-     style="fill:#2b0000;stroke-width:1.00139"
+     style="fill:#ffffff;stroke-width:1.00139"
      id="rect4-5"
      width="69.975014"
      height="70.094208"
      x="50.10527"
      y="51.4851" />
   <rect
-     style="fill:#2b0000;stroke-width:1.00139"
+     style="fill:#ffffff;stroke-width:1.00139"
      id="rect4-4"
      width="69.975014"
      height="70.094208"
      x="50.08374"
      y="180.99094" />
   <rect
-     style="fill:#2b0000;stroke-width:1.00169"
+     style="fill:#ffffff;stroke-width:1.00169"
      id="rect4-7"
      width="69.940155"
      height="70.170837"
@@ -87,7 +87,7 @@
   <path
      d="m 219.04025,245.78012 h 30.8948 v 16.125 l -24.01302,30.00001 h -18.88829 l 12.00651,-30.00001 z"
      id="text4"
-     style="font-size:239.948px;-inkscape-font-specification:'sans-serif, Normal';fill:#2b0000;stroke-width:1.24973"
+     style="font-size:239.948px;-inkscape-font-specification:'sans-serif, Normal';fill:#ffffff;stroke-width:1.24973"
      aria-label="," />
   <text
      xml:space="preserve"
@@ -101,7 +101,7 @@
        y="125.02322" /></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:162.09px;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000;stroke-width:1.68843"
+     style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:162.09px;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke-width:1.68843"
      x="305.82925"
      y="120.30117"
      id="text5"
@@ -110,10 +110,10 @@
        id="tspan4"
        x="305.82925"
        y="120.30117"
-       style="stroke-width:1.68843">MECRISP</tspan><tspan
+       style="stroke-width:1.68843;fill:#000000">MECRISP</tspan><tspan
        sodipodi:role="line"
        x="305.82925"
        y="322.91367"
        id="tspan5"
-       style="stroke-width:1.68843">CUBE4TH</tspan></text>
+       style="stroke-width:1.68843;fill:#000000">CUBE4TH</tspan></text>
 </svg>
