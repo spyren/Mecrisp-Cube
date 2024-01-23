@@ -1,5 +1,9 @@
-![](/sdcard/man/img/flipper-header-logo.jpg)
-![](/sdcard/man/img/mecrisp-cube-logo-red-q.svg)
+<table>
+  <tr>
+    <td><img src="/sdcard/man/img/flipper-header-logo.jpg"  ></td>
+    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"  ></td>
+  </tr>
+</table> 
 
 # Mecrisp-Cube
 
