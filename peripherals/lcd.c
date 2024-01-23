@@ -54,7 +54,8 @@
 #include "font12x16.h"
 
 #if LCDISPLAY == 1
-#include "spyr.h"
+//#include "spyr.h"
+#include "mecrisp-cube-logo.h"
 
 // Macros
 // ******
@@ -181,22 +182,20 @@ void LCD_init(void) {
 	}
 
 	LCD_clear();
-	LCD_setPos(127-spyr_height-8, 0);
-	LCD_putXBM(spyr_bits, spyr_width, spyr_height);
-
 	LCD_setPos(0, 0);
-	LCD_setFont(LCD_FONT8X8);
-	LCD_puts("Mecrisp-");
-	LCD_setPos(93, 0);
-	LCD_puts("Cube\r\n");
-	LCD_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
+	LCD_putXBM(mecrisp_cube_logo_bits, mecrisp_cube_logo_width, mecrisp_cube_logo_height);
+
+	LCD_setFont(LCD_FONT12X16);
+	LCD_setPos(34, 0);
+	LCD_puts("MECRISP\r\n");
+	LCD_setPos(34, 2);
+	LCD_puts("CUBE4TH\r\n");
 
 	LCD_setFont(LCD_FONT6X8);
-	LCD_puts(BOARD "\r\n");
-	LCD_puts("Forth for\r\n");
-	LCD_puts("the STM32WB \r\n");
-	LCD_puts("(c)2024\r\n");
-	LCD_puts("peter@spyr.ch");
+	LCD_setPos(0, 5);
+	LCD_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
+	LCD_puts("Forth for the STM32WB\r\n");
+	LCD_puts("(c)2024 peter@spyr.ch");
 
 	for (i = 0; i < membersof(st7567_on_sequence); i++) {
 		LCD_sendCommand(st7567_on_sequence[i]);
