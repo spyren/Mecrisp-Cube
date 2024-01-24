@@ -1,9 +1,11 @@
 <table>
   <tr>
-    <td><img src="/sdcard/man/img/flipper-header-logo.jpg"  ></td>
+    <td>![](/sdcard/man/img/flipper-header-logo.jpg)  </td>
     <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"  ></td>
   </tr>
 </table> 
+
+<img src="/sdcard/man/img/flipper-header-logo.jpg" 
 
 # Mecrisp-Cube
 
