@@ -1,4 +1,4 @@
 title: Mecrisp-Cube
 description: Mecrisp-Stellaris Forth for the STM32 Cube ecosystem
 show_downloads: true
-
+theme: jekyll-theme-slate
