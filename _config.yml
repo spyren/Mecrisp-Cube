@@ -1,4 +1,6 @@
 title: Mecrisp-Cube
 description: Mecrisp-Stellaris Forth for the STM32 Cube ecosystem
 show_downloads: true
-theme: jekyll-theme-slate
+remote_theme: pages-themes/slate@v0.2.0
+plugins:
+- jekyll-remote-theme # add this line to the plugins list if you already have one
