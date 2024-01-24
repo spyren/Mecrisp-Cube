@@ -5,7 +5,9 @@
   </tr>
 </table> 
 
-<img src="/sdcard/man/img/flipper-header-logo.jpg" 
+<img src="/sdcard/man/img/flipper-header-logo.jpg" >
+
+![](/sdcard/man/img/flipper-header-logo.jpg)
 
 # Mecrisp-Cube
 
