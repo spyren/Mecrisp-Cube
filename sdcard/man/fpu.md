@@ -53,6 +53,7 @@ Also from STM AN4044
 >format, and any integer with absolute value less than 2^53 can be exactly represented in the 
 >double-precision format.
 
+
 ## Normalized Numbers Range 
 
 | Mode    | Exponent   | Exp. Bias   | Exp. Range   | Mantissa   | Decimal digits   | Min. value   | Max. Value   |
@@ -71,43 +72,6 @@ Also from STM AN4044
    * [Scientific notation](https://en.wikipedia.org/wiki/Scientific_notation)
    * [Engineering notation](https://en.wikipedia.org/wiki/Engineering_notation)
    * [Metric prefix](https://en.wikipedia.org/wiki/Metric_prefix)
-
-
-## Some Hints for Using the FPU
-
-It is better to be approximately (vaguely) right than exactly wrong. Carveth Read
-
-   * Do not use FPU in interrupt service routines.
-   * Tasks/Threads with FPU operations need much more return stack depth. 
-   * Rounding is not always working properly. Not useful for precision more than 3.
-
-<pre>
-0.1005e fs. 1.01E-1  ok.
-0.1005e fm. 101m ok.
-4 set-precision
-0.100005e fs. 1.0000E-1  ok.
-0.100005e fm. 100.00m ok.
-1.00005e f>x x. 1,00004994869232177734375000000000  ok.
-1,00005 x. 1,00004999991506338119506835937500  ok.
-</pre>
-
-
-## Links
-
-   * https://forth-standard.org/standard/float
-   * https://en.wikipedia.org/wiki/IEEE_754 
-   * https://en.wikipedia.org/wiki/Single-precision_floating-point_format
-   * [What Every Computer Scientist Should Know About Floating-Point Arithmetic](https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
-   * [Fixed Point](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html), https://en.wikipedia.org/wiki/Q_(number_format)
-
-   * https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Number-Conversion.html#Number-Conversion
-   * https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Floating-Point.html#Floating-Point
-   * https://forth-standard.org/proposals/recognizer#contribution-142
-   * https://interrupt.memfault.com/blog/cortex-m-rtos-context-switching ARM Cortex-M RTOS Context Switching
-   * https://mcuoneclipse.com/2019/03/29/be-aware-floating-point-operations-on-arm-cortex-m4f/
-   * http://support.raisonance.com/content/how-should-i-use-floating-point-unit-fpu-cortex-m4
-   * [Newlib](https://en.wikipedia.org/wiki/Newlib)
-   * [The Forth Scientific Library](https://www.taygeta.com/fsl/scilib.html) e.g. for ANS Forth Complex Arithmetic Lexicon
 
 
 Floating-Point Words
@@ -192,6 +156,25 @@ fln     ( r1 -- r2 )       r2 is the natural logarithm of r1
 flog    ( r1 -- r2 )       r2 is the base-ten logarithm of r1
 ```
 
+## Some Hints for Using the FPU
+
+It is better to be approximately (vaguely) right than exactly wrong. Carveth Read
+
+   * Do not use FPU in interrupt service routines.
+   * Tasks/Threads with FPU operations need much more return stack depth. 
+   * Rounding is not always working properly. Not useful for precision more than 3.
+
+<pre>
+0.1005e fs. 1.01E-1  ok.
+0.1005e fm. 101m ok.
+4 set-precision
+0.100005e fs. 1.0000E-1  ok.
+0.100005e fm. 100.00m ok.
+1.00005e f>x x. 1,00004994869232177734375000000000  ok.
+1,00005 x. 1,00004999991506338119506835937500  ok.
+</pre>
+
+
 How to Use
 ----------
 
@@ -246,3 +229,22 @@ they use sometimes decimal points.
 ```
 
 ![](img/buergi-sin.png)
+
+## Links
+
+   * https://forth-standard.org/standard/float
+   * https://en.wikipedia.org/wiki/IEEE_754 
+   * https://en.wikipedia.org/wiki/Single-precision_floating-point_format
+   * [What Every Computer Scientist Should Know About Floating-Point Arithmetic](https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
+   * [Fixed Point](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html), https://en.wikipedia.org/wiki/Q_(number_format)
+
+   * https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Number-Conversion.html#Number-Conversion
+   * https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Floating-Point.html#Floating-Point
+   * https://forth-standard.org/proposals/recognizer#contribution-142
+   * https://interrupt.memfault.com/blog/cortex-m-rtos-context-switching ARM Cortex-M RTOS Context Switching
+   * https://mcuoneclipse.com/2019/03/29/be-aware-floating-point-operations-on-arm-cortex-m4f/
+   * http://support.raisonance.com/content/how-should-i-use-floating-point-unit-fpu-cortex-m4
+   * [Newlib](https://en.wikipedia.org/wiki/Newlib)
+   * [The Forth Scientific Library](https://www.taygeta.com/fsl/scilib.html) e.g. for ANS Forth Complex Arithmetic Lexicon
+
+
