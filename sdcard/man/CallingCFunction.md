@@ -5,10 +5,6 @@
   </tr>
 </table> 
 
-![](img/C_Programming_Language.svg)
-![](img/mecrisp-cube-logo-red.svg)
-
-
 Calling C Functions from Forth and Vice Versa
 =============================================
 
