@@ -418,8 +418,20 @@ they use sometimes decimal points.
 
 ### Jost Bürgi
 
+https://en.wikipedia.org/wiki/Jost_B%C3%BCrgi
+>By 1586, Bürgi was able to calculate sines at arbitrary precision, using several algorithms,
+>one of which he called Kunstweg. He supposedly used these algorithms to calculate a
+>_Canon Sinuum_, a table of sines to 8 places in steps of 2 arc seconds.
+>Nothing more is known on this table, and some authors have speculated that its range
+>was only over 45 degrees. Such tables were extremely important for navigation at sea.
+>Johannes Kepler called the Canon Sinuum the most precise known table of sines.
+>Bürgi explained his algorithms in his work Fundamentum Astronomiae which he presented to
+>Emperor Rudolf II in 1592.[15]
+
 http://wp.andreas.bieri.name/myblog/2018/01/30/jost-buergis-sinus-berechnung/
+
 ![](img/buergi-sin.png)
+
 
 ### Links
 
