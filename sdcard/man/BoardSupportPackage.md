@@ -9,7 +9,9 @@ Board Support Package for the Flipper Zero
 ==========================================
 
 The board support package for the STM32WB Flipper Zero is restricted to the
-pin header (Arduino numbering) and the onboard LEDs, switches (buttons), LCD, charger.
+pin header (Arduino numbering) and the onboard LEDs, switches (buttons), LCD, 
+charger, vibro, and speaker.
+
 The STM32 has much more capabilities than 10 digital I/O pins, 3 analog
 input pins, UART, SPI, and I2C interfaces. But if you want to use the
 more advanced features you can use the CubeMX to create source code for
