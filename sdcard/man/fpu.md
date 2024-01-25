@@ -64,7 +64,7 @@ Also from STM AN4044
 ## IEEE.754 Single and Double Precision Floating-Point Coding 
 
    * [Single-precision floating-point format](https://en.wikipedia.org/wiki/Single-precision_floating-point_format)
-   * [Double-precision floating-point format](ttps://en.wikipedia.org/wiki/Double-precision_floating-point_format)
+   * [Double-precision floating-point format](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 
 ![](img/ieee-754.png)
 
