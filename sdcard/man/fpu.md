@@ -1,4 +1,5 @@
 ![](img/mecrisp-cube-4th-logo-red-h.svg)
+![](img/Float_example-header.png)
 
 Floating-Point Unit FPU
 =======================
@@ -7,20 +8,51 @@ Why Floating-Point?
 -------------------
 
 [STM AN4044](https://www.st.com/resource/en/application_note/an4044-floating-point-unit-demonstration-on-stm32-microcontrollers-stmicroelectronics.pdf):
-One alternative to floating-point is [fixed-point](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html), where the exponent field is fixed. But if
-fixed-point is giving better calculation speed on FPU-less processors, the range of numbers
-and their dynamic is low. As a consequence, a developer using the fixed-point technique will
-have to check carefully any scaling/saturation issues in the algorithm. 
-
-| *Coding*         | *Dynamic [dB]* |
-|------------------|----------------|
-| Int32            | 192            |
-| Int64            | 385            |
-| Single precision | 1529           |
-| Double precision | 12318          |
+> One alternative to floating-point is [fixed-point](https://mecrisp-stellaris-folkdoc.sourceforge.io/fixed-point.html),
+> where the exponent field is fixed. But if fixed-point is giving better calculation speed
+> on FPU-less processors, the range of numbers and their dynamic is low. As a consequence,
+> a developer using the fixed-point technique will have to check carefully any
+> scaling/saturation issues in the algorithm. 
+>
+>| *Coding*         | *Dynamic [dB]* |
+>|------------------|----------------|
+>| Int32            | 192            |
+>| Int64            | 385            |
+>| Single precision | 1529           |
+>| Double precision | 12318          |
 
    * [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s) on GitHub
    * [fpu.c](https://github.com/spyren/Mecrisp-Cube/blob/master/peripherals/fpu.c) on GitHub
+
+The STM32 ARM Cortex M4F MPUs (e.g. STM32WB, STM32F4, STM32L4) have a single precision floating-point unit. 
+The STM32H7 MPUs have a double precision FPU (not supported yet).
+
+Also from STM AN4044
+
+>Floating-point calculations require a lot of resources, as for any operation between
+>two numbers. For example, we need to:
+>
+>    Align the two numbers (have them with the same exponent)
+>    Perform the operation
+>    Round out the result
+>    Code the result 
+
+On an FPU-less processor, all these operations are done by software through the C compiler 
+library (or Forth Words) and are not visible to the programmer; but the performances are very low. 
+On a processor having an FPU, all of the operations are entirely done by hardware in a single cycle, 
+for most of the instructions. The C (or Forth) compiler does not use its own floating-point 
+library but directly generates FPU native instructions.
+
+When implementing a mathematical algorithm on a microprocessor having an FPU, the programmer 
+does not have to choose between performance and development time. T
+he FPU brings reliability allowing to use directly any generated code through a 
+high level tool, such as MATLAB or Scilab, with the highest level of performance.
+
+Any integer with absolute value less than 2^24 can be exactly represented in the single-precision 
+format, and any integer with absolute value less than 2^53 can be exactly represented in the 
+double-precision format.
+
+Normalized Numbers Range 
 
 
 Floating-Point Words
@@ -146,8 +178,11 @@ Mecrisp-Cube has the word `f.` defined as an assembler routine in [fpu.s](https:
       x#             \ fract digit
     loop
    dup
-  #> 
+  #>
   type space
 ; 
 ```
 
+![](img/ieee-754.png)
+
+![](img/buergi-sin.png.svg)
