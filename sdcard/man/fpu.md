@@ -22,9 +22,6 @@ Why Floating-Point?
 >| Single precision | 1529           |
 >| Double precision | 12318          |
 
-   * [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s) on GitHub
-   * [fpu.c](https://github.com/spyren/Mecrisp-Cube/blob/master/peripherals/fpu.c) on GitHub
-
 The STM32 ARM Cortex M4F MPUs (e.g. STM32WB, STM32F4, STM32L4) have a single precision floating-point unit. 
 The STM32H7 MPUs have a double precision FPU (not supported yet).
 
@@ -80,7 +77,8 @@ Floating-Point Words
 No separate floating-point stack. A single precision floating-point number is one cell. 
 The 32-bit base-2 format is officially referred to as binary32 [IEEE 754-2008](https://en.wikipedia.org/wiki/IEEE_754-2008_revision).
 
-Bare FPU Words (Without C Math Library)
+### Bare FPU Words (Without C Math Library)
+
 ```
 f+      ( r1 r2 -- r3 )     Add r1 to r2 giving the sum r3
 f-      ( r1 r2 -- r3 )     Subtract r2 from r1, giving r3
@@ -127,8 +125,7 @@ set-precision ( u -- )      set the number of significant digits currently used 
 ```
 
 
-Words Using the C Math Library
-------------------------------
+### Words Using the C Math Library
 
 [C mathematical functions](https://en.wikipedia.org/wiki/C_mathematical_functions) @ Wikipedia
 ```
@@ -156,13 +153,17 @@ fln     ( r1 -- r2 )       r2 is the natural logarithm of r1
 flog    ( r1 -- r2 )       r2 is the base-ten logarithm of r1
 ```
 
-## Some Hints for Using the FPU
+## How to Use
+
+### Some Hints for Using the FPU
 
 It is better to be approximately (vaguely) right than exactly wrong. Carveth Read
 
    * Do not use FPU in interrupt service routines.
    * Tasks/Threads with FPU operations need much more return stack depth. 
    * Rounding is not always working properly. Not useful for precision more than 3.
+
+### Examples
 
 <pre>
 0.1005e fs. 1.01E-1  ok.
@@ -174,9 +175,6 @@ It is better to be approximately (vaguely) right than exactly wrong. Carveth Rea
 1,00005 x. 1,00004999991506338119506835937500  ok.
 </pre>
 
-
-How to Use
-----------
 
 Calculation of two [parallel resistors](https://en.wikipedia.org/wiki/Resistor#Series_and_parallel_resistors):
 ```forth
@@ -193,6 +191,196 @@ Calculation of two [parallel resistors](https://en.wikipedia.org/wiki/Resistor#S
 ```
 2.2n 47k f* fm. 103u  ok.
 ```
+
+
+## Performance Estimation
+
+All measurements and calculation are based on the *Cortex !M4F MCU !STM32WB55 @ 32 MHz*.
+
+Simple test program to estimate execution time of `fsin` and `fsqrt`:
+<pre>
+: test-fpu ( -- n ) \ test 1000 times sin return n in ms
+  osKernelGetTickCount  cr
+  pi 2e f* 1000e f/  \ 2*pi/1000
+  cr
+  1000 0 do
+\   dup i s>f f*      drop
+    dup i s>f f* fsin drop
+\   i .  dup i s>f f* fsin fs.   cr
+\   i .  dup i s>f f* fsin hex.  cr
+  loop
+  drop
+  osKernelGetTickCount swap -
+;
+</pre>
+
+With `fsin` it takes about 7 ms, without about 1 ms for 1000 iterations. 
+Therefore a `fsin` word takes about 6 us. 
+For the *!STM32F405 @ 168 MHz*, the `fsin` takes about 2 us.
+
+`fsqrt` takes also about 2 ms for 1000 iterations. Therefore a `fsqrt` word 
+takes about 1 us or less (the same time as `f/`, see below).
+
+Basic operations like `f/` are defined as inline. 
+First check `fsin` and `f/` with the builtin disassembler:
+<pre>
+see fsin
+08007BE8: B500  push { lr }
+08007BEA: 4630  mov r0 r6
+08007BEC: F025  bl  0802D694
+08007BEE: FD52
+08007BF0: 4606  mov r6 r0
+08007BF2: BD00  pop { pc }
+ ok.
+</pre>
+
+The FPU instructions are unknown to the disassembler
+<pre>
+see f/
+0800745A: EE00
+0800745C: 6A90
+0800745E: CF40  ldmia r7 { r6 }
+08007460: EE00
+08007462: 6A10
+08007464: EE80
+08007466: 0A20
+08007468: EE10
+0800746A: 6A10
+0800746C: 4770  bx lr
+</pre>
+
+From [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s) on !GitHub
+<pre>
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_foldable_2|Flag_inline, "f/"
+f_slash:
+        @ ( r1 r2 -- r3 ) Divide r1 by r2, giving the quotient r3.
+@ -----------------------------------------------------------------------------
+	vmov 	s1, tos                      1
+	drop               ldmia r7 { r6 }   1
+	vmov 	s0, tos                      1
+	vdiv.f32 s0, s0, s1                  14
+	vmov 	tos, s0                      1
+	bx 		lr
+                                      cycles 18
+</pre>
+
+About 20 cycles (625 ns @ 32 MHz) for a division, 10 (300 ns) for multiplication, 
+and 5 (150 ns) for +/-. `vsqrt.f32` has 14 cycles. 
+
+<pre>
+include /fsr/fixpt-math-lib.fs  ok.
+
+: test-fix ( -- n ) \ test 1000 times fixed-point sin return n in ms
+  osKernelGetTickCount  cr
+\ pi 2e f* 1000e f/  \ 2*pi/1000
+  360,0 1000,0 x/
+  cr
+  1000 0 do
+\   2dup i 0 swap x*      2drop
+\   2dup i 0 swap x* sin  2drop
+    2dup i 0 swap x* sqrt  2drop
+\   i .  2dup i 0 swap x* sin x.   cr
+\   i .  2dup i 0 swap x* sqrt x.   cr
+\   i .  2dup i 0 swap x* sin hex. hex. cr
+  loop
+  2drop
+  osKernelGetTickCount swap -
+;
+test-fix .
+
+323 
+</pre>
+
+With `sqrt` it takes about 323 ms (`sin` is not working for me), without about 6 ms. 
+Therefore a `sqrt` word takes about 317 us, with FPU it takes less than 1 us. 
+A simple multiplication about 6 us (FPU 300 ns). 
+
+Only addition and subtraction are comparable:
+<pre>
+see d+
+080008B6: CF07  ldmia r7 { r0  r1  r2 }   1
+080008B8: 1812  adds r2 r2 r0             1
+080008BA: 414E  adcs r6 r1                1
+080008BC: 3F04  subs r7 #4                1
+080008BE: 603A  str r2 [ r7 #0 ]          1
+080008C0: 4770  bx lr
+                                   Cycles 5
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_foldable_2|Flag_inline, "f+"
+f_add:
+        @ ( r1 r2 -- r3 ) Add r1 to r2 giving the sum r3.
+@ -----------------------------------------------------------------------------
+	vmov 	s1, tos                   1
+	drop                              1
+	vmov 	s0, tos                   1
+	vadd.f32 s0, s1                   1
+	vmov 	tos, s0                   1
+	bx 		lr
+                                   Cycles 5
+</pre>
+
+### Windows PC
+
+*Swift-Forth* on a 64 bit Windows PC @ 3.4 GHz, HW FPU
+<pre>
+: test ( --  ) \ test 1'000 times sin, displays time in us
+  ucounter cr
+  pi 2e f* 1000e f/  \ 2*pi/1000
+  cr
+  1000 0 do
+\    fdup i s>f f*      fdrop
+     fdup i s>f f* fsin fdrop
+\    i .  fdup i s>f f* fsin fs.   cr
+\    i .  fdup i s>f f* fsin hex. hex.  cr
+  loop
+  fdrop
+  utimer
+;
+</pre>
+
+91 us, 28 us -> 63 ns for `fsin`. 2 magnitudes faster than Mecrisp-Cube M4F @ 32 MHz
+
+
+### Linux PC
+
+*Gforth* on a 64 bit Linux PC @ Intel I7 8 cores 2.2 GHz, HW FPU
+<pre>
+: test ( --  ) \ test 1'000 times sin, displays time in us
+  utime cr
+  pi 2e f* 1000e f/  \ 2*pi/1000
+  cr
+  1000 0 do
+\    fdup i s>f f*      fdrop
+     fdup i s>f f* fsin fdrop
+\    i .  fdup i s>f f* fsin fs.   cr
+\    i .  fdup i s>f f* fsin hex. hex.  cr
+  loop
+  fdrop
+  utime 2swap d-
+;
+</pre>
+64 us, 13 us -> 51 ns for `fsin`. 2 magnitudes faster than Mecrisp-Cube M4F @ 32 MHz
+
+
+### Conclusion
+
+As long as you do only elementary arithmetic, fixed- and floating-point have 
+comparable execution time (but division and multiplication is a magnitude slower). 
+But for more elaborate calculation (trigonomteric, exponential functions) the 
+execution time is for fixed-point at least two magnitudes slower.
+
+If time is not an issue in either development or execution, you can easily do without the FPU.
+
+
+## Varia
+
+### Implementation Details
+
+
+   * [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s) on GitHub
+   * [fpu.c](https://github.com/spyren/Mecrisp-Cube/blob/master/peripherals/fpu.c) on GitHub
 
 Mecrisp-Cube has the word `f.` defined as an assembler routine in 
 [fpu.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/fpu.s), 
@@ -228,9 +416,12 @@ they use sometimes decimal points.
 ; 
 ```
 
+### Jost Bürgi
+
+http://wp.andreas.bieri.name/myblog/2018/01/30/jost-buergis-sinus-berechnung/
 ![](img/buergi-sin.png)
 
-## Links
+### Links
 
    * https://forth-standard.org/standard/float
    * https://en.wikipedia.org/wiki/IEEE_754 
