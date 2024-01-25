@@ -183,6 +183,62 @@ Settings
 -   Send: Newline CR, Local echo off
 
 
+## Some Sort of SIGINT
 
-\-- [PeterSchmid - 2020-04-20]
+https://en.wikipedia.org/wiki/Signal_(IPC)#SIGINT
+<blockquote>
+The SIGINT signal is sent to a process by its controlling terminal when a user wishes to 
+interrupt the process. This is typically initiated by pressing Ctrl+C, 
+but on some systems, the "delete" character or "break" key can be used.
+</blockquote>
 
+You do not have always a reset button to restart a hanging console, power cycle 
+is not convenient in most cases. There is now an assert for ^C, 
+UART errors (FIFO, interruption) throw an assert too.
+
+If you want something similar to an SIGINT, replace the assert `ASSERT_nonfatal()`
+with `osThreadFlagsSet()` or `osEventFlagsSet()` to inform your application thread. 
+
+[uart.c](https://github.com/spyren/Mecrisp-Cube/blob/master/peripherals/uart.c)
+<pre>
+/**
+  * @brief
+  * 	Function implementing the UART Rx thread.
+  * @param
+  * 	argument: Not used
+  * @retval
+  * 	None
+  */
+static void UART_RxThread(void *argument) {
+	osStatus_t status;
+
+	osMutexAcquire(UART_MutexID, osWaitForever);
+	// wait for the first Rx character
+	if (HAL_UART_Receive_IT(&huart1, &UART_RxBuffer, 1) != HAL_OK) {
+		// something went wrong
+		Error_Handler();
+	}
+	osMutexRelease(UART_MutexID);
+
+	// Infinite loop
+	for(;;) {
+		// blocked till a character is received
+		status = osThreadFlagsWait(UART_CHAR_RECEIVED, osFlagsWaitAny, osWaitForever);
+		<b>ASSERT_nonfatal(UART_RxBuffer != 0x03, ASSERT_UART_SIGINT, 0) // ^C character abort</b>
+		// put the received character into the queue
+		status = osMessageQueuePut(UART_RxQueueId, &UART_RxBuffer, 0, 100);
+		if (status != osOK) {
+			// can't put char into queue
+			Error_Handler();
+		}
+		// receive the next character
+		osMutexAcquire(UART_MutexID, osWaitForever);
+		status = HAL_UART_Receive_IT(&huart1, &UART_RxBuffer, 1);
+		osMutexRelease(UART_MutexID);
+		if (status != osOK) {
+			// can't receive char
+			Error_Handler();
+		}
+	}
+}
+</pre>
