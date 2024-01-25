@@ -445,7 +445,7 @@ There is no debouncing for the `switchx?` words.
 Deactivate the sysled function (the LED is no longer used by the system e.g. 
 for battery charging state):
 ```
--sysled  \ deactivate sysled
+$80 -sysled  \ deactivate sysled
 
 0 rgbled!      \ Switch off LED
 $ff0000 rgbled! \ Red LED 100 % brightness
@@ -454,7 +454,7 @@ $00ff00 rgbled!   \ Green LED 100 % brightness
 $0000ff rgbled!    \ Blue LED 100 % brightness
 $ffffff rgbled!     \ White LED 100 % brightness
 
-+sysled  \ Activate the sysled function 
+$80 +sysled  \ Activate the sysled function 
 ```
 
 # Feather Wings
@@ -547,8 +547,8 @@ Implentation [plex.c](/peripherals/plex.c).
 plex-emit    ( c -- )           Emit a character (writes a character to the Plex display)
 plex-emit?   ( -- f )           Plex ready to get a character (I2C not busy)
 
-hook-emit    ( -- a )           Hooks for redirecting terminal IO on the fly
-hook-emit?   ( -- a )    
+hook-emit    ( -- a- )          Hooks for redirecting terminal IO on the fly
+hook-emit?   ( -- a- )    
 
 plexpos!     ( u -- )           Set Plex cursor position/column u
 plexpos@     (  -- u )          Get the current Plex cursor position
@@ -616,11 +616,11 @@ Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
   drop
 ;
 
-: Marquee ( a u -- ) \ marquee a string on charlie plex
+: Marquee ( c- u -- ) \ marquee a string on charlie plex
   lcdclr  0 lcdfont 
   2dup >lcd 2swap type >term  \ write string to LCD
-  nip ( a u -- u )
-  3 - \ trailing spaces
+  nip ( c- u -- u )
+  3 - \ remove trailing spaces
   begin
     dup 6 *  0 do \ all string columns, a char is 6 pixels wide
       i LCD>plex
