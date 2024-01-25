@@ -19,9 +19,10 @@ Procedure Call Standard for the ARM Architecture
 | Register | AAPCS Purpose                                        | Restore Contents | MECRISP Forth Purpose  | ISR Stacking |
 |----------|------------------------------------------------------|------------------|------------------------|--------------|
 | xPSR     | Processor Status Register, Flags                     | N                | Flags                  | 1            |
-| r1       | Argument, result, scratch register 2                 | N                | Scratch                | 3            |
+| r0       | Argument, result, scratch register 1                 | N                | Scratch                | 2            |
+| r1       | Argument, scratch register 2                         | N                | Scratch                | 3            |
 | r2       | Argument, scratch register 3                         | N                | Scratch                | 4            |
-| r3       | Argument, scratch register 4                         | Y                | Scratch                | 5            |
+| r3       | Argument, scratch register 4                         | N                | Scratch                | 5            |
 | r4       | Variable register 1                                  | Y                | DO Index               |              |
 | r5       | Variable register 2                                  | Y                | DO Limit               |              |
 | r6       | Variable register 3                                  | Y                | Top Of Stack TOS       |              |
@@ -34,6 +35,7 @@ Procedure Call Standard for the ARM Architecture
 | r13      | Stack pointer (SP)                                   | y                | Stack pointer (SP)     |              |
 | r14      | Link register (LR)                                   | N                | Link register (LR)     | 7            |
 | r15      | Program counter (PC)                                 | N                | Program counter (PC)   | 0            |
+
 
 VFP Register Usage
 ------------------
