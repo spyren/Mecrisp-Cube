@@ -1,4 +1,5 @@
 ![](img/mecrisp-cube-4th-logo-red-h.svg)
+![](img/ch3-flush.gif)
 
 Intro
 =====
