@@ -1,4 +1,5 @@
 ![](img/mecrisp-cube-4th-logo-red-h.svg)
+
 ![](img/Float_example-header.png)
 
 Floating-Point Unit FPU
@@ -36,23 +37,25 @@ Also from STM AN4044
 >    Perform the operation
 >    Round out the result
 >    Code the result 
-
-On an FPU-less processor, all these operations are done by software through the C compiler 
-library (or Forth Words) and are not visible to the programmer; but the performances are very low. 
-On a processor having an FPU, all of the operations are entirely done by hardware in a single cycle, 
-for most of the instructions. The C (or Forth) compiler does not use its own floating-point 
-library but directly generates FPU native instructions.
-
-When implementing a mathematical algorithm on a microprocessor having an FPU, the programmer 
-does not have to choose between performance and development time. T
-he FPU brings reliability allowing to use directly any generated code through a 
-high level tool, such as MATLAB or Scilab, with the highest level of performance.
-
-Any integer with absolute value less than 2^24 can be exactly represented in the single-precision 
-format, and any integer with absolute value less than 2^53 can be exactly represented in the 
-double-precision format.
+>
+>On an FPU-less processor, all these operations are done by software through the C compiler
+>library (or Forth Words) and are not visible to the programmer; but the performances are very low.
+>On a processor having an FPU, all of the operations are entirely done by hardware in a single cycle,
+>for most of the instructions. The C (or Forth) compiler does not use its own floating-point
+>library but directly generates FPU native instructions.
+>
+>When implementing a mathematical algorithm on a microprocessor having an FPU, the programmer 
+>does not have to choose between performance and development time.
+>The FPU brings reliability allowing to use directly any generated code through a 
+>high level tool, such as MATLAB or Scilab, with the highest level of performance.
+>
+>Any integer with absolute value less than 2^24 can be exactly represented in the single-precision 
+>format, and any integer with absolute value less than 2^53 can be exactly represented in the 
+>double-precision format.
 
 Normalized Numbers Range 
+
+![](img/ieee-754.png)
 
 
 Floating-Point Words
@@ -183,6 +186,4 @@ Mecrisp-Cube has the word `f.` defined as an assembler routine in [fpu.s](https:
 ; 
 ```
 
-![](img/ieee-754.png)
-
-![](img/buergi-sin.png.svg)
+![](img/buergi-sin.png)
