@@ -43,6 +43,14 @@ with access control systems.
 But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
 Flipper Zero also an ideal tool for programming on the go.
 
+STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
+Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
+Developed with the same technology as the ultra-low power STM32L4 microcontrollers, 
+the STM32WB MCU series provides the same digital and analog peripherals suitable 
+for applications requiring an extended battery life and complex functionalities. 
+If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
+Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
+
 ![](/sdcard/man/img/flipper-stlink-2.jpg)
 
 
