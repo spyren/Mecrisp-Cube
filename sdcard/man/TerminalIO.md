@@ -13,6 +13,9 @@ for this purpose in the past. Today's PCs have software to emulate a
 terminal, but usually no longer have serial ports (RS-232 interfaces).
 Instead, there are usually USB interfaces.
 
+What says Leo Brodie to this topic? 
+[I/O and You](https://www.forth.com/starting-forth/10-input-output-operators/)
+
 The
 [USB-CDC](https://en.wikipedia.org/wiki/USB_communications_device_class)
 appears as a traditional RS-232 port in your operating system (Linux
@@ -22,8 +25,6 @@ handshaking, parity and other awkward things.
 There is also a wireless console for PCs and mobile devices. The
 proprietary STM BLE Cable Replacement Service is used as communication
 protocol. 
-
-https://www.forth.com/starting-forth/10-input-output-operators/
 
 `emit` and `key` can block the calling thread, if the buffer is full
 (`emit`) or empty (`key`). The other threads are not affected (no
