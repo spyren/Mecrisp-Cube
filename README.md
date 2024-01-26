@@ -34,6 +34,7 @@ for STM32 MCUs. There are three flavors (branches) available:
 
 May the Forth Be With You!
 
+
 ## Intro for the Flipper Zero
 
 Instant real-time programming with Forth. 
@@ -42,6 +43,7 @@ with access control systems.
 But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
 Flipper Zero also an ideal tool for programming on the go.
 ![](/sdcard/man/img/flipper-stlink-2.jpg)
+
 
 ## Features
 
@@ -233,12 +235,15 @@ The compiled word `hello` needs only 14 bytes in the dictionary.
 
 
 #### Special Functions on Startup 
+
 USB-CDC is the default console.
   * *Button UP* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
   * *Button DOWN* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
   * *Button RIGHT* do not include `0:/etc/rc.local`
 
+
 #### RGB LED as Status Indicator
+
 The RGB LED  displays the status
   * *dimmed Green* LIPO fully charged
   * *dimmed Red* LIPO charging
@@ -333,6 +338,7 @@ The STM tools work on Linux, Windows, and Mac.
 Tab size is 4 for C and assembler source files. 
 Append `?ts=4` to the URL to change the tab-size.
 
+
 ## Versioning
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/spyren/Mecrisp-Cube/tags). 
@@ -375,6 +381,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
+
 ## License
 
 This project *Mecrsip-Cube* is free software: you can redistribute it
@@ -390,10 +397,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
+
 ## Acknowledgments
 
 * http://mecrisp.sourceforge.net/ Original Mecrisp project, **Matthias Koch**
 * https://mecrisp-stellaris-folkdoc.sourceforge.io/ Mecrisp Stellaris Unofficial UserDoc, **Terry Porter**
+
 
 ## Documentation
 
@@ -405,11 +414,12 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
  * [Terminal IO](/sdcard/man/TerminalIO.md)
  * [Filesystem](/sdcard/man/FileSystem.md)
  * [VI Editor](/sdcard/man/EditorVi.md)
- * Error Handling ([Assertation](/sdcard/man/assert.md) and [Watchdog](/sdcard/man/watchdog.md))
+ * Error Handling ([Assertion](/sdcard/man/assert.md) and [Watchdog](/sdcard/man/watchdog.md))
  * [Real Time Clock](/sdcard/man/RealTimeClock.md)
  * [Floating Point Unit](/sdcard/man/fpu.md)
  * [C API](/sdcard/man/CallingCFunction.md)
  * [Display](/sdcard/man/display.md)
+
 
 ### Elsewhere
 
