@@ -6,7 +6,7 @@
   </tr>
 </table> 
 
-# Mecrisp-Cube
+# Mecrisp-Cube (Flipper branch)
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
