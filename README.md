@@ -10,17 +10,25 @@
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
-Forth is an interactive and extensible language, with built-in lexical analysis (tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
+Forth is an interactive and extensible language, with built-in lexical analysis 
+(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
+4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
 
-Forth is perfect for embedded systems where some sort of user interactivity like CLI and extensibility (at runtime) are needed. 
+Forth is perfect for embedded systems where some sort of user interactivity 
+like CLI and extensibility (at runtime) are needed. 
 
-C & Forth in the 21st Century. C and Forth are both about 50 years old. The combination of the strength of this two worlds results in a powerful system that outperforms other much newer systems like Python. Good design withstands the test of time.
+C & Forth in the 21st Century. C and Forth are both about 50 years old. 
+The combination of the strength of this two worlds results in a powerful 
+system that outperforms other much newer systems like Python. 
+Good design withstands the test of time.
 
-The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. There are three flavors (branches) available:
+The goal of Mecrisp-Cube is to be a complete Forth programming environment 
+for STM32 MCUs. There are three flavors (branches) available:
 
   * [WB55 Nucleo](../master) (master) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
-    [Firefly Dev Board](../firefly) (firefly), [Katydid Dev Board](../katydid) (katydid), [WB5M Discovery](../WB5M) (WB55M) and the
-    [STM32WB Feather](../WBfeater) (WBfeater). In work [Flipper Zero](../Flipper)
+    [Firefly Dev Board](../firefly) (firefly), [Katydid Dev Board](../katydid) (katydid),
+    [WB5M Discovery](../WB5M) (WB55M) and the [STM32WB Feather](../WBfeather) (WBfeather).
+    In work [Flipper Zero](../Flipper) (Flipper):
   * [F405](../F405) for Adafruit's Feather STM32F405.
   * [H74x](../H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
@@ -29,8 +37,10 @@ May the Forth Be With You!
 ## Intro for the Flipper Zero
 
 Instant real-time programming with Forth. 
-The [Flipper Zero](https://flipperzero.one/) is an excellent portable tool for interaction with access control systems. 
-But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make Flipper Zero also an ideal tool for programming on the go.
+The [Flipper Zero](https://flipperzero.one/) is an excellent portable tool for interaction 
+with access control systems. 
+But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
+Flipper Zero also an ideal tool for programming on the go.
 ![](/sdcard/man/img/flipper-stlink-2.jpg)
 
 ## Features
@@ -49,23 +59,31 @@ But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
   * [RTOS](/sdcard/man/CmsisRtos.md)
     * Forth as CMSIS-RTOS thread.
     * CMSIS-RTOS API to use FreeRTOS from Forth.
-    * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware, key and emit block the calling thread. 
+    * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware,
+      key and emit block the calling thread. 
   * USB
-    * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for serial communication via USB
+    * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
+      serial communication via USB
     * Redirect console I/O like cdc-emit, cdc-key
   * BLE 5.0 GAP Peripheral Role (STM32WB)
     * DIS Device Information Service
     * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
-    * [CRS](/sdcard/man/TerminalIO.md#ble-cable-replacement-serial-communication-api) Cable Replacement Server service (proprietary service from STM, similar to Classic Bluetooth SPP). Redirect console I/O like crs-emit, crs-key. 
+    * [CRS](/sdcard/man/TerminalIO.md#ble-cable-replacement-serial-communication-api)
+      Cable Replacement Server service (proprietary service from STM, similar to
+      Classic Bluetooth SPP).
+      Redirect console I/O like crs-emit, crs-key. 
   * Floating-Point Unit [FPU](/sdcard/man/fpu.md)
-    * Support for the floating-point unit FPU, single precision for M4F MPUs and double precision for M7 MPUs
+    * Support for the floating-point unit FPU, single precision for M4F MPUs
+      and double precision for M7 MPUs
     * CMSIS-DSP 
   * [vi](/sdcard/man/EditorVi.md) editor
   * Real Time Clock [RTC](/sdcard/man/RealTimeClock.md)
   * [Watchdog](/sdcard/man/watchdog.md)
   * [Assertion and Logging](/sdcard/man/assert.md)
 
+
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
+
   * Control (5-button joystick, Back button, Reboot)
   * [LCD](/sdcard/man/display.md) display 128x64 pixel
   * RGB LED
@@ -83,6 +101,7 @@ Not supported yet:
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
+
 ### External Peripherals (e.g. Feather Wings) 
 
   * OLED Display 128x32, 128x64, I2C
@@ -92,10 +111,12 @@ For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.m
   * NeoPixelWing
   * DotStarWing 
 
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
 machine (Flipper Zero) for development and testing purposes. 
+
 
 ### Prerequisites
 
@@ -109,6 +130,7 @@ machine (Flipper Zero) for development and testing purposes.
     * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
   * STM32CubeProgrammer or [qFlipper](https://docs.flipper.net/qflipper)
+
 
 ### Flash the Mecrisp-Cube Firmware
 
