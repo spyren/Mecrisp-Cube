@@ -30,7 +30,7 @@ for STM32 MCUs. There are three flavors (branches) available:
     [WB5M Discovery](../WB5M) (WB55M) and the [STM32WB Feather](../WBfeather) (WBfeather).
     In work [Flipper Zero](../Flipper) (Flipper):
   * [F405](../F405) (F405) for Adafruit's Feather STM32F405.
-  * [H74x](../H74x3) (H74x) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+  * [H74x](../H743) (H743) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
 May the Forth Be With You!
 
