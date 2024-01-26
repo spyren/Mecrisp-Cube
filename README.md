@@ -25,12 +25,12 @@ Good design withstands the test of time.
 The goal of Mecrisp-Cube is to be a complete Forth programming environment 
 for STM32 MCUs. There are three flavors (branches) available:
 
-  * [WB55 Nucleo](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
+  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
     [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
     [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
     In work [Flipper Zero](../Flipper) (`Flipper`):
-  * [F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
-  * [H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
+  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
 May the Forth Be With You!
 
