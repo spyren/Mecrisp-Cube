@@ -18,7 +18,7 @@ C & Forth in the 21st Century. C and Forth are both about 50 years old. The comb
 
 The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. There are three flavors available:
 
-  * MecrispCubeWB (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](../firefly), [Katydid](../katydid), [Discovery](../WB5M) and the [STM32WB Feather](../WBfeater) Dev Board. In work [STM32WB Flipper Zero](../Flipper)
+  * [MecrispCubeWB](../master)) (BLE) for the STM32WB55 Nucleo Board and dongle and variants for the [Firefly](../firefly), [Katydid](../katydid), [Discovery](../WB5M) and the [STM32WB Feather](../WBfeater) Dev Board. In work [STM32WB Flipper Zero](../Flipper)
   * [F405](../F405) for Adafruit's Feather STM32F405.
   * [H74x](../H74x3) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
