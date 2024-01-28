@@ -145,7 +145,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : delay ( -- )
-  50 osDelay drop  \ wait 200 ms
+  50 osDelay drop  \ wait 50 ms
 ;
 
 : left ( -- ) 
