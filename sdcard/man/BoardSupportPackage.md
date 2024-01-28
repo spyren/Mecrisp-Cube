@@ -410,7 +410,7 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 ## Switches
 
 Most development boards have at least a switch or a push button, 
-the Nucleo and Dongle have 3 switches.
+the Nucleo has 3 and Dongle has 1 switches.
 
 ```
 switch1? .
