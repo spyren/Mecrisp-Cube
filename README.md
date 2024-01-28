@@ -140,13 +140,8 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
 Flash the Mecrisp-Cube [binary](/Release/MecrispCube.bin) `MecrispCube.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFS.bin) 
 `MecrispCubeFS.bin` to the WB55 Nucleo. Using the built-in USB DFU bootloader.
 
-   1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
-   1. Connect the Nucleoboard USB to the PC
-   1. Program the binary (`MecrispCube.bin` or better `MecrispCubeFS.bin`) with 
-      1. the STMCubeProgrammer (select USB Device), for Linux 
-         `sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer`
-      1. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
-   1. Reboot your device by pressing and holding the left and back buttons 
+ 1. Connect the Nucleo Board USB ST-LINK to the PC
+ 1. Copy binary (MecrispCube.bin or better the MecrispCubeFS.bin) to the USB mass storage NODE_WB55RG 
 
 
 ### Use the Terminal (USB CDC)
@@ -329,6 +324,86 @@ The STM tools work on Linux, Windows, and Mac.
 
 Tab size is 4 for C and assembler source files. 
 Append `?ts=4` to the URL to change the tab-size.
+
+
+## Flash Mecrisp-Cube to the Target
+
+Alternate ways to flash Mecrisp-Cube to the target. For the easy way see 
+MecrispCubeWB#Prerequisites. 
+
+
+### Nucleo Board
+
+Connect Nucleo's ST-LINK USB to you PC. Erase the flash e.g. by `openOCD`, 
+we use 768 KiB %ICON{right}% 192 sectors. 
+<pre>
+$ <b>telnet localhost 4444</b>
+Trying ::1...
+telnet: connect to address ::1: Connection refused
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Open On-Chip Debugger
+> <b>reset init</b>
+Unable to match requested speed 500 kHz, using 480 kHz
+Unable to match requested speed 500 kHz, using 480 kHz
+target halted due to debug-request, current mode: Thread 
+xPSR: 0x01000000 pc: 0x08003aae msp: 0x20000430
+> <b>flash erase_sector 0 0 192</b>
+erased sectors 0 through 192 on flash bank 0 in 4.583453s
+> <b>flash write_image mecrisp-stellaris-stm32wb55.hex</b>
+device idcode = 0x20016495 (STM32WB5x - Rev: 2.1)
+flash size = 1024kbytes
+flash mode : single-bank
+Padding 4 bytes to keep 8-byte write size
+block write succeeded
+wrote 15404 bytes from file mecrisp-stellaris-stm32wb55.hex in 0.329747s (45.620 KiB/s)
+
+> <b>shutdown</b>
+shutdown command invoked
+Connection closed by foreign host.
+</pre>
+
+
+### USB Dongle
+
+The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in 
+boot-loader. This bootloader works via USB. As programming tool I use the 
+CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
+
+<pre>
+$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
+$ <b>cubepgmcli -c port=USB1 -e [0 191]</b>
+$ <b>cubepgmcli -c port=USB1 -d Release/MecrispCube.bin 0x8000000 </b>
+$ <b>cubepgmcli -c port=USB1 -ob displ</b>
+</pre>
+
+BTW you can flash the Nucleo Board in the same way. 
+
+
+### Update BLE Stack
+
+You can find the BLE Stack and FUS in 
+[STM32CubeWB](https://www.st.com/en/embedded-software/stm32cubewb.html)
+or from [GitHub](https://github.com/STMicroelectronics/STM32CubeWB), 
+in the directory `Projects/STM32WB_Copro_Wireless_Binaries`. 
+At time of writing the FUS is Version 1.2.0, the stack v1.17.3. The STM32CubeProgrammer is v2.14.0.
+
+Nucleo board: Using USB_USER interface and the built-in bootloader (activate with jumper between CN7.5 and CN7.7)
+<pre>
+$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
+$ <b>cd STM32Cube_FW_WB_V1.14.1/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
+$ <b>cubepgmcli -c port=USB1 -fwdelete</b>
+$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_FUS_fw.bin 0x080EC000 firstinstall=0</b>
+$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_FUS_fw_for_fus_0_5_3.bin 0x080EC000 firstinstall=0</b>
+$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CB000 firstinstall=1</b>
+</pre>
+
+Alternate way to erase the flash memory (change the Memory Read Protection from Level 1 to level 0):
+<pre>
+$ <b>cubepgmcli -c port=swd -ob rdp=0xbb</b>
+$ <b>cubepgmcli -c port=swd -rdu</b>
+</pre>
 
 
 ## Versioning
