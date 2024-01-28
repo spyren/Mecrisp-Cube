@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <td><img src="img/flipper-header.jpg"  ></td>
+    <td><img src="img/nucleo-header.jpg"  ></td>
     <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
   </tr>
 </table> 
@@ -8,51 +8,44 @@
 Board Support Package for the Flipper Zero
 ==========================================
 
-The board support package for the STM32WB Flipper Zero is restricted to the
-pin header (Arduino numbering) and the onboard LEDs, switches (buttons), LCD, 
-charger, vibro, and speaker.
+The board support package for the STM32WB Nucleo Board is restricted to the 
+Arduino UNO R3 pin header and the onboard LEDs and switches (buttons). 
+The STM32 has much more capabilities then 14 digital I/O pins, 
+6 analog input pins, UART, SPI, and I2C interfaces. But if you want to use 
+the more advanced features you can use the CubeMX to create source code for the 
+internal peripherals. This project wants to show how to use the Cube Ecosystem 
+for a Forth system (or vice versa) and can't implement all features and 
+possibilities the STM32WB has. It is a good starting point for your project. 
 
-The STM32 has much more capabilities than 10 digital I/O pins, 3 analog
-input pins, UART, SPI, and I2C interfaces. But if you want to use the
-more advanced features you can use the CubeMX to create source code for
-the internal peripherals. This project wants to show how to use the Cube
-Ecosystem for a Forth system (or vice versa) and can\'t implement all
-features and possibilities the STM32WB has. It is a good starting point
-for your project. 
 
 Board Support Words
 ===================
 
 For GPIO pin defaults see [table](#arduino-and-feather-assignments).
 ```
-rgbled!      ( u -- )         set the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
-rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
-wled!        ( u -- )         set the W (LCD backlight) led
-wled@        ( -- u )         get the W (LCD backlight) led
-+sysled      ( u -- )         set sysled flags u $01 ACTIVATE, $02 DISK_READ_OPERATION, $04 DISK_WRITE_OPERATION
-                              $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
--sysled      ( u -- )         clear sysled flags u
+led1!        ( ? -- )         set LED1 (blue)
+led2!        ( ? -- )         set LED2 (green)
+led3!        ( ? -- )         set LED3 (red)
+led1@        ( -- ? )         get LED1 (blue)
+led2@        ( -- ? )         get LED2 (green)
+led3@        ( -- ? )         get LED3 (red)
 
-switch1?     ( -- f )         get switch1 (OK button), closed=TRUE
-switch2?     ( -- f )         get switch2 (BACK button), closed=TRUE
-switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
-switch4?     ( -- f )         get switch4 (LEFT), closed=TRUE
-switch5?     ( -- f )         get switch5 (UP button), closed=TRUE
-switch6?     ( -- f )         get switch6 (DOWN button), closed=TRUE
+switch1?     ( -- ? )         get switch1, closed=TRUE
+switch2?     ( -- ? )         get switch2, closed=TRUE
+switch3?     ( -- ? )         get switch3, closed=TRUE
 
-button       ( -- c )         wait for and fetch the pressed button (similar to the key word) 
-                              char b BACK, o OK, r RIGHT, l LEFT, u UP, d DOWN
-button?      ( -- f )         Is there a button press?
+dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
+dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
 
 dpin!        ( f u -- )       set the digital output port pin u (D0=0 .. D18=18)  to f (TRUE 1, FALSE 0)
 dpin@        ( u -- f )       get the digital input/output port pin u
 dmod         ( u1 u2 -- )     set the pin u2 to mode u1: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM
                                                 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
 
-pwmpin!      ( u1 u2 -- )     set the digital output port pin u2 (D6=6, D11=11) to a PWM value u1 (0..1000). Default frequency is 1 kHz, TIMER1
+pwmpin!      ( u1 u2 -- )     set the digital output port pin u2 (D3=3, D6=6, D9=9) to a PWM value u1 (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D6=6, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-EXTImod      ( u1 u2 -- )     set for pin u2 (A0 16, A1 17, D9 9, D10 10) the EXTI mode u1: 0 rising, 1 falling, 2 both edges, 3 none
+EXTImod      ( u1 u2 -- )     set for pin u2 (D2, D4, D7, D10) the EXTI mode u1: 0 rising, 1 falling, 2 both edges, 3 none
 EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (A0 16, A1 17, D9 9, D10 10), timeout u2 in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
@@ -63,7 +56,7 @@ ICOCcount!   ( u -- )         set the input capture / output compare counter for
 ICOCcount@   ( -- u )         get the input capture / output compare counter for TIMER2
 ICOCstart    ( -- )           start the ICOC period
 ICOCstop     ( -- )           stop the ICOC period
-OCmod        ( u1 u2 -- )     set for pin u2 (D13 13) the Output Compare mode u1: 0 frozen, 1 active level on match, 2 inactive level on match, 
+OCmod        ( u1 u2 -- )     set for pin u2 (D0, D1, D5) the Output Compare mode u1: 0 frozen, 1 active level on match, 2 inactive level on match, 
                               3 toggle on match, 4 forced active, 5 forced inactive
     
 OCstart      ( u1 u2 -- )     start the output compare mode for pin u2 with pulse u1
@@ -75,8 +68,8 @@ waitperiod   ( -- )           wait for the end of the TIMER2 period
 OCwait       ( u -- )         wait for the end of output capture on pin u
 ICwait       ( u1 -- u2 )     wait for the end of input capture with timeout u1, returns counter u2
 
-apin@        ( u1 -- u2 )     get the analog input port pin u1 (A0 .. A2). Returns a 12 bit value u2 (0..4095) 
-vref@        ( -- u )         get the Vref voltage in mV (about 2500 mV)
+apin@        ( u1 -- u2 )     get the analog input port pin u1 (A0 .. A5). Returns a 12 bit value u2 (0..4095) 
+vref@        ( -- u )         get the Vref voltage in mV (rather the VDDA, about 3300 mV)
 vbat@        ( -- u )         get the Vbat voltage in mV (about 3300 mV)
 CPUtemp@     ( -- u )         get CPU temperature in degree Celsius
 
