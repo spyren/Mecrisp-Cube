@@ -1,6 +1,6 @@
 ![](img/mecrisp-cube-4th-logo-red-h.svg)
 
-# Assertation and Logging
+# Assertion and Logging
 
 For severe failures e.g. stack overflow the only way to recover for embedded systems is a 
 reset (warm restart, abort). Other asserts (unknown events) can be ignored because they 

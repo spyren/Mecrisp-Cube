@@ -76,8 +76,8 @@ OCwait       ( u -- )         wait for the end of output capture on pin u
 ICwait       ( u1 -- u2 )     wait for the end of input capture with timeout u1, returns counter u2
 
 apin@        ( u1 -- u2 )     get the analog input port pin u1 (A0 .. A2). Returns a 12 bit value u2 (0..4095) 
-vref@        ( -- u )         get the Vref voltage in mV (rather the VDDA)
-vbat@        ( -- u )         get the Vbat voltage in mV
+vref@        ( -- u )         get the Vref voltage in mV (about 2500 mV)
+vbat@        ( -- u )         get the Vbat voltage in mV (about 3300 mV)
 CPUtemp@     ( -- u )         get CPU temperature in degree Celsius
 
 I2Cput       ( c- u1 u2-- )   put a message with length u (count in bytes) from buffer at a to the I2C slave device u
@@ -137,7 +137,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : init-port ( -- )
-  11 18 dmod   \ set A2/D18 to analog
+  11 16 dmod   \ set A0/D16 to analog
   8 0 do
     0 i pin dpin!
     3 i pin dmod \ port is output
@@ -145,7 +145,7 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 ;
 
 : delay ( -- )
-  50 osDelay drop  \ wait 200 ms
+  50 osDelay drop  \ wait 50 ms
 ;
 
 : left ( -- ) 
@@ -175,6 +175,12 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 
 Using the ADC (Analog Input Pins)
 =================================
+
+Flipper Zero use the VREF+ out mode. I prefer the the VREF+ input mode and 
+use the VDDA (3.3 V) as reference voltage, This compensates for the 
+measurement inaccuracy caused by VDDA variations. 
+However the reference voltage for the Flipper is about 2.5 V and therefore 
+the measurement range is from 0 to 2.5 V. 
 
 `apin@ ( a -- u )` returns the ADC value (12 bit, 0 .. 4095) from one of
 the analog pins A0 to A2 (0 .. 2). Here I use the A0 to control the

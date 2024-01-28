@@ -1,8 +1,9 @@
 ![](img/mecrisp-cube-4th-logo-red-h.svg)
 ![](img/ch3-flush.gif)
 
-Intro
-=====
+# Terminal-IO
+
+## Intro
 
 To work interactively with a Forth system, you need some kind of
 [console](https://en.wikipedia.org/wiki/System_console). A text
@@ -11,6 +12,9 @@ with [RS-232](https://en.wikipedia.org/wiki/RS-232) port has been used
 for this purpose in the past. Today's PCs have software to emulate a
 terminal, but usually no longer have serial ports (RS-232 interfaces).
 Instead, there are usually USB interfaces.
+
+What says Leo Brodie to this topic? 
+[I/O and You](https://www.forth.com/starting-forth/10-input-output-operators/)
 
 The
 [USB-CDC](https://en.wikipedia.org/wiki/USB_communications_device_class)
@@ -22,22 +26,20 @@ There is also a wireless console for PCs and mobile devices. The
 proprietary STM BLE Cable Replacement Service is used as communication
 protocol. 
 
-
-Terminal-IO
-===========
-
 `emit` and `key` can block the calling thread, if the buffer is full
 (`emit`) or empty (`key`). The other threads are not affected (no
 busy-wait). The incoming characters (Rx) are buffered in a RTOS message
 queue, outgoing characters are also buffered.
 
-Default console is USB-CDC, but if you press button SW2 on reset, the
+Default console is USB-CDC, but if you press button SW2 
+(it depends on the used board) on reset, the
 console is redirected to the UART
 [RS-232](https://en.wikipedia.org/wiki/RS-232) serial device (for
 details see
 [mecrisp.s](https://github.com/spyren/Mecrisp-Cube/blob/master/Forth/cube/mecrisp.s)).
 If you press button SW1 on reset, the console is redirected to the
 Bluetooth LE Cable Replacement Service.
+
 ```
 emit?        ( -- f )       Ready to send a character?
 key?         ( -- f )       Checks if a key is waiting
@@ -69,8 +71,8 @@ crs          ( -- )         redirect console to BLE CRS
 ;
 ```
 
-USB-CDC Serial Communication (API)
-==================================
+
+## USB-CDC Serial Communication (API)
 
 Buffered USB-CDC serial communication. The
 [USB-CDC](https://en.wikipedia.org/wiki/USB_communications_device_class)
@@ -91,8 +93,8 @@ cdc-emit?  ( -- f ) Ready to send a character. Buffer is not full.
 cdc-key?   ( -- f ) Checks if a character is in the buffer.
 ```
 
-UART Serial Communication (API)
-===============================
+
+## UART Serial Communication (API)
 
 The Rx buffer is 5 k, the Tx buffer 1 k. Copy and past source code into
 the terminal is possible without buffer overrun.
@@ -114,8 +116,8 @@ wordlength!  ( u -- ) sets word length 7, 8, 9 (including parity)
 stopbits!    ( u -- ) sets stop bits 0 1 bit, 1 1.5 bit, 2 2 bit
 ```
 
-BLE Cable Replacement Serial Communication (API)
-================================================
+
+## BLE Cable Replacement Serial Communication (API)
 
 Classic Bluetooth has a Serial Port Profile (SPP). It emulates a serial
 cable to provide a simple substitute for existing RS-232, including the
@@ -160,8 +162,7 @@ crs-key?   ( -- f ) Checks if a character is in the buffer.
 The blue LED indicates a connection to a central device.
 
 
-Terminal Emulators
-==================
+## Terminal Emulators
 
 Terminal emulator applications for PCs, e.g.:
 
