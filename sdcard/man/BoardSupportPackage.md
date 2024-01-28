@@ -5,8 +5,8 @@
   </tr>
 </table> 
 
-Board Support Package for the Flipper Zero
-==========================================
+Board Support Package for the Nucleo and Dongle
+===============================================
 
 The board support package for the STM32WB Nucleo Board is restricted to the 
 Arduino UNO R3 pin header and the onboard LEDs and switches (buttons). 
@@ -169,12 +169,6 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 Using the ADC (Analog Input Pins)
 =================================
 
-Flipper Zero use the VREF+ out mode. I prefer the the VREF+ input mode and 
-use the VDDA (3.3 V) as reference voltage, This compensates for the 
-measurement inaccuracy caused by VDDA variations. 
-However the reference voltage for the Flipper is about 2.5 V and therefore 
-the measurement range is from 0 to 2.5 V. 
-
 `apin@ ( a -- u )` returns the ADC value (12 bit, 0 .. 4095) from one of
 the analog pins A0 to A2 (0 .. 2). Here I use the A0 to control the
 delay.
@@ -300,9 +294,6 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 # Using Input Capture and Output Compare
 
-The Flipper expose only one port pin with a TIMER2 channel. 
-Therefore only one GPIO (D13) can be used as input capture or output compare. 
-
 ## Time Base
 
 Default timer resolution is 1 us. The 32 bit TIMER2 is used as time base 
@@ -418,7 +409,8 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 
 ## Switches
 
-Most development boards have at least a switch or a push button, the Flipper has 6 switches.
+Most development boards have at least a switch or a push button, 
+the Nucleo and Dongle have 3 switches.
 
 ```
 switch1? .
@@ -458,28 +450,48 @@ $80 +sysled  \ Activate the sysled function
 
 # Feather Wings
 
-## Feather Adaptor
+## Nucleo Dongle - Feather Adaptor
 
-Feather Adaptor with ST-LINK and 8 LEDs (D6, D0, D1, D9, D13, D10, D12, D11). 
-There are jumpers for SCL, SCA, SCK, MO, and MI. 
-The ST-LINK pins SWDIO, SWCLK, VCP_RX, and VCP_TX
-are also jumpered.
-There is a [Grove](https://wiki.seeedstudio.com/Grove_System/) connector 
-(A0, A1, VCC, GND) for I2C/Analog/Digital too.
+Remove the USB Type A plug from the dongle and add a Adafruit 
+Micro B breakout board. It is convenient to have a Micro-SD 
+breakout board (level shifter is not needed) and JTAG connector 
+(I prefer the 14 pin STM variant to have a serial interface by the ST-LINK). 
+Everything mounted on headers on the backside of 
+FeatherWing [Tripler](https://www.adafruit.com/product/3417) Mini Kit.
 
-A two evening project (wiring instead of knitting). See below for knitting pattern.
+![](img/dongle-feather-adaptor.jpg)
 
-<table>
-  <tr>
-    <td><img src="img/flipper-feather-adaptor-top.jpg"  ></td>
-    <td><img src="img/flipper-feather-adaptor-bottom.jpg"  ></td>
-  </tr>
-</table> 
-
-It is easier to use the [Flipper Zero Breadboard](https://www.joom.com/geek/en/products/631b4ceb3dd2930180ea7f2b).
-If you do not need the Feather Adaptor but want to have ST-Link and some LEDs the 
-[ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) is a
-good choice.
+| Description | Dongle | Function  |  Feather     | Micro-SD  | JTAG 14pin |
+|-------------|--------|-----------|--------------|-----------|------------|
+| GND         | CN1.1  | GND       | JP1.13 GND   | GND       | 5, 7, 11   |
+| NRST        | CN1.2  | RES       | JP1.16 RST   |           | 12         |
+| PA13        | CN1.3  | SWDIO     | -            |           | 4          |
+| PA14        | CN1.4  | SWDCLK    | -            |           | 6          |
+| PB3         | CN1.5  | SWO       | A4?          |           | 8          |
+| 3V3         | CN1.6  | 3V3       | JP1.14/15 3V3 | 3V 5V    | 3          |
+| PB2         | CN1.7  | SPI_CS    | -            | CS        |            |
+| PA5         | CN1.8  | D13 SCK   | JP1.6  SCK   | CLK       |            |
+| PA6         | CN1.9  | D12 MISO  | JP1.4  MISO  | DO        |            |
+| PA7         | CN1.10 | D11 MOSI  | JP1.5  MOSI  | DI        |            |
+| PB8         | CN2.1  | D15 SCL   | JP3.11 SCL   |           |            |
+| PB9         | CN2.2  | D14 SDA   | JP3.12 SDA   |           |            |
+| PA0         | CN2.3  | A3        | JP1.9  A3    |           |            |
+| PA2         | CN2.4  | D1        | JP1.2  D1    |           |            |
+| PA3         | CN2.5  | D0        | JP1.3  D0    |           |            |
+| PB6         | CN2.6  | UARTRX    |              |           | 13         |
+| PA9         | CN2.7  | D9        | JP3.8  D9    |           |            |
+| PB7         | CN2.7  | UARTTX    |              |           | 14         |
+| PA8         | CN2.8  | D6 Neopixel | JP3.9  D6  |           |            |
+| GND         | CN2.9  | GND       | GND          |           |            |
+| PA1         | CN2.10 | A2        | JP1.10 A2    |           |            |
+| !USB5V      |        | 5V        | JP3.3  USB   |           |            |
+| BOOT0       |        | BOOT0     | JP1.1  B0    |           |            |
+| PB0 AT2 ?   |        |           | JP1.12 A0    |           |            |
+| PB1 AT2 ?   |        |           | JP1.11 A1    |           |            |
+| PB3   ?     | CN1.5  | SWO       | JP1.8  A4?   |           | 8          |
+|             |        |           | JP1.7  A5    |           |            |
+|             |        |           | JP3.1  VBAT  |           |            |
+|             |        |           | JP3.2  EN    |           |            |
 
 
 ## Neopixel
@@ -493,7 +505,7 @@ The control protocol for NeoPixels is based on only one communication wire.
 
 ### Single NeoPixel
 
-For the Flipper I use D6 for the Neopixel. It takes about 30 us to set one Neopixel, 
+For the Nucleo I use D8 for the Neopixel. It takes about 30 us to set one Neopixel, 
 during this time the interrupts are disabled. 
 
 <pre>
@@ -649,8 +661,6 @@ message strlen Marquee
 
 ### Arduino Pinout 
 
-[GPIO & modules](https://docs.flipper.net/gpio-and-modules)
-
 #### Arduino Left
 
 ![](img/nucleo_wb55rg_arduino_left.png)
@@ -720,7 +730,6 @@ message strlen Marquee
 | FLASH_SCLK    | PA3              | QUADSPI_BK1_SCLK           |
 
 
-
 ## STM32WB Nucleo Dongle
 
 ### Internal
@@ -740,50 +749,6 @@ message strlen Marquee
 | LD2           | PB0              |                            |
 | LD3           | PA4              |                            |
 | Neopixel      | PC12             | D6                         |
-
-
-## Nucleo Dongle - Feather Adaptor
-
-Remove the USB Type A plug from the dongle and add a Adafruit 
-Micro B breakout board. It is convenient to have a Micro-SD 
-breakout board (level shifter is not needed) and JTAG connector 
-(I prefer the 14 pin STM variant to have a serial interface by the ST-LINK). 
-Everything mounted on headers on the backside of 
-FeatherWing [Tripler](https://www.adafruit.com/product/3417) Mini Kit.
-
-![](img/dongle-feather-adaptor.jpg)
-
-| Description | Dongle | Function  |  Feather     | Micro-SD  | JTAG 14pin |
-|-------------|--------|-----------|--------------|-----------|------------|
-| GND         | CN1.1  | GND       | JP1.13 GND   | GND       | 5, 7, 11   |
-| NRST        | CN1.2  | RES       | JP1.16 RST   |           | 12         |
-| PA13        | CN1.3  | SWDIO     | -            |           | 4          |
-| PA14        | CN1.4  | SWDCLK    | -            |           | 6          |
-| PB3         | CN1.5  | SWO       | A4?          |           | 8          |
-| 3V3         | CN1.6  | 3V3       | JP1.14/15 3V3 | 3V 5V    | 3          |
-| PB2         | CN1.7  | SPI_CS    | -            | CS        |            |
-| PA5         | CN1.8  | D13 SCK   | JP1.6  SCK   | CLK       |            |
-| PA6         | CN1.9  | D12 MISO  | JP1.4  MISO  | DO        |            |
-| PA7         | CN1.10 | D11 MOSI  | JP1.5  MOSI  | DI        |            |
-| PB8         | CN2.1  | D15 SCL   | JP3.11 SCL   |           |            |
-| PB9         | CN2.2  | D14 SDA   | JP3.12 SDA   |           |            |
-| PA0         | CN2.3  | A3        | JP1.9  A3    |           |            |
-| PA2         | CN2.4  | D1        | JP1.2  D1    |           |            |
-| PA3         | CN2.5  | D0        | JP1.3  D0    |           |            |
-| PB6         | CN2.6  | UARTRX    |              |           | 13         |
-| PA9         | CN2.7  | D9        | JP3.8  D9    |           |            |
-| PB7         | CN2.7  | UARTTX    |              |           | 14         |
-| PA8         | CN2.8  | D6 Neopixel | JP3.9  D6  |           |            |
-| GND         | CN2.9  | GND       | GND          |           |            |
-| PA1         | CN2.10 | A2        | JP1.10 A2    |           |            |
-| !USB5V      |        | 5V        | JP3.3  USB   |           |            |
-| BOOT0       |        | BOOT0     | JP1.1  B0    |           |            |
-| PB0 AT2 ?   |        |           | JP1.12 A0    |           |            |
-| PB1 AT2 ?   |        |           | JP1.11 A1    |           |            |
-| PB3   ?     | CN1.5  | SWO       | JP1.8  A4?   |           | 8          |
-|             |        |           | JP1.7  A5    |           |            |
-|             |        |           | JP3.1  VBAT  |           |            |
-|             |        |           | JP3.2  EN    |           |            |
 
 
 
