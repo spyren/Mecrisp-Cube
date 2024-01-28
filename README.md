@@ -432,13 +432,13 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 ### Elsewhere
 
-* [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
-* [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
-* https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
-* https://forth-ev.de/ Forth-Gesellschaft e.V.
-* https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
+ * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
+ * [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
+ * https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
+ * https://forth-ev.de/ Forth-Gesellschaft e.V.
+ * https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
 
-* https://forth-standard.org/standard/words, Forth 2012 Standard Words
-* https://gforth.org/manual/, GForth Manual
+ * https://forth-standard.org/standard/words, Forth 2012 Standard Words
+ * https://gforth.org/manual/, GForth Manual
 
 
