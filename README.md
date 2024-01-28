@@ -173,10 +173,12 @@ The greeting screen should apear after startup:
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
-Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 2023 peter@spyr.ch
+Mecrisp-Cube 1.5.1 for STM32WB Flipper Zero, 63/128  KiB RAM/FLASH dictionary (C) 2024 peter@spyr.c
   * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
+  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+
 include 0:/etc/rc.local
 ```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
