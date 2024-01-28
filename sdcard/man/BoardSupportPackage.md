@@ -671,91 +671,36 @@ message strlen Marquee
 ![](img/nucleo_wb55rg_morpho_right.png)
 
 
-## External 
+###  Internal 
 
-### GPIO Ports
+#### Push Buttons
 
-[GPIO & modules](https://docs.flipper.net/gpio-and-modules)
-
-![](img/flipper-gpio.jpg)
-
-
-### Arduino and Feather Assignments
-
-| Pin    | Label   | STM32WB55 pin    | Arduino   | Feather        | Alternate Functions                              | Default      |
-|--------|---------|------------------|-----------|----------------|--------------------------------------------------|--------------|
-| 1      | +5V     |                  |           | VBUS           |                                                  |              |
-| 2      | A7      | PA7              | D11       | D11 [MOSI]     | SPI1_MOSI, TIM1_CH1 (PWM)                        | in pull-up   |
-| 3      | A6      | PA6              | D12       | D12 [MISO]     | SPI1_MISO                                        | in pull-up   |
-| 4      | A4      | PA4              | D10       | D10            | SPI1_CS, EXTI4                                   | in pull-up   |
-| 5      | B3      | PB3              | D13       | D13 [CLK]      | SPI1_CLK, TIM2_CH2 (output capture), SWO         | in pull-up   |
-| 6      | B2      | PB2              | D9        | D9             | EXTI2                                            | in pull-up   |
-| 7      | C3      | PC3              | A2 (D18)  | A2             |                                                  | analog       |
-| 8      | GND     |                  |           | GND            |                                                  |              |
-| 9      | 3V3     |                  |           | 3.3V           |                                                  |              |
-| 10     | SWC     | PA14             | D3        | D3             | SWCLK                                            | debug        |
-| 11     | GND     |                  |           | GND            |                                                  |              |
-| 12     | SIO     | PA13             | D2        | D2             | SWDIO                                            | debug        |
-| 13     | TX      | PB6              | D1        | TX             | D1                                               | UART         |
-| 14     | RX      | PB7              | D0        | RX             | D0                                               | UART         |
-| 15     | C1      | PC1              | A1 (D17)  | A1 [SDA]       | I2C3_SDA, EXTI1                                  | I2C          |
-| 16     | C0      | PC0              | A0 (D16)  | A0 [SCL]       | I2C3_SCL, EXTI0                                  | I2C          | 
-| 17     | 1W      | PB14             | D6        | D6             | TIM1_CH2 (PWM)                                   | in pull-up   |
-| 18     | GND     |                  |           | GND            |                                                  |              |
+| Signal name   | STM32WB55 pin    | 
+|---------------|------------------|
+| SWITCH1       | PC4 (PC13)       |
+| SWITCH2       | PD0              |
+| SWITCH3       | PD1              |
 
 
-### JTAG/SWD Adaptor
+#### LEDs
 
-| JTAG Pin    | JTAG STM 14pin   | Flipper Pin   | STLINK-V3MINI    | Description    |
-|-------------|------------------|---------------|------------------|----------------|
-|             | 1                |               |                  | NC             |
-|             | 2                |               |                  | NC             |
-| 1           | 3                | 9             | 30 (right)       | VDD            |
-| 2           | 4                | 12            | 4  (left)        | SWDIO          |
-| 3           | 5                | 8             | 8  (left)        | GND            |
-| 4           | 6                | 10            | 13 (left)        | SWCLK          |
-| 5           | 7                |               |                  | GND            |
-| 6           | 8                | (5)           | 6  (left)        | SWO            |
-| 7           | 9                |               |                  | NC             |
-| 8           | 10               |               |                  | NC             |
-| 9           | 11               | 11            | 5  (left)        | GND_DETECT     |
-| 10          | 12               | -             | 31 (right)       | NRST           |
-|             | 13               | 14            | 15 (left)        | VCP_RX Target  |
-|             | 14               | 13            | 12 (left)        | VCP_TX Target  |
-
-   * [STLINK-V3MINI debugger/programmer](https://www.st.com/resource/en/user_manual/um2502-stlinkv3mods-and-stlinkv3mini-debuggerprogrammer-tiny-probes-for-stm32-microcontrollers-stmicroelectronics.pdf)
-   * [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3)
+| Signal name | STM32WB55 pin  | Comment                  |
+|-------------|----------------|--------------------------|
+| LD1         | PB5            |                          |
+| LD2         | PB0            |                          |
+| LD3         | PB1            |                          |
+| Neopixel    | PC12           | D8                       |
 
 
-##  Internal 
-
-### Push Buttons
-
-| Signal name   | STM32WB55 pin    | Comment                    | Numbering   |
-|---------------|------------------|----------------------------|-------------|
-| BUTTON_OK     | PH3              | BOOTP                      | 1           |
-| BUTTON_BACK   | PC13             | RESET, WKUP2               | 2           |
-| BUTTON_RIGHT  | PB12             |                            | 3           |
-| BUTTON_LEFT   | PB11             | RESET                      | 4           |
-| BUTTON_UP     | PB10             |                            | 5           |
-| BUTTON_DOWN   | PC6              |                            | 6           |
-
-
-### RGB LED, LCD Backlight LED
+#### I2C
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
 | IC2_SCL       | PA9              | I2C1_SCL                   |
 | IC2_SDA       | PA10             | I2C1_SDA                   |
 
-PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 
-   * I2C Address write 60h, read 61h.
-   * PWM frequency is either 256 Hz or 558 Hz.
-   * max. 25.5 mA, 100 uA steps
-
-
-### UART VCP ST-LINK
+#### UART VCP ST-LINK
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
@@ -763,92 +708,82 @@ PWM Driver Chip: [LP5562](https://www.ti.com/lit/ds/symlink/lp5562.pdf)
 | UART_RX       | PB7              | USART1_RX                  |
 
 
-### SPI LCD Display
-
-[Sitronix ST7567S](https://www.crystalfontz.com/controllers/Sitronix/ST7567/303/) (older devices ST7565R ?)
-
-| Signal name   | STM32W555 pin    | Comment                    |
-|---------------|------------------|----------------------------|
-| DISPLAY_RST   | PB0              |                            |
-| DISPLAY_DI    | PB1              |                            |
-| DISPLAY_CS    | PC11             | CS                         |
-| SPI_D_MOSI    | PB15             | SPI2_MOSI                  |
-| SPI_D_SCK     | PD1              | SPI2_SCK                   |
-| LCD_LED       | PC9              |                            | 
-
-
-### microSD Adapter (SD Drive)
-
-| Signal name   | STM32W555 pin    | Comment                    |
-|---------------|------------------|----------------------------|
-| SD_CS         | PC12             | Chip Select                |
-| SD_CD         | PC10             | Card Detect                |
-| SPI_D_MOSI    | PB15             | SPI2_MOSI                  |
-| SPI_D_MISO    | PC2              | SPI2_MISO                  |
-| SPI_D_SCK     | PD1              | SPI2_SCK                   |
-
-
-### LIPO Charger, Fuel Gauge
-
-   * [BQ25896RTWR](https://www.ti.com/lit/ds/symlink/bq25896.pdf) Charger, 0x6b (1101011B + R/W)
-   * [BQ27220YZFR](https://www.ti.com/lit/ds/symlink/bq27220.pdf) Fuel gauge, 0x55 (1010101 + R/W),
+#### Quad SPI for Flash
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| IC2_SCL       | PA9              | I2C1_SCL                   |
-| IC2_SDA       | PA10             | I2C1_SDA                   |
-| PWR_INT       | -                |                            |
+| FLASH_NCS     | PD3              | QUADSPI_BK1_NCS            |
+| FLASH_IO0     | PB9              | QUADSPI_BK1_IO0            |
+| FLASH_IO1     | PD5              | QUADSPI_BK1_IO1            |
+| FLASH_IO2     | PD6              | QUADSPI_BK1_IO2            |
+| FLASH_IO3     | PD7              | QUADSPI_BK1_IO3            |
+| FLASH_SCLK    | PA3              | QUADSPI_BK1_SCLK           |
 
 
-### Vibro and Speaker
+
+## STM32WB Nucleo Dongle
+
+### Internal
+
+#### Push Button
 
 | Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| SPEAKER       | PB8              | _TIM16CH1_, TIM1CH2N       |
-| VIBRO         | PA8              |                            |
+| SWITCH1       | PC12             | WKUP3                      |
 
 
-### Infrared
+#### LEDs
 
-| Signal name   | STM32WB55 pin    | Comment                      |
-|---------------|------------------|------------------------------|
-| IR_RX         | PB9              | _TIM2CH1_, TIM2ETR, EXTI0    |
-| IR_TX         | PA0              | IR_OUT, TIM17CH1, _TIM1CH3_  |
-
-
-### Sub-GHz
-
-CC1101RGPR
-
-| Signal name   | STM32W555 pin    | Comment                    |
+| Signal name   | STM32WB55 pin    | Comment                    |
 |---------------|------------------|----------------------------|
-| RF_SW_0       | PC4              |                            |
-| CC1101_CS     | PD0              | Chip Select                |
-| CC1101_G0     | PA1              |                            |
-| SPI_R_MOSI    | PB15             | SPI1_MOSI                  |
-| SPI_R_MISO    | PC2              | SPI1_MISO                  |
-| SPI_R_SCK     | PD1              | SPI1_SCK                   |
+| LD1           | PB5              |                            |
+| LD2           | PB0              |                            |
+| LD3           | PA4              |                            |
+| Neopixel      | PC12             | D6                         |
 
 
-### 125 kHz RFID
+## Nucleo Dongle - Feather Adaptor
 
-| Signal name   | STM32W555 pin    | Comment                    |
-|---------------|------------------|----------------------------|
-| RFID_PULL     | PA2              |                            |
-| RFFID_CARRIER | PA15             |                            |
-| RFID_OUT      | PB3              |                            |
-| RFID_RF_IN    | PC5              |                            |
+Remove the USB Type A plug from the dongle and add a Adafruit 
+Micro B breakout board. It is convenient to have a Micro-SD 
+breakout board (level shifter is not needed) and JTAG connector 
+(I prefer the 14 pin STM variant to have a serial interface by the ST-LINK). 
+Everything mounted on headers on the backside of 
+FeatherWing [Tripler](https://www.adafruit.com/product/3417) Mini Kit.
+
+![](img/feather-adaptor.jpg)
+
+| Description | Dongle | Function  |  Feather     | Micro-SD  | JTAG 14pin |
+|-------------|--------|-----------|--------------|-----------|------------|
+| GND         | CN1.1  | GND       | JP1.13 GND   | GND       | 5, 7, 11   |
+| NRST        | CN1.2  | RES       | JP1.16 RST   |           | 12         |
+| PA13        | CN1.3  | SWDIO     | -            |           | 4          |
+| PA14        | CN1.4  | SWDCLK    | -            |           | 6          |
+| PB3         | CN1.5  | SWO       | A4?          |           | 8          |
+| 3V3         | CN1.6  | 3V3       | JP1.14/15 3V3 | 3V 5V    | 3          |
+| PB2         | CN1.7  | SPI_CS    | -            | CS        |            |
+| PA5         | CN1.8  | D13 SCK   | JP1.6  SCK   | CLK       |            |
+| PA6         | CN1.9  | D12 MISO  | JP1.4  MISO  | DO        |            |
+| PA7         | CN1.10 | D11 MOSI  | JP1.5  MOSI  | DI        |            |
+| PB8         | CN2.1  | D15 SCL   | JP3.11 SCL   |           |            |
+| PB9         | CN2.2  | D14 SDA   | JP3.12 SDA   |           |            |
+| PA0         | CN2.3  | A3        | JP1.9  A3    |           |            |
+| PA2         | CN2.4  | D1        | JP1.2  D1    |           |            |
+| PA3         | CN2.5  | D0        | JP1.3  D0    |           |            |
+| PB6         | CN2.6  | UARTRX    |              |           | 13         |
+| PA9         | CN2.7  | D9        | JP3.8  D9    |           |            |
+| PB7         | CN2.7  | UARTTX    |              |           | 14         |
+| PA8         | CN2.8  | D6 Neopixel | JP3.9  D6  |           |            |
+| GND         | CN2.9  | GND       | GND          |           |            |
+| PA1         | CN2.10 | A2        | JP1.10 A2    |           |            |
+| !USB5V      |        | 5V        | JP3.3  USB   |           |            |
+| BOOT0       |        | BOOT0     | JP1.1  B0    |           |            |
+| PB0 AT2 ?   |        |           | JP1.12 A0    |           |            |
+| PB1 AT2 ?   |        |           | JP1.11 A1    |           |            |
+| PB3   ?     | CN1.5  | SWO       | JP1.8  A4?   |           | 8          |
+|             |        |           | JP1.7  A5    |           |            |
+|             |        |           | JP3.1  VBAT  |           |            |
+|             |        |           | JP3.2  EN    |           |            |
 
 
-### NFC
-
-ST25R3916-AQWT
-
-| Signal name   | STM32W555 pin    | Comment                    |
-|---------------|------------------|----------------------------|
-| NFC_CS        | PE4              | Chip Select                |
-| NFC_IRQ       |                  |                            |
-| SPI_R_MOSI    | PB15             | SPI1_MOSI                  |
-| SPI_R_MISO    | PC2              | SPI1_MISO                  |
-| SPI_R_SCK     | PD1              | SPI1_SCK                   |
 
