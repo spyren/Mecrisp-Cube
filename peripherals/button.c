@@ -54,7 +54,7 @@
 #define BUTTON_RELEASED		GPIO_PIN_SET
 
 #define DEBOUNCE_TIME		20							// 20 ms
-#define	BACKLIGHT_TIME		(20 * 1000 / DEBOUNCE_TIME)	// 20 s
+#define	BACKLIGHT_TIME		(60 * 1000 / DEBOUNCE_TIME)	// 1 Min
 #define HALT_TIME			(5 * 1000 / DEBOUNCE_TIME)	// 5 s
 #define MEASURE_INTERVAL	(1 * 1000 / DEBOUNCE_TIME)	// 1 s
 
@@ -268,18 +268,23 @@ static void BUTTON_Thread(void *argument) {
 			POWER_halt();
 		}
 
-		if (GAUGE_UpdateBatState) {
-			if (measure_timeout--) {
-				measure_timeout = MEASURE_INTERVAL;
+		if (measure_timeout--) {
+			measure_timeout = MEASURE_INTERVAL;
+			if (GAUGE_getCurrent() >= 0) {
 				if (GAUGE_getCharge() == 100) {
 					// fully charged
+					// green LED
+					BSP_clearSysLED(SYSLED_CHARGING);
 					BSP_setSysLED(SYSLED_FULLY_CHARGED);
-				} else if (GAUGE_getCurrent() > 0) {
+				} else{
 					// charging
+					// red LED
+					BSP_clearSysLED(SYSLED_FULLY_CHARGED);
 					BSP_setSysLED(SYSLED_CHARGING);
-				} else {
-					BSP_clearSysLED(SYSLED_CHARGING|SYSLED_FULLY_CHARGED);
 				}
+			} else {
+				// discharge
+				BSP_clearSysLED(SYSLED_CHARGING|SYSLED_FULLY_CHARGED);
 			}
 		}
 

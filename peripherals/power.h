@@ -103,8 +103,6 @@
 #define GAUGE_CTRL_EXIT_CFG_UPDATE 		0x0092
 #define GAUGE_CTRL_RETURN_TO_ROM 		0x0F00
 
-extern uint8_t GAUGE_UpdateBatState;
-
 
 void POWER_startup(void);
 void POWER_init(void);
