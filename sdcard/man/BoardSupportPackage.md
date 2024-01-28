@@ -176,6 +176,12 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 Using the ADC (Analog Input Pins)
 =================================
 
+Flipper Zero use the VREF+ out mode. I prefer the the VREF+ input mode and 
+use the VDDA (3.3 V) as reference voltage, This compensates for the 
+measurement inaccuracy caused by VDDA variations. 
+However the reference voltage for the Flipper is about 2.5 V and therefore 
+the measurement range is from 0 to 2.5 V. 
+
 `apin@ ( a -- u )` returns the ADC value (12 bit, 0 .. 4095) from one of
 the analog pins A0 to A2 (0 .. 2). Here I use the A0 to control the
 delay.
