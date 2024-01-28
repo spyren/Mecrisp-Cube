@@ -638,27 +638,37 @@ message .str"    MECRISP-CUBE REAL-TIME FORTH ON THE GO!   "
 message strlen Marquee
 ```
 
-## Pinouts
+# Pinouts
 
-### STM32WB Nucleo Board 
+## STM32WB Nucleo Board 
 
   * https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html
   * [Schematic Nucleo Board MB1355](https://www.st.com/content/ccc/resource/technical/layouts_and_diagrams/schematic_pack/group0/e3/a0/c8/d8/8d/da/4f/43/mb1355_schematics/files/MB1355-WB55RGV-C02_schematic.pdf/jcr:content/translations/en.MB1355-WB55RGV-C02_schematic.pdf)
   * [Schematic Nucleo Dongle MB1293](https://www.st.com/content/ccc/resource/technical/layouts_and_diagrams/schematic_pack/group0/6f/4a/27/3b/7d/c4/43/f8/mb1293_schematics/files/MB1293-WB55CGU-C02_schematic.pdf/jcr:content/translations/en.MB1293-WB55CGU-C02_schematic.pdf)
 
 
-#### Arduino Pinout 
+### Arduino Pinout 
 
 [GPIO & modules](https://docs.flipper.net/gpio-and-modules)
 
-![Arduino left](img/nucleo_wb55rg_arduino_left.png)
+#### Arduino Left
 
-![Arduino right](img/nucleo_wb55rg_arduino_right.png)
+![](img/nucleo_wb55rg_arduino_left.png)
+
+#### Arduino Right
+
+![](img/nucleo_wb55rg_arduino_right.png)
 
 
+### Morpho Pinout 
 
-#### Morpho Pinout 
+#### Morpho Left
 
+![](img/nucleo_wb55rg_morpho_left.png)
+
+#### Morpho Right
+
+![](img/nucleo_wb55rg_morpho_right.png)
 
 
 ## External 
