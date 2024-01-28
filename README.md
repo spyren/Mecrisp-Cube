@@ -38,14 +38,10 @@ May the Forth Be With You!
 ## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
 
 If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
-you get a Nucleo68 Board and a USB Dongle.
+you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
 
-The Nucleo board has a ST-LINK on board
-Instant real-time programming with Forth. 
-The [Flipper Zero](https://flipperzero.one/) is an excellent portable tool for interaction 
-with access control systems. 
-But the display, the buttons, LIPO (2.1 Ah), GPIO, BLE, SD-Card, RTC, etc. make 
-Flipper Zero also an ideal tool for programming on the go.
+The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
+and LEDs and switches (buttons).
 
 STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
 Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
@@ -67,7 +63,7 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
   * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
   * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
     * Internal Flash drive 0:, 384 KiB
-    * microSD drive 1: 
+    * microSD drive 1: (optional, external SD adaptor)
   * Integration in STM32 Cube Ecosystem. 
     * Create C code from CubeMX for internal peripherals and use it in Forth
     * [Calling C Functions](/sdcard/man/CallingCFunction.md) from Forth and vice versa 
@@ -99,20 +95,14 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * Control (5-button joystick, Back button, Reboot)
-  * [LCD](/sdcard/man/display.md) display 128x64 pixel
-  * RGB LED
-  * Power (LIPO charger and fuel gauge)
-  * Vibration Motor
-  * Buzzer/Speaker
-  * GPIO (Input and Output, PWM, Input Capture and Output compare, I2C, SPI, ADC)
-
-Not supported yet:
-  * Sub-1 GHz Transceiver
-  * 125 kHz RFID
-  * NFC
-  * Infrared Transceiver
-  * iButton
+  * 3 push buttons
+  * 3 LEDs
+  * I2C
+  * SPI
+  * 6 ADC pins
+  * 3 PWM pins
+  * Input Capture / Output Compare
+  * 4 external interrupts (EXTI)
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
@@ -130,13 +120,11 @@ For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.m
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
-machine (Flipper Zero) for development and testing purposes. 
+machine (WB55 Nucleo or Dongle) for development and testing purposes. 
 
 
 ### Prerequisites
 
-  * [Flipper Zero](https://flipperzero.one/) with STM32WB55 MCU (Cortex ARM M4) runs at a 32 MHz (the Bluetooth stack runs on a Cortex ARM M0+ core). 
-  * Optional: [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) or you can build your own e.g. with a [STLINK-V3MINI](https://www.st.com/en/development-tools/stlink-v3mini.html) and some cables, see [JTAG_SWD_Adaptor](/sdcard/man/BoardSupportPackage.md#jtagswd-adaptor)
   * Terminal emulator application for PC, e.g.: 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
@@ -144,16 +132,17 @@ machine (Flipper Zero) for development and testing purposes.
     * minicom, microcom, screen - Linux
     * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
-  * STM32CubeProgrammer or [qFlipper](https://docs.flipper.net/qflipper)
+  * STM32CubeProgrammer (optional)
 
 
 ### Flash the Mecrisp-Cube Firmware
 
-Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFlipper.bin) `MecrispCubeFlipper.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFlipperFS.bin) `MecrispCubeFlipperFS.bin` to the Flipper Zero. Using the built-in USB DFU bootloader, see also [firmware recovery](https://docs.flipper.net/basics/firmware-update/firmware-recovery).
+Flash the Mecrisp-Cube [binary](/Release/MecrispCube.bin) `MecrispCube.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFS.bin) 
+`MecrispCubeFS.bin` to the WB55 Nucleo. Using the built-in USB DFU bootloader.
 
    1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
-   1. Connect the Flipper Zero USB to the PC
-   1. Program the binary (`MecrispCubeFlipper.bin` or better `MecrispCubeFlipperFS.bin`) with 
+   1. Connect the Nucleoboard USB to the PC
+   1. Program the binary (`MecrispCube.bin` or better `MecrispCubeFS.bin`) with 
       1. the STMCubeProgrammer (select USB Device), for Linux 
          `sudo /usr/local/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32CubeProgrammer`
       1. or the [qFlipper](https://docs.flipper.net/qflipper) with _install from file_
@@ -162,7 +151,7 @@ Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFlipper.bin) `MecrispCubeFli
 
 ### Use the Terminal (USB CDC)
 
-Connect the Flipper Zero USB to the PC. Start the terminal emulator application on the PC. 
+Connect the WB55 Nucleo USB to the PC. Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
 I set the putty terminal configuration to 
 
@@ -265,16 +254,6 @@ The RGB LED  displays the status
   * *flashing Yellow* "disk" (serial flash or SD) read operation
 
 
-### Flash the original Flipper Firmware
-
-If you want to go back to the original firmware, do the following
-
-   1. Press and hold the OK and the back buttons for 30 s (you should see a blank screen)
-   1. Connect the Flipper Zero USB to the PC
-   1. Flash the Flipper firmware with [qFlipper](https://docs.flipper.net/qflipper) _REPAIR_
-   1. Reboot your device by pressing and holding the left and back buttons 
-
-
 ## Installing Development Environment 
 
 A step by step series of examples that tell you how to get a development env running
@@ -288,7 +267,7 @@ you do not want to use the STM32CubeIDE.
 Get the sources from github:
 
 ```
-psi@homer:~> git clone --branch Flipper https://github.com/spyren/Mecrisp-Cube
+psi@homer:~> git clone https://github.com/spyren/Mecrisp-Cube
 Cloning into 'Mecrisp-Cube'...
 remote: Enumerating objects: 8334, done.
 remote: Counting objects: 100% (2220/2220), done.
@@ -306,7 +285,7 @@ Copy project into workspace
 Browse to Mecrisp-Cube directory
 ```
 
-Generate code from the STM32CubeMX `MecrispCubeFlipper.ioc` file:
+Generate code from the STM32CubeMX `MecrispCube.ioc` file:
 
 ```
 Project -> Generate Code 
