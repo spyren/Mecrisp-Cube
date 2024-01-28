@@ -6,7 +6,7 @@
   </tr>
 </table> 
 
-# Mecrisp-Cube (Flipper branch)
+# Mecrisp-Cube (master branch)
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
@@ -35,8 +35,12 @@ for STM32 MCUs. There are three flavors (branches) available:
 May the Forth Be With You!
 
 
-## Intro for the Flipper Zero
+## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
 
+If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
+you get a Nucleo68 Board and a USB Dongle.
+
+The Nucleo board has a ST-LINK on board
 Instant real-time programming with Forth. 
 The [Flipper Zero](https://flipperzero.one/) is an excellent portable tool for interaction 
 with access control systems. 
@@ -51,7 +55,7 @@ for applications requiring an extended battery life and complex functionalities.
 If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
 Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
-![](/sdcard/man/img/flipper-stlink-2.jpg)
+![](/sdcard/man/img/stm32wb-nucleo.jpg)
 
 
 ## Features
