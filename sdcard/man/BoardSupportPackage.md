@@ -751,7 +751,7 @@ breakout board (level shifter is not needed) and JTAG connector
 Everything mounted on headers on the backside of 
 FeatherWing [Tripler](https://www.adafruit.com/product/3417) Mini Kit.
 
-![](img/feather-adaptor.jpg)
+![](img/dongle-feather-adaptor.jpg)
 
 | Description | Dongle | Function  |  Feather     | Micro-SD  | JTAG 14pin |
 |-------------|--------|-----------|--------------|-----------|------------|
