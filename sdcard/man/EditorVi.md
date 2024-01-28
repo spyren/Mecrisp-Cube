@@ -1,3 +1,10 @@
+<table>
+  <tr>
+    <td><img src="img/Mecrisp-Cube-vi-header2.jpg"  ></td>
+    <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
+  </tr>
+</table> 
+
 Intro
 =====
 
@@ -98,6 +105,5 @@ Visual Studio Code with
 [Forth](https://marketplace.visualstudio.com/items?itemName=fttx.language-forth)
 extension:
 
+![](img/VSCode-forth.png)
 
-
-\-- [PeterSchmid - 2020-08-29]
