@@ -76,8 +76,8 @@ OCwait       ( u -- )         wait for the end of output capture on pin u
 ICwait       ( u1 -- u2 )     wait for the end of input capture with timeout u1, returns counter u2
 
 apin@        ( u1 -- u2 )     get the analog input port pin u1 (A0 .. A2). Returns a 12 bit value u2 (0..4095) 
-vref@        ( -- u )         get the Vref voltage in mV (rather the VDDA)
-vbat@        ( -- u )         get the Vbat voltage in mV
+vref@        ( -- u )         get the Vref voltage in mV (about 2500 mV)
+vbat@        ( -- u )         get the Vbat voltage in mV (about 3300 mV)
 CPUtemp@     ( -- u )         get CPU temperature in degree Celsius
 
 I2Cput       ( c- u1 u2-- )   put a message with length u (count in bytes) from buffer at a to the I2C slave device u
