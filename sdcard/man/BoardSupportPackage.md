@@ -23,16 +23,16 @@ Board Support Words
 
 For GPIO pin defaults see [table](#arduino-and-feather-assignments).
 ```
-led1!        ( ? -- )         set LED1 (blue)
-led2!        ( ? -- )         set LED2 (green)
-led3!        ( ? -- )         set LED3 (red)
-led1@        ( -- ? )         get LED1 (blue)
-led2@        ( -- ? )         get LED2 (green)
-led3@        ( -- ? )         get LED3 (red)
+led1!        ( f -- )         set LED1 (blue)
+led2!        ( f -- )         set LED2 (green)
+led3!        ( f -- )         set LED3 (red)
+led1@        ( -- f )         get LED1 (blue)
+led2@        ( -- f )         get LED2 (green)
+led3@        ( -- f )         get LED3 (red)
 
-switch1?     ( -- ? )         get switch1, closed=TRUE
-switch2?     ( -- ? )         get switch2, closed=TRUE
-switch3?     ( -- ? )         get switch3, closed=TRUE
+switch1?     ( -- f )         get switch1, closed=TRUE
+switch2?     ( -- f )         get switch2, closed=TRUE
+switch3?     ( -- f )         get switch3, closed=TRUE
 
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
 dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
