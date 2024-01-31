@@ -83,34 +83,6 @@ SPIput       ( c- u -- )      put a message with length u from buffer at c- to t
 SPIputget    ( c- u1 u2 -- )  put a message with length u1 from buffer at c- to the SPI slave device 
                               and get a message with length u2 from device to buffer at c-
 SPImutex     ( -- a- )        get the SPI mutex address
-
-LIPOcharge@  ( -- u )         get LIPO charge [%]
-LIPOvoltage@ ( -- u )         get LIPO voltage [mV]
-LIPOcurrent@ ( -- n )         get LIPO current [mA]
-
-LIPOgauge@   ( u1 -- u2 )     get fuel gauge value u2 from register u1
-LIPOgauge!   ( u1 u2 --  )    set fuel gauge register u2 with data u1
-
-LIPOcharger@ ( u1 -- u2 )     get charger value u2 from register u1
-LIPOcharger! ( u1 u2 --  )    set charger register u2 with data u1
-
-vibro@       (  -- f )        get vibro state
-vibro!       ( f -- )         set vibro status, 0 switch off
-
-speaker!     ( u -- )         set speaker freqency u, 0 = off, 20 .. 10000 Hz
-
-peripheral!  ( f -- )         set peripheral supply status, 0 switch off
-
-lcd-emit     ( c -- )         emit a character (writes a character to the LCD display)
-lcd-emit?    ( -- f )         LCD ready to get a character 
-lcdpos!      ( u1 u2 -- )     set LCD cursor position, 
-                              u1 (column, x) horizontal position, max. 127  
-                              u2 (row, y) vertical position (a line consists of 8 pixels), max. 7
-lcdpos@      (  -- u1 u2 )    get the current LCD cursor position
-lcdclr       (  --  )         clear the LCD display, sets the cursor to 0, 0
-lcdfont      ( u --  )        select the font, u: 0 6x8, 1 8x8, 2 8X16 , 3 12X16
-lcdcolumn!   ( u -- )         write a column (8 pixels) to the current position. Increment position. Bit 0 on top
-lcdcolumn@   ( -- u )         read a column (8 pixels) from the current position
 ```
 
 
@@ -405,7 +377,7 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 ;
 ```
 
-# Using Push Buttons and the RGB LED
+# Using Push Buttons
 
 ## Switches
 
@@ -418,35 +390,6 @@ switch1? .
 The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
 There is no debouncing for the `switchx?` words.
 
-## Push Buttons
-
-```forth
-: joystick ( -- ) \ read button events till OK
-  begin button? while
-    button drop \ empty the buffer
-  repeat
-  begin
-    button dup emit
-  [char] o = until 
-;
-```
-
-## RGB LED
-
-Deactivate the sysled function (the LED is no longer used by the system e.g. 
-for battery charging state):
-```
-$80 -sysled  \ deactivate sysled
-
-0 rgbled!      \ Switch off LED
-$ff0000 rgbled! \ Red LED 100 % brightness
-$7f0000 rgbled!  \ Red LED 50 % brightness
-$00ff00 rgbled!   \ Green LED 100 % brightness
-$0000ff rgbled!    \ Blue LED 100 % brightness
-$ffffff rgbled!     \ White LED 100 % brightness
-
-$80 +sysled  \ Activate the sysled function 
-```
 
 # Feather Wings
 
