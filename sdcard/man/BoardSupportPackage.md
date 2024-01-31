@@ -678,7 +678,7 @@ message strlen Marquee
 
 #### Morpho Right
 
-![](img/nucleo_wb55rg_morpho_right.png)
+![](img/nucleo_wb55rg_morpho_right2.png)
 
 
 ###  Internal 
