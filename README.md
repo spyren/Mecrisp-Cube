@@ -97,9 +97,10 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
   * 3 push buttons
   * 3 LEDs
+  * 16 GPIO pins, D0 .. D15
+  * 6 ADC pins, A0 .. A5
   * I2C
   * SPI
-  * 6 ADC pins
   * 3 PWM pins
   * Input Capture / Output Compare
   * 4 external interrupts (EXTI)
