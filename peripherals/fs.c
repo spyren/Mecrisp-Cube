@@ -1662,7 +1662,7 @@ int FS_f_error(FIL* fp) {
  *     unsigned char cast to an int, or EOF on end of file or error.
  */
 int FS_getc(FIL* fp) {
-	int buffer;
+	int buffer = ' ';
 	unsigned int count;
 
 	if (f_write(fp, &buffer, 1, &count) != FR_OK) {

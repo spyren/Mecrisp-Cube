@@ -56,7 +56,7 @@
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.14.1, USB-CDC, BLE Stack 5.3 (C) 2022 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
@@ -458,7 +458,7 @@ typedef struct {
 	uint16_t pin;
 } PortPin_t;
 
-static const PortPin_t PortPin_a[16] = {
+static const PortPin_t PortPin_a[22] = {
 		{ D0_GPIO_Port, D0_Pin } ,
 		{ D1_GPIO_Port, D1_Pin } ,
 		{ D2_GPIO_Port, D2_Pin } ,
@@ -474,7 +474,14 @@ static const PortPin_t PortPin_a[16] = {
 		{ D12_GPIO_Port, D12_Pin } ,
 		{ D13_GPIO_Port, D13_Pin } ,
 		{ D14_GPIO_Port, D14_Pin } ,
-		{ D15_GPIO_Port, D15_Pin }
+		{ D15_GPIO_Port, D15_Pin } ,
+		{ A0_GPIO_Port,  A0_Pin } ,             // 16
+		{ A1_GPIO_Port,  A1_Pin } ,             // 17
+		{ A2_GPIO_Port,  A2_Pin } ,             // 18
+		{ A3_GPIO_Port,  A3_Pin } ,             // 19
+		{ A4_GPIO_Port,  A4_Pin } ,             // 20
+		{ A5_GPIO_Port,  A5_Pin } ,             // 21
+
 };
 
 /**
@@ -527,10 +534,10 @@ int BSP_getDigitalPort(void) {
 
 /**
  *  @brief
- *	    Sets the digital output port pin (D0 .. D15).
+ *	    Sets the digital output port pin (D0 .. D15, A0 .. A5).
  *
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 21.
  *	@param[in]
  *      state         0/1
  *  @return
@@ -549,10 +556,10 @@ void BSP_setDigitalPin(int pin_number, int state) {
 
 /**
  *  @brief
- *	    Gets the digital input port pin (D0 .. D15).
+ *	    Gets the digital input port pin (D0 .. D15, A0 .. A5).
  *
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 21.
  *  @return
  *      state         0/1
  *
@@ -732,26 +739,29 @@ typedef struct {
 } PortPinMode_t;
 
 static const PortPinMode_t DigitalPortPinMode_a[] = {
-	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				// 0 in
-	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 pullup
-	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 pulldow
-	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 opendrain
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 }  	// 8 I2C opendrain pullup
+	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				//  0 in
+	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				//  1 pullup
+	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				//  2 pulldow
+	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				//  3 pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				//  4 opendrain
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	//  5 pwm pushpull
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  6 input capture in
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  7 output compare pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	//  8 I2C opendrain pullup
+	{ GPIO_MODE_AF_PP,     GPIO_PULLUP,   GPIO_AF7_USART1 },//  9 UART
+    { GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF5_SPI1 },  // 10 SPI
+    { GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 }               // 11 analog
 };
 /**
  *  @brief
- *	    Sets the digital port pin mode (D0 .. D15).
+ *	    Sets the digital port pin mode (D0 .. D15, A0 .. A5).
  *
  *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
  *      5 out pwm, 6 input capture, 7 output compare, 8 I2C
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 21
  *	@param[in]
- *      mode          0 to 8
+ *      mode          0 to 11
  *  @return
  *      none
  *

@@ -33,6 +33,8 @@
 
 /**< generic parameters ******************************************************/
 
+/**< generic parameters ******************************************************/
+
 /**
  * Define Tx Power
  */
@@ -41,8 +43,25 @@
 /**
  * Define Advertising parameters
  */
-#define CFG_ADV_BD_ADDRESS                (0x000000000000)
-#define CFG_BLE_ADDRESS_TYPE              PUBLIC_ADDR /**< Bluetooth address types defined in ble_legacy.h */
+#define CFG_ADV_BD_ADDRESS                (0x11aabbccddee)
+
+/**
+ * Define BD_ADDR type: define proper address. Can only be GAP_PUBLIC_ADDR (0x00) or GAP_STATIC_RANDOM_ADDR (0x01)
+ */
+#define CFG_IDENTITY_ADDRESS              GAP_PUBLIC_ADDR
+
+/**
+ * Define privacy: PRIVACY_DISABLED or PRIVACY_ENABLED
+ */
+#define CFG_PRIVACY                       PRIVACY_DISABLED
+
+/**
+ * Define BLE Address Type
+ * Bluetooth address types defined in ble_legacy.h
+ * if CFG_PRIVACY equals PRIVACY_DISABLED, CFG_BLE_ADDRESS_TYPE has 2 allowed values: GAP_PUBLIC_ADDR or GAP_STATIC_RANDOM_ADDR
+ * if CFG_PRIVACY equals PRIVACY_ENABLED, CFG_BLE_ADDRESS_TYPE has 2 allowed values: GAP_RESOLVABLE_PRIVATE_ADDR or GAP_NON_RESOLVABLE_PRIVATE_ADDR
+ */
+#define CFG_BLE_ADDRESS_TYPE              GAP_PUBLIC_ADDR
 
 #define CFG_FAST_CONN_ADV_INTERVAL_MIN    (0x80)      /**< 80ms */
 #define CFG_FAST_CONN_ADV_INTERVAL_MAX    (0xA0)      /**< 100ms */
@@ -163,8 +182,8 @@
 // Greeting Message
 // ****************
 
-#define MECRISP_CUBE_TAG "1.5.0"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
+#define MECRISP_CUBE_TAG "1.5.1"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required set define to 0 */
@@ -290,12 +309,13 @@
  * LsSource
  * Some information for Low speed clock mapped in bits field
  * - bit 0:   1: Calibration for the RF system wakeup clock source   0: No calibration for the RF system wakeup clock source
- * - bit 1:   1: STM32W5M Module device                              0: Other devices as STM32WBxx SOC, STM32WB1M module
+ * - bit 1:   1: STM32WB5M Module device                             0: Other devices as STM32WBxx SOC, STM32WB1M module
+ * - bit 2:   1: HSE/1024 Clock config                               0: LSE Clock config
  */
 #if defined(STM32WB5Mxx)
-  #define CFG_BLE_LSE_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LSE_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LSE_MOD5MM_DEV)
+  #define CFG_BLE_LS_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LS_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LS_MOD5MM_DEV | SHCI_C2_BLE_INIT_CFG_BLE_LS_CLK_LSE)
 #else
-  #define CFG_BLE_LSE_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LSE_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LSE_OTHER_DEV)
+  #define CFG_BLE_LS_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LS_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LS_OTHER_DEV | SHCI_C2_BLE_INIT_CFG_BLE_LS_CLK_LSE)
 #endif
 
 /**
@@ -327,6 +347,10 @@
  * - SHCI_C2_BLE_INIT_OPTIONS_NO_EXT_ADV
  * - SHCI_C2_BLE_INIT_OPTIONS_CS_ALGO2
  * - SHCI_C2_BLE_INIT_OPTIONS_NO_CS_ALGO2
+ * - SHCI_C2_BLE_INIT_OPTIONS_REDUC_GATTDB_NVM
+ * - SHCI_C2_BLE_INIT_OPTIONS_FULL_GATTDB_NVM
+ * - SHCI_C2_BLE_INIT_OPTIONS_GATT_CACHING_USED
+ * - SHCI_C2_BLE_INIT_OPTIONS_GATT_CACHING_NOTUSED
  * - SHCI_C2_BLE_INIT_OPTIONS_POWER_CLASS_1
  * - SHCI_C2_BLE_INIT_OPTIONS_POWER_CLASS_2_3
  * which are used to set following configuration bits:
@@ -340,15 +364,34 @@
  *          0: extended advertizing not supported
  * (bit 4): 1: CS Algo #2 supported
  *          0: CS Algo #2 not supported
+ * (bit 5): 1: Reduced GATT database in NVM
+ *          0: Full GATT database in NVM
+ * (bit 6): 1: GATT caching is used
+ *          0: GATT caching is not used
  * (bit 7): 1: LE Power Class 1
  *          0: LE Power Class 2-3
+ * other bits: complete with Options_extension flag
+ */
+#define CFG_BLE_OPTIONS  (SHCI_C2_BLE_INIT_OPTIONS_LL_HOST | SHCI_C2_BLE_INIT_OPTIONS_WITH_SVC_CHANGE_DESC | SHCI_C2_BLE_INIT_OPTIONS_DEVICE_NAME_RW | SHCI_C2_BLE_INIT_OPTIONS_NO_EXT_ADV | SHCI_C2_BLE_INIT_OPTIONS_NO_CS_ALGO2 | SHCI_C2_BLE_INIT_OPTIONS_FULL_GATTDB_NVM | SHCI_C2_BLE_INIT_OPTIONS_GATT_CACHING_NOTUSED | SHCI_C2_BLE_INIT_OPTIONS_POWER_CLASS_2_3)
+
+/**
+ * BLE stack Options_extension flags to be configured with:
+ * - SHCI_C2_BLE_INIT_OPTIONS_APPEARANCE_WRITABLE
+ * - SHCI_C2_BLE_INIT_OPTIONS_APPEARANCE_READONLY
+ * - SHCI_C2_BLE_INIT_OPTIONS_ENHANCED_ATT_SUPPORTED
+ * - SHCI_C2_BLE_INIT_OPTIONS_ENHANCED_ATT_NOTSUPPORTED
+ * which are used to set following configuration bits:
+ * (bit 0): 1: appearance Writable
+ *          0: appearance Read-Only
+ * (bit 1): 1: Enhanced ATT supported
+ *          0: Enhanced ATT not supported
  * other bits: reserved (shall be set to 0)
  */
-#define CFG_BLE_OPTIONS  (SHCI_C2_BLE_INIT_OPTIONS_LL_HOST | SHCI_C2_BLE_INIT_OPTIONS_WITH_SVC_CHANGE_DESC | SHCI_C2_BLE_INIT_OPTIONS_DEVICE_NAME_RW | SHCI_C2_BLE_INIT_OPTIONS_NO_EXT_ADV | SHCI_C2_BLE_INIT_OPTIONS_NO_CS_ALGO2 | SHCI_C2_BLE_INIT_OPTIONS_POWER_CLASS_2_3)
+#define CFG_BLE_OPTIONS_EXT  (SHCI_C2_BLE_INIT_OPTIONS_APPEARANCE_READONLY | SHCI_C2_BLE_INIT_OPTIONS_ENHANCED_ATT_NOTSUPPORTED)
 
 #define CFG_BLE_MAX_COC_INITIATOR_NBR   (32)
 
-#define CFG_BLE_MIN_TX_POWER            (-40)
+#define CFG_BLE_MIN_TX_POWER            (0)
 
 #define CFG_BLE_MAX_TX_POWER            (0)
 
@@ -393,6 +436,14 @@
   */
 
 #define CFG_BLE_RX_PATH_COMPENS    (0)
+
+  /* BLE core version (16-bit signed integer).
+   * - SHCI_C2_BLE_INIT_BLE_CORE_5_2
+   * - SHCI_C2_BLE_INIT_BLE_CORE_5_3
+   * which are used to set: 11(5.2), 12(5.3).
+   */
+
+#define CFG_BLE_CORE_VERSION   (SHCI_C2_BLE_INIT_BLE_CORE_5_3)
 
 /******************************************************************************
  * Transport Layer
@@ -707,6 +758,7 @@ typedef enum
  ******************************************************************************/
 #define	OLED					1
 #define MIP						0
+#define LCDISPLAY				0
 #define PLEX					1
 #define EPD						0
 #define FPU_IP					1

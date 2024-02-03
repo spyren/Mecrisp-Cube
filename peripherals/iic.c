@@ -65,7 +65,7 @@ const osMutexAttr_t IIC_MutexAttr = {
 		0U					// size for control block
 };
 
-static osSemaphoreId_t II2_SemaphoreID;
+static osSemaphoreId_t IIC_SemaphoreID;
 
 
 // Public Functions
@@ -81,8 +81,8 @@ void IIC_init(void) {
 	IIC_MutexID = osMutexNew(&IIC_MutexAttr);
 	ASSERT_fatal(IIC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
 
-	II2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(II2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+	IIC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	ASSERT_fatal(IIC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 }
 
 
@@ -128,14 +128,14 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	hal_status = HAL_I2C_Master_Receive_DMA(&hi2c1, dev<<1, RxBuffer, RxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
 	} else {
 		// can't get Message
 		IIC_Status = -3;
 	}
 	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
 
 	return IIC_Status;
@@ -166,14 +166,14 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	hal_status = HAL_I2C_Master_Transmit_DMA(&hi2c1, dev<<1, TxBuffer, TxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
 	} else {
 		// can't get Message
 		IIC_Status = -3;
 	}
 	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
 
 	return IIC_Status;
@@ -207,14 +207,14 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 	hal_status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c1, dev<<1, TxRxBuffer, TxSize, I2C_FIRST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
 	} else {
 		// can't transmit Message
 		IIC_Status = -3;
 	}
-	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
+		osMutexRelease(IIC_MutexID);
 		return IIC_Status;
 	}
 
@@ -222,14 +222,14 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 	hal_status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c1, dev<<1, TxRxBuffer, RxSize, I2C_LAST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(II2_SemaphoreID, osWaitForever);
+		osSemaphoreAcquire(IIC_SemaphoreID, osWaitForever);
 	} else {
 		// can't get Message
 		IIC_Status = -3;
 	}
 	osMutexRelease(IIC_MutexID);
 	if (IIC_Status != 0) {
-		Error_Handler();
+		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
 
 	return IIC_Status;
@@ -254,7 +254,7 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hi2c);
 
-	osSemaphoreRelease(II2_SemaphoreID);
+	osSemaphoreRelease(IIC_SemaphoreID);
 }
 
 /**
@@ -268,7 +268,7 @@ void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
 	/* Prevent unused argument(s) compilation warning */
 	UNUSED(hi2c);
 
-	osSemaphoreRelease(II2_SemaphoreID);
+	osSemaphoreRelease(IIC_SemaphoreID);
 }
 
 /**
@@ -283,7 +283,7 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
 	UNUSED(hi2c);
 
 	IIC_Status = -1;
-	osSemaphoreRelease(II2_SemaphoreID);
+	osSemaphoreRelease(IIC_SemaphoreID);
 }
 
 
@@ -298,6 +298,6 @@ void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c) {
 	UNUSED(hi2c);
 
 	IIC_Status = -2;
-	osSemaphoreRelease(II2_SemaphoreID);
+	osSemaphoreRelease(IIC_SemaphoreID);
 }
 
