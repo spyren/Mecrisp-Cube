@@ -519,16 +519,18 @@ $ dd if=/dev/zero of=fd-384k.img bs=512 count=768
 768+0 Datensätze ein
 768+0 Datensätze aus
 393216 bytes (393 kB, 384 KiB) copied, 0,00155426 s, 253 MB/s
-# losetup /dev/loop1 fd-384k.img
-# mkfs -t vfat /dev/loop1
-# mount -o loop /dev/loop1 /mnt
+$ sudo losetup --find --show fd-384k.img
+/dev/loop33
+$ sudo mkfs -t vfat /dev/loop33
+mkfs.fat 4.2 (2021-01-31)
+$ su mount -o loop /dev/loop33 /mnt
 </pre>
 
 Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
 <pre>
-# cd sdcard
-# tar cf - etc fsr home man README.md | tar xvf - -C /mnt
-# umount /mnt
+$ cd sdcard
+$ sudo tar cf - etc fsr home README.md | sudo tar xvf - -C /mnt
+$ sudo umount /mnt
 </pre>
 
 Umount the loop-device and copy the file to a SD-card. 
