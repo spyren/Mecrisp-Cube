@@ -37,16 +37,16 @@ switch3?     ( -- f )         get switch3, closed=TRUE
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
 dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
 
-dpin!        ( f u -- )       set the digital output port pin u (D0=0 .. D18=18)  to f (TRUE 1, FALSE 0)
+dpin!        ( f u -- )       set the digital output port pin u (D0=0 .. D15=15, A0=16 .. A5=21)  to f (TRUE 1, FALSE 0)
 dpin@        ( u -- f )       get the digital input/output port pin u
 dmod         ( u1 u2 -- )     set the pin u2 to mode u1: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM
                                                 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
 
 pwmpin!      ( u1 u2 -- )     set the digital output port pin u2 (D3=3, D6=6, D9=9) to a PWM value u1 (0..1000). Default frequency is 1 kHz, TIMER1
-pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D6=6, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
+pwmprescale  ( u --  )        set the PWM prescale for TIMER1. 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
 EXTImod      ( u1 u2 -- )     set for pin u2 (D2, D4, D7, D10) the EXTI mode u1: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (A0 16, A1 17, D9 9, D10 10), timeout u2 in [ms]
+EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (D2, D4, D7, D10), timeout u2 in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -93,19 +93,11 @@ This example is a very simple chase lighting program inspired by Knight Rider.
 You need 8 LEDs and 8 resistors.
 
 ```forth
-\ Flipper Zero portmap
-\               0   1   2   3    4    5    6    7
-create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
-
-: pin ( u -- u )  \ gets the Dx pin number
-  cells port-map + @
-;
-
 : init-port ( -- )
   11 16 dmod   \ set A0/D16 to analog
   8 0 do
-    0 i pin dpin!
-    3 i pin dmod \ port is output
+    0 i dpin!
+    3 i dmod \ port is output
   loop
 ;
 
@@ -115,17 +107,17 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 
 : left ( -- ) 
   7 0 do
-    1 i pin dpin! 
+    1 i dpin! 
     delay
-    0 i pin dpin!
+    0 i dpin!
   loop 
 ;
 
 : right ( -- )
   8 1 do  
-    1 8 i - pin dpin! 
+    1 8 i - dpin! 
     delay
-    0 8 i - pin dpin!
+    0 8 i - dpin!
   loop 
 ;
 
@@ -173,7 +165,7 @@ scale is from 0 (0 % duty cycle) to 1000 (100 % duty cycle), this
 results in a PWM frequency of 1 kHz. If you need higher PWM frequencies,
 decrease the divider and/or the scale.
 
-PWM port pins: D6 (TIM1CH2), D11 (TIM1CH1)
+PWM port pins: D3 (TIM1CH3), D6 (TIM1CH1), D9 (TIM1CH2)
 
 Simple test program to set brightness of a LED on pin D3 with a
 potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
@@ -286,15 +278,18 @@ All channels (input capture / output compare) use the same time base.
 
 ## Output Compare
 
-Output compare TIM2: D13
-
+Output compare TIM2: D0 (TIM2CH4), D1 (TIM2CH3), D5 (TIM2CH1)
 ```forth
-7 13 dmod \ output compare for D13
+7 0 dmod \ output compare for D0
+7 1 dmod \ output compare for D1
+7 5 dmod \ output compare for D5
 
 : oc-toggle ( -- )
   5000000 ICOCperiod! \ 5 s period
   ICOCstart
-  3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
+  3 0 OCmod  1000000 0 OCstart \ toggle D0 after 1 s
+  3 1 OCmod  2000000 1 OCstart \ toggle D1 after 2 s
+  3 5 OCmod  3000000 5 OCstart \ toggle D5 after 3 s 
   begin
      waitperiod
      cr .time
@@ -306,7 +301,7 @@ Output compare TIM2: D13
 When you abort (hit any key) the program, the timer still runs and controls 
 the port pins. To stop the port pins:
 <pre>
-13 OCstop  
+0 OCstop  1 OCstop  5 OCstop  
 </pre>
 
 Or change the prescale to make it faster or slower:
@@ -317,12 +312,12 @@ Or change the prescale to make it faster or slower:
 
 ## Input Capture
 
-This sample program measures the time between the edges on port D13. 
+This sample program measures the time between the edges on port A2. 
 If no event occurs within 2 seconds, "timeout" is issued. 
 Hit any key to abort program.
 ```forth
 : ic-test ( -- )
-  6 13 dmod \ input capture on D13
+  6 18 dmod \ input capture on A2
   ICOCstart
   2 ICstart  \ both edges
   ICOCcount@ ( -- count )
