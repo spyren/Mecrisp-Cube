@@ -127,7 +127,7 @@ To change the display type you have to edit the
 
 ### Other OLEDs with SSD1306 
    * OLED B click 96x39 mono https://www.mikroe.com/oled-b-click, SSD1306
-      * !I2C address 60 / 0x3c or SPI
+      * I2C address 60 / 0x3c or SPI
       * Manual [[https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf][SSD1306]]
       * https://learn.adafruit.com/adafruit-pioled-128x32-mini-oled-for-raspberry-pi
       * Manual [[https://download.mikroe.com/documents/datasheets/ssd1351-revision-1.3.pdf][SSD1351]]
@@ -138,10 +138,10 @@ To change the display type you have to edit the
       * https://learn.adafruit.com/adafruit-128x64-oled-bonnet-for-raspberry-pi/overview
       * https://pinout.xyz/pinout/i2c# 
 
-   * Adafruit !FeatherWing 128x64 OLED
+   * Adafruit FeatherWing 128x64 OLED
       * https://learn.adafruit.com/adafruit-128x64-oled-featherwing
 
-   * Adafruit !FeatherWing 128x32 OLED
+   * Adafruit FeatherWing 128x32 OLED
       * https://www.adafruit.com/product/2900
       * Schematics https://learn.adafruit.com/assets/71319
       * D/C pin is not available -> data read is not possible
@@ -150,6 +150,7 @@ To change the display type you have to edit the
 
    * Octopus
       * https://www.distrelec.ch/de/octopus-128x64-oled-display-pi-supply-pis-1277/p/30163414 
+      ![](img/dongle-feather-adaptor.jpg)
 
 ## SH1107 Driver (OLED)
 
