@@ -4,10 +4,10 @@
 
 I really like the neat little OLED displays. They are crisp and draw only some miliamps. 
 Cheap OLED display have a resolution 128x32 that's enough for about 4 lines and 20 characters.
-The maximum resolution seems to be at about 128x64.
+The maximum resolution seems to be at about 128x128.
 
 The little displays use serial interfaces like I2C and SPI. Usually the display RAM is write only.
-Therefore you need a buffer in the MCU RAM.
+Therefore you need a frame buffer in the MCU RAM.
 
 There are other displays with different technologies:
   * LCD Liquid Crystall Display (e.g. Flipper Zero)
