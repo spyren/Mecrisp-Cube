@@ -10,7 +10,7 @@ Board Support Package for the Nucleo and Dongle
 
 The board support package for the STM32WB Nucleo Board is restricted to the 
 Arduino UNO R3 pin header and the onboard LEDs and switches (buttons). 
-The STM32 has much more capabilities then 14 digital I/O pins, 
+The STM32 has much more capabilities then 16 digital I/O pins, 
 6 analog input pins, UART, SPI, and I2C interfaces. But if you want to use 
 the more advanced features you can use the CubeMX to create source code for the 
 internal peripherals. This project wants to show how to use the Cube Ecosystem 
