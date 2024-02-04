@@ -390,6 +390,13 @@ There is no debouncing for the `switchx?` words.
 
 ## Nucleo Arduino - Feather Adaptor
 
+Feather adaptor built with a 
+[Arduino Proto Shield Uno rev3](https://store.arduino.cc/products/proto-shield-rev3-uno-size). 
+There is also a Grove I2C interface for an
+[Octopus 128x64 OLED-Display](https://www.distrelec.ch/de/octopus-128x64-oled-display-pi-supply-pis-1277/p/30163414),
+a [microSD adaptor](FileSystem.md#home-brewed-microsd-adapter-for-stm32wb55-nucleodongle-spi) (SPI),
+and a Neopixel.
+
 ![](img/nucleo-feather-adaptor.jpg)
 
 
@@ -398,11 +405,11 @@ There is no debouncing for the `switchx?` words.
 | PB8         | I2C1     | D15 SCL  | JP3.11 SCL   |           | SCL  Pin1  |
 | PB9         | I2C1     | D14 SDA  | JP3.12 SDA   |           | SDA  Pin2  |
 | AVDD        |          | AREF     |              |           |            |
-| GND         |          | GND      | JP1.13 GND   |           | GND  Pin4  |
-| PA5         | SPI1     | D13      | JP1.6  SCK   |           |            |
-| PA6         | SPI1     | D12      | JP1.4  MISO  |           |            |
-| PA7         | SPI1     | D11      | JP1.5  MOSI  |           |            |
-| PA4         |          | D10      | JP3.7  D10   |           |            |
+| GND         |          | GND      | JP1.13 GND   | Pin3, Pin6| GND  Pin4  |
+| PA5         | SPI1     | D13      | JP1.6  SCK   | Pin5      |            |
+| PA6         | SPI1     | D12      | JP1.4  MISO  | Pin7      |            |
+| PA7         | SPI1     | D11      | JP1.5  MOSI  | Pin2      |            |
+| PA4         | (SPI)    | D10      | JP3.7  D10   | Pin1      |            |
 | PA9         |          | D9       | JP3.8  D9    |           |            |
 | PC12        | Neopixel | D8       |              |           |            |
 | PC13        |          | D7       |              |           |            |
@@ -418,7 +425,7 @@ There is no debouncing for the `switchx?` words.
 |-------------|----------|----------|--------------|-----------|------------|
 | NC          |          | IOREF    |              |           |            |
 | NRST        |          | RESET    | JP1.16 RST   |           |            |
-| 3V3         |          | 3.3V     | JP1.14/15 3V3|           | VCC Pin3   |
+| 3V3         |          | 3.3V     | JP1.14/15 3V3| Pin4      | VCC Pin3   |
 | 5V          |          | 5V       | JP3.3  USB   |           |            |
 | GND         |          | GND      |              |           |            |
 | GND         |          | GND      |              |           |            |
