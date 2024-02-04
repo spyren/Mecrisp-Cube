@@ -10,7 +10,7 @@ Board Support Package for the Nucleo and Dongle
 
 The board support package for the STM32WB Nucleo Board is restricted to the 
 Arduino UNO R3 pin header and the onboard LEDs and switches (buttons). 
-The STM32 has much more capabilities then 14 digital I/O pins, 
+The STM32 has much more capabilities then 16 digital I/O pins, 
 6 analog input pins, UART, SPI, and I2C interfaces. But if you want to use 
 the more advanced features you can use the CubeMX to create source code for the 
 internal peripherals. This project wants to show how to use the Cube Ecosystem 
@@ -37,16 +37,16 @@ switch3?     ( -- f )         get switch3, closed=TRUE
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
 dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
 
-dpin!        ( f u -- )       set the digital output port pin u (D0=0 .. D18=18)  to f (TRUE 1, FALSE 0)
+dpin!        ( f u -- )       set the digital output port pin u (D0=0 .. D15=15, A0=16 .. A5=21)  to f (TRUE 1, FALSE 0)
 dpin@        ( u -- f )       get the digital input/output port pin u
 dmod         ( u1 u2 -- )     set the pin u2 to mode u1: 0 in, 1 in pull-up, 2 in pull-down, 3 out push pull, 4 out open drain, 5 out push pull PWM
                                                 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
 
 pwmpin!      ( u1 u2 -- )     set the digital output port pin u2 (D3=3, D6=6, D9=9) to a PWM value u1 (0..1000). Default frequency is 1 kHz, TIMER1
-pwmprescale  ( u --  )        set the PWM prescale for TIMER1 (D6=6, D11=11)). 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
+pwmprescale  ( u --  )        set the PWM prescale for TIMER1. 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
 EXTImod      ( u1 u2 -- )     set for pin u2 (D2, D4, D7, D10) the EXTI mode u1: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (A0 16, A1 17, D9 9, D10 10), timeout u2 in [ms]
+EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (D2, D4, D7, D10), timeout u2 in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -93,19 +93,11 @@ This example is a very simple chase lighting program inspired by Knight Rider.
 You need 8 LEDs and 8 resistors.
 
 ```forth
-\ Flipper Zero portmap
-\               0   1   2   3    4    5    6    7
-create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
-
-: pin ( u -- u )  \ gets the Dx pin number
-  cells port-map + @
-;
-
 : init-port ( -- )
   11 16 dmod   \ set A0/D16 to analog
   8 0 do
-    0 i pin dpin!
-    3 i pin dmod \ port is output
+    0 i dpin!
+    3 i dmod \ port is output
   loop
 ;
 
@@ -115,17 +107,17 @@ create port-map 6 , 0 , 1 , 9 , 13 , 10 , 12 , 11 ,
 
 : left ( -- ) 
   7 0 do
-    1 i pin dpin! 
+    1 i dpin! 
     delay
-    0 i pin dpin!
+    0 i dpin!
   loop 
 ;
 
 : right ( -- )
   8 1 do  
-    1 8 i - pin dpin! 
+    1 8 i - dpin! 
     delay
-    0 8 i - pin dpin!
+    0 8 i - dpin!
   loop 
 ;
 
@@ -173,7 +165,7 @@ scale is from 0 (0 % duty cycle) to 1000 (100 % duty cycle), this
 results in a PWM frequency of 1 kHz. If you need higher PWM frequencies,
 decrease the divider and/or the scale.
 
-PWM port pins: D6 (TIM1CH2), D11 (TIM1CH1)
+PWM port pins: D3 (TIM1CH3), D6 (TIM1CH1), D9 (TIM1CH2)
 
 Simple test program to set brightness of a LED on pin D3 with a
 potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
@@ -245,7 +237,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 ```forth
 640 pwmprescale 
-5 4 dmod   \ set D6 to PWM
+5 6 dmod   \ set D6 to PWM
 11 16 dmod   \ set A0/D16 to analog
 
 : slowservo ( -- ) 
@@ -286,15 +278,18 @@ All channels (input capture / output compare) use the same time base.
 
 ## Output Compare
 
-Output compare TIM2: D13
-
+Output compare TIM2: D0 (TIM2CH4), D1 (TIM2CH3), D5 (TIM2CH1)
 ```forth
-7 13 dmod \ output compare for D13
+7 0 dmod \ output compare for D0
+7 1 dmod \ output compare for D1
+7 5 dmod \ output compare for D5
 
 : oc-toggle ( -- )
   5000000 ICOCperiod! \ 5 s period
   ICOCstart
-  3 13 OCmod  3000000 13 OCstart \ toggle D13 after 3 s
+  3 0 OCmod  1000000 0 OCstart \ toggle D0 after 1 s
+  3 1 OCmod  2000000 1 OCstart \ toggle D1 after 2 s
+  3 5 OCmod  3000000 5 OCstart \ toggle D5 after 3 s 
   begin
      waitperiod
      cr .time
@@ -306,7 +301,7 @@ Output compare TIM2: D13
 When you abort (hit any key) the program, the timer still runs and controls 
 the port pins. To stop the port pins:
 <pre>
-13 OCstop  
+0 OCstop  1 OCstop  5 OCstop  
 </pre>
 
 Or change the prescale to make it faster or slower:
@@ -317,12 +312,12 @@ Or change the prescale to make it faster or slower:
 
 ## Input Capture
 
-This sample program measures the time between the edges on port D13. 
+This sample program measures the time between the edges on port A2. 
 If no event occurs within 2 seconds, "timeout" is issued. 
 Hit any key to abort program.
 ```forth
 : ic-test ( -- )
-  6 13 dmod \ input capture on D13
+  6 18 dmod \ input capture on A2
   ICOCstart
   2 ICstart  \ both edges
   ICOCcount@ ( -- count )
@@ -349,22 +344,22 @@ Bouncing time is about 250 us for my push button.
 
 # Using EXTI line
 
-GPIO pins D9, D10, A0 and A1 can be used as an EXTI line. 
-EXTIs are external interrupt lines, D9 uses EXTI2 (EXTI Line2 interrupt), 
-D10 EXTI4, A0/D16 EXIT0, and A0/D17 EXTI1. 
+GPIO pins D2, D4, D7 and D10 can be used as an EXTI line, D4 and D7 share the same EXTI line. 
+EXTIs are external interrupt lines, D2 uses EXTI_9_5 (EXTI Line 9..5 interrupt), 
+D2 EXTI_9_5, D4 EXTI_15_10, D7 EXTI_15_10, and D10 EXTI_4. 
 
-If  you use a push button for D9, there could be several events on pressing the push button once.
+If  you use a push button for D2, there could be several events on pressing the push button once.
 This is called bouncing. 
 For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
 
 ```forth
 : exti-test ( -- )
-  2 9 EXTImod \ both edges on D9
+  2 2 EXTImod \ both edges on D2
   begin
-    2000 9 EXTIwait \ wait for edge on D9 with 2 s timeout
+    2000 2 EXTIwait \ wait for edge on D2 with 2 s timeout
     cr
     0= if
-      9 dpin@ if
+      2 dpin@ if
         ." rising edge"
       else
         ." falling edge"
@@ -382,7 +377,7 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 ## Switches
 
 Most development boards have at least a switch or a push button, 
-the Nucleo has 3 and Dongle has 1 switches.
+the Nucleo has 3 switches and Dongle has 1 switche.
 
 ```
 switch1? .
@@ -393,7 +388,52 @@ There is no debouncing for the `switchx?` words.
 
 # Feather Wings
 
-## Nucleo Dongle - Feather Adaptor
+## Nucleo Arduino - Feather Adaptor
+
+![](img/nucleo-feather-adaptor.jpg)
+
+
+| Nucleo right| Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|-------------|----------|----------|--------------|-----------|------------|
+| PB8         | I2C1     | D15 SCL  | JP3.11 SCL   |           | SCL  Pin1  |
+| PB9         | I2C1     | D14 SDA  | JP3.12 SDA   |           | SDA  Pin2  |
+| AVDD        |          | AREF     |              |           |            |
+| GND         |          | GND      | JP1.13 GND   |           | GND  Pin4  |
+| PA5         | SPI1     | D13      | JP1.6  SCK   |           |            |
+| PA6         | SPI1     | D12      | JP1.4  MISO  |           |            |
+| PA7         | SPI1     | D11      | JP1.5  MOSI  |           |            |
+| PA4         |          | D10      | JP3.7  D10   |           |            |
+| PA9         |          | D9       | JP3.8  D9    |           |            |
+| PC12        | Neopixel | D8       |              |           |            |
+| PC13        |          | D7       |              |           |            |
+| PA8         |          | D6       | JP3.9  D6    |           |            |
+| PA15        |          | D5       | JP3.10 D5    |           |            |
+| PC10        |          | D4       |              |           |            |
+| PA10        |          | D3       |              |           |            |
+| PC6         |          | D2       |              |           |            |
+| PA2         | UART     | D1 Tx    | JP1.2  D1    |           |            |
+| PA3         | UART     | D0 rx    | JP1.3  D0    |           |            |
+
+| Nucleo left | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|-------------|----------|----------|--------------|-----------|------------|
+| NC          |          | IOREF    |              |           |            |
+| NRST        |          | RESET    | JP1.16 RST   |           |            |
+| 3V3         |          | 3.3V     | JP1.14/15 3V3|           | VCC Pin3   |
+| 5V          |          | 5V       | JP3.3  USB   |           |            |
+| GND         |          | GND      |              |           |            |
+| GND         |          | GND      |              |           |            |
+| VIN         |          | Vin      |              |           |            |
+| PC0         |          | A0       | JP1.12 A0    |           |            |
+| PC1         |          | A1       | JP1.11 A1    |           |            |
+| PA1         |          | A2       | JP1.10 A2    |           |            |
+| PA0         |          | A3       | JP1.9  A3    |           |            |
+| PC3         |          | A4       | JP1.8  A4    |           |            |
+| PC2         |          | A5       | JP1.7  A5    |           |            |
+|             |          |          | JP3.1  VBAT  |           |            |
+|             |          |          | JP3.2  EN    |           |            |
+
+
+## Dongle - Feather Adaptor
 
 Remove the USB Type A plug from the dongle and add a Adafruit 
 Micro B breakout board. It is convenient to have a Micro-SD 
@@ -452,7 +492,7 @@ For the Nucleo I use D8 for the Neopixel. It takes about 30 us to set one Neopix
 during this time the interrupts are disabled. 
 
 <pre>
-3 6 dmod           \ D6 output
+3 8 dmod           \ D8 output
 $ff0000 neopixel!   \ red LED 100 % brightness
 </pre>
 
@@ -584,7 +624,6 @@ Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
   switch1? until
   drop ( u -- )
 ;
-
 
 1 plexshutdown
 
