@@ -404,7 +404,7 @@ There is no debouncing for the `switchx?` words.
 | PA7         | SPI1     | D11      | JP1.5  MOSI  |           |            |
 | PA4         |          | D10      | JP3.7  D10   |           |            |
 | PA9         |          | D9       | JP3.8  D9    |           |            |
-| PC12        | Neopixel | D8       | JP3.4  D8    |           |            |
+| PC12        | Neopixel | D8       |              |           |            |
 | PC13        |          | D7       |              |           |            |
 | PA8         |          | D6       | JP3.9  D6    |           |            |
 | PA15        |          | D5       | JP3.10 D5    |           |            |
