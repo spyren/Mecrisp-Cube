@@ -516,9 +516,9 @@ Create a 384 KiB FAT filesystem as a loop device on Linux
 (or use the already prepared [fd-384k.img](../boot/fd-384k.img)):
 <pre>
 $ dd if=/dev/zero of=fd-384k.img bs=512 count=768
-768+0 Datensätze ein
-768+0 Datensätze aus
-393216 bytes (393 kB, 384 KiB) copied, 0,00155426 s, 253 MB/s
+768+0 records in
+768+0 records out
+393216 bytes (393 kB, 384 KiB) copied, 0.00517216 s, 76.0 MB/s
 $ sudo losetup --find --show fd-384k.img
 /dev/loop33
 $ sudo mkfs -t vfat /dev/loop33
