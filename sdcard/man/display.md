@@ -150,7 +150,7 @@ To change the display type you have to edit the
 
    * Octopus
       * https://www.distrelec.ch/de/octopus-128x64-oled-display-pi-supply-pis-1277/p/30163414 
-      ![](img/dongle-feather-adaptor.jpg)
+      ![](img/nucleo-feather-adaptor.jpg)
 
 ## SH1107 Driver (OLED)
 
