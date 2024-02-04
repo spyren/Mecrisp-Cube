@@ -388,7 +388,71 @@ There is no debouncing for the `switchx?` words.
 
 # Feather Wings
 
-## Nucleo Dongle - Feather Adaptor
+## Nucleo - Arduino/Feather Adaptor
+
+| Description | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|-------------|----------|----------|--------------|-----------|------------|
+|             |          | D0 Rx    |              |           |            |
+|             |          | D1 Tx    |              |           |            |
+|             |          | D2       |              |           |            |
+|             |          | D3       |              |           |            |
+|             |          | D4       |              |           |            |
+|             |          | D5       |              |           |            |
+|             |          | D6       |              |           |            |
+|             |          | D7       |              |           |            |
+|             |          | D8       |              |           |            |
+|             |          | D9       |              |           |            |
+|             |          | D10      |              |           |            |
+|             |          | D11      |              |           |            |
+|             |          | D12      |              |           |            |
+|             |          | D13      |              |           |            |
+|             |          | GND      |              |           |            |
+|             |          | AREF     |              |           |            |
+|             |          | D14 SDA  |              |           |            |
+|             |          | D15 SCL  |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+|             |          |          |              |           |            |
+
+
+| GND         | CN1.1  | GND       | JP1.13 GND   | GND       | 5, 7, 11   |
+| NRST        | CN1.2  | RES       | JP1.16 RST   |           | 12         |
+| PA13        | CN1.3  | SWDIO     | -            |           | 4          |
+| PA14        | CN1.4  | SWDCLK    | -            |           | 6          |
+| PB3         | CN1.5  | SWO       | A4?          |           | 8          |
+| 3V3         | CN1.6  | 3V3       | JP1.14/15 3V3 | 3V 5V    | 3          |
+| PB2         | CN1.7  | SPI_CS    | -            | CS        |            |
+| PA5         | CN1.8  | D13 SCK   | JP1.6  SCK   | CLK       |            |
+| PA6         | CN1.9  | D12 MISO  | JP1.4  MISO  | DO        |            |
+| PA7         | CN1.10 | D11 MOSI  | JP1.5  MOSI  | DI        |            |
+| PB8         | CN2.1  | D15 SCL   | JP3.11 SCL   |           |            |
+| PB9         | CN2.2  | D14 SDA   | JP3.12 SDA   |           |            |
+| PA0         | CN2.3  | A3        | JP1.9  A3    |           |            |
+| PA2         | CN2.4  | D1        | JP1.2  D1    |           |            |
+| PA3         | CN2.5  | D0        | JP1.3  D0    |           |            |
+| PB6         | CN2.6  | UARTRX    |              |           | 13         |
+| PA9         | CN2.7  | D9        | JP3.8  D9    |           |            |
+| PB7         | CN2.7  | UARTTX    |              |           | 14         |
+| PA8         | CN2.8  | D6 Neopixel | JP3.9  D6  |           |            |
+| GND         | CN2.9  | GND       | GND          |           |            |
+| PA1         | CN2.10 | A2        | JP1.10 A2    |           |            |G
+| !USB5V      |        | 5V        | JP3.3  USB   |           |            |
+| BOOT0       |        | BOOT0     | JP1.1  B0    |           |            |
+| PB0 AT2 ?   |        |           | JP1.12 A0    |           |            |
+| PB1 AT2 ?   |        |           | JP1.11 A1    |           |            |
+| PB3   ?     | CN1.5  | SWO       | JP1.8  A4?   |           | 8          |
+|             |        |           | JP1.7  A5    |           |            |
+|             |        |           | JP3.1  VBAT  |           |            |
+|             |        |           | JP3.2  EN    |           |            |
+
+
+## Dongle - Feather Adaptor
 
 Remove the USB Type A plug from the dongle and add a Adafruit 
 Micro B breakout board. It is convenient to have a Micro-SD 
