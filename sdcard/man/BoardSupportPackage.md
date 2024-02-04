@@ -237,7 +237,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 
 ```forth
 640 pwmprescale 
-5 4 dmod   \ set D6 to PWM
+5 6 dmod   \ set D6 to PWM
 11 16 dmod   \ set A0/D16 to analog
 
 : slowservo ( -- ) 
@@ -344,22 +344,22 @@ Bouncing time is about 250 us for my push button.
 
 # Using EXTI line
 
-GPIO pins D9, D10, A0 and A1 can be used as an EXTI line. 
-EXTIs are external interrupt lines, D9 uses EXTI2 (EXTI Line2 interrupt), 
-D10 EXTI4, A0/D16 EXIT0, and A0/D17 EXTI1. 
+GPIO pins D2, D4, D7 and D10 can be used as an EXTI line, D4 and D7 share the same EXTI line. 
+EXTIs are external interrupt lines, D2 uses EXTI_9_5 (EXTI Line 9..5 interrupt), 
+D2 EXTI_9_5, D4 EXTI_15_10, D7 EXTI_15_10, and D10 EXTI_4. 
 
-If  you use a push button for D9, there could be several events on pressing the push button once.
+If  you use a push button for D2, there could be several events on pressing the push button once.
 This is called bouncing. 
 For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
 
 ```forth
 : exti-test ( -- )
-  2 9 EXTImod \ both edges on D9
+  2 2 EXTImod \ both edges on D2
   begin
-    2000 9 EXTIwait \ wait for edge on D9 with 2 s timeout
+    2000 2 EXTIwait \ wait for edge on D2 with 2 s timeout
     cr
     0= if
-      9 dpin@ if
+      2 dpin@ if
         ." rising edge"
       else
         ." falling edge"
@@ -377,7 +377,7 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 ## Switches
 
 Most development boards have at least a switch or a push button, 
-the Nucleo has 3 and Dongle has 1 switches.
+the Nucleo has 3 switches and Dongle has 1 switche.
 
 ```
 switch1? .
@@ -447,7 +447,7 @@ For the Nucleo I use D8 for the Neopixel. It takes about 30 us to set one Neopix
 during this time the interrupts are disabled. 
 
 <pre>
-3 6 dmod           \ D6 output
+3 8 dmod           \ D8 output
 $ff0000 neopixel!   \ red LED 100 % brightness
 </pre>
 
@@ -579,7 +579,6 @@ Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
   switch1? until
   drop ( u -- )
 ;
-
 
 1 plexshutdown
 
