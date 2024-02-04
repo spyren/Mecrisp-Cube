@@ -388,68 +388,49 @@ There is no debouncing for the `switchx?` words.
 
 # Feather Wings
 
-## Nucleo - Arduino/Feather Adaptor
+## Nucleo Arduino - Feather Adaptor
 
-| Description | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+![](img/nucleo-feather-adaptor.jpg)
+
+
+| Nucleo right| Function | Arduino  |  Feather     | Micro-SD  | Grove      |
 |-------------|----------|----------|--------------|-----------|------------|
-|             |          | D0 Rx    |              |           |            |
-|             |          | D1 Tx    |              |           |            |
-|             |          | D2       |              |           |            |
-|             |          | D3       |              |           |            |
-|             |          | D4       |              |           |            |
-|             |          | D5       |              |           |            |
-|             |          | D6       |              |           |            |
-|             |          | D7       |              |           |            |
-|             |          | D8       |              |           |            |
-|             |          | D9       |              |           |            |
-|             |          | D10      |              |           |            |
-|             |          | D11      |              |           |            |
-|             |          | D12      |              |           |            |
-|             |          | D13      |              |           |            |
-|             |          | GND      |              |           |            |
-|             |          | AREF     |              |           |            |
-|             |          | D14 SDA  |              |           |            |
-|             |          | D15 SCL  |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
-|             |          |          |              |           |            |
+| PB8         | I2C1     | D15 SCL  | JP3.11 SCL   |           | SCL  Pin1  |
+| PB9         | I2C1     | D14 SDA  | JP3.12 SDA   |           | SDA  Pin2  |
+| AVDD        |          | AREF     |              |           |            |
+| GND         |          | GND      | JP1.13 GND   |           | GND  Pin4  |
+| PA5         | SPI1     | D13      | JP1.6  SCK   |           |            |
+| PA6         | SPI1     | D12      | JP1.4  MISO  |           |            |
+| PA7         | SPI1     | D11      | JP1.5  MOSI  |           |            |
+| PA4         |          | D10      | JP3.7  D10   |           |            |
+| PA9         |          | D9       | JP3.8  D9    |           |            |
+| PC12        | Neopixel | D8       | JP3.4  D8    |           |            |
+| PC13        |          | D7       |              |           |            |
+| PA8         |          | D6       | JP3.9  D6    |           |            |
+| PA15        |          | D5       | JP3.10 D5    |           |            |
+| PC10        |          | D4       |              |           |            |
+| PA10        |          | D3       |              |           |            |
+| PC6         |          | D2       |              |           |            |
+| PA2         | UART     | D1 Tx    | JP1.2  D1    |           |            |
+| PA3         | UART     | D0 rx    | JP1.3  D0    |           |            |
 
-
-| GND         | CN1.1  | GND       | JP1.13 GND   | GND       | 5, 7, 11   |
-| NRST        | CN1.2  | RES       | JP1.16 RST   |           | 12         |
-| PA13        | CN1.3  | SWDIO     | -            |           | 4          |
-| PA14        | CN1.4  | SWDCLK    | -            |           | 6          |
-| PB3         | CN1.5  | SWO       | A4?          |           | 8          |
-| 3V3         | CN1.6  | 3V3       | JP1.14/15 3V3 | 3V 5V    | 3          |
-| PB2         | CN1.7  | SPI_CS    | -            | CS        |            |
-| PA5         | CN1.8  | D13 SCK   | JP1.6  SCK   | CLK       |            |
-| PA6         | CN1.9  | D12 MISO  | JP1.4  MISO  | DO        |            |
-| PA7         | CN1.10 | D11 MOSI  | JP1.5  MOSI  | DI        |            |
-| PB8         | CN2.1  | D15 SCL   | JP3.11 SCL   |           |            |
-| PB9         | CN2.2  | D14 SDA   | JP3.12 SDA   |           |            |
-| PA0         | CN2.3  | A3        | JP1.9  A3    |           |            |
-| PA2         | CN2.4  | D1        | JP1.2  D1    |           |            |
-| PA3         | CN2.5  | D0        | JP1.3  D0    |           |            |
-| PB6         | CN2.6  | UARTRX    |              |           | 13         |
-| PA9         | CN2.7  | D9        | JP3.8  D9    |           |            |
-| PB7         | CN2.7  | UARTTX    |              |           | 14         |
-| PA8         | CN2.8  | D6 Neopixel | JP3.9  D6  |           |            |
-| GND         | CN2.9  | GND       | GND          |           |            |
-| PA1         | CN2.10 | A2        | JP1.10 A2    |           |            |G
-| !USB5V      |        | 5V        | JP3.3  USB   |           |            |
-| BOOT0       |        | BOOT0     | JP1.1  B0    |           |            |
-| PB0 AT2 ?   |        |           | JP1.12 A0    |           |            |
-| PB1 AT2 ?   |        |           | JP1.11 A1    |           |            |
-| PB3   ?     | CN1.5  | SWO       | JP1.8  A4?   |           | 8          |
-|             |        |           | JP1.7  A5    |           |            |
-|             |        |           | JP3.1  VBAT  |           |            |
-|             |        |           | JP3.2  EN    |           |            |
+| Nucleo left | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|-------------|----------|----------|--------------|-----------|------------|
+| NC          |          | IOREF    |              |           |            |
+| NRST        |          | RESET    | JP1.16 RST   |           |            |
+| 3V3         |          | 3.3V     | JP1.14/15 3V3|           | VCC Pin3   |
+| 5V          |          | 5V       | JP3.3  USB   |           |            |
+| GND         |          | GND      |              |           |            |
+| GND         |          | GND      |              |           |            |
+| VIN         |          | Vin      |              |           |            |
+| PC0         |          | A0       | JP1.12 A0    |           |            |
+| PC1         |          | A1       | JP1.11 A1    |           |            |
+| PA1         |          | A2       | JP1.10 A2    |           |            |
+| PA0         |          | A3       | JP1.9  A3    |           |            |
+| PC3         |          | A4       | JP1.8  A4    |           |            |
+| PC2         |          | A5       | JP1.7  A5    |           |            |
+|             |          |          | JP3.1  VBAT  |           |            |
+|             |          |          | JP3.2  EN    |           |            |
 
 
 ## Dongle - Feather Adaptor
