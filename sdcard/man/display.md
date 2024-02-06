@@ -51,6 +51,8 @@ oledcolumn@  ( -- u )           Read a column (8 pixels) from the current positi
 *) part of redirection.fs
 </pre>
 
+![](img/nucleo-feather-adaptor.jpg)
+
 
 # Usage
 
