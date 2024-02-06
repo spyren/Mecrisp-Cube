@@ -539,6 +539,8 @@ and interrupt latency.
 
 ## CharlieWing Plex LED Display
 
+![](img/flipper-plex.jpg)
+
 ### Plex Words
 
 `plex-emit` works like the standard word `emit`. It blocks the calling thread,
