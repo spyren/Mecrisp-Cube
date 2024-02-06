@@ -6,6 +6,9 @@
   </tr>
 </table> 
 
+![](img/flipper-display.jpg)
+![](img/mecrisp-cube-logo-red-h.svg)
+
 # Mecrisp-Cube (Flipper branch)
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
