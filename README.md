@@ -6,6 +6,14 @@
   </tr>
 </table> 
 
+<table>
+  <tr>
+    <td><img src="/sdcard/man/img/flipper-display.jpg">
+ </td>
+    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
+  </tr>
+</table> 
+
 ![](/sdcard/man/img/flipper-display.jpg)
 ![](/sdcard/man/img/mecrisp-cube-logo-red-h.svg)
 
