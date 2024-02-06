@@ -18,6 +18,15 @@ Driver [oled.c](/peripherals/oled.c), fonts from https://www.mikrocontroller.net
 
 [Code page 850](https://en.wikipedia.org/wiki/Code_page_850)
 
+## Small OLED Display 128x64 Pixel
+
+![](img/nucleo-feather-adaptor.jpg)
+
+## Flipper LCD
+
+![](img/flipper-display.jpg)
+
+
 # OLED Words
 
 `oled-emit` works like the standard word `emit`. It blocks the calling thread, 
@@ -50,8 +59,6 @@ oledcolumn@  ( -- u )           Read a column (8 pixels) from the current positi
 
 *) part of redirection.fs
 </pre>
-
-![](img/nucleo-feather-adaptor.jpg)
 
 
 # Usage
