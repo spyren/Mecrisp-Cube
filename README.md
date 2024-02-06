@@ -6,8 +6,8 @@
   </tr>
 </table> 
 
-![](img/flipper-display.jpg)
-![](img/mecrisp-cube-logo-red-h.svg)
+![](/sdcard/man/img/flipper-display.jpg)
+![](/sdcard/man/img/mecrisp-cube-logo-red-h.svg)
 
 # Mecrisp-Cube (Flipper branch)
 
