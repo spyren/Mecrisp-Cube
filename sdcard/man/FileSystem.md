@@ -523,7 +523,7 @@ $ sudo losetup --find --show fd-384k.img
 /dev/loop33
 $ sudo mkfs -t vfat /dev/loop33
 mkfs.fat 4.2 (2021-01-31)
-$ su mount -o loop /dev/loop33 /mnt
+$ sudo mount -o loop /dev/loop33 /mnt
 </pre>
 
 Copy the the files and directories with `cp` or `tar` to the mounted image, e.g.
