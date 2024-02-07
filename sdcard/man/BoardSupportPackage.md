@@ -739,6 +739,9 @@ message strlen Marquee
 | LD3           | PA4              |                            |
 | Neopixel      | PC12             | D6                         |
 
+
+### Dongle with OCTOPUS OLED and Neopixel
+
 ![](img/dongle-oled.png)
 
 
