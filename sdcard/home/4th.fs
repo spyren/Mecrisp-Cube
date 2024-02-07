@@ -1,28 +1,36 @@
 1 plexshutdown
 
-200 buffer: message
-message .str" 4th"
-message strlen 4th
-lcdclr  0 lcdfont 
->lcd 2swap type >term  \ write string to lcd
+: frame ( c- -- )
+  15 0 do
+    dup i + @  i swap 10 plexcolumn!
+  loop
+  drop
+;
+
+50 buffer: frame-buffer
+
+0 plexpos!
+char 4 plex-emit
+1 plexcolumn@ frame-buffer !
+2 plexcolumn@ frame-buffer 1 + !
+3 plexcolumn@ frame-buffer 2 + !
+4 plexcolumn@ frame-buffer 3 + !
+5 plexcolumn@ frame-buffer 4 + !
+
+0 plexpos!
+char t plex-emit
+1 plexcolumn@ frame-buffer 6 + !
+2 plexcolumn@ frame-buffer 7 + !
+3 plexcolumn@ frame-buffer 8 + !
+4 plexcolumn@ frame-buffer 9 + !
+
+0 plexpos!
+char h plex-emit
+1 plexcolumn@ frame-buffer 11 + !
+2 plexcolumn@ frame-buffer 12 + !
+3 plexcolumn@ frame-buffer 13 + !
+4 plexcolumn@ frame-buffer 14 + !
 
 plexclr
-\ 4
-1  0 lcdpos! lcdcolumn@  0 swap 10 plexcolumn!
-2  0 lcdpos! lcdcolumn@  1 swap 10 plexcolumn!
-3  0 lcdpos! lcdcolumn@  2 swap 10 plexcolumn!
-4  0 lcdpos! lcdcolumn@  3 swap 10 plexcolumn!
-5  0 lcdpos! lcdcolumn@  4 swap 10 plexcolumn!
-                         5 0    10 plexcolumn!
-\ t
-7  0 lcdpos! lcdcolumn@  6 swap 10 plexcolumn!
-8  0 lcdpos! lcdcolumn@  7 swap 10 plexcolumn!
-9  0 lcdpos! lcdcolumn@  8 swap 10 plexcolumn!
-10 0 lcdpos! lcdcolumn@  9 swap 10 plexcolumn!
-                        10 0    10 plexcolumn!
-\ h
-13 0 lcdpos! lcdcolumn@ 11 swap 10 plexcolumn!
-14 0 lcdpos! lcdcolumn@ 12 swap 10 plexcolumn!
-15 0 lcdpos! lcdcolumn@ 13 swap 10 plexcolumn!
-16 0 lcdpos! lcdcolumn@ 14 swap 10 plexcolumn!
+frame-buffer frame
 
