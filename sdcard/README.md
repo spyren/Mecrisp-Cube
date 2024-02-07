@@ -1,10 +1,5 @@
-<table>
-  <tr>
-    <td><img src="/sdcard/man/img/flipper-header-logo.jpg">
- </td>
-    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
-  </tr>
-</table> 
+![](/sdcard/man/img/flipper-display.jpg)
+![](/sdcard/man/img/mecrisp-cube-logo-red-h.svg)
 
 # Mecrisp-Cube (Flipper branch)
 
@@ -27,8 +22,8 @@ for STM32 MCUs. There are three flavors (branches) available:
 
   * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
     [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
-    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
-    In work [Flipper Zero](../Flipper) (`Flipper`):
+    [WB5M Discovery](../WB5M) (`WB55M`), [STM32WB Feather](../WBfeather) (`WBfeather`) and the 
+    [Flipper Zero](../Flipper) (`Flipper`).
   * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
   * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
@@ -173,10 +168,12 @@ The greeting screen should apear after startup:
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
-Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 2023 peter@spyr.ch
+Mecrisp-Cube 1.5.1 for STM32WB Flipper Zero, 63/128  KiB RAM/FLASH dictionary (C) 2024 peter@spyr.c
   * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
+  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+
 include 0:/etc/rc.local
 ```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
@@ -432,13 +429,13 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 ### Elsewhere
 
-* [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
-* [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
-* https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
-* https://forth-ev.de/ Forth-Gesellschaft e.V.
-* https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
+ * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
+ * [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
+ * https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
+ * https://forth-ev.de/ Forth-Gesellschaft e.V.
+ * https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
 
-* https://forth-standard.org/standard/words, Forth 2012 Standard Words
-* https://gforth.org/manual/, GForth Manual
+ * https://forth-standard.org/standard/words, Forth 2012 Standard Words
+ * https://gforth.org/manual/, GForth Manual
 
 
