@@ -739,5 +739,6 @@ message strlen Marquee
 | LD3           | PA4              |                            |
 | Neopixel      | PC12             | D6                         |
 
+![](img/dongle-oled.png)
 
 
