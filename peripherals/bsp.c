@@ -59,7 +59,7 @@ uint32_t swap_uint32(uint32_t val);
 // Global Variables
 // ****************
 const char BSP_Version[] =
-	    "  * Firmware Package STM32Cube FW_WB V1.14.1, USB-CDC, BLE Stack 5.3 (C) 2022 STMicroelectronics \n";
+	    "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources

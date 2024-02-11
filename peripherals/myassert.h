@@ -58,13 +58,16 @@
 #define ASSERT_UART_SIGINT				15
 #define ASSERT_UART_ERROR_CALLBACK		16
 #define ASSERT_UART_FIFO				17
+#define ASSERT_I2C						18
 
-#define ASSERT_FLASH_UNLOCK				18
-#define ASSERT_FLASH_LOCK				19
+#define ASSERT_FLASH_UNLOCK				19
+#define ASSERT_FLASH_LOCK				20
 
-#define ASSERT_FREERTOS					20
+#define ASSERT_FREERTOS					21
 
-#define ASSERT_CRS_SIGINT				21
+#define ASSERT_CRS_SIGINT				22
+
+#define ASSERT_UNKNOWN					99
 
 void ASSERT_init(void);
 int ASSERT_occurred(void);

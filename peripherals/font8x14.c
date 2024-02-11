@@ -35,7 +35,7 @@ const char font_8x14[1][16]={
 #else
 const char font_8x14[256][16]={
 #endif
-		{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},	// 0x00
+		{0xF0,0x00,0xF8,0x03,0xF8,0x0F,0xF0,0x1F,0xF0,0x1F,0xF8,0x0F,0xF8,0x03,0xF0,0x00},	// 0x00 heart 0x03
 #ifndef DEBUG
 		{0x00,0x07,0x80,0x08,0x40,0x15,0x40,0x14,0x40,0x14,0x40,0x15,0x80,0x08,0x00,0x07},	// 0x01
 		{0x00,0x07,0x80,0x0F,0xC0,0x12,0xC0,0x17,0xC0,0x17,0xC0,0x12,0x80,0x0F,0x00,0x07},	// 0x02
@@ -307,7 +307,11 @@ const char font_8x14[256][16]={
  *      bit pattern for the char
  */
 int FONT8X14_getUpperColumn(int ch, int column) {
+#ifdef DEBUG
+	return font_8x14[0][2*column];
+#else
 	return font_8x14[ch][2*column];
+#endif
 }
 
 /**
@@ -322,7 +326,11 @@ int FONT8X14_getUpperColumn(int ch, int column) {
  *      bit pattern for the char
  */
 int FONT8X14_getLowerColumn(int ch, int column) {
+#ifdef DEBUG
+	return font_8x14[0][2*column + 1];
+#else
 	return font_8x14[ch][2*column + 1];
+#endif
 }
 
 /**
@@ -337,7 +345,11 @@ int FONT8X14_getLowerColumn(int ch, int column) {
  *      bit pattern for the char
  */
 int FONT8X14_getColumn(int ch, int column) {
+#ifdef DEBUG
+	return FONT8X14_getUpperColumn(0, column) + (FONT8X14_getLowerColumn(ch, column) << 8);
+#else
 	return FONT8X14_getUpperColumn(ch, column) + (FONT8X14_getLowerColumn(ch, column) << 8);
+#endif
 }
 
 

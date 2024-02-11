@@ -62,7 +62,7 @@
 #include "font12x16.h"
 
 #if OLED == 1
-#include "spyr.h"
+#include "mecrisp-cube-logo.h"
 
 // Macros
 // ******
@@ -257,23 +257,41 @@ void OLED_init(void) {
 	}
 #endif
 
-	OLED_clear();
-	OLED_setPos(127-spyr_height-8, 0);
-	OLED_putXBM(spyr_bits, spyr_width, spyr_height);
+//	OLED_clear();
+//	OLED_setPos(127-spyr_height-8, 0);
+//	OLED_putXBM(spyr_bits, spyr_width, spyr_height);
+//
+//	OLED_setPos(0, 0);
+//	OLED_setFont(OLED_FONT8X8);
+//	OLED_puts("Mecrisp-");
+//	OLED_setPos(93, 0);
+//	OLED_puts("Cube\r\n");
+//	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
+//
+//	OLED_setFont(OLED_FONT6X8);
+//	OLED_puts(BOARD "\r\n");
+//	OLED_puts("Forth for\r\n");
+//	OLED_puts("the STM32WB \r\n");
+//	OLED_puts("(c)2022\r\n");
+//	OLED_puts("peter@spyr.ch");
 
+	OLED_clear();
 	OLED_setPos(0, 0);
-	OLED_setFont(OLED_FONT8X8);
-	OLED_puts("Mecrisp-");
-	OLED_setPos(93, 0);
-	OLED_puts("Cube\r\n");
-	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
+	OLED_putXBM(mecrisp_cube_logo_bits, mecrisp_cube_logo_width, mecrisp_cube_logo_height);
+
+	OLED_setFont(OLED_FONT12X16);
+	OLED_setPos(34, 0);
+	OLED_puts("MECRISP\r\n");
+	OLED_setPos(34, 2);
+	OLED_puts("CUBE4TH\r\n");
 
 	OLED_setFont(OLED_FONT6X8);
-	OLED_puts(BOARD "\r\n");
-	OLED_puts("Forth for\r\n");
-	OLED_puts("the STM32WB \r\n");
-	OLED_puts("(c)2022\r\n");
-	OLED_puts("peter@spyr.ch");
+	OLED_setPos(0, 5);
+	OLED_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
+	OLED_puts("Forth for the STM32WB\r\n");
+	OLED_puts("(c)2024 peter@spyr.ch");
+
+
 }
 
 
@@ -604,7 +622,6 @@ void OLED_writeColumn(uint8_t column) {
 
 	// copy into I2C array
 	buf[1] = display_buffer->rows[CurrentPosY][CurrentPosX];
-
 #ifndef OLED_SPI
 	IIC_putMessage(buf, 2, OLED_I2C_ADR);
 #else
@@ -614,8 +631,8 @@ void OLED_writeColumn(uint8_t column) {
 	RTSPI_WriteData(buf+1, 1);
 	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
 	osMutexRelease(RTSPI_MutexID);
-#endif // OLED_SPI
-#endif // OLED_PAGE_VERTICA
+#endif
+#endif
 
 	postwrap(1, 1);
 }
@@ -868,7 +885,7 @@ static void putGlyph8x16(int ch) {
 	#endif // OLED_SPI
 
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
+		buf[i+1] = display_buffer->rows[CurrentPosY+i][CurrentPosX+1];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
 	#ifndef OLED_SPI
@@ -883,6 +900,7 @@ static void putGlyph8x16(int ch) {
 	#endif // OLED_SPI
 
 #endif
+	setPos(CurrentPosX+8, CurrentPosY);
 
 	postwrap(8, 2);
 }
@@ -948,7 +966,7 @@ static void putGlyph12x16(int ch) {
 	#endif // OLED_SPI
 
 	for (i = 0; i < 12; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosX+i][CurrentPosY+1];
+		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
 	#ifndef OLED_SPI
@@ -963,6 +981,7 @@ static void putGlyph12x16(int ch) {
 	#endif // OLED_SPI
 
 #endif
+	setPos(CurrentPosX+12, CurrentPosY);
 
 	postwrap(12, 2);
 }

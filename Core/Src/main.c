@@ -218,10 +218,10 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM16_Init();
 //  MX_WWDG_Init();
-  MX_AES1_Init();
-  MX_CRC_Init();
-  MX_RNG_Init();
-  MX_PKA_Init();
+//  MX_AES1_Init();
+//  MX_CRC_Init();
+//  MX_RNG_Init();
+//  MX_PKA_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1

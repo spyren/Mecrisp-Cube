@@ -157,7 +157,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setNeoPixel(0);
+	BSP_setRgbLED(0x008000); // Set RGB green LED to 50 %
 	ASSERT_init();
 	SD_init();
 	FD_init();
@@ -179,11 +179,11 @@ void MainThread(void *argument)
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
-		BSP_setLED3(TRUE);
+		BSP_setRgbLED(BSP_getRgbLED() | 0x800000); // Set RGB red LED to 50 %
 		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		BSP_setLED2(FALSE); // switch off power on LED
+		BSP_setRgbLED(BSP_getRgbLED() & 0xFF7FFF); // // switch off power on LED
 	}
 
 	Forth();
