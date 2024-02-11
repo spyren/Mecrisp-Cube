@@ -70,7 +70,11 @@
 // Global Variables
 // ****************
 
+#if EXTERNAL_FLASH == 1
+const char FS_Version[] = "  * FatFs for external flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN\n";
+#else
 const char FS_Version[] = "  * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN\n";
+#endif
 
 FATFS FatFs_FD;	/* Work area (filesystem object) for logical flash drive (0) */
 FATFS FatFs_SD;	/* Work area (filesystem object) for logical SD drive (1) */

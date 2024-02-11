@@ -54,6 +54,13 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 RAM_SHARED_B (xrw)         : ORIGIN = 0x20038000, LENGTH = 15K
 }
 
+/*
+FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
+*/
+
 /* Define output sections */
 SECTIONS
 {
