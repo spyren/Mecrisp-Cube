@@ -6,7 +6,7 @@
   </tr>
 </table> 
 
-# Mecrisp-Cube (master branch)
+# Mecrisp-Cube (WB5M branch)
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
