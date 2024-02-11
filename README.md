@@ -35,12 +35,9 @@ for STM32 MCUs. There are three flavors (branches) available:
 May the Forth Be With You!
 
 
-## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
+## Intro for the STM32WB5MM Discovery Board
 
-If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
-you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
-
-The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
+The STM32WB5MM Discovery board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
 and LEDs and switches (buttons).
 
 STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
@@ -58,8 +55,8 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 ### Standard Mecrisp-Cube features
   * 63 KiB RAM dictionary 
-  * 128 KiB Flash Forth dictionary 
-  * 50 KiB for C code 
+  * 384 KiB Flash Forth dictionary 
+  * 128 KiB for C code 
   * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
   * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
     * Internal Flash drive 0:, 384 KiB
@@ -95,8 +92,8 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * 3 push buttons
-  * 3 LEDs
+  * 2 push buttons
+  * 1 RGB LED
   * 16 GPIO pins, D0 .. D15
   * 6 ADC pins, A0 .. A5
   * I2C
