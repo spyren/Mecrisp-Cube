@@ -88,17 +88,22 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "aes.h"
+#include "crc.h"
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
 #include "ipcc.h"
+#include "pka.h"
 #include "quadspi.h"
 #include "rf.h"
+#include "rng.h"
 #include "rtc.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
+#include "wwdg.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -118,10 +123,6 @@
 #include "power.h"
 
 /* USER CODE END Includes */
-
-#if (__FPU_USED == 0)
-      #warning "FPU is not used"
-#endif
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
@@ -189,8 +190,13 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-  /* Configure the peripherals common clocks */
+/* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
+
+  /* IPCC initialisation */
+  MX_IPCC_Init();
+
+  /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
 
@@ -200,7 +206,6 @@ int main(void)
   MX_ADC1_Init();
   MX_I2C3_Init();
   MX_QUADSPI_Init();
-  MX_RF_Init();
   MX_RTC_Init();
   MX_USART1_UART_Init();
   if (MX_FATFS_Init() != APP_OK) {
@@ -212,6 +217,12 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM16_Init();
+//  MX_WWDG_Init();
+  MX_AES1_Init();
+  MX_CRC_Init();
+  MX_RNG_Init();
+  MX_PKA_Init();
+  MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace

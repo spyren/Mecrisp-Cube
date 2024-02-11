@@ -45,7 +45,6 @@
 #include "plex.h"
 #include "watchdog.h"
 #include "myassert.h"
-#include "power.h"
 #if OLED == 1
 #include "oled.h"
 #endif
@@ -103,8 +102,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-//	MX_APPE_Init();
-	POWER_init();
+	MX_APPE_Init();
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
@@ -159,8 +157,8 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
+	BSP_setNeoPixel(0);
 	ASSERT_init();
-	BSP_setRgbLED(0x008000); // Set RGB green LED to 50 %
 	SD_init();
 	FD_init();
 	FS_init();
@@ -181,11 +179,11 @@ void MainThread(void *argument)
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
 		// CPU2 hardfault
-		BSP_setRgbLED(BSP_getRgbLED() | 0x800000); // Set RGB red LED to 50 %
+		BSP_setLED3(TRUE);
 		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 	} else {
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		BSP_setRgbLED(BSP_getRgbLED() & 0xFF7FFF); // // switch off power on LED
+		BSP_setLED2(FALSE); // switch off power on LED
 	}
 
 	Forth();

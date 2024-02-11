@@ -40,6 +40,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 extern RTC_HandleTypeDef hrtc;
+
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -145,6 +146,7 @@ void MX_APPE_Init(void)
 /* USER CODE BEGIN APPE_Init_2 */
 
 /* USER CODE END APPE_Init_2 */
+
    return;
 }
 
@@ -326,6 +328,7 @@ static void appe_Tl_Init(void)
 {
   TL_MM_Config_t tl_mm_config;
   SHCI_TL_HciInitConf_t SHci_Tl_Init_Conf;
+
   /**< Reference table initialization */
   TL_Init();
 
@@ -471,6 +474,7 @@ static void APPE_SysEvtReadyProcessing(void * pPayload)
 
   SHCI_C2_CONFIG_Cmd_Param_t config_param = {0};
   uint32_t RevisionID=0;
+  uint32_t DeviceID=0;
 
   p_sys_event = (TL_AsynchEvt_t*)(((tSHCI_UserEvtRxParam*)pPayload)->pckt->evtserial.evt.payload);
   p_sys_ready_event = (SHCI_C2_Ready_Evt_t*) p_sys_event->payload;
@@ -506,7 +510,11 @@ static void APPE_SysEvtReadyProcessing(void * pPayload)
 
     APP_DBG_MSG(">>== DBGMCU_GetRevisionID= %lx \n\r", RevisionID);
 
-    config_param.RevisionID = RevisionID;
+    config_param.RevisionID = (uint16_t)RevisionID;
+
+    DeviceID = LL_DBGMCU_GetDeviceID();
+    APP_DBG_MSG(">>== DBGMCU_GetDeviceID= %lx \n\r", DeviceID);
+    config_param.DeviceID = (uint16_t)DeviceID;
     (void)SHCI_C2_Config(&config_param);
 
     APP_BLE_Init();
