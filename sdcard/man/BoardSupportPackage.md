@@ -586,9 +586,9 @@ message .str"    MECRISP-CUBE REAL-TIME FORTH ON THE GO!   "
 message strlen Marquee
 ```
 
-## Pinouts
+# Pinouts
 
-### Arduino Pinout 
+## Arduino Pinout 
 
 | *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |------------------|---------------|------------------|----------------------------|
@@ -628,9 +628,9 @@ message strlen Marquee
 |                  | GPIO_SELECT2  | PH1              | 0 STMOD+, 1 LPUART D0/D1   |
 
 
-###  Internal 
+##  Internal 
 
-#### Push Buttons
+### Push Buttons
 
 | Signal name   | STM32WB55 pin    | Comment  |
 |---------------|------------------|----------|
@@ -638,7 +638,7 @@ message strlen Marquee
 | SWITCH2       | PC13             | WKUP2    |
 
 
-#### RGB LED
+### RGB LED
 
 | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
@@ -652,7 +652,7 @@ fCLK(SDI) = 20 kHz to 600 kHz, the max. frequency for the SPI is
 therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 
 
-#### I2C
+### I2C
 
 | Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
@@ -660,7 +660,7 @@ therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 | IC2_SDA       | PA10             | I2C1_SDA                   |
 
 
-#### UART VCP ST-LINK
+### UART VCP ST-LINK
 
 | Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
@@ -669,7 +669,7 @@ therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 
 
 
-#### Quad SPI for Flash
+### Quad SPI for Flash
 
 | Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
@@ -683,7 +683,7 @@ therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 
 MicroSdBlocks#STM32WB5MM_Discovery_Kit_SPI_S25
 
-#### S25FL128SDSMFV001
+### S25FL128SDSMFV001
 
 Programming (1.5 MBps)
    * 256- or 512-byte page programming buffer options
@@ -700,7 +700,7 @@ Erase (0.5 to 0.65 MBps)
 If we use only the first 4 !KiB from the 64 !KiB sector then we have 16 !MiB / 16 = 1 !MiB.
 
 
-#### SPI OLED Display
+### SPI OLED Display
 
 | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
@@ -715,7 +715,7 @@ If we use only the first 4 !KiB from the 64 !KiB sector then we have 16 !MiB / 1
    * https://files.seeedstudio.com/wiki/Grove-OLED-Display-0.96-SSD1315-/res/OEL%20Display%20Module.pdf
 
 
-#### Onboard Mems (I2C)
+### Onboard Mems (I2C)
 
 | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
@@ -725,7 +725,7 @@ If we use only the first 4 !KiB from the 64 !KiB sector then we have 16 !MiB / 1
 | MEMS_RDY      | PE1              | STTS22H temperatrur sensor |
 
 
-##### Digital Microphone
+### Digital Microphone
 
 | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
@@ -733,7 +733,7 @@ If we use only the first 4 !KiB from the 64 !KiB sector then we have 16 !MiB / 1
 | MICRO_DI      | PA9              | SAI1_DI2                   |
 
 
-### STMod+ Connector Pinout
+## STMod+ Connector Pinout
 
 | *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |------------------|---------------|------------------|----------------------------|
