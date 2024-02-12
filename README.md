@@ -32,7 +32,7 @@ May the Forth Be With You!
 
 ## Intro for the STM32WB5MM Discovery Board
 
-The STM32WB5MM-DK Discovery Board is not as cheep as the Nucleo Board but it has plenty of 
+The STM32WB5MM-DK Discovery Board is not as cheap as the Nucleo Board but it has plenty of 
 peripherals on board: OLED display 128x64 pixel, 128-Mbit Quad-SPI NOR Flash Memory, 
 temperature sensor, accelerometer/gyroscope sensor, Time‑of‑Flight and gesture‑detection 
 sensor, digital microphone, RGB LED, infrared LED, and touch sensor. 
