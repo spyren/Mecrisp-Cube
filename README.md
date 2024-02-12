@@ -51,7 +51,7 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 ### Standard Mecrisp-Cube features
   * 63 KiB RAM dictionary 
   * 384 KiB Flash Forth dictionary 
-  * 128 KiB for C code 
+  * 150 KiB for C code 
   * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
   * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
     * Internal Flash drive 0:, 384 KiB
