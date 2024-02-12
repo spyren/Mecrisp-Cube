@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <td><img src="/sdcard/man/img/nucleo-header.jpg">
+    <td><img src="/sdcard/man/img/discovery.jpg">
  </td>
     <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
   </tr>
