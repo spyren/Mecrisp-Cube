@@ -251,7 +251,7 @@ you do not want to use the STM32CubeIDE.
 Get the sources from github:
 
 ```
-psi@homer:~> git clone https://github.com/spyren/Mecrisp-Cube
+$ git clone https://github.com/spyren/Mecrisp-Cube
 Cloning into 'Mecrisp-Cube'...
 remote: Enumerating objects: 8334, done.
 remote: Counting objects: 100% (2220/2220), done.
@@ -259,6 +259,11 @@ remote: Compressing objects: 100% (860/860), done.
 remote: Total 8334 (delta 1458), reused 2059 (delta 1335), pack-reused 6114
 Receiving objects: 100% (8334/8334), 108.93 MiB | 13.49 MiB/s, done.
 Resolving deltas: 100% (5788/5788), done.
+$ mv Mecrisp-Cube MecrispCubeWB5M
+$ cd MecrispCubeWB5M
+$ checkout WB5M
+Switched to a new branch 'WB5M'
+branch 'WB5M' set up to track 'origin/WB5M'.
 ```
 
 Import the project into the IDE:
@@ -266,10 +271,10 @@ Import the project into the IDE:
 ```
 File -> Import -> General -> Existing Projects into Workspace -> Select root directory
 Copy project into workspace
-Browse to Mecrisp-Cube directory
+Browse to MecrispCubeWB5M directory
 ```
 
-Generate code from the STM32CubeMX `MecrispCube.ioc` file:
+Generate code from the STM32CubeMX `MecrispCubeWB5M.ioc` file:
 
 ```
 Project -> Generate Code 
