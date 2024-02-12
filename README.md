@@ -1,10 +1,5 @@
-<table>
-  <tr>
-    <td><img src="/sdcard/man/img/discovery.jpg">
- </td>
-    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
-  </tr>
-</table> 
+![](/sdcard/man/img/discovery.jpg)
+![](/sdcard/man/img/mecrisp-cube-logo-red-h.svg)
 
 # Mecrisp-Cube (WB5M branch)
 
