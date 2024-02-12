@@ -43,7 +43,7 @@ for applications requiring an extended battery life and complex functionalities.
 If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
 Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
-![](/sdcard/man/img/stm32wb-nucleo.jpg)
+![](/sdcard/man/img/discovery-top.png)
 
 
 ## Features
