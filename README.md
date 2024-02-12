@@ -54,8 +54,8 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
   * 150 KiB for C code 
   * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
   * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
-    * Internal Flash drive 0:, 384 KiB
-    * microSD drive 1: (optional, external SD adaptor)
+    * [External Serial Flash](/sdcard/man/FileSystem.md#stm32wb5mm-discovery-kit-qspi-s25fl128) drive 0:, 1 MiB
+    * microSD drive 1: (optional, [external SD adaptor](/sdcard/man/FileSystem.md#home-brewed-microsd-adapter-for-stm32wb55-nucleodongle-spi))
   * Integration in STM32 Cube Ecosystem. 
     * Create C code from CubeMX for internal peripherals and use it in Forth
     * [Calling C Functions](/sdcard/man/CallingCFunction.md) from Forth and vice versa 
@@ -96,6 +96,15 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
   * 3 PWM pins
   * Input Capture / Output Compare
   * 4 external interrupts (EXTI)
+
+Not supported yet:
+
+  * temperature sensor
+  * accelerometer/gyroscope sensor
+  * Time-of-Flight and gesture/detection sensor
+  * digital microphone
+  * infrared LED
+  * touch sensor
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
