@@ -229,27 +229,22 @@ $08043558 10 dump
 ```
 The compiled word `hello` needs only 14 bytes in the dictionary.
 
-### Switch On/Off, Buttons, LED
-
-  * *Switch Off* press and hold the BACK-Button for 5 s or type in the command `shutdown`
-  * *Switch On* press the BACK-Button 
-  * *Reset* press and hold the BACK- and LEFT-Button or Ctrl-C or `reset`
-
+### Buttons, LED
 
 #### Special Functions on Startup 
 
 USB-CDC is the default console.
-  * *Button UP* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
-  * *Button DOWN* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
-  * *Button RIGHT* do not include `0:/etc/rc.local`
+  * *SW1* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
+  * *SW2* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
+  * *SW3* do not include `0:/etc/rc.local`
 
 
-#### RGB LED as Status Indicator
+#### LEDs as Status Indicator
 
 The RGB LED  displays the status
-  * *dimmed Green* LIPO fully charged
-  * *dimmed Red* LIPO charging
-  * *dimmed Blue* BLE connected
+  * *Green* USB enumerated
+  * *Red* Error occured
+  * *Blue* BLE connected
   * *flashing Red* "disk" (serial flash or SD) write operation
   * *flashing Yellow* "disk" (serial flash or SD) read operation
 
