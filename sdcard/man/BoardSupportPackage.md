@@ -1,21 +1,17 @@
-<table>
-  <tr>
-    <td><img src="img/nucleo-header.jpg"  ></td>
-    <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
-  </tr>
-</table> 
+![](/sdcard/man/img/discovery.jpg)
+![](/sdcard/man/img/mecrisp-cube-logo-red-h.svg)
 
-Board Support Package for the Nucleo and Dongle
-===============================================
+Board Support Package for the STM32WB5MM Discovery Board
+========================================================
 
-The board support package for the STM32WB Nucleo Board is restricted to the 
-Arduino UNO R3 pin header and the onboard LEDs and switches (buttons). 
-The STM32 has much more capabilities then 16 digital I/O pins, 
-6 analog input pins, UART, SPI, and I2C interfaces. But if you want to use 
-the more advanced features you can use the CubeMX to create source code for the 
-internal peripherals. This project wants to show how to use the Cube Ecosystem 
-for a Forth system (or vice versa) and can't implement all features and 
-possibilities the STM32WB has. It is a good starting point for your project. 
+The board support package for the STM32WB5MM-DK Discovery Kit is restricted 
+to the Arduino UNO R3 pin header and the onboard LEDs, and switches (buttons). 
+The STM32 has much more capabilities then 14 digital I/O pins, 6 analog input 
+pins, UART, SPI, and I2C interfaces. But if you want to use the more advanced 
+features you can use the CubeMX to create source code for the internal peripherals. 
+This project wants to show how to use the Cube Ecosystem for a Forth system 
+(or vice versa) and can't implement all features and possibilities the STM32WB has. 
+It is a good starting point for your project. 
 
 
 Board Support Words
@@ -23,16 +19,11 @@ Board Support Words
 
 For GPIO pin defaults see [table](#arduino-and-feather-assignments).
 ```
-led1!        ( f -- )         set LED1 (blue)
-led2!        ( f -- )         set LED2 (green)
-led3!        ( f -- )         set LED3 (red)
-led1@        ( -- f )         get LED1 (blue)
-led2@        ( -- f )         get LED2 (green)
-led3@        ( -- f )         get LED3 (red)
+rgbled!      ( rgb -- )       set the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
+rgbled@      ( -- rgb )       get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
 
-switch1?     ( -- f )         get switch1, closed=TRUE
-switch2?     ( -- f )         get switch2, closed=TRUE
-switch3?     ( -- f )         get switch3, closed=TRUE
+switch1?     ( -- n )         get switch1, closed=TRUE
+switch2?     ( -- n )         get switch2, closed=TRUE
 
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
 dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
@@ -45,8 +36,8 @@ dmod         ( u1 u2 -- )     set the pin u2 to mode u1: 0 in, 1 in pull-up, 2 i
 pwmpin!      ( u1 u2 -- )     set the digital output port pin u2 (D3=3, D6=6, D9=9) to a PWM value u1 (0..1000). Default frequency is 1 kHz, TIMER1
 pwmprescale  ( u --  )        set the PWM prescale for TIMER1. 32 kHz / prescale, default 32 -> PWM frequency 1 kHz
 
-EXTImod      ( u1 u2 -- )     set for pin u2 (D2, D4, D7, D10) the EXTI mode u1: 0 rising, 1 falling, 2 both edges, 3 none
-EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (D2, D4, D7, D10), timeout u2 in [ms]
+EXTImod      ( u1 u2 -- )     set for pin u2 (D0, D1, D2, D4, D10) the EXTI mode u1: 0 rising, 1 falling, 2 both edges, 3 none
+EXTIwait     ( u1 u2 -- )     wait for EXTI interrupt on pin u2 (D0, D1, D2, D4, D10), timeout u2 in [ms]
 
 ICOCprescale ( u -- )         set the input capture / output compare prescale for TIMER2. default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 ICOCperiod!  ( u -- )         set the input capture / output compare (TIMER2) period. default $FFFFFFFF (4'294'967'295). 
@@ -56,7 +47,7 @@ ICOCcount!   ( u -- )         set the input capture / output compare counter for
 ICOCcount@   ( -- u )         get the input capture / output compare counter for TIMER2
 ICOCstart    ( -- )           start the ICOC period
 ICOCstop     ( -- )           stop the ICOC period
-OCmod        ( u1 u2 -- )     set for pin u2 (D0, D1, D5) the Output Compare mode u1: 0 frozen, 1 active level on match, 2 inactive level on match, 
+OCmod        ( u1 u2 -- )     set for pin u2 (D5, D13) the Output Compare mode u1: 0 frozen, 1 active level on match, 2 inactive level on match, 
                               3 toggle on match, 4 forced active, 5 forced inactive
     
 OCstart      ( u1 u2 -- )     start the output compare mode for pin u2 with pulse u1
@@ -377,7 +368,7 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 ## Switches
 
 Most development boards have at least a switch or a push button, 
-the Nucleo has 3 switches and Dongle has 1 switche.
+the Discovery has 2 switches.
 
 ```
 switch1? .
@@ -438,50 +429,6 @@ and a Neopixel.
 | PC2         |          | A5       | JP1.7  A5    |           |            |
 |             |          |          | JP3.1  VBAT  |           |            |
 |             |          |          | JP3.2  EN    |           |            |
-
-
-## Dongle - Feather Adaptor
-
-Remove the USB Type A plug from the dongle and add a Adafruit 
-Micro B breakout board. It is convenient to have a Micro-SD 
-breakout board (level shifter is not needed) and JTAG connector 
-(I prefer the 14 pin STM variant to have a serial interface by the ST-LINK). 
-Everything mounted on headers on the backside of 
-FeatherWing [Tripler](https://www.adafruit.com/product/3417) Mini Kit.
-
-![](img/dongle-feather-adaptor.jpg)
-
-| Description | Dongle | Function  |  Feather     | Micro-SD  | JTAG 14pin |
-|-------------|--------|-----------|--------------|-----------|------------|
-| GND         | CN1.1  | GND       | JP1.13 GND   | GND       | 5, 7, 11   |
-| NRST        | CN1.2  | RES       | JP1.16 RST   |           | 12         |
-| PA13        | CN1.3  | SWDIO     | -            |           | 4          |
-| PA14        | CN1.4  | SWDCLK    | -            |           | 6          |
-| PB3         | CN1.5  | SWO       | A4?          |           | 8          |
-| 3V3         | CN1.6  | 3V3       | JP1.14/15 3V3 | 3V 5V    | 3          |
-| PB2         | CN1.7  | SPI_CS    | -            | CS        |            |
-| PA5         | CN1.8  | D13 SCK   | JP1.6  SCK   | CLK       |            |
-| PA6         | CN1.9  | D12 MISO  | JP1.4  MISO  | DO        |            |
-| PA7         | CN1.10 | D11 MOSI  | JP1.5  MOSI  | DI        |            |
-| PB8         | CN2.1  | D15 SCL   | JP3.11 SCL   |           |            |
-| PB9         | CN2.2  | D14 SDA   | JP3.12 SDA   |           |            |
-| PA0         | CN2.3  | A3        | JP1.9  A3    |           |            |
-| PA2         | CN2.4  | D1        | JP1.2  D1    |           |            |
-| PA3         | CN2.5  | D0        | JP1.3  D0    |           |            |
-| PB6         | CN2.6  | UARTRX    |              |           | 13         |
-| PA9         | CN2.7  | D9        | JP3.8  D9    |           |            |
-| PB7         | CN2.7  | UARTTX    |              |           | 14         |
-| PA8         | CN2.8  | D6 Neopixel | JP3.9  D6  |           |            |
-| GND         | CN2.9  | GND       | GND          |           |            |
-| PA1         | CN2.10 | A2        | JP1.10 A2    |           |            |
-| !USB5V      |        | 5V        | JP3.3  USB   |           |            |
-| BOOT0       |        | BOOT0     | JP1.1  B0    |           |            |
-| PB0 AT2 ?   |        |           | JP1.12 A0    |           |            |
-| PB1 AT2 ?   |        |           | JP1.11 A1    |           |            |
-| PB3   ?     | CN1.5  | SWO       | JP1.8  A4?   |           | 8          |
-|             |        |           | JP1.7  A5    |           |            |
-|             |        |           | JP3.1  VBAT  |           |            |
-|             |        |           | JP3.2  EN    |           |            |
 
 
 ## Neopixel
@@ -650,50 +597,71 @@ message strlen Marquee
 
 ### Arduino Pinout 
 
-#### Arduino Left
-
-![](img/nucleo_wb55rg_arduino_left.png)
-
-#### Arduino Right
-
-![](img/nucleo_wb55rg_arduino_right.png)
-
-
-### Morpho Pinout 
-
-#### Morpho Left
-
-![](img/nucleo_wb55rg_morpho_left.png)
-
-#### Morpho Right
-
-![](img/nucleo_wb55rg_morpho_right2.png)
+| *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+|------------------|---------------|------------------|----------------------------|
+| CN2.1            | NC            | -                | NC (reserved for the test) |
+| CN2.2            | 3V3 (IOREF)   | -                | IOREF 3V3                  |
+| CN2.3            | NRST          | NRST             | NRST                       |
+| CN2.4            | 3V3           | -                | 3.3 V                      |
+| CN2.5            | 5V            | -                | 5 V                        |
+| CN2.6            | GND           | -                | Ground                     |
+| CN2.7            | GND           | -                | Ground                     |
+| CN2.8            | VIN           |                  | Ext. +12V                  |
+| CN3.1            | A0            | PC3              | ADC1_IN4                   |
+| CN3.2            | A1            | PA2              | ADC1_IN7/TIM2_CH1 IC       |
+| CN3.3            | A2            | PA5              | ADC1_IN10                  |
+| CN3.4            | A3            | PC1              | ADC1_IN2                   |
+| CN3.5            | A4            | PC4              | ADC1_IN13                  |
+| CN3.6            | A5            | PC5              | ADC1_IN14                  |
+| CN4.1            | D0            | PC0              | LPUART1_RX/EXTI0           |
+| CN4.2            | D1            | PB5              | LPUART1_TX/EXTI9_5         |
+| CN4.3            | D2            | PD12             | GPIO/EXTI15_10             |
+| CN4.4            | D3            | PD14             | GPIO/TIM1_CH1              |
+| CN4.5            | D4            | PE3              | GPIO/EXTI_3                |
+| CN4.6            | D5            | PB10             | GPIO/TIM2_CH3 OC           |
+| CN4.7            | D6            | PE0              | GPIO/TIM16_CH1             |
+| CN4.8            | D7            | PB2              | GPIO                       |
+| CN1.1            | D8            | PD13             | GPIO                       |
+| CN1.2            | D9            | PD15             | GPIO/TIM1_CH2              |
+| CN1.3            | D10           | PA4              | SPI1_NSS/EXTI4             |
+| CN1.4            | D11           | PA7              | SPI1_MOSI                  |
+| CN1.5            | D12           | PB4              | SPI1_MISO                  |
+| CN1.6            | D13           | PA1              | SPI1_SCK/TIM2_CH2 OC       |
+| CN1.7            | GND           | -                | Ground                     |
+| CN1.8            | AVDD          | -                | VDDA                       |
+| CN1.9            | D14           | PA10             | !I2C1_SDA                  |
+| CN1.10           | D15           | PB8              | !I2C1_SCL                  |
+|                  | GPIO_SELECT1  | PE2              | 0 IR LED, 1 RGB LED        |
+|                  | GPIO_SELECT2  | PH1              | 0 STMOD+, 1 LPUART D0/D1   |
 
 
 ###  Internal 
 
 #### Push Buttons
 
-| Signal name   | STM32WB55 pin    | 
-|---------------|------------------|
-| SWITCH1       | PC4 (PC13)       |
-| SWITCH2       | PD0              |
-| SWITCH3       | PD1              |
+| Signal name   | STM32WB55 pin    | Comment  |
+|---------------|------------------|----------|
+| SWITCH1       | PC12             | WKUP3    |
+| SWITCH2       | PC13             | WKUP2    |
 
 
-#### LEDs
+#### RGB LED
 
-| Signal name | STM32WB55 pin  | Comment                  |
-|-------------|----------------|--------------------------|
-| LD1         | PB5            |                          |
-| LD2         | PB0            |                          |
-| LD3         | PB1            |                          |
-| Neopixel    | PC12           | D8                       |
+| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+|---------------|------------------|----------------------------|
+| D11           | PA7              | SPI1_MOSI                  |
+| RGB_SELECT    | PH1              | RGB CS                     |
+
+PWM Driver Chip: [[https://www.ti.com/lit/ds/symlink/tlc59731.pdf][TLC59731]]
+
+SPI is used for the timing. 4 SPI bits are one pulse position bit. 
+fCLK(SDI) = 20 kHz to 600 kHz, the max. frequency for the SPI is 
+therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 
 
 #### I2C
 
-| Signal name   | STM32WB55 pin    | Comment                    |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | IC2_SCL       | PA9              | I2C1_SCL                   |
 | IC2_SDA       | PA10             | I2C1_SDA                   |
@@ -701,15 +669,16 @@ message strlen Marquee
 
 #### UART VCP ST-LINK
 
-| Signal name   | STM32WB55 pin    | Comment                    |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | UART_TX       | PB6              | USART1_TX                  |
 | UART_RX       | PB7              | USART1_RX                  |
 
 
+
 #### Quad SPI for Flash
 
-| Signal name   | STM32WB55 pin    | Comment                    |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | FLASH_NCS     | PD3              | QUADSPI_BK1_NCS            |
 | FLASH_IO0     | PB9              | QUADSPI_BK1_IO0            |
@@ -719,29 +688,81 @@ message strlen Marquee
 | FLASH_SCLK    | PA3              | QUADSPI_BK1_SCLK           |
 
 
-## STM32WB Nucleo Dongle
+MicroSdBlocks#STM32WB5MM_Discovery_Kit_SPI_S25
 
-### Internal
+#### S25FL128SDSMFV001
 
-#### Push Button
+Programming (1.5 MBps)
+   * 256- or 512-byte page programming buffer options
+   * Quad-input page programming (QPP) for slow clock systems
+   * Automatic ECC-internal hardware error correction code generation with single bit error correction
 
-| Signal name   | STM32WB55 pin    | Comment                    |
+Erase (0.5 to 0.65 MBps)
+   * Hybrid sector size option - Physical set of thirty two 4-KB sectors at
+     top or bottom of address space with all remaining sectors of 64 KB :-(,
+     for compatibility with prior generation S25FL devices.
+   * Uniform sector option - always erase 256-KB blocks for software
+     compatibility with higher density and future devices.
+
+If we use only the first 4 !KiB from the 64 !KiB sector then we have 16 !MiB / 16 = 1 !MiB.
+
+
+#### SPI OLED Display
+
+| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
-| SWITCH1       | PC12             | WKUP3                      |
+| D13           | PA1              | SPI1_SCK                   |
+| D12           | PB4              | SPI1_MISO                  |
+| D11           | PA7              | SPI1_MOSI                  |
+| OLED_CS       | PH0              | SPI1_NSS                   |
+| OLED_RST      | PC8              | Reset OLED                 |
+| OLED_DC       | PC9              | Data/Control               | 
+
+   * https://github.com/STMicroelectronics/stm32-ssd1315/blob/main/ssd1315.c
+   * https://files.seeedstudio.com/wiki/Grove-OLED-Display-0.96-SSD1315-/res/OEL%20Display%20Module.pdf
 
 
-#### LEDs
+#### Onboard Mems (I2C)
 
-| Signal name   | STM32WB55 pin    | Comment                    |
+| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
-| LD1           | PB5              |                            |
-| LD2           | PB0              |                            |
-| LD3           | PA4              |                            |
-| Neopixel      | PC12             | D6                         |
+| MEMS_SCK      | PB13             | I2C3_SCL                   |
+| MEMS_SDA      | PB11             | I2C3_SDA                   |
+| MEMS_INT      | PD2              | Accelerometer, Gyro        |
+| MEMS_RDY      | PE1              | STTS22H temperatrur sensor |
 
 
-### Dongle with OCTOPUS OLED and Neopixel
+##### Digital Microphone
 
-![](img/dongle-oled.png)
+| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+|---------------|------------------|----------------------------|
+| MICRO_CK      | PA8              | SAI1_CK2                   |
+| MICRO_DI      | PA9              | SAI1_DI2                   |
+
+
+##### STMod+ Connector Pinout
+
+| *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+|------------------|---------------|------------------|----------------------------|
+| CN5.1            |               | PD0, PA6         | SPI2_NSS, LPUART1_CTS      |
+| CN5.2            | , D1          | PD4, PB5         | SPI2_MOSI (1), LPUART1_TXD |
+| CN5.3            | , D0          | PC2, PC0         | SPI2_MISO (1), LPUART1_RXD |
+| CN5.4            |               | PD1, PB12        | SPI2_SCK, LPUART1_RTS      |
+| CN5.5            |               | GND              | Ground                     |
+| CN5.6            |               | +5V              | Power                      |
+| CN5.7            | D15           | PB8              | I2C1_SCL                   |
+| CN5.8            |               | PB15             | SPI2_MOSI (2)              |
+| CN5.9            |               | PB14             | SPI2_MISO (2)              |
+| CN5.10           | D14           | PA10             | I2C1_SDA                   |
+| CN5.11           |               | PE3              | INT                        |
+| CN5.12           |               | PD8              | STMOD+_RESET               |
+| CN5.13           |               | PA0              | ADC1_IN5                   |
+| CN5.14           |               | PA15             | PWM (TIM2_CH1)             |
+| CN5.15           |               | +5V              | Power                      |
+| CN5.16           |               | GND              | Ground                     |
+| CN5.17           |               | PC11             | GPIO                       |
+| CN5.18           |               | PC10             | GPIO                       |
+| CN5.19           |               | PA5              | GPIO, ADC1_IN10            |
+| CN5.20           | A3            | PC1              | GPIO, ADC1_IN12            |
 
 
