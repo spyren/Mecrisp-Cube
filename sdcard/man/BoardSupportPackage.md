@@ -588,7 +588,7 @@ message strlen Marquee
 
 # Pinouts
 
- - [Schematics MB1292](file:///C:/Users/smipe/Downloads/en.MB1292-WB5MM-B01_Schematic-1.PDF)
+ - [Schematics MB1292](https://www.st.com/resource/en/schematic_pack/mb1292-wb5mm-b01_schematic.pdf)
  - [User manual, UM2825](https://www.st.com/resource/en/user_manual/um2825-discovery-kit-with-stm32wb5mmg-module-stmicroelectronics.pdf)
 
 
@@ -663,7 +663,7 @@ message strlen Marquee
 | D11           | PA7              | SPI1_MOSI                  |
 | RGB_SELECT    | PH1              | RGB CS                     |
 
-PWM Driver Chip: [[https://www.ti.com/lit/ds/symlink/tlc59731.pdf][TLC59731]]
+PWM Driver Chip: [TLC59731](https://www.ti.com/lit/ds/symlink/tlc59731.pdf)
 
 SPI is used for the timing. 4 SPI bits are one pulse position bit. 
 fCLK(SDI) = 20 kHz to 600 kHz, the max. frequency for the SPI is 
