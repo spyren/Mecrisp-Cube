@@ -588,6 +588,10 @@ message strlen Marquee
 
 # Pinouts
 
+ - [Schematics MB1292](file:///C:/Users/smipe/Downloads/en.MB1292-WB5MM-B01_Schematic-1.PDF)
+ - [User manual, UM2825](https://www.st.com/resource/en/user_manual/um2825-discovery-kit-with-stm32wb5mmg-module-stmicroelectronics.pdf)
+
+
 ## Arduino Pinout 
 
 | *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
@@ -627,6 +631,20 @@ message strlen Marquee
 |                  | GPIO_SELECT1  | PE2              | 0 IR LED, 1 RGB LED        |
 |                  | GPIO_SELECT2  | PH1              | 0 STMOD+, 1 LPUART D0/D1   |
 
+### I2C, Arduino, STmod+
+
+| Signal name   | STM32W5MMG pin   | Comment                    |
+|---------------|------------------|----------------------------|
+| D15           | PB8              | I2C1_SCL                   |
+| D14           | PA10             | I2C1_SDA                   |
+
+### LPUART, Arduino, STmod+
+
+| Signal name   | STM32W5MMG pin   | Comment                    |
+|---------------|------------------|----------------------------|
+| D1            | PB5              | LPUART1_TX                 |
+| D0            | PC0              | LPUART1_RX                 |
+
 
 ##  Internal 
 
@@ -652,21 +670,12 @@ fCLK(SDI) = 20 kHz to 600 kHz, the max. frequency for the SPI is
 therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 
 
-### I2C
-
-| Signal name   | STM32W5MMG pin   | Comment                    |
-|---------------|------------------|----------------------------|
-| IC2_SCL       | PA9              | I2C1_SCL                   |
-| IC2_SDA       | PA10             | I2C1_SDA                   |
-
-
 ### UART VCP ST-LINK
 
 | Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | UART_TX       | PB6              | USART1_TX                  |
 | UART_RX       | PB7              | USART1_RX                  |
-
 
 
 ### Quad SPI for Flash
@@ -681,9 +690,7 @@ therefore 2.4 MHz, I choosed 2 MHz. It takes about 30 us to set one RGB-LED.
 | FLASH_SCLK    | PA3              | QUADSPI_BK1_SCLK           |
 
 
-MicroSdBlocks#STM32WB5MM_Discovery_Kit_SPI_S25
-
-### S25FL128SDSMFV001
+#### S25FL128SDSMFV001
 
 Programming (1.5 MBps)
    * 256- or 512-byte page programming buffer options
@@ -725,12 +732,34 @@ If we use only the first 4 KiB from the 64 KiB sector then we have 16 MiB / 16 =
 | MEMS_RDY      | PE1              | STTS22H temperatrur sensor |
 
 
+#### Accelerometer 
+
+I2C Address (unshifted): 0x6b
+
+[ISM330DHCX](https://www.st.com/resource/en/datasheet/ism330dhcx.pdf)
+
+#### Temperature sensor 
+
+I2C Address (unshifted): 0x38
+
+[STTS22H](https://www.st.com/resource/en/datasheet/stts22h.pdf)
+
+
+#### Time‑of‑Flight sensor 
+
+I2C Address (unshifted): 0x29
+
+[VL53L0CXV0DH](https://www.st.com/resource/en/datasheet/vl53l0x.pdf)
+
+
 ### Digital Microphone
 
 | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
 |---------------|------------------|----------------------------|
 | MICRO_CK      | PA8              | SAI1_CK2                   |
 | MICRO_DI      | PA9              | SAI1_DI2                   |
+
+[IMP34DT05TR](https://www.st.com/resource/en/datasheet/imp34dt05.pdf)
 
 
 ## STMod+ Connector Pinout
