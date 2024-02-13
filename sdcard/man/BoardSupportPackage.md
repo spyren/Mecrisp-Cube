@@ -622,8 +622,8 @@ message strlen Marquee
 | CN1.6            | D13           | PA1              | SPI1_SCK/TIM2_CH2 OC       |
 | CN1.7            | GND           | -                | Ground                     |
 | CN1.8            | AVDD          | -                | VDDA                       |
-| CN1.9            | D14           | PA10             | !I2C1_SDA                  |
-| CN1.10           | D15           | PB8              | !I2C1_SCL                  |
+| CN1.9            | D14           | PA10             | I2C1_SDA                   |
+| CN1.10           | D15           | PB8              | I2C1_SCL                   |
 |                  | GPIO_SELECT1  | PE2              | 0 IR LED, 1 RGB LED        |
 |                  | GPIO_SELECT2  | PH1              | 0 STMOD+, 1 LPUART D0/D1   |
 
@@ -697,7 +697,7 @@ Erase (0.5 to 0.65 MBps)
    * Uniform sector option - always erase 256-KB blocks for software
      compatibility with higher density and future devices.
 
-If we use only the first 4 !KiB from the 64 !KiB sector then we have 16 !MiB / 16 = 1 !MiB.
+If we use only the first 4 KiB from the 64 KiB sector then we have 16 MiB / 16 = 1 MiB.
 
 
 ### SPI OLED Display
