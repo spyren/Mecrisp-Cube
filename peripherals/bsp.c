@@ -296,17 +296,30 @@ typedef struct {
 	uint16_t pin;
 } PortPin_t;
 
-static const PortPin_t PortPin_a[22] = { { D0_GPIO_Port, D0_Pin }, {
-		D1_GPIO_Port, D1_Pin }, { D2_GPIO_Port, D2_Pin },
-		{ D3_GPIO_Port, D3_Pin }, { D4_GPIO_Port, D4_Pin }, { D5_GPIO_Port,
-				D5_Pin }, { D6_GPIO_Port, D6_Pin }, { D7_GPIO_Port, D7_Pin }, {
-				D8_GPIO_Port, D9_Pin }, { D9_GPIO_Port, D9_Pin }, {
-				D10_GPIO_Port, D10_Pin }, { D11_GPIO_Port, D11_Pin }, {
-				D12_GPIO_Port, D12_Pin }, { D13_GPIO_Port, D13_Pin }, {
-				D14_GPIO_Port, D14_Pin }, { D15_GPIO_Port, D15_Pin }, {
-				A0_GPIO_Port, A0_Pin }, { A1_GPIO_Port, A1_Pin }, {
-				A2_GPIO_Port, A2_Pin }, { A3_GPIO_Port, A3_Pin }, {
-				A4_GPIO_Port, A4_Pin }, { A5_GPIO_Port, A5_Pin } };
+static const PortPin_t PortPin_a[22] = {
+		{ D0_GPIO_Port, D0_Pin },
+		{ D1_GPIO_Port, D1_Pin },
+		{ D2_GPIO_Port, D2_Pin },
+		{ D3_GPIO_Port, D3_Pin },
+		{ D4_GPIO_Port, D4_Pin },
+		{ D5_GPIO_Port, D5_Pin },
+		{ D6_GPIO_Port, D6_Pin },
+		{ D7_GPIO_Port, D7_Pin },
+		{ D8_GPIO_Port, D8_Pin },
+		{ D9_GPIO_Port, D9_Pin },
+		{D10_GPIO_Port, D10_Pin},
+		{D11_GPIO_Port, D11_Pin},
+		{D12_GPIO_Port, D12_Pin},
+		{D13_GPIO_Port, D13_Pin},
+		{D14_GPIO_Port, D14_Pin},
+		{D15_GPIO_Port, D15_Pin},
+		{A0_GPIO_Port, A0_Pin },
+		{ A1_GPIO_Port, A1_Pin },
+		{ A2_GPIO_Port, A2_Pin },
+		{ A3_GPIO_Port, A3_Pin },
+		{ A4_GPIO_Port, A4_Pin },
+		{ A5_GPIO_Port, A5_Pin }
+};
 
 /**
  *  @brief
@@ -1158,7 +1171,7 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelDataTx(D9_GPIO_Port, D9_Pin, rgb);
+	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
 
 	RESTORE_PRIMASK();
 

@@ -40,6 +40,7 @@
 #include "main.h"
 #include "i2c.h"
 #include "iic.h"
+#include "iic3.h"
 #include "myassert.h"
 
 
@@ -53,6 +54,7 @@ static volatile int IIC_Status;
 // Hardware resources
 // ******************
 extern I2C_HandleTypeDef hi2c1;
+extern I2C_HandleTypeDef hi2c3;
 
 // RTOS resources
 // **************
@@ -251,10 +253,11 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
   * @retval None
   */
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hi2c);
-
-	osSemaphoreRelease(IIC_SemaphoreID);
+	if (hi2c->Instance == I2C1) {
+		osSemaphoreRelease(IIC_SemaphoreID);
+	} else if (hi2c->Instance == I2C3) {
+		osSemaphoreRelease(IIC3_SemaphoreID);
+	}
 }
 
 /**
@@ -264,11 +267,11 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
   * @retval None
   */
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hi2c);
-
-	osSemaphoreRelease(IIC_SemaphoreID);
+	if (hi2c->Instance == I2C1) {
+		osSemaphoreRelease(IIC_SemaphoreID);
+	} else if (hi2c->Instance == I2C3) {
+		osSemaphoreRelease(IIC3_SemaphoreID);
+	}
 }
 
 /**
@@ -278,12 +281,13 @@ void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
   * @retval None
   */
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
-
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hi2c);
-
-	IIC_Status = -1;
-	osSemaphoreRelease(IIC_SemaphoreID);
+	if (hi2c->Instance == I2C1) {
+		IIC_Status = -1;
+		osSemaphoreRelease(IIC_SemaphoreID);
+	} else if (hi2c->Instance == I2C3) {
+		IIC3_Status = -1;
+		osSemaphoreRelease(IIC3_SemaphoreID);
+	}
 }
 
 
@@ -294,10 +298,12 @@ void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c) {
   * @retval None
   */
 void HAL_I2C_AbortCpltCallback(I2C_HandleTypeDef *hi2c) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hi2c);
-
-	IIC_Status = -2;
-	osSemaphoreRelease(IIC_SemaphoreID);
+	if (hi2c->Instance == I2C1) {
+		IIC_Status = -2;
+		osSemaphoreRelease(IIC_SemaphoreID);
+	} else if (hi2c->Instance == I2C3) {
+		IIC3_Status = -2;
+		osSemaphoreRelease(IIC3_SemaphoreID);
+	}
 }
 
