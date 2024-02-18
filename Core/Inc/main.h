@@ -62,6 +62,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define MEMS_INT1_Pin GPIO_PIN_2
+#define MEMS_INT1_GPIO_Port GPIOD
+#define MEMS_INT1_EXTI_IRQn EXTI2_IRQn
 #define FLASH_IO3_Pin GPIO_PIN_7
 #define FLASH_IO3_GPIO_Port GPIOD
 #define OLED_DC_Pin GPIO_PIN_9
@@ -72,6 +75,9 @@ void Error_Handler(void);
 #define FLASH_IO1_GPIO_Port GPIOD
 #define D2_Pin GPIO_PIN_12
 #define D2_GPIO_Port GPIOD
+#define MEMS_DRDY_Pin GPIO_PIN_1
+#define MEMS_DRDY_GPIO_Port GPIOE
+#define MEMS_DRDY_EXTI_IRQn EXTI1_IRQn
 #define MEMS_SCK_Pin GPIO_PIN_13
 #define MEMS_SCK_GPIO_Port GPIOB
 #define FLASH_NCS_Pin GPIO_PIN_3

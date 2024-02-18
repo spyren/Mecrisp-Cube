@@ -42,7 +42,9 @@
 #include "shci.h"
 #include "clock.h"
 #include "iic.h"
+#include "iic3.h"
 #include "plex.h"
+#include "mems.h"
 #include "watchdog.h"
 #include "myassert.h"
 #if OLED == 1
@@ -108,6 +110,7 @@ void MX_FREERTOS_Init(void) {
 	RTC_init();
 	UART_init();
 	IIC_init();
+	IIC3_init();
 	CDC_init();
 	FLASH_init();
 	RTSPI_init();
@@ -174,6 +177,7 @@ void MainThread(void *argument)
 #if EPD == 1
 	EPD_init();
 #endif
+	MEMS_init();
 
 	osDelay(100);
 	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory

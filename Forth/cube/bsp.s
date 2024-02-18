@@ -758,3 +758,15 @@ set_halt:
 	bl		POWER_setSwitch
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "memstemp@"
+get_memstemp:
+		@ (  -- u ) Get the MEMS temperature
+// int MEMS_getTemperature(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		MEMS_getTemperature
+	movs	tos, r0
+	pop		{pc}
+

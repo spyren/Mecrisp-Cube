@@ -50,6 +50,7 @@
 #include "bsp.h"
 #include "rt_spi.h"
 #include "power.h"
+#include "mems.h"
 
 // Private function prototypes
 // ***************************
@@ -148,6 +149,14 @@ void BSP_init(void) {
 		Error_Handler();
 	}
 
+	EXTI_0_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_0_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+	EXTI_3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (EXTI_0_SemaphoreID == NULL) {
+		Error_Handler();
+	}
 	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	if (EXTI_4_SemaphoreID == NULL) {
 		Error_Handler();
@@ -1130,6 +1139,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	switch (GPIO_Pin) {
 	case GPIO_PIN_0:  // D0
 		osSemaphoreRelease(EXTI_0_SemaphoreID);
+		break;
+	case GPIO_PIN_1:  // MEMS_DRDY
+		osSemaphoreRelease(MEMS_DRDY_SemaphoreID);
+		break;
+	case GPIO_PIN_2:  // MEMS_INT1
+//		osSemaphoreRelease(EXTI_2_SemaphoreID);
 		break;
 	case GPIO_PIN_5:  // D1
 		osSemaphoreRelease(EXTI_9_5_SemaphoreID);
