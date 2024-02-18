@@ -391,44 +391,44 @@ and a Neopixel.
 ![](img/nucleo-feather-adaptor.jpg)
 
 
-| Nucleo right| Function | Arduino  |  Feather     | Micro-SD  | Grove      |
-|-------------|----------|----------|--------------|-----------|------------|
-| PB8         | I2C1     | D15 SCL  | JP3.11 SCL   |           | SCL  Pin1  |
-| PB9         | I2C1     | D14 SDA  | JP3.12 SDA   |           | SDA  Pin2  |
-| AVDD        |          | AREF     |              |           |            |
-| GND         |          | GND      | JP1.13 GND   | Pin3, Pin6| GND  Pin4  |
-| PA5         | SPI1     | D13      | JP1.6  SCK   | Pin5      |            |
-| PA6         | SPI1     | D12      | JP1.4  MISO  | Pin7      |            |
-| PA7         | SPI1     | D11      | JP1.5  MOSI  | Pin2      |            |
-| PA4         | (SPI)    | D10      | JP3.7  D10   | Pin1      |            |
-| PA9         |          | D9       | JP3.8  D9    |           |            |
-| PC12        | Neopixel | D8       |              |           |            |
-| PC13        |          | D7       |              |           |            |
-| PA8         |          | D6       | JP3.9  D6    |           |            |
-| PA15        |          | D5       | JP3.10 D5    |           |            |
-| PC10        |          | D4       |              |           |            |
-| PA10        |          | D3       |              |           |            |
-| PC6         |          | D2       |              |           |            |
-| PA2         | UART     | D1 Tx    | JP1.2  D1    |           |            |
-| PA3         | UART     | D0 rx    | JP1.3  D0    |           |            |
+| Discovery right| Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|----------------|----------|----------|--------------|-----------|------------|
+| PB8            | I2C1     | D15 SCL  | JP3.11 SCL   |           | SCL  Pin1  |
+| PA10           | I2C1     | D14 SDA  | JP3.12 SDA   |           | SDA  Pin2  |
+| AVDD           |          | AREF     |              |           |            |
+| GND            |          | GND      | JP1.13 GND   | Pin3, Pin6| GND  Pin4  |
+| PA1            | SPI1     | D13      | JP1.6  SCK   | Pin5      |            |
+| PB4            | SPI1     | D12      | JP1.4  MISO  | Pin7      |            |
+| PA7            | SPI1     | D11      | JP1.5  MOSI  | Pin2      |            |
+| PA4            | (SPI)    | D10      | JP3.7  D10   | Pin1      |            |
+| PD15           |          | D9       | JP3.8  D9    |           |            |
+| PD13           | Neopixel | D8       |              |           |            |
+| PB2            |          | D7       |              |           |            |
+| PE0            |          | D6       | JP3.9  D6    |           |            |
+| PB10           |          | D5       | JP3.10 D5    |           |            |
+| PE3            |          | D4       |              |           |            |
+| PD14           |          | D3       |              |           |            |
+| PD12           |          | D2       |              |           |            |
+| PB5            | UART     | D1 Tx    | JP1.2  D1    |           |            |
+| PC0            | UART     | D0 rx    | JP1.3  D0    |           |            |
 
-| Nucleo left | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
-|-------------|----------|----------|--------------|-----------|------------|
-| NC          |          | IOREF    |              |           |            |
-| NRST        |          | RESET    | JP1.16 RST   |           |            |
-| 3V3         |          | 3.3V     | JP1.14/15 3V3| Pin4      | VCC Pin3   |
-| 5V          |          | 5V       | JP3.3  USB   |           |            |
-| GND         |          | GND      |              |           |            |
-| GND         |          | GND      |              |           |            |
-| VIN         |          | Vin      |              |           |            |
-| PC0         |          | A0       | JP1.12 A0    |           |            |
-| PC1         |          | A1       | JP1.11 A1    |           |            |
-| PA1         |          | A2       | JP1.10 A2    |           |            |
-| PA0         |          | A3       | JP1.9  A3    |           |            |
-| PC3         |          | A4       | JP1.8  A4    |           |            |
-| PC2         |          | A5       | JP1.7  A5    |           |            |
-|             |          |          | JP3.1  VBAT  |           |            |
-|             |          |          | JP3.2  EN    |           |            |
+| Discovery left | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|----------------|----------|----------|--------------|-----------|------------|
+| NC             |          | IOREF    |              |           |            |
+| NRST           |          | RESET    | JP1.16 RST   |           |            |
+| 3V3            |          | 3.3V     | JP1.14/15 3V3| Pin4      | VCC Pin3   |
+| 5V             |          | 5V       | JP3.3  USB   |           |            |
+| GND            |          | GND      |              |           |            |
+| GND            |          | GND      |              |           |            |
+| VIN            |          | Vin      |              |           |            |
+| PC3            |          | A0       | JP1.12 A0    |           |            |
+| PA2            |          | A1       | JP1.11 A1    |           |            |
+| PA5            |          | A2       | JP1.10 A2    |           |            |
+| PC1            |          | A3       | JP1.9  A3    |           |            |
+| PC4            |          | A4       | JP1.8  A4    |           |            |
+| PC5            |          | A5       | JP1.7  A5    |           |            |
+|                |          |          | JP3.1  VBAT  |           |            |
+|                |          |          | JP3.2  EN    |           |            |
 
 
 ## Neopixel
