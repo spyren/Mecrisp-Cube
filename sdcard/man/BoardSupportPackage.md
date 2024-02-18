@@ -728,7 +728,8 @@ If we use only the first 4 KiB from the 64 KiB sector then we have 16 MiB / 16 =
 |---------------|------------------|----------------------------|
 | MEMS_SCK      | PB13             | I2C3_SCL                   |
 | MEMS_SDA      | PB11             | I2C3_SDA                   |
-| MEMS_INT      | PD2              | Accelerometer, Gyro        |
+| MEMS_INT1     | PD2              | Accelerometer, Gyro        |
+| MEMS_INT2     | PD9              | Time‑of‑Fligh              |
 | MEMS_RDY      | PE1              | STTS22H temperatrur sensor |
 
 
