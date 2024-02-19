@@ -132,10 +132,7 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
 
 ### Prerequisites
 
-  * One of these boards
-    * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
-      Arduino™ Uno V3 and ST morpho connectors
-    * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
+  * [STM32WB5MM Discovery Board](https://www.st.com/en/evaluation-tools/stm32wb5mm-dk.html)
   * Terminal emulator application for PC, e.g.: 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
