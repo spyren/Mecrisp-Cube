@@ -5,7 +5,9 @@ Board Support Package for the STM32WB5MM Discovery Board
 ========================================================
 
 The board support package for the STM32WB5MM-DK Discovery Kit is restricted 
-to the Arduino UNO R3 pin header and the onboard LEDs, and switches (buttons). 
+to the Arduino UNO R3 pin header and the onboard LEDs, the switches (buttons),
+the OLED display, the temperature sensor TTS22H, and the accelometer ISM330DHCX. 
+
 The STM32 has much more capabilities then 14 digital I/O pins, 6 analog input 
 pins, UART, SPI, and I2C interfaces. But if you want to use the more advanced 
 features you can use the CubeMX to create source code for the internal peripherals. 
