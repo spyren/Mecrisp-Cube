@@ -64,6 +64,12 @@ vref@        ( -- u )         get the Vref voltage in mV (rather the VDDA, about
 vbat@        ( -- u )         get the Vbat voltage in mV (about 3300 mV)
 CPUtemp@     ( -- u )         get CPU temperature in degree Celsius
 
+MEMStemp@    ( -- u )         get temperature multiplied by 100 from MEMS temperature sensor TTS22H
+MEMStts22h@  ( c1 -- c2)      get value c2 from register c1 (temperature sensor TTS22H)
+MEMStts22h!  ( c1 c2 -- )     set register c2 to the argument c1 (temperature sensor TTS22H)
+MEMSism330@  ( c1 -- c2)      get value c2 from register c1 (accelerometer ISM330)
+MEMSism330!  ( c1 c2 -- )     set register c2 to the argument c1 (accelerometer ISM330)
+
 I2Cput       ( c- u1 u2-- )   put a message with length u (count in bytes) from buffer at a to the I2C slave device u
 I2Cget       ( c- u1 u2 -- )  get a message c- with length u1 from I2C slave u2 device to buffer at c-
 I2Cputget    ( c- u1 u2 u3 -- ) put a message with length u1 from buffer at c- to the I2C slave device u3
