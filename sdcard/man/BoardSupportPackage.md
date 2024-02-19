@@ -737,8 +737,8 @@ If we use only the first 4 KiB from the 64 KiB sector then we have 16 MiB / 16 =
 | MEMS_SCK      | PB13             | I2C3_SCL                   |
 | MEMS_SDA      | PB11             | I2C3_SDA                   |
 | MEMS_INT1     | PD2              | Accelerometer, Gyro        |
-| MEMS_INT2     | PD9              | Time‑of‑Fligh              |
-| MEMS_RDY      | PE1              | STTS22H temperatrur sensor |
+| MEMS_INT2     | PD9              | Time‑of‑Flight             |
+| MEMS_DRDY     | PE1              | STTS22H temperature sensor |
 
 
 #### Accelerometer 
@@ -785,7 +785,7 @@ I2C Address (unshifted): 0x29
 | CN5.8            |               | PB15             | SPI2_MOSI (2)              |
 | CN5.9            |               | PB14             | SPI2_MISO (2)              |
 | CN5.10           | D14           | PA10             | I2C1_SDA                   |
-| CN5.11           |               | PE3              | INT                        |
+| CN5.11           | D4            | PE3              | INT                        |
 | CN5.12           |               | PD8              | STMOD+_RESET               |
 | CN5.13           |               | PA0              | ADC1_IN5                   |
 | CN5.14           |               | PA15             | PWM (TIM2_CH1)             |
@@ -793,7 +793,7 @@ I2C Address (unshifted): 0x29
 | CN5.16           |               | GND              | Ground                     |
 | CN5.17           |               | PC11             | GPIO                       |
 | CN5.18           |               | PC10             | GPIO                       |
-| CN5.19           |               | PA5              | GPIO, ADC1_IN10            |
+| CN5.19           | A2            | PA5              | GPIO, ADC1_IN10            |
 | CN5.20           | A3            | PC1              | GPIO, ADC1_IN12            |
 
 
