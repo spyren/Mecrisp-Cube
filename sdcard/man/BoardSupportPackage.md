@@ -602,7 +602,7 @@ message strlen Marquee
 
 ## Arduino Pinout 
 
-| *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+| Connector        | Signal name   | STM32W5MMG pin   | Comment                    |
 |------------------|---------------|------------------|----------------------------|
 | CN2.1            | NC            | -                | NC (reserved for the test) |
 | CN2.2            | 3V3 (IOREF)   | -                | IOREF 3V3                  |
@@ -666,7 +666,7 @@ message strlen Marquee
 
 ### RGB LED
 
-| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | D11           | PA7              | SPI1_MOSI                  |
 | RGB_SELECT    | PH1              | RGB CS                     |
@@ -717,7 +717,7 @@ If we use only the first 4 KiB from the 64 KiB sector then we have 16 MiB / 16 =
 
 ### SPI OLED Display
 
-| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | D13           | PA1              | SPI1_SCK                   |
 | D12           | PB4              | SPI1_MISO                  |
@@ -732,7 +732,7 @@ If we use only the first 4 KiB from the 64 KiB sector then we have 16 MiB / 16 =
 
 ### Onboard Mems (I2C)
 
-| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | MEMS_SCK      | PB13             | I2C3_SCL                   |
 | MEMS_SDA      | PB11             | I2C3_SDA                   |
@@ -763,7 +763,7 @@ I2C Address (unshifted): 0x29
 
 ### Digital Microphone
 
-| *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+| Signal name   | STM32W5MMG pin   | Comment                    |
 |---------------|------------------|----------------------------|
 | MICRO_CK      | PA8              | SAI1_CK2                   |
 | MICRO_DI      | PA9              | SAI1_DI2                   |
@@ -773,7 +773,7 @@ I2C Address (unshifted): 0x29
 
 ## STMod+ Connector Pinout
 
-| *Connector*      | *Signal name* | *STM32W5MMG pin* | *Comment*                  |
+| Connector        | Signal name   | STM32W5MMG pin   | Comment                    |
 |------------------|---------------|------------------|----------------------------|
 | CN5.1            |               | PD0, PA6         | SPI2_NSS, LPUART1_CTS      |
 | CN5.2            | , D1          | PD4, PB5         | SPI2_MOSI (1), LPUART1_TXD |
