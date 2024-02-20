@@ -179,15 +179,14 @@ void MainThread(void *argument)
 #endif
 	MEMS_init();
 
-	osDelay(100);
-	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
-	if (* ((uint32_t *) SRAM2A_BASE) == 0x1170FD0F) {
-		// CPU2 hardfault
-		BSP_setRgbLED(0x800000); // Set RGB red LED to 50 %
-//		ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
-	} else {
+	// wait till BLE is ready
+	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
+		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
 		BSP_setRgbLED(BSP_getRgbLED() & 0xFF7FFF); // // switch off power on LED
+	} else {
+		// timeout -> BLE (CPU2) not started, flash operations not possible
+		BSP_setRgbLED(0x800000); // Set RGB red LED to 50 %
 	}
 
 	Forth();

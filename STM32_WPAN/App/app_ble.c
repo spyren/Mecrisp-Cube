@@ -435,6 +435,8 @@ void APP_BLE_Init(void)
   Adv_Request(APP_BLE_FAST_ADV);
 
   /* USER CODE BEGIN APP_BLE_Init_2 */
+  extern osThreadId_t FORTH_ConThreadHandle;
+  osThreadFlagsSet(FORTH_ConThreadHandle, BLE_IS_READY);
 
   /* USER CODE END APP_BLE_Init_2 */
 

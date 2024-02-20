@@ -772,5 +772,8 @@ typedef enum
 #define EPD						0
 #define FPU_IP					1
 
+// Thread flag, is set after BLE has been started
+#define BLE_IS_READY			0x01
+
 #endif /*APP_CONF_H */
 

@@ -759,7 +759,7 @@ set_halt:
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
-		Wortbirne Flag_visible, "memstemp@"
+		Wortbirne Flag_visible, "MEMStemp@"
 get_memstemp:
 		@ (  -- u ) Get the MEMS temperature
 // int MEMS_getTemperature(void)
@@ -769,4 +769,57 @@ get_memstemp:
 	bl		MEMS_getTemperature
 	movs	tos, r0
 	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "MEMStts22h@"
+		@ ( c1 -- c2 )    get value c2 from register c1 (temperature sensor TTS22H)
+get_memstts22h:
+// int MEMS_TTS22H_getRegister(uint8_t reg)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// timeout
+	bl		MEMS_TTS22H_getRegister
+	movs	tos, r0		// return value
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "MEMStts22h!"
+set_memstts22h:
+        @ ( c1 c2 --  ) set register c2 to the argument c1 (temperature sensor TTS22H)
+// void MEMS_TTS22H_setRegister(uint8_t reg, uint8_t data)
+@ -----------------------------------------------------------------------------
+    push	{lr}
+    movs	r0, tos			// reg
+    drop
+    movs	r1, tos			// data
+    drop
+    bl		MEMS_TTS22H_setRegister
+    pop		{pc}
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "MEMSism330@"
+		@ ( c1 -- c2 )    get value c2 from register c1 (accelerometer ISM330)
+get_memsism330:
+// int MEMS_ISM330_getRegister(uint8_t reg)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// timeout
+	bl		MEMS_ISM330_getRegister
+	movs	tos, r0		// return value
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "MEMSism330!"
+set_memsism330:
+        @ ( c1 c2 --  ) set register c2 to the argument c1 (accelerometer ISM330)
+// void MEMS_ISM330_setRegister(uint8_t reg, uint8_t data)
+@ -----------------------------------------------------------------------------
+    push	{lr}
+    movs	r0, tos			// reg
+    drop
+    movs	r1, tos			// data
+    drop
+    bl		MEMS_ISM330_setRegister
+    pop		{pc}
+
 
