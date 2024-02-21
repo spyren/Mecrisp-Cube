@@ -396,7 +396,7 @@ There is also a Grove I2C interface for an
 a [microSD adaptor](FileSystem.md#home-brewed-microsd-adapter-for-stm32wb55-nucleodongle-spi) (SPI),
 and a Neopixel.
 
-![](img/nucleo-feather-adaptor.jpg)
+![](img/discovery-plex.jpg)
 
 
 | Discovery right| Function | Arduino  |  Feather     | Micro-SD  | Grove      |
