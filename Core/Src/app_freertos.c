@@ -55,6 +55,7 @@
 #if EPD == 1
 #include "epd.h"
 #endif
+#include "usb_cdc.h"
 #include "tiny.h"
 
 /* USER CODE END Includes */

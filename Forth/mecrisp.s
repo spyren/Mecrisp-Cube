@@ -547,6 +547,10 @@ Forth:
 	ldr		tos, =VI_Version	// print vi system version
 	bl		fs_strlen
 	bl		stype
+	pushdatos
+	ldr		tos, =TINY_Version	// print TinyUSB system version
+	bl		fs_strlen
+	bl		stype
 
 //	bl		BSP_getSwitch3		// button1 pressed on reset -> no include
 //	cmp		r0, #0
