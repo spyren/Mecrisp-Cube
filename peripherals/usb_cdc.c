@@ -40,6 +40,7 @@
 //#include "usbd_cdc_if.h"
 //#include "usb_device.h"
 #include "myassert.h"
+#include "tusb.h"
 
 
 #define CDC_TX_SENT	0x01
@@ -106,10 +107,6 @@ void CDC_init(void) {
 	// creation of CDC_Thread
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
 	ASSERT_fatal(CDC_ThreadID != NULL, ASSERT_THREAD_CREATION, __get_PC());
-
-//	MX_USB_Device_Init();
-
-
 }
 
 
@@ -223,25 +220,17 @@ static void cdc_thread(void *argument) {
 	uint8_t return_value;
 
 	// blocked till USB_CDC is connected
-	osEventFlagsWait(CDC_EvtFlagsID, CDC_CONNECTED, osFlagsWaitAny, osWaitForever);
-	osDelay(2000);
+//	osEventFlagsWait(CDC_EvtFlagsID, CDC_CONNECTED, osFlagsWaitAny, osWaitForever);
+//	osDelay(2000);
 
 	// Infinite loop
 	for(;;) {
 		// blocked till a character is in the Tx queue
 		if (osMessageQueueGet(CDC_TxQueueId, &buffer, 0, osWaitForever) == osOK) {
-			// blocked till CDC transmit ready
-			osEventFlagsWait(CDC_EvtFlagsID, CDC_TX_READY,
-					osFlagsWaitAny | osFlagsNoClear, osWaitForever);
 			// send the character
-//			return_value = CDC_Transmit_FS(&buffer, 1);
-//			if (return_value == USBD_FAIL) {
-//				// can't send char
-//				Error_Handler();
-//			} else if (return_value == USBD_BUSY) {
-//				// transmit busy
-//				Error_Handler();
-//			}
+			// osMessageQueueGetCount();
+	        tud_cdc_write(&buffer, 1);
+	        tud_cdc_write_flush();
 		} else {
 			// can't write to the queue
 			Error_Handler();
