@@ -30,7 +30,6 @@
 #include "app_entry.h"
 #include "uart.h"
 #include "flash.h"
-#include "usb_cdc.h"
 #include "bsp.h"
 #include "rt_spi.h"
 #include "sd.h"
@@ -56,7 +55,7 @@
 #if EPD == 1
 #include "epd.h"
 #endif
-
+#include "tiny.h"
 
 /* USER CODE END Includes */
 
@@ -116,6 +115,7 @@ void MX_FREERTOS_Init(void) {
 	RTSPI_init();
 	BLOCK_init();
 	VI_init();
+	TINY_init();
 
   /* USER CODE END Init */
 
