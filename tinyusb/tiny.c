@@ -63,12 +63,7 @@
 #include "app_common.h"
 #include "cmsis_os.h"
 
-#include "FreeRTOS.h"
-#include "semphr.h"
-#include "queue.h"
-#include "task.h"
-#include "timers.h"
-
+#include "usb_cdc.h"
 
 // Private function prototypes
 // ***************************
@@ -95,7 +90,7 @@ static const osThreadAttr_t usb_device_attributes = {
 static osThreadId_t TINY_CdcStackId;
 static const osThreadAttr_t cdc_stack_attributes = {
 		.name = "CDC_Stack",
-		.priority = (osPriority_t) osPriorityNormal,
+		.priority = (osPriority_t) osPriorityBelowNormal,
 		.stack_size = configMINIMAL_STACK_SIZE
 };
 
@@ -133,7 +128,7 @@ static void usb_device_thread(void *param) {
     tud_task();
 
     // following code only run if tud_task() process at least 1 event
-    tud_cdc_write_flush();
+//    tud_cdc_write_flush();
   }
 }
 
@@ -165,6 +160,7 @@ void tud_resume_cb(void) {
 //--------------------------------------------------------------------+
 void cdc_stack_thread(void *params) {
   (void) params;
+  uint8_t buf;
 
   // RTOS forever loop
   while (1) {
@@ -174,24 +170,14 @@ void cdc_stack_thread(void *params) {
     {
       // There are data available
       while (tud_cdc_available()) {
-        uint8_t buf[64];
-
-        // read and echo back
-        uint32_t count = tud_cdc_read(buf, sizeof(buf));
-        (void) count;
-
-        // Echo back
-        // Note: Skip echo by commenting out write() and write_flush()
-        // for throughput test e.g
-        //    $ dd if=/dev/zero of=/dev/ttyACM0 count=10000
-        tud_cdc_write(buf, count);
+        tud_cdc_read(&buf, 1);
+        osMessageQueuePut(CDC_RxQueueId, &buf, 0, osWaitForever);
       }
 
-      tud_cdc_write_flush();
     }
 
     // For ESP32-Sx this delay is essential to allow idle how to run and reset watchdog
-    osDelay(1);
+//    osDelay(1);
   }
 }
 
@@ -210,6 +196,10 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts) {
 
 // Invoked when CDC interface received data from host
 void tud_cdc_rx_cb(uint8_t itf) {
-  (void) itf;
+	  (void) itf;
+//	  uint8_t buf;
+
+//	  tud_cdc_read(&buf, 1);
+//      osMessageQueuePut(CDC_RxQueueId, &itf, 0, osWaitForever);
 }
 
