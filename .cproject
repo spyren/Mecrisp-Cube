@@ -75,6 +75,7 @@
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
 									<listOptionValue builtIn="false" value="../peripherals"/>
+									<listOptionValue builtIn="false" value="../tinyusb"/>
 									<listOptionValue builtIn="false" value="../vi"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1296185955" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
@@ -110,9 +111,9 @@
 						<entry excluding="cube|cube/wings.s|cube/fs.s|cube/bsp.s|cube/stm-flash.s|cube/rtos.s|cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|stm32wb/flash.s|stm32wb/interrupts.s|common|stm32wb/terminal.s|stm32wb/flash-wb.s|stm32wb/STM32WBxx_CM4.svd.equates.s|stm32wb/hse-clock.s|stm32wb/turbo.s|stm32wb/vectors.s" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
 						<entry excluding="ST/STM32_USB_Device_Library/Class/MSC" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="STM32_WPAN"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_Device"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Utilities"/>
 						<entry excluding="oled_spi.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="peripherals"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tinyusb"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="vi"/>
 					</sourceEntries>
 				</configuration>
@@ -262,9 +263,9 @@
 						<entry excluding="cube|cube/wings.s|cube/fs.s|cube/bsp.s|cube/stm-flash.s|cube/rtos.s|cube/terminal.s|cube/STM32WBxx_CM4.svd.equates.s|cube/interrupts.s|cube/flash-wb.s|common" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Forth"/>
 						<entry excluding="ST/STM32_USB_Device_Library/Class/MSC" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="STM32_WPAN"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_Device"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Utilities"/>
 						<entry excluding="oled_spi.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="peripherals"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="tinyusb"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="vi"/>
 					</sourceEntries>
 				</configuration>
@@ -286,5 +287,10 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
-	<storageModule moduleId="scannerConfiguration"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.759621966;com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.759621966.;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.1004109190;com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1296185955">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>

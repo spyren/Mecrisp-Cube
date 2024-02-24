@@ -37,8 +37,8 @@
 #include "app_common.h"
 #include "main.h"
 #include "usb_cdc.h"
-#include "usbd_cdc_if.h"
-#include "usb_device.h"
+//#include "usbd_cdc_if.h"
+//#include "usb_device.h"
 #include "myassert.h"
 
 
@@ -107,7 +107,7 @@ void CDC_init(void) {
 	CDC_ThreadID = osThreadNew(cdc_thread, NULL, &cdc_thread_attributes);
 	ASSERT_fatal(CDC_ThreadID != NULL, ASSERT_THREAD_CREATION, __get_PC());
 
-	MX_USB_Device_Init();
+//	MX_USB_Device_Init();
 
 
 }
@@ -234,14 +234,14 @@ static void cdc_thread(void *argument) {
 			osEventFlagsWait(CDC_EvtFlagsID, CDC_TX_READY,
 					osFlagsWaitAny | osFlagsNoClear, osWaitForever);
 			// send the character
-			return_value = CDC_Transmit_FS(&buffer, 1);
-			if (return_value == USBD_FAIL) {
-				// can't send char
-				Error_Handler();
-			} else if (return_value == USBD_BUSY) {
-				// transmit busy
-				Error_Handler();
-			}
+//			return_value = CDC_Transmit_FS(&buffer, 1);
+//			if (return_value == USBD_FAIL) {
+//				// can't send char
+//				Error_Handler();
+//			} else if (return_value == USBD_BUSY) {
+//				// transmit busy
+//				Error_Handler();
+//			}
 		} else {
 			// can't write to the queue
 			Error_Handler();
