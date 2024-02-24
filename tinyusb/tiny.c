@@ -75,6 +75,11 @@
 static void usb_device_thread(void *argument);
 static void cdc_stack_thread(void *argument);
 
+// Global Variables
+// ****************
+const char TINY_Version[] =
+	    "  * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)\n";
+
 // RTOS resources
 // **************
 
