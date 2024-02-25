@@ -192,7 +192,8 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
-  MX_IPCC_Init();
+  // do not init IPCC, this is already handled by MX_APPE_Config()
+//  MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
 
@@ -210,7 +211,6 @@ int main(void)
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
-//  MX_USB_Device_Init();
   MX_SPI1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
