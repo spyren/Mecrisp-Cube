@@ -2,6 +2,8 @@
  *  @brief
  *      tinyusb for Mecrisp-Cube
  *
+ *		The tud_task() is called in the usb_device_thread.
+ *		The callbacks are also handled here.
  *  @file
  *      tiny.c
  *  @author
@@ -68,7 +70,6 @@
 // Private function prototypes
 // ***************************
 static void usb_device_thread(void *argument);
-static void cdc_stack_thread(void *argument);
 
 // Global Variables
 // ****************
@@ -83,15 +84,7 @@ static osThreadId_t TINY_UsbDeviceId;
 static const osThreadAttr_t usb_device_attributes = {
 		.name = "USB_Device",
 		.priority = (osPriority_t) osPriorityNormal,
-		.stack_size = configMINIMAL_STACK_SIZE
-};
-
-// Definitions for CDC Stack thread
-static osThreadId_t TINY_CdcStackId;
-static const osThreadAttr_t cdc_stack_attributes = {
-		.name = "CDC_Stack",
-		.priority = (osPriority_t) osPriorityBelowNormal,
-		.stack_size = configMINIMAL_STACK_SIZE
+		.stack_size = 128*8
 };
 
 
@@ -102,10 +95,6 @@ void TINY_init(void) {
 	// creation of USB Device thread
 	TINY_UsbDeviceId = osThreadNew(usb_device_thread, NULL, &usb_device_attributes);
 	ASSERT_fatal(TINY_UsbDeviceId != NULL, ASSERT_THREAD_CREATION, __get_PC());
-
-	// creation of CDC Stack thread
-	TINY_CdcStackId = osThreadNew(cdc_stack_thread, NULL, &cdc_stack_attributes);
-	ASSERT_fatal(TINY_CdcStackId != NULL, ASSERT_THREAD_CREATION, __get_PC());
 }
 
 // USB Device Driver task
@@ -138,10 +127,12 @@ static void usb_device_thread(void *param) {
 
 // Invoked when device is mounted
 void tud_mount_cb(void) {
+	osThreadFlagsSet(CDC_ThreadID, CDC_CONNECTED);
 }
 
 // Invoked when device is unmounted
 void tud_umount_cb(void) {
+	osThreadFlagsSet(CDC_ThreadID, CDC_DISCONNECTED);
 }
 
 // Invoked when usb bus is suspended
@@ -155,51 +146,37 @@ void tud_suspend_cb(bool remote_wakeup_en) {
 void tud_resume_cb(void) {
 }
 
-//--------------------------------------------------------------------+
-// USB CDC
-//--------------------------------------------------------------------+
-void cdc_stack_thread(void *params) {
-  (void) params;
-  uint8_t buf;
-
-  // RTOS forever loop
-  while (1) {
-    // connected() check for DTR bit
-    // Most but not all terminal client set this when making connection
-    // if ( tud_cdc_connected() )
-    {
-      // There are data available
-      while (tud_cdc_available()) {
-        tud_cdc_read(&buf, 1);
-        osMessageQueuePut(CDC_RxQueueId, &buf, 0, osWaitForever);
-      }
-
-    }
-
-    // For ESP32-Sx this delay is essential to allow idle how to run and reset watchdog
-//    osDelay(1);
-  }
+// Invoked when a TX is complete and therefore space becomes available in TX buffer
+void tud_cdc_tx_complete_cb(uint8_t itf) {
+	(void) itf;
 }
 
 // Invoked when cdc when line state changed e.g connected/disconnected
 void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts) {
-  (void) itf;
-  (void) rts;
+	(void) itf;
+	(void) rts;
 
-  // TODO set some indicator
-  if (dtr) {
-    // Terminal connected
-  } else {
-    // Terminal disconnected
-  }
+	if (dtr) {
+		// Terminal connected
+		osThreadFlagsSet(CDC_ThreadID, CDC_CONNECTED);
+	} else {
+		// Terminal disconnected
+		osThreadFlagsSet(CDC_ThreadID, CDC_DISCONNECTED);
+	}
 }
 
 // Invoked when CDC interface received data from host
 void tud_cdc_rx_cb(uint8_t itf) {
-	  (void) itf;
-//	  uint8_t buf;
+	(void) itf;
+	uint8_t buf;
 
-//	  tud_cdc_read(&buf, 1);
-//      osMessageQueuePut(CDC_RxQueueId, &itf, 0, osWaitForever);
+	// this can block the calling thread/task
+	osMessageQueuePut(CDC_RxQueueId, &itf, 0, osWaitForever);
+	while (tud_cdc_available()) {
+		buf = tud_cdc_read_char();
+		osMessageQueuePut(CDC_RxQueueId, &buf, 0, osWaitForever);
+	}
+
 }
+
 

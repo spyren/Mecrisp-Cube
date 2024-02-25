@@ -190,6 +190,7 @@ void MainThread(void *argument)
 		BSP_setRgbLED(0x800000); // Set RGB red LED to 50 %
 	}
 
+
 	Forth();
 
 	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0);
