@@ -175,7 +175,7 @@
 #define RAM_FLASH_SIZE	"63/384"
 #else
 // Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
-#define BOARD 			"Flipper Zero"
+#define BOARD 			"Flipper"
 #define RAM_FLASH_SIZE	"63/128"
 #endif
 
