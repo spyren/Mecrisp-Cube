@@ -100,7 +100,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb_device.h"
 #include "wwdg.h"
 #include "gpio.h"
 
@@ -200,7 +199,6 @@ int main(void)
   MX_USART1_UART_Init();
   MX_RF_Init();
   MX_RTC_Init();
-//  MX_USB_Device_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
