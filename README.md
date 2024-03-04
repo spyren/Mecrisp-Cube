@@ -383,6 +383,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ### v1.5.1 Flipper Release
 * LCD driver (Flipper)
 * Docu on GitHub
+### v1.6.0 tinyUSB Release
+* Device USB-CDC and USB-MSC
 
 
 ## Authors
