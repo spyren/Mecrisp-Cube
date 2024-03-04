@@ -451,7 +451,7 @@ There is no debouncing for the `switchx?` words.
 Deactivate the sysled function (the LED is no longer used by the system e.g. 
 for battery charging state):
 ```
-$80 -sysled  \ deactivate sysled
+$01 -sysled  \ deactivate sysled
 
 0 rgbled!      \ Switch off LED
 $ff0000 rgbled! \ Red LED 100 % brightness
