@@ -41,6 +41,7 @@
 #include "main.h"
 #include "d_spi.h"
 #include "sd.h"
+#include "bsp.h"
 
 
 // Defines
@@ -323,6 +324,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(DSPI_MutexID, osWaitForever);
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
@@ -375,6 +377,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	osMutexRelease(DSPI_MutexID);
 
 	/* Return the reponse */
@@ -404,6 +407,7 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(DSPI_MutexID, osWaitForever);
+	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
@@ -460,6 +464,7 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	SD_IO_CSState(1);
 	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
+	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	osMutexRelease(DSPI_MutexID);
 
 	/* Return the reponse */

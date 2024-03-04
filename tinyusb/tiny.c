@@ -127,12 +127,10 @@ static void usb_device_thread(void *param) {
 
 // Invoked when device is mounted
 void tud_mount_cb(void) {
-	osThreadFlagsSet(CDC_ThreadID, CDC_CONNECTED);
 }
 
 // Invoked when device is unmounted
 void tud_umount_cb(void) {
-	osThreadFlagsSet(CDC_ThreadID, CDC_DISCONNECTED);
 }
 
 // Invoked when usb bus is suspended

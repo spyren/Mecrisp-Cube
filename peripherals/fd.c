@@ -42,6 +42,7 @@
 #include "sd.h"
 #include "flash.h"
 #include "myassert.h"
+#include "bsp.h"
 
 
 // Defines
@@ -138,6 +139,7 @@ int FD_getBlocks(void) {
 uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
 	if (FD_START_ADDRESS + (ReadAddr+NumOfBlocks)*FD_BLOCK_SIZE <= FD_END_ADDRESS) {
 		// valid blocks
 		memcpy(pData, (uint8_t *) FD_START_ADDRESS + ReadAddr*FD_BLOCK_SIZE,
@@ -145,6 +147,7 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 		retr = SD_OK;
 	}
 	/* Return the reponse */
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	return retr;
 }
 
@@ -177,6 +180,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 		// valid blocks
 
 		osMutexAcquire(FD_MutexID, osWaitForever);
+		BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 		int FirstBoundary = WriteAddr % FD_BLOCKS_PER_PAGE;
 		int LastBoundary = (WriteAddr + NumOfBlocks) % FD_BLOCKS_PER_PAGE;
@@ -218,6 +222,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 			}
 		}
 
+		BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 		osMutexRelease(FD_MutexID);
 	} else {
 		retr = SD_ERROR;

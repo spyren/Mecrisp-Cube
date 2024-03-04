@@ -62,7 +62,7 @@ static void update_sysled(void);
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
 
 // Hardware resources
 // ******************
