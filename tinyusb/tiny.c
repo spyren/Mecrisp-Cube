@@ -168,10 +168,12 @@ void tud_cdc_rx_cb(uint8_t itf) {
 	(void) itf;
 	uint8_t buf;
 
+	ASSERT_nonfatal(itf != 0x03, ASSERT_CDC_SIGINT, 0); // ^C character abort
 	// this can block the calling thread/task
 	osMessageQueuePut(CDC_RxQueueId, &itf, 0, osWaitForever);
 	while (tud_cdc_available()) {
 		buf = tud_cdc_read_char();
+		ASSERT_nonfatal(buf != 0x03, ASSERT_CDC_SIGINT, 0); // ^C character abort
 		osMessageQueuePut(CDC_RxQueueId, &buf, 0, osWaitForever);
 	}
 
