@@ -100,7 +100,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb_device.h"
 #include "wwdg.h"
 #include "gpio.h"
 
@@ -139,6 +138,7 @@
 
 /* USER CODE BEGIN PV */
 const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
+const char MecrispVersion[] = "  * ";
 const char rc_local[] = RC_LOCAL;
 
 /* USER CODE END PV */
