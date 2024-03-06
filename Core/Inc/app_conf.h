@@ -162,22 +162,17 @@
 #define BOARD_TYPE_MKR		2
 #define BOARD_TYPE_FEATHER	3
 #define BOARD_TYPE_FIREFLY	4
+#define BOARD_TYPE_FLIPPER	4
 
-#define BOARD_TYPE			BOARD_TYPE_UNO
+
+#define BOARD_TYPE			BOARD_TYPE_FLIPPER
 
 // MCU Type
 // ********
 
 #define MCU_TYPE		"STM32WB"
-#if BOARD_TYPE == BOARD_TYPE_FEATHER
-// Adafruit headers
-#define BOARD 			"Feather"
-#define RAM_FLASH_SIZE	"63/384"
-#else
-// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
 #define BOARD 			"Flipper"
 #define RAM_FLASH_SIZE	"63/128"
-#endif
 
 // Greeting Message
 // ****************
