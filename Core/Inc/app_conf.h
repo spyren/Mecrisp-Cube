@@ -169,15 +169,8 @@
 // ********
 
 #define MCU_TYPE		"STM32WB"
-#if BOARD_TYPE == BOARD_TYPE_FEATHER
-// Adafruit headers
-#define BOARD 			"Feather"
-#define RAM_FLASH_SIZE	"63/384"
-#else
-// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
 #define BOARD 			"Nucleo"
 #define RAM_FLASH_SIZE	"63/128"
-#endif
 
 // Greeting Message
 // ****************
