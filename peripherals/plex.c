@@ -265,37 +265,38 @@ void PLEX_setPWM(int PWM) {
  *      none
  */
 void PLEX_clear(void) {
-	uint8_t buf[2];
-	int8_t old_frame = CurrentFrame;
-	uint32_t i, j;
+//	uint8_t buf[2];
+//	int8_t old_frame = CurrentFrame;
+//	uint32_t i, j;
+	uint32_t i;
 
 	if (!plexReady) {
 		return;
 	}
 
-	for (j=0; j<8; j++) {
-		PLEX_setFrame(j);
+//	for (j=0; j<8; j++) {
+//		PLEX_setFrame(j);
 
 		for (i=0; i<18; i++) {
 			PLEX_setColumn(i, 0x00, -1);
 		}
 
-		for (i=0; i<18; i++) {
-			// no blinking
-			buf[0] = BLINK_REG+i;
-			buf[1] = 0;
-			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
-		}
+//		for (i=0; i<18; i++) {
+//			// no blinking
+//			buf[0] = BLINK_REG+i;
+//			buf[1] = 0;
+//			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+//		}
+//
+//		for (i=0; i<144; i++) {
+//			// max. brightness
+//			buf[0] = PWM_REG+i;
+//			buf[1] = 0xff;
+//			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
+//		}
+//	}
 
-		for (i=0; i<144; i++) {
-			// max. brightness
-			buf[0] = PWM_REG+i;
-			buf[1] = 0xff;
-			IIC_putMessage(buf, 2, PLEX_I2C_ADR);
-		}
-	}
-
-	PLEX_setFrame(old_frame);
+//	PLEX_setFrame(old_frame);
 }
 
 
