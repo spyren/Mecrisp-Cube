@@ -1002,7 +1002,7 @@ uint64_t FS_split(uint64_t forth_stack) {
 				if (fr == FR_OK) {
 					for (line_count = 0; line_count < lines; line_count++) {
 						buf = f_gets(line, sizeof(line), &fil_src);
-						if (*buf == NULL) {
+						if (buf == NULL) {
 							// no lines left
 							break;
 						}
@@ -1099,7 +1099,7 @@ uint64_t FS_wc(uint64_t forth_stack) {
 		if (fr == FR_OK) {
 			while (!f_eof(&fil)) {
 				buf = f_gets(line, sizeof(line), &fil);
-				if (*buf == NULL) {
+				if (buf == NULL) {
 					// no lines left
 					break;
 				}
@@ -1662,7 +1662,7 @@ int FS_f_error(FIL* fp) {
  *     unsigned char cast to an int, or EOF on end of file or error.
  */
 int FS_getc(FIL* fp) {
-	int buffer;
+	int buffer = ' ';
 	unsigned int count;
 
 	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
