@@ -1,11 +1,9 @@
 /**
  *  @brief
-*  @brief
  *      Buffered I2C (or IIC) communication.
  *
- *      Using interrupt for I2C1 peripheral. Separate threads for transmitting
- *      and receiving data. CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
- *      CMSIS-RTOS queues as buffers.
+ *      Using interrupt and DMA for I2C1 peripheral.
+ *      CMSIS-RTOS Mutex for mutual-exclusion I2C resource.
  *  @file
  *      iic.h
  *  @author
@@ -36,7 +34,8 @@
 #ifndef INC_IIC_H_
 #define INC_IIC_H_
 
-extern osMutexId_t UART_MutexID;
+#define IIC_TIMEOUT	500
+
 
 void IIC_init(void);
 int IIC_ready(void);
