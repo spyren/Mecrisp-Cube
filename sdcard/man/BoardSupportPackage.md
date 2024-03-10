@@ -29,10 +29,11 @@ rgbled!      ( u -- )         set the RGB led ($ff0000 red, $00ff00 green, $0000
 rgbled@      ( -- u )         get the RGB led ($ff0000 red, $00ff00 green, $0000ff blue)
 wled!        ( u -- )         set the W (LCD backlight) led
 wled@        ( -- u )         get the W (LCD backlight) led
-+sysled      ( u -- )         set sysled flags u $01 ACTIVATE, $02 DISK_READ_OPERATION, $04 DISK_WRITE_OPERATION
-                              $08 CHARGING, $10 FULLY_CHARGED, $20 BLE_CONNECTED
--sysled      ( u -- )         clear sysled flags u
-
++sysled      ( u -- )         set sysled flags u $01 ACTIVATE
+-sysled      ( u -- )         clear sysled flags u $01 DEACTIVATE
+                              $02 DISK_READ_OPERATION (yellow), $04 DISK_WRITE_OPERATION (red)
+                              $08 CHARGING (dimmed red), $10 FULLY_CHARGED (dimmed green),
+                              $20 BLE_CONNECTED (dimmed blue)
 switch1?     ( -- f )         get switch1 (OK button), closed=TRUE
 switch2?     ( -- f )         get switch2 (BACK button), closed=TRUE
 switch3?     ( -- f )         get switch3 (RIGHT button), closed=TRUE
@@ -448,7 +449,8 @@ There is no debouncing for the `switchx?` words.
 
 ## RGB LED
 
-Deactivate the sysled function (the LED is no longer used by the system e.g. 
+The RB LED is used as system LED and shows the system state. If you want to use
+the RGB LED you have to deactivate the sysled function (the LED is no longer used by the system e.g. 
 for battery charging state):
 ```
 $01 -sysled  \ deactivate sysled
@@ -460,7 +462,7 @@ $00ff00 rgbled!   \ Green LED 100 % brightness
 $0000ff rgbled!    \ Blue LED 100 % brightness
 $ffffff rgbled!     \ White LED 100 % brightness
 
-$80 +sysled  \ Activate the sysled function 
+$01 +sysled  \ Activate the sysled function 
 ```
 
 # Feather Wings
