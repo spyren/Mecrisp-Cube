@@ -44,6 +44,7 @@
 #include "fd_spi.h"
 #include "myassert.h"
 #include "n25q128a.h"
+#include "bsp.h"
 
 
 // Defines
@@ -152,6 +153,8 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 	uint32_t adr;
 
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
+
 #if FDSPI_DEVICE == FDSPI_S25FL128
 	// 64 KiB, 4 KiB have 8 512 B blocks
 	int i;
@@ -183,6 +186,7 @@ uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) {
 	}
 #endif
 
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	/* Return the reponse */
 	return retr;
 }
@@ -210,6 +214,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) 
 	uint8_t retr = SD_ERROR;
 	int i;
 	uint8_t block_field; // bit0 block0, bit1 block1 ..
+
+	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 	uint32_t base_block_adr = BlockAdr & (~ (FD_BLOCKS_PER_SECTOR -1));
 
@@ -264,6 +270,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t BlockAdr, uint32_t NumOfBlocks) 
 		retr = SD_ERROR;
 	}
 
+	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	/* Return the response */
 	return retr;
 }

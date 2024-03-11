@@ -192,8 +192,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
-  // do not init IPCC, this is already handled by MX_APPE_Config()
-//  MX_IPCC_Init();
+  MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
 

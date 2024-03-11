@@ -56,6 +56,7 @@
 // ***************************
 uint32_t easy_set(uint8_t in_pattern);
 uint32_t swap_uint32(uint32_t val);
+static void update_sysled(void);
 
 // Global Variables
 // ****************
@@ -108,6 +109,8 @@ uint32_t neo_pixel = 0;
 uint32_t rgb_led = 0;
 uint32_t rgb_buffer[16];
 static uint32_t adc_calibration;
+// static int sys_led_status = SYSLED_ACTIVATE;
+static int sys_led_status = 0;
 
 // Public Functions
 // ****************
@@ -1234,6 +1237,79 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
 
 	osMutexRelease(DigitalPort_MutexID);
 	osDelay(1);
+}
+
+
+/**
+ *  @brief
+ *	    Set the system LED.
+ *
+ *		SYSLED_ACTIVATE 			= 1 << 0,
+ *		SYSLED_DISK_READ_OPERATION 	= 1 << 1, yellow
+ *		SYSLED_DISK_WRITE_OPERATION = 1 << 2, red
+ *		SYSLED_CHARGING 			= 1 << 3, dimmed red
+ *		SYSLED_FULLY_CHARGED 		= 1 << 4, dimmed green
+ *		SYSLED_BLE_CONNECTED 		= 1 << 5, dimmed blue
+ *	@param[in]
+ *      status
+ *  @return
+ *      none
+ *
+ */
+void BSP_setSysLED(BSP_sysled_t status) {
+	sys_led_status |= status;
+	update_sysled();
+}
+
+/**
+ *  @brief
+ *	    Clear the system LED.
+ *
+ *		SYSLED_ACTIVATE 			= 1 << 0,
+ *		SYSLED_DISK_READ_OPERATION 	= 1 << 1,
+ *		SYSLED_DISK_WRITE_OPERATION = 1 << 2,
+ *		SYSLED_CHARGING 			= 1 << 3,
+ *		SYSLED_FULLY_CHARGED 		= 1 << 4,
+ *		SYSLED_BLE_CONNECTED 		= 1 << 5,
+ *	@param[in]
+ *      status
+ *  @return
+ *      none
+ *
+ */
+void BSP_clearSysLED(BSP_sysled_t status) {
+	sys_led_status &= ~status;
+	update_sysled();
+}
+
+static void update_sysled(void) {
+	uint32_t rgb = 0;
+	if (sys_led_status & SYSLED_ACTIVATE) {
+		if (sys_led_status & SYSLED_DISK_READ_OPERATION) {
+			// bright yellow
+			rgb = 0xFFFF00;
+		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
+			// bright red
+			rgb = 0xFF0000;
+		} else if (sys_led_status & SYSLED_CHARGING) {
+			// red
+			rgb = 0x200000;
+		} else if (sys_led_status & SYSLED_FULLY_CHARGED) {
+			// green
+			rgb = 0x002000;
+		} else if (sys_led_status & SYSLED_POWER_ON) {
+			// red
+			rgb = 0x400000;
+		} else if (sys_led_status & SYSLED_ERROR) {
+			// green
+			rgb = 0x004000;
+		}
+		if (sys_led_status & SYSLED_BLE_CONNECTED) {
+			// add some blue
+			rgb |= 0x000020;
+		}
+		BSP_setRgbLED(rgb);
+	}
 }
 
 

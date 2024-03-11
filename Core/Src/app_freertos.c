@@ -161,7 +161,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setRgbLED(0x008000); // Set RGB green LED to 50 %
+	BSP_setSysLED(SYSLED_POWER_ON); // dimmed green LED
 	ASSERT_init();
 	SD_init();
 	FD_init();
@@ -184,12 +184,12 @@ void MainThread(void *argument)
 	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
 		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		BSP_setRgbLED(BSP_getRgbLED() & 0xFF7FFF); // // switch off power on LED
+		BSP_clearSysLED(SYSLED_POWER_ON);
 	} else {
 		// timeout -> BLE (CPU2) not started, flash operations not possible
-		BSP_setRgbLED(0x800000); // Set RGB red LED to 50 %
+		BSP_clearSysLED(SYSLED_POWER_ON);
+		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
 	}
-
 
 	Forth();
 
