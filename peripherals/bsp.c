@@ -103,7 +103,8 @@ extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
 
 static uint32_t adc_calibration;
-static int sys_led_status = 0;
+static int sys_led_status = SYSLED_ACTIVATE;
+// static int sys_led_status = 0;
 
 
 // Public Functions
@@ -1485,11 +1486,11 @@ static void update_sysled(void) {
 			// green
 			rgb = 0x002000;
 		} else if (sys_led_status & SYSLED_POWER_ON) {
-			// red
-			rgb = 0x400000;
-		} else if (sys_led_status & SYSLED_ERROR) {
 			// green
 			rgb = 0x004000;
+		} else if (sys_led_status & SYSLED_ERROR) {
+			// red
+			rgb = 0x400000;
 		}
 		if (sys_led_status & SYSLED_BLE_CONNECTED) {
 			// add some blue

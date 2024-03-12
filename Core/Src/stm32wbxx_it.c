@@ -61,6 +61,7 @@ extern ADC_HandleTypeDef hadc1;
 extern DMA_HandleTypeDef hdma_i2c1_rx;
 extern DMA_HandleTypeDef hdma_i2c1_tx;
 extern I2C_HandleTypeDef hi2c1;
+extern IPCC_HandleTypeDef hipcc;
 extern RTC_HandleTypeDef hrtc;
 extern DMA_HandleTypeDef hdma_spi1_rx;
 extern DMA_HandleTypeDef hdma_spi1_tx;
@@ -220,7 +221,7 @@ void RTC_WKUP_IRQHandler(void)
   /* USER CODE BEGIN RTC_WKUP_IRQn 0 */
   HW_TS_RTC_Wakeup_Handler();
   /* USER CODE END RTC_WKUP_IRQn 0 */
-//  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
+  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
   /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
 
   /* USER CODE END RTC_WKUP_IRQn 1 */

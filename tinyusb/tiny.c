@@ -83,7 +83,7 @@ const char TINY_Version[] =
 static osThreadId_t TINY_UsbDeviceId;
 static const osThreadAttr_t usb_device_attributes = {
 		.name = "USB_Device",
-		.priority = (osPriority_t) osPriorityAboveNormal,
+		.priority = (osPriority_t) osPriorityNormal,
 		.stack_size = 128*8
 };
 

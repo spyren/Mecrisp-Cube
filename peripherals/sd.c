@@ -41,6 +41,7 @@
 #include "main.h"
 #include "rt_spi.h"
 #include "sd.h"
+#include "bsp.h"
 
 
 // Defines
@@ -321,6 +322,8 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
 
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
+
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
@@ -377,6 +380,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 
 	osMutexRelease(RTSPI_MutexID);
 
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	/* Return the reponse */
 	return retr;
 }
@@ -401,6 +405,8 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	uint8_t retr = SD_ERROR;
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
+
+	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(RTSPI_MutexID, osWaitForever);
@@ -462,6 +468,7 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 	osMutexRelease(RTSPI_MutexID);
 
+	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	/* Return the reponse */
 	return retr;
 }

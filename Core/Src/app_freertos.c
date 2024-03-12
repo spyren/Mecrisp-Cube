@@ -160,7 +160,6 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setNeoPixel(0);
 	BSP_setSysLED(SYSLED_POWER_ON); // dimmed green LED
 	ASSERT_init();
 	SD_init();
