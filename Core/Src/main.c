@@ -91,11 +91,13 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "adc.h"
+#include "aes.h"
+#include "crc.h"
 #include "dma.h"
 #include "app_fatfs.h"
 #include "i2c.h"
 #include "ipcc.h"
-#include "rf.h"
+#include "pka.h"
 #include "rtc.h"
 #include "spi.h"
 #include "tim.h"
@@ -189,6 +191,9 @@ int main(void)
   /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
+  /* IPCC initialisation */
+  MX_IPCC_Init();
+
   /* USER CODE BEGIN SysInit */
  
   /* USER CODE END SysInit */
@@ -199,19 +204,16 @@ int main(void)
   MX_USART1_UART_Init();
   MX_RF_Init();
   MX_RTC_Init();
-//  MX_USB_Device_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_SPI1_Init();
   MX_I2C1_Init();
-//  MX_IPCC_Init(); // not needed, see hw_ipcc.c
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
 //  MX_WWDG_Init();
   /* USER CODE BEGIN 2 */
-  BSP_setLED2(TRUE); // switch on power on LED
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
   printf("Hallo Velo\n");
