@@ -777,4 +777,28 @@ StackVersion:
 	movs	tos, r0
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "+sysled"
+set_sysled:
+	@ ( flags -- ) Set the system LED
+// void BSP_setSysLED(int status);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		BSP_setSysLED
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "-sysled"
+clear_sysled:
+	@ ( flags -- ) Clear the system LED
+// void BSP_clearSysLED(int status);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		BSP_clearSysLED
+	pop		{pc}
+
 

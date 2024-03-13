@@ -104,7 +104,6 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	MX_APPE_Init();
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
@@ -141,7 +140,6 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-//	MX_APPE_Init();
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -178,8 +176,6 @@ void MainThread(void *argument)
 	EPD_init();
 #endif
 
-	osDelay(10);
-
 	// wait till BLE is ready
 	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
 		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
@@ -187,7 +183,6 @@ void MainThread(void *argument)
 		BSP_clearSysLED(SYSLED_POWER_ON);
 	} else {
 		// timeout -> BLE (CPU2) not started, flash operations not possible
-		// ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
 		BSP_clearSysLED(SYSLED_POWER_ON);
 		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
 	}
