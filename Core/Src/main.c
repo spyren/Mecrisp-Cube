@@ -11,16 +11,16 @@
  *
  *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
  *       20 KiB Forth Core
- *      150 KiB Middleware (debug 250 KiB)
+ *      186 KiB Middleware (debug 187 KiB, only 128 font chars)
  *
  *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
  *      128 KiB Flash Dictionary
  *
  *      FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
  *      384 KiB future use for built in flash drive
-
+ *
  *      FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-
+ *
  *      STM32WB55C: 256 KiB RAM
  *
  *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
@@ -29,19 +29,17 @@
  *
  *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
  *       1 KiB Stack         (for startup and ISRs, MSP)
- *       1 KiB Heap          (maybe not needed)
- *       1 KiB UART Tx Buffer
- *       5 KiB UART Rx Buffer
- *       4 KiB CDC Rx/Tx Buffer
- *       2 KiB CDC RxQueue
+ *       2 KiB Heap          (maybe not needed)
  *       4 KiB Flash erase Buffer
+ *       4 KiB Block Buffer
  *      10 KiB global variables
- *      80 KiB RTOS Heap (about 9 KiB free)
+ *      90 KiB RTOS Heap (about 17 KiB free)
  *         Thread Stack size
  *              4 KiB Forth (main)
  *              1 KiB UART_Tx
- *              1 KiB UART_Rx
- *              1 KiB CDC
+ *              5 KiB UART_Rx
+ *              2 KiB CDC_Rx
+ *            0.5 KiB CDC_Tx
  *              1 KiB CRS
  *              1 KiB HRS
  *              1 KiB HCI_USER_EVT
@@ -49,6 +47,7 @@
  *              1 KiB SHCI_USER_EVT
  *
  *             40 KiB vi text buffer
+ *     107 KiB
  *
  *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
  *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
@@ -230,9 +229,10 @@ int main(void)
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
    */
-  while (LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID)) {
+  int i = 100;
+  while (LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID) && i > 0) {
 	  // lock failed
-	  ;
+	  i--;
   }
 
   /* USER CODE END 2 */

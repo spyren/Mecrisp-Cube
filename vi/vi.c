@@ -342,7 +342,7 @@ static char *swap_context(char *);		// goto new context for '' command
 // ****************
 
 void VI_init(void) {
-	text = pvPortMalloc(TEXT_SIZE+100); // some savety margin
+	text = pvPortMalloc(TEXT_SIZE+100); // some safety margin
 	screen = pvPortMalloc(MAX_SCR_COLS * MAX_SCR_ROWS + 8);
 
 	status_buffer = pvPortMalloc(MAX_INPUT_LEN);	// hold messages to user

@@ -308,6 +308,14 @@ const char font_6x8[256][6]={
  *      bit pattern for the char
  */
 int FONT6X8_getColumn(int ch, int column) {
+#ifdef DEBUG
+	if (ch <= 127) {
+		return font_6x8[ch][column];
+	} else {
+		return font_6x8[3][column]; // heart
+	}
+#else
 	return font_6x8[ch][column];
+#endif
 }
 

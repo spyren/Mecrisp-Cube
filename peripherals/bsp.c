@@ -57,7 +57,7 @@ static void update_sysled(void);
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
@@ -1474,11 +1474,11 @@ static void update_sysled(void) {
 	uint32_t rgb = 0;
 	if (sys_led_status & SYSLED_ACTIVATE) {
 		if (sys_led_status & SYSLED_DISK_READ_OPERATION) {
+			// bright green
+			rgb = 0x00FF00;
+		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
 			// bright yellow
 			rgb = 0xFFFF00;
-		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
-			// bright red
-			rgb = 0xFF0000;
 		} else if (sys_led_status & SYSLED_CHARGING) {
 			// red
 			rgb = 0x200000;
@@ -1486,8 +1486,8 @@ static void update_sysled(void) {
 			// green
 			rgb = 0x002000;
 		} else if (sys_led_status & SYSLED_POWER_ON) {
-			// green
-			rgb = 0x004000;
+			// white
+			rgb = 0x404040;
 		} else if (sys_led_status & SYSLED_ERROR) {
 			// red
 			rgb = 0x400000;
