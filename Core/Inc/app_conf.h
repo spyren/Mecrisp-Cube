@@ -162,6 +162,7 @@
 #define BOARD_TYPE_MKR		2
 #define BOARD_TYPE_FEATHER	3
 #define BOARD_TYPE_FIREFLY	4
+#define BOARD_TYPE_FLIPPER  5
 
 #define BOARD_TYPE			BOARD_TYPE_UNO
 #define EXTERNAL_FLASH		1
@@ -170,19 +171,8 @@
 // ********
 
 #define MCU_TYPE		"STM32WB"
-#if BOARD_TYPE == BOARD_TYPE_FEATHER
-// Adafruit headers
-#define BOARD 			"Feather"
-#define RAM_FLASH_SIZE	"63/384"
-#else
-// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
 #define BOARD 			"Discovery"
-  #if EXTERNAL_FLASH == 1
-    #define RAM_FLASH_SIZE	"63/384"
-  #else
-    #define RAM_FLASH_SIZE	"63/128"
-  #endif
-#endif
+#define RAM_FLASH_SIZE	"63/384"
 
 // Greeting Message
 // ****************
@@ -192,7 +182,8 @@
 #else
 #define MECRISP_CUBE_TAG "1.6.0 rel"
 #endif
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
+
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required set define to 0 */

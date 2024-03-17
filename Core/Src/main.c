@@ -33,12 +33,13 @@
  *       2 KiB CDC RxQueue
  *       4 KiB Flash erase Buffer
  *      10 KiB global variables
- *      80 KiB RTOS Heap (about 9 KiB free)
+ *      90 KiB RTOS Heap (about 9 KiB free)
  *         Thread Stack size
  *              4 KiB Forth (main)
  *              1 KiB UART_Tx
  *              1 KiB UART_Rx
- *              1 KiB CDC
+ *              1 KiB CDC_Tx
+ *              2 KiB CDC_Rx
  *              1 KiB CRS
  *              1 KiB HRS
  *              1 KiB HCI_USER_EVT
@@ -46,6 +47,7 @@
  *              1 KiB SHCI_USER_EVT
  *
  *             40 KiB vi text buffer
+ *     107 KiB
  *
  *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
  *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
@@ -110,6 +112,7 @@
 #include "app_common.h"
 #include "uart.h"
 #include "flash.h"
+#include "usb_cdc.h"
 #include "bsp.h"
 #include "spi.h"
 #include "sd.h"
@@ -140,6 +143,7 @@
 
 /* USER CODE BEGIN PV */
 const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
+const char MecrispVersion[] = "  * ";
 const char rc_local[] = RC_LOCAL;
 
 /* USER CODE END PV */
@@ -229,13 +233,20 @@ int main(void)
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
    */
-  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
+  int i = 100;
+  while (LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID) && i > 0) {
+         // lock failed
+         i--;
+  }
 
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();  /* Init code for STM32_WPAN */
-//  MX_APPE_Init();
+
+  /* Init code for STM32_WPAN */
+  MX_APPE_Init();
+
   /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 

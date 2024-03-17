@@ -227,14 +227,14 @@ void BSP_setRgbLED(uint32_t rgb) {
 	rgb_buffer[1] = easy_set(rgb >> 16);			// red
 	rgb_buffer[2] = easy_set((rgb >> 8) & 0xFF);	// green
 	rgb_buffer[3] = easy_set(rgb & 0xFF);			// blue
-	RTSPI_WriteReadData((uint8_t *)rgb_buffer, (uint8_t *)rgb_buffer, 16);
+	RTSPI_WriteData((uint8_t *)rgb_buffer, 16);
 	RTSPI_Write(0b10001000); // GSLAT
 
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
 
 	osMutexRelease(RTSPI_MutexID);
 	osMutexRelease(DigitalPort_MutexID);
-	osDelay(1);
+//	osDelay(1);
 }
 
 /**
@@ -1286,11 +1286,11 @@ static void update_sysled(void) {
 	uint32_t rgb = 0;
 	if (sys_led_status & SYSLED_ACTIVATE) {
 		if (sys_led_status & SYSLED_DISK_READ_OPERATION) {
+			// bright green
+			rgb = 0x00FF00;
+		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
 			// bright yellow
 			rgb = 0xFFFF00;
-		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
-			// bright red
-			rgb = 0xFF0000;
 		} else if (sys_led_status & SYSLED_CHARGING) {
 			// red
 			rgb = 0x200000;
@@ -1298,8 +1298,8 @@ static void update_sysled(void) {
 			// green
 			rgb = 0x002000;
 		} else if (sys_led_status & SYSLED_POWER_ON) {
-			// green
-			rgb = 0x004000;
+			// white
+			rgb = 0x404040;
 		} else if (sys_led_status & SYSLED_ERROR) {
 			// red
 			rgb = 0x400000;
