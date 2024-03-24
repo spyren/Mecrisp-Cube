@@ -197,6 +197,7 @@
 									<listOptionValue builtIn="false" value="../tiny_lpm"/>
 									<listOptionValue builtIn="false" value="../peripherals"/>
 									<listOptionValue builtIn="false" value="../vi"/>
+									<listOptionValue builtIn="false" value="../tinyusb"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.423449888" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>

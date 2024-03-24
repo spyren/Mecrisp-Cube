@@ -232,6 +232,8 @@ void BSP_setRgbLED(uint32_t rgb) {
 
 	HAL_GPIO_WritePin(RGB_SELECT_GPIO_Port, RGB_SELECT_Pin, GPIO_PIN_RESET);
 
+	RTSPI_Write(0b00000000); // give some time & to be sure the MOSI is low
+
 	osMutexRelease(RTSPI_MutexID);
 	osMutexRelease(DigitalPort_MutexID);
 //	osDelay(1);

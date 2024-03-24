@@ -196,7 +196,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
-  MX_IPCC_Init();
+//  MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
 
@@ -235,10 +235,15 @@ int main(void)
    */
   int i = 100;
   while (LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID) && i > 0) {
-         // lock failed
-         i--;
+	  // lock failed
+	  i--;
   }
-
+  if (i == 0) {
+	  ASSERT_fatal(0, ASSERT_HSEM_CLK48, 0);
+  }
+  for (i=0; i<100; i++) {
+	  ; // wait a short period
+  }
   /* USER CODE END 2 */
 
   /* Init scheduler */
