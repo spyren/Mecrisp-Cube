@@ -8308,7 +8308,7 @@ LOAD /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 [!provide]                        PROVIDE (__fini_array_end = .)
                 0x0000000008036924                _sidata = LOADADDR (.data)
 
-.data           0x0000000020010000      0x254 load address 0x0000000008036924
+.data           0x0000000020010000      0x24c load address 0x0000000008036924
                 0x0000000020010000                . = ALIGN (0x4)
                 0x0000000020010000                _sdata = .
  *(.data)
@@ -8339,685 +8339,683 @@ LOAD /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 0x0000000020010040        0xe ./STM32_WPAN/App/app_ble.o
                 0x0000000020010040                a_ManufData
  *fill*         0x000000002001004e        0x2 
- .data.sys_led_status
-                0x0000000020010050        0x4 ./peripherals/bsp.o
  .data.mecrisp_cube_logo_bits
-                0x0000000020010054       0x80 ./peripherals/oled.o
+                0x0000000020010050       0x80 ./peripherals/oled.o
  .data.CurrentBrightness
-                0x00000000200100d4        0x1 ./peripherals/plex.o
+                0x00000000200100d0        0x1 ./peripherals/plex.o
  .data.plexReady
-                0x00000000200100d5        0x1 ./peripherals/plex.o
- *fill*         0x00000000200100d6        0x2 
+                0x00000000200100d1        0x1 ./peripherals/plex.o
+ *fill*         0x00000000200100d2        0x2 
  .data._usbd_qdef
-                0x00000000200100d8       0x5c ./tinyusb/device/usbd.o
-                0x00000000200100d8                _usbd_qdef
+                0x00000000200100d4       0x5c ./tinyusb/device/usbd.o
+                0x00000000200100d4                _usbd_qdef
  .data._usbd_rhport
-                0x0000000020010134        0x1 ./tinyusb/device/usbd.o
- *fill*         0x0000000020010135        0x3 
+                0x0000000020010130        0x1 ./tinyusb/device/usbd.o
+ *fill*         0x0000000020010131        0x3 
  .data.string_desc_arr
-                0x0000000020010138       0x18 ./tinyusb/usb_descriptors.o
-                0x0000000020010138                string_desc_arr
- .data.__sglue  0x0000000020010150        0xc /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-findfp.o)
-                0x0000000020010150                __sglue
- .data._tzname  0x000000002001015c        0x8 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzvars.o)
-                0x000000002001015c                _tzname
+                0x0000000020010134       0x18 ./tinyusb/usb_descriptors.o
+                0x0000000020010134                string_desc_arr
+ .data.__sglue  0x000000002001014c        0xc /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-findfp.o)
+                0x000000002001014c                __sglue
+ .data._tzname  0x0000000020010158        0x8 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzvars.o)
+                0x0000000020010158                _tzname
  .data._impure_data
-                0x0000000020010164       0x4c /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-impure.o)
-                0x0000000020010164                _impure_data
+                0x0000000020010160       0x4c /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-impure.o)
+                0x0000000020010160                _impure_data
  .data._impure_ptr
-                0x00000000200101b0        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-impure.o)
-                0x00000000200101b0                _impure_ptr
- *fill*         0x00000000200101b4        0x4 
- .data.tzinfo   0x00000000200101b8       0x58 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-gettzinfo.o)
- .data.one      0x0000000020010210        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libm.a(libm_a-sf_tanh.o)
- .data.tiny     0x0000000020010214        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libm.a(libm_a-sf_tanh.o)
- .data.two      0x0000000020010218        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libm.a(libm_a-sf_tanh.o)
+                0x00000000200101ac        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-impure.o)
+                0x00000000200101ac                _impure_ptr
+ .data.tzinfo   0x00000000200101b0       0x58 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-gettzinfo.o)
+ .data.one      0x0000000020010208        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libm.a(libm_a-sf_tanh.o)
+ .data.tiny     0x000000002001020c        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libm.a(libm_a-sf_tanh.o)
+ .data.two      0x0000000020010210        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libm.a(libm_a-sf_tanh.o)
  *(.RamFunc)
- .RamFunc       0x000000002001021c       0x38 ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_flash.o
+ .RamFunc       0x0000000020010214       0x38 ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_flash.o
  *(.RamFunc*)
-                0x0000000020010254                . = ALIGN (0x4)
-                0x0000000020010254                _edata = .
+                0x000000002001024c                . = ALIGN (0x4)
+                0x000000002001024c                _edata = .
 
-.igot.plt       0x0000000020010254        0x0 load address 0x0000000008036b78
- .igot.plt      0x0000000020010254        0x0 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/softfp/crtbegin.o
+.igot.plt       0x000000002001024c        0x0 load address 0x0000000008036b70
+ .igot.plt      0x000000002001024c        0x0 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/softfp/crtbegin.o
 
 BLE_DRIVER_CONTEXT
-                0x0000000020010254       0x52 load address 0x0000000008036b78
+                0x000000002001024c       0x52 load address 0x0000000008036b70
  BLE_DRIVER_CONTEXT
-                0x0000000020010254        0x6 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/crs_stm.o
- *fill*         0x000000002001025a        0x2 
+                0x000000002001024c        0x6 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/crs_stm.o
+ *fill*         0x0000000020010252        0x2 
  BLE_DRIVER_CONTEXT
-                0x000000002001025c       0x10 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/dis.o
+                0x0000000020010254       0x10 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/dis.o
  BLE_DRIVER_CONTEXT
-                0x000000002001026c        0x8 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/hrs.o
+                0x0000000020010264        0x8 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/hrs.o
  BLE_DRIVER_CONTEXT
-                0x0000000020010274       0x21 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/svc_ctl.o
-                0x0000000020010274                SVCCTL_EvtHandler
-                0x0000000020010294                SVCCTL_CltHandler
- *fill*         0x0000000020010295        0x3 
+                0x000000002001026c       0x21 ./Middlewares/ST/STM32_WPAN/ble/svc/Src/svc_ctl.o
+                0x000000002001026c                SVCCTL_EvtHandler
+                0x000000002001028c                SVCCTL_CltHandler
+ *fill*         0x000000002001028d        0x3 
  BLE_DRIVER_CONTEXT
-                0x0000000020010298        0xe ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
-                0x00000000200102a4                UserEventFlow
+                0x0000000020010290        0xe ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
+                0x000000002001029c                UserEventFlow
 
 SYSTEM_DRIVER_CONTEXT
-                0x00000000200102a8        0xe load address 0x0000000008036bca
+                0x00000000200102a0        0xe load address 0x0000000008036bc2
  SYSTEM_DRIVER_CONTEXT
-                0x00000000200102a8        0xe ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
-                0x00000000200102b5                SHCI_TL_UserEventFlow
+                0x00000000200102a0        0xe ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
+                0x00000000200102ad                SHCI_TL_UserEventFlow
 
 BLE_APP_CONTEXT
-                0x00000000200102b8        0xe load address 0x0000000008036bd8
+                0x00000000200102b0        0xe load address 0x0000000008036bd0
  BLE_APP_CONTEXT
-                0x00000000200102b8        0xe ./STM32_WPAN/App/hrs_app.o
-                0x00000000200102c8                . = ALIGN (0x4)
+                0x00000000200102b0        0xe ./STM32_WPAN/App/hrs_app.o
+                0x00000000200102c0                . = ALIGN (0x4)
 
-.bss            0x00000000200102c8    0x1a698 load address 0x0000000008036be6
-                0x00000000200102c8                _sbss = .
-                0x00000000200102c8                __bss_start__ = _sbss
+.bss            0x00000000200102c0    0x1a698 load address 0x0000000008036bde
+                0x00000000200102c0                _sbss = .
+                0x00000000200102c0                __bss_start__ = _sbss
  *(.bss)
- .bss           0x00000000200102c8       0x1c /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/softfp/crtbegin.o
+ .bss           0x00000000200102c0       0x1c /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/thumb/v7e-m+fp/softfp/crtbegin.o
  *(.bss*)
- .bss.hadc1     0x00000000200102e4       0x64 ./Core/Src/adc.o
-                0x00000000200102e4                hadc1
- .bss.hcryp1    0x0000000020010348       0x60 ./Core/Src/aes.o
-                0x0000000020010348                hcryp1
+ .bss.hadc1     0x00000000200102dc       0x64 ./Core/Src/adc.o
+                0x00000000200102dc                hadc1
+ .bss.hcryp1    0x0000000020010340       0x60 ./Core/Src/aes.o
+                0x0000000020010340                hcryp1
  .bss.MtxShciId
-                0x00000000200103a8        0x4 ./Core/Src/app_entry.o
-                0x00000000200103a8                MtxShciId
+                0x00000000200103a0        0x4 ./Core/Src/app_entry.o
+                0x00000000200103a0                MtxShciId
  .bss.SemShciId
-                0x00000000200103ac        0x4 ./Core/Src/app_entry.o
-                0x00000000200103ac                SemShciId
+                0x00000000200103a4        0x4 ./Core/Src/app_entry.o
+                0x00000000200103a4                SemShciId
  .bss.ShciUserEvtProcessId
-                0x00000000200103b0        0x4 ./Core/Src/app_entry.o
-                0x00000000200103b0                ShciUserEvtProcessId
+                0x00000000200103a8        0x4 ./Core/Src/app_entry.o
+                0x00000000200103a8                ShciUserEvtProcessId
  .bss.FORTH_ConThreadHandle
-                0x00000000200103b4        0x4 ./Core/Src/app_freertos.o
-                0x00000000200103b4                FORTH_ConThreadHandle
- .bss.hcrc      0x00000000200103b8       0x24 ./Core/Src/crc.o
-                0x00000000200103b8                hcrc
+                0x00000000200103ac        0x4 ./Core/Src/app_freertos.o
+                0x00000000200103ac                FORTH_ConThreadHandle
+ .bss.hcrc      0x00000000200103b0       0x24 ./Core/Src/crc.o
+                0x00000000200103b0                hcrc
  .bss.AsynchPrescalerUserConfig
-                0x00000000200103dc        0x1 ./Core/Src/hw_timerserver.o
+                0x00000000200103d4        0x1 ./Core/Src/hw_timerserver.o
  .bss.CurrentRunningTimerID
-                0x00000000200103dd        0x1 ./Core/Src/hw_timerserver.o
+                0x00000000200103d5        0x1 ./Core/Src/hw_timerserver.o
  .bss.MaxWakeupTimerSetup
-                0x00000000200103de        0x2 ./Core/Src/hw_timerserver.o
+                0x00000000200103d6        0x2 ./Core/Src/hw_timerserver.o
  .bss.PreviousRunningTimerID
-                0x00000000200103e0        0x1 ./Core/Src/hw_timerserver.o
- *fill*         0x00000000200103e1        0x3 
+                0x00000000200103d8        0x1 ./Core/Src/hw_timerserver.o
+ *fill*         0x00000000200103d9        0x3 
  .bss.SSRValueOnLastSetup
-                0x00000000200103e4        0x4 ./Core/Src/hw_timerserver.o
+                0x00000000200103dc        0x4 ./Core/Src/hw_timerserver.o
  .bss.SynchPrescalerUserConfig
-                0x00000000200103e8        0x2 ./Core/Src/hw_timerserver.o
+                0x00000000200103e0        0x2 ./Core/Src/hw_timerserver.o
  .bss.WakeupTimerDivider
-                0x00000000200103ea        0x1 ./Core/Src/hw_timerserver.o
+                0x00000000200103e2        0x1 ./Core/Src/hw_timerserver.o
  .bss.WakeupTimerLimitation
-                0x00000000200103eb        0x1 ./Core/Src/hw_timerserver.o
+                0x00000000200103e3        0x1 ./Core/Src/hw_timerserver.o
  .bss.aTimerContext
-                0x00000000200103ec       0x90 ./Core/Src/hw_timerserver.o
+                0x00000000200103e4       0x90 ./Core/Src/hw_timerserver.o
  .bss.hdma_i2c1_rx
-                0x000000002001047c       0x60 ./Core/Src/i2c.o
-                0x000000002001047c                hdma_i2c1_rx
+                0x0000000020010474       0x60 ./Core/Src/i2c.o
+                0x0000000020010474                hdma_i2c1_rx
  .bss.hdma_i2c1_tx
-                0x00000000200104dc       0x60 ./Core/Src/i2c.o
-                0x00000000200104dc                hdma_i2c1_tx
+                0x00000000200104d4       0x60 ./Core/Src/i2c.o
+                0x00000000200104d4                hdma_i2c1_tx
  .bss.hdma_i2c3_rx
-                0x000000002001053c       0x60 ./Core/Src/i2c.o
-                0x000000002001053c                hdma_i2c3_rx
+                0x0000000020010534       0x60 ./Core/Src/i2c.o
+                0x0000000020010534                hdma_i2c3_rx
  .bss.hdma_i2c3_tx
-                0x000000002001059c       0x60 ./Core/Src/i2c.o
-                0x000000002001059c                hdma_i2c3_tx
- .bss.hi2c1     0x00000000200105fc       0x54 ./Core/Src/i2c.o
-                0x00000000200105fc                hi2c1
- .bss.hi2c3     0x0000000020010650       0x54 ./Core/Src/i2c.o
-                0x0000000020010650                hi2c3
- .bss.hpka      0x00000000200106a4        0xc ./Core/Src/pka.o
-                0x00000000200106a4                hpka
+                0x0000000020010594       0x60 ./Core/Src/i2c.o
+                0x0000000020010594                hdma_i2c3_tx
+ .bss.hi2c1     0x00000000200105f4       0x54 ./Core/Src/i2c.o
+                0x00000000200105f4                hi2c1
+ .bss.hi2c3     0x0000000020010648       0x54 ./Core/Src/i2c.o
+                0x0000000020010648                hi2c3
+ .bss.hpka      0x000000002001069c        0xc ./Core/Src/pka.o
+                0x000000002001069c                hpka
  .bss.hdma_quadspi
-                0x00000000200106b0       0x60 ./Core/Src/quadspi.o
-                0x00000000200106b0                hdma_quadspi
- .bss.hqspi     0x0000000020010710       0x44 ./Core/Src/quadspi.o
-                0x0000000020010710                hqspi
- .bss.hrng      0x0000000020010754       0x14 ./Core/Src/rng.o
-                0x0000000020010754                hrng
- .bss.hrtc      0x0000000020010768       0x24 ./Core/Src/rtc.o
-                0x0000000020010768                hrtc
+                0x00000000200106a8       0x60 ./Core/Src/quadspi.o
+                0x00000000200106a8                hdma_quadspi
+ .bss.hqspi     0x0000000020010708       0x44 ./Core/Src/quadspi.o
+                0x0000000020010708                hqspi
+ .bss.hrng      0x000000002001074c       0x14 ./Core/Src/rng.o
+                0x000000002001074c                hrng
+ .bss.hrtc      0x0000000020010760       0x24 ./Core/Src/rtc.o
+                0x0000000020010760                hrtc
  .bss.hdma_spi1_rx
-                0x000000002001078c       0x60 ./Core/Src/spi.o
-                0x000000002001078c                hdma_spi1_rx
+                0x0000000020010784       0x60 ./Core/Src/spi.o
+                0x0000000020010784                hdma_spi1_rx
  .bss.hdma_spi1_tx
-                0x00000000200107ec       0x60 ./Core/Src/spi.o
-                0x00000000200107ec                hdma_spi1_tx
- .bss.hspi1     0x000000002001084c       0x64 ./Core/Src/spi.o
-                0x000000002001084c                hspi1
- .bss.htim17    0x00000000200108b0       0x4c ./Core/Src/stm32wbxx_hal_timebase_tim.o
-                0x00000000200108b0                htim17
- .bss.__env     0x00000000200108fc        0x4 ./Core/Src/syscalls.o
-                0x00000000200108fc                __env
+                0x00000000200107e4       0x60 ./Core/Src/spi.o
+                0x00000000200107e4                hdma_spi1_tx
+ .bss.hspi1     0x0000000020010844       0x64 ./Core/Src/spi.o
+                0x0000000020010844                hspi1
+ .bss.htim17    0x00000000200108a8       0x4c ./Core/Src/stm32wbxx_hal_timebase_tim.o
+                0x00000000200108a8                htim17
+ .bss.__env     0x00000000200108f4        0x4 ./Core/Src/syscalls.o
+                0x00000000200108f4                __env
  .bss.heap_end.0
-                0x0000000020010900        0x4 ./Core/Src/sysmem.o
- .bss.htim1     0x0000000020010904       0x4c ./Core/Src/tim.o
-                0x0000000020010904                htim1
- .bss.htim16    0x0000000020010950       0x4c ./Core/Src/tim.o
-                0x0000000020010950                htim16
- .bss.htim2     0x000000002001099c       0x4c ./Core/Src/tim.o
-                0x000000002001099c                htim2
- .bss.huart1    0x00000000200109e8       0x94 ./Core/Src/usart.o
-                0x00000000200109e8                huart1
- .bss.hwwdg     0x0000000020010a7c       0x14 ./Core/Src/wwdg.o
-                0x0000000020010a7c                hwwdg
- .bss.uwTick    0x0000000020010a90        0x4 ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.o
-                0x0000000020010a90                uwTick
- .bss.pFlash    0x0000000020010a94       0x18 ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_flash.o
-                0x0000000020010a94                pFlash
+                0x00000000200108f8        0x4 ./Core/Src/sysmem.o
+ .bss.htim1     0x00000000200108fc       0x4c ./Core/Src/tim.o
+                0x00000000200108fc                htim1
+ .bss.htim16    0x0000000020010948       0x4c ./Core/Src/tim.o
+                0x0000000020010948                htim16
+ .bss.htim2     0x0000000020010994       0x4c ./Core/Src/tim.o
+                0x0000000020010994                htim2
+ .bss.huart1    0x00000000200109e0       0x94 ./Core/Src/usart.o
+                0x00000000200109e0                huart1
+ .bss.hwwdg     0x0000000020010a74       0x14 ./Core/Src/wwdg.o
+                0x0000000020010a74                hwwdg
+ .bss.uwTick    0x0000000020010a88        0x4 ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal.o
+                0x0000000020010a88                uwTick
+ .bss.pFlash    0x0000000020010a8c       0x18 ./Drivers/STM32WBxx_HAL_Driver/Src/stm32wbxx_hal_flash.o
+                0x0000000020010a8c                pFlash
  .bss.Appli_state
-                0x0000000020010aac        0x1 ./FATFS/App/app_fatfs.o
-                0x0000000020010aac                Appli_state
- *fill*         0x0000000020010aad        0x3 
+                0x0000000020010aa4        0x1 ./FATFS/App/app_fatfs.o
+                0x0000000020010aa4                Appli_state
+ *fill*         0x0000000020010aa5        0x3 
  .bss.USERPathFD
-                0x0000000020010ab0        0x4 ./FATFS/App/app_fatfs.o
-                0x0000000020010ab0                USERPathFD
+                0x0000000020010aa8        0x4 ./FATFS/App/app_fatfs.o
+                0x0000000020010aa8                USERPathFD
  .bss.USERPathSD
-                0x0000000020010ab4        0x4 ./FATFS/App/app_fatfs.o
-                0x0000000020010ab4                USERPathSD
+                0x0000000020010aac        0x4 ./FATFS/App/app_fatfs.o
+                0x0000000020010aac                USERPathSD
  .bss.CmdRspStatusFlag
-                0x0000000020010ab8        0x1 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
- *fill*         0x0000000020010ab9        0x3 
+                0x0000000020010ab0        0x1 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
+ *fill*         0x0000000020010ab1        0x3 
  .bss.HciCmdEventQueue
-                0x0000000020010abc        0x8 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
+                0x0000000020010ab4        0x8 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
  .bss.StatusNotCallBackFunction
-                0x0000000020010ac4        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
+                0x0000000020010abc        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
  .bss.hciContext
-                0x0000000020010ac8       0x20 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
+                0x0000000020010ac0       0x20 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/hci_tl.o
  .bss.CmdRspStatusFlag
-                0x0000000020010ae8        0x1 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
- *fill*         0x0000000020010ae9        0x3 
+                0x0000000020010ae0        0x1 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
+ *fill*         0x0000000020010ae1        0x3 
  .bss.StatusNotCallBackFunction
-                0x0000000020010aec        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
+                0x0000000020010ae4        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
  .bss.shciContext
-                0x0000000020010af0       0x20 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
+                0x0000000020010ae8       0x20 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/shci_tl.o
  .bss.BLE_IoBusAclDataTxAck
-                0x0000000020010b10        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
+                0x0000000020010b08        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
  .bss.BLE_IoBusEvtCallBackFunction
-                0x0000000020010b14        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
+                0x0000000020010b0c        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
  .bss.LocalFreeBufQueue
-                0x0000000020010b18        0x8 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
+                0x0000000020010b10        0x8 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
  .bss.SYS_CMD_IoBusCallBackFunction
-                0x0000000020010b20        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
+                0x0000000020010b18        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
  .bss.SYS_EVT_IoBusCallBackFunction
-                0x0000000020010b24        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
- .bss.CurrVol   0x0000000020010b28        0x1 ./Middlewares/Third_Party/FatFs/src/ff.o
- *fill*         0x0000000020010b29        0x3 
- .bss.FatFs     0x0000000020010b2c        0x8 ./Middlewares/Third_Party/FatFs/src/ff.o
- .bss.Files     0x0000000020010b34       0x20 ./Middlewares/Third_Party/FatFs/src/ff.o
- .bss.Fsid      0x0000000020010b54        0x2 ./Middlewares/Third_Party/FatFs/src/ff.o
- *fill*         0x0000000020010b56        0x2 
- .bss.disk      0x0000000020010b58       0x10 ./Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
-                0x0000000020010b58                disk
+                0x0000000020010b1c        0x4 ./Middlewares/ST/STM32_WPAN/interface/patterns/ble_thread/tl/tl_mbox.o
+ .bss.CurrVol   0x0000000020010b20        0x1 ./Middlewares/Third_Party/FatFs/src/ff.o
+ *fill*         0x0000000020010b21        0x3 
+ .bss.FatFs     0x0000000020010b24        0x8 ./Middlewares/Third_Party/FatFs/src/ff.o
+ .bss.Files     0x0000000020010b2c       0x20 ./Middlewares/Third_Party/FatFs/src/ff.o
+ .bss.Fsid      0x0000000020010b4c        0x2 ./Middlewares/Third_Party/FatFs/src/ff.o
+ *fill*         0x0000000020010b4e        0x2 
+ .bss.disk      0x0000000020010b50       0x10 ./Middlewares/Third_Party/FatFs/src/ff_gen_drv.o
+                0x0000000020010b50                disk
  .bss.Idle_Stack.2
-                0x0000000020010b68      0x310 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020010b60      0x310 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.Idle_TCB.3
-                0x0000000020010e78       0xac ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020010e70       0xac ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.KernelState
-                0x0000000020010f24        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020010f1c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.Timer_Stack.0
-                0x0000000020010f28      0x310 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020010f20      0x310 ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.Timer_TCB.1
-                0x0000000020011238       0xac ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+                0x0000000020011230       0xac ./Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
  .bss.xQueueRegistry
-                0x00000000200112e4       0x40 ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
-                0x00000000200112e4                xQueueRegistry
+                0x00000000200112dc       0x40 ./Middlewares/Third_Party/FreeRTOS/Source/queue.o
+                0x00000000200112dc                xQueueRegistry
  .bss.pxCurrentTCB
-                0x0000000020011324        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
-                0x0000000020011324                pxCurrentTCB
+                0x000000002001131c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x000000002001131c                pxCurrentTCB
  .bss.pxDelayedTaskList
-                0x0000000020011328        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011320        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.pxOverflowDelayedTaskList
-                0x000000002001132c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011324        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.pxReadyTasksLists
-                0x0000000020011330      0x460 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011328      0x460 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxCurrentNumberOfTasks
-                0x0000000020011790        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011788        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxDeletedTasksWaitingCleanUp
-                0x0000000020011794        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x000000002001178c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxSchedulerSuspended
-                0x0000000020011798        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011790        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxTaskNumber
-                0x000000002001179c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011794        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.uxTopReadyPriority
-                0x00000000200117a0        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011798        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xDelayedTaskList1
-                0x00000000200117a4       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x000000002001179c       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xDelayedTaskList2
-                0x00000000200117b8       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117b0       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xNextTaskUnblockTime
-                0x00000000200117cc        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117c4        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xNumOfOverflows
-                0x00000000200117d0        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117c8        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xPendedTicks
-                0x00000000200117d4        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117cc        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xPendingReadyList
-                0x00000000200117d8       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117d0       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xSchedulerRunning
-                0x00000000200117ec        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117e4        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xSuspendedTaskList
-                0x00000000200117f0       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117e8       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xTasksWaitingTermination
-                0x0000000020011804       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x00000000200117fc       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xTickCount
-                0x0000000020011818        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011810        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.xYieldPending
-                0x000000002001181c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+                0x0000000020011814        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/tasks.o
  .bss.pxCurrentTimerList
-                0x0000000020011820        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011818        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.pxOverflowTimerList
-                0x0000000020011824        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x000000002001181c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.ucStaticTimerQueueStorage.1
-                0x0000000020011828       0xa0 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011820       0xa0 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xActiveTimerList1
-                0x00000000200118c8       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200118c0       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xActiveTimerList2
-                0x00000000200118dc       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200118d4       0x14 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xLastTime.2
-                0x00000000200118f0        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200118e8        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xStaticTimerQueue.0
-                0x00000000200118f4       0x50 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x00000000200118ec       0x50 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xTimerQueue
-                0x0000000020011944        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x000000002001193c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.xTimerTaskHandle
-                0x0000000020011948        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
+                0x0000000020011940        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .bss.ulMaxPRIGROUPValue
-                0x000000002001194c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
- .bss.pxEnd     0x0000000020011950        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
- .bss.ucHeap    0x0000000020011954    0x16800 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020011944        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.o
+ .bss.pxEnd     0x0000000020011948        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+ .bss.ucHeap    0x000000002001194c    0x16800 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xBlockAllocatedBit
-                0x0000000020028154        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x000000002002814c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xFreeBytesRemaining
-                0x0000000020028158        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020028150        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xMinimumEverFreeBytesRemaining
-                0x000000002002815c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020028154        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xNumberOfSuccessfulAllocations
-                0x0000000020028160        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x0000000020028158        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.xNumberOfSuccessfulFrees
-                0x0000000020028164        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
- .bss.xStart    0x0000000020028168        0x8 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+                0x000000002002815c        0x4 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+ .bss.xStart    0x0000000020028160        0x8 ./Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
  .bss.AdvIntervalMax
-                0x0000000020028170        0x2 ./STM32_WPAN/App/app_ble.o
+                0x0000000020028168        0x2 ./STM32_WPAN/App/app_ble.o
  .bss.AdvIntervalMin
-                0x0000000020028172        0x2 ./STM32_WPAN/App/app_ble.o
+                0x000000002002816a        0x2 ./STM32_WPAN/App/app_ble.o
  .bss.AdvUpdateProcessId
-                0x0000000020028174        0x4 ./STM32_WPAN/App/app_ble.o
-                0x0000000020028174                AdvUpdateProcessId
+                0x000000002002816c        0x4 ./STM32_WPAN/App/app_ble.o
+                0x000000002002816c                AdvUpdateProcessId
  .bss.BleApplicationContext
-                0x0000000020028178       0x84 ./STM32_WPAN/App/app_ble.o
+                0x0000000020028170       0x84 ./STM32_WPAN/App/app_ble.o
  .bss.HciUserEvtProcessId
-                0x00000000200281fc        0x4 ./STM32_WPAN/App/app_ble.o
-                0x00000000200281fc                HciUserEvtProcessId
- .bss.MtxHciId  0x0000000020028200        0x4 ./STM32_WPAN/App/app_ble.o
-                0x0000000020028200                MtxHciId
- .bss.SemHciId  0x0000000020028204        0x4 ./STM32_WPAN/App/app_ble.o
-                0x0000000020028204                SemHciId
+                0x00000000200281f4        0x4 ./STM32_WPAN/App/app_ble.o
+                0x00000000200281f4                HciUserEvtProcessId
+ .bss.MtxHciId  0x00000000200281f8        0x4 ./STM32_WPAN/App/app_ble.o
+                0x00000000200281f8                MtxHciId
+ .bss.SemHciId  0x00000000200281fc        0x4 ./STM32_WPAN/App/app_ble.o
+                0x00000000200281fc                SemHciId
  .bss.a_BdAddrUdn
-                0x0000000020028208        0x6 ./STM32_WPAN/App/app_ble.o
- *fill*         0x000000002002820e        0x2 
+                0x0000000020028200        0x6 ./STM32_WPAN/App/app_ble.o
+ *fill*         0x0000000020028206        0x2 
  .bss.CRS_RxQueueId
-                0x0000000020028210        0x4 ./STM32_WPAN/App/crs_app.o
+                0x0000000020028208        0x4 ./STM32_WPAN/App/crs_app.o
  .bss.CRS_ThreadId
-                0x0000000020028214        0x4 ./STM32_WPAN/App/crs_app.o
-                0x0000000020028214                CRS_ThreadId
+                0x000000002002820c        0x4 ./STM32_WPAN/App/crs_app.o
+                0x000000002002820c                CRS_ThreadId
  .bss.CRS_TxQueueId
-                0x0000000020028218        0x4 ./STM32_WPAN/App/crs_app.o
+                0x0000000020028210        0x4 ./STM32_WPAN/App/crs_app.o
  .bss.HrsProcessId
-                0x000000002002821c        0x4 ./STM32_WPAN/App/hrs_app.o
-                0x000000002002821c                HrsProcessId
+                0x0000000020028214        0x4 ./STM32_WPAN/App/hrs_app.o
+                0x0000000020028214                HrsProcessId
  .bss.FreeBufCb
-                0x0000000020028220        0x4 ./STM32_WPAN/Target/hw_ipcc.o
+                0x0000000020028218        0x4 ./STM32_WPAN/Target/hw_ipcc.o
  .bss.OffModeDisable
-                0x0000000020028224        0x4 ./Utilities/lpm/tiny_lpm/stm32_lpm.o
+                0x000000002002821c        0x4 ./Utilities/lpm/tiny_lpm/stm32_lpm.o
  .bss.StopModeDisable
-                0x0000000020028228        0x4 ./Utilities/lpm/tiny_lpm/stm32_lpm.o
- *fill*         0x000000002002822c        0x4 
+                0x0000000020028220        0x4 ./Utilities/lpm/tiny_lpm/stm32_lpm.o
+ *fill*         0x0000000020028224        0x4 
  .bss.BLOCK_Buffers
-                0x0000000020028230     0x1020 ./peripherals/block.o
-                0x0000000020028230                BLOCK_Buffers
+                0x0000000020028228     0x1020 ./peripherals/block.o
+                0x0000000020028228                BLOCK_Buffers
  .bss.BLOCK_MutexID
-                0x0000000020029250        0x4 ./peripherals/block.o
+                0x0000000020029248        0x4 ./peripherals/block.o
  .bss.Adc_MutexID
-                0x0000000020029254        0x4 ./peripherals/bsp.o
+                0x000000002002924c        0x4 ./peripherals/bsp.o
  .bss.Adc_SemaphoreID
-                0x0000000020029258        0x4 ./peripherals/bsp.o
+                0x0000000020029250        0x4 ./peripherals/bsp.o
  .bss.DigitalPort_MutexID
-                0x000000002002925c        0x4 ./peripherals/bsp.o
+                0x0000000020029254        0x4 ./peripherals/bsp.o
  .bss.EXTI_0_SemaphoreID
-                0x0000000020029260        0x4 ./peripherals/bsp.o
+                0x0000000020029258        0x4 ./peripherals/bsp.o
  .bss.EXTI_15_10_SemaphoreID
-                0x0000000020029264        0x4 ./peripherals/bsp.o
+                0x000000002002925c        0x4 ./peripherals/bsp.o
  .bss.EXTI_3_SemaphoreID
-                0x0000000020029268        0x4 ./peripherals/bsp.o
+                0x0000000020029260        0x4 ./peripherals/bsp.o
  .bss.EXTI_4_SemaphoreID
-                0x000000002002926c        0x4 ./peripherals/bsp.o
+                0x0000000020029264        0x4 ./peripherals/bsp.o
  .bss.EXTI_9_5_SemaphoreID
-                0x0000000020029270        0x4 ./peripherals/bsp.o
+                0x0000000020029268        0x4 ./peripherals/bsp.o
  .bss.ICOC_CH1_SemaphoreID
-                0x0000000020029274        0x4 ./peripherals/bsp.o
+                0x000000002002926c        0x4 ./peripherals/bsp.o
  .bss.ICOC_CH2_SemaphoreID
-                0x0000000020029278        0x4 ./peripherals/bsp.o
+                0x0000000020029270        0x4 ./peripherals/bsp.o
  .bss.ICOC_CH3_SemaphoreID
-                0x000000002002927c        0x4 ./peripherals/bsp.o
+                0x0000000020029274        0x4 ./peripherals/bsp.o
  .bss.ICOC_period_SemaphoreID
-                0x0000000020029280        0x4 ./peripherals/bsp.o
+                0x0000000020029278        0x4 ./peripherals/bsp.o
  .bss.neo_pixel
-                0x0000000020029284        0x4 ./peripherals/bsp.o
-                0x0000000020029284                neo_pixel
+                0x000000002002927c        0x4 ./peripherals/bsp.o
+                0x000000002002927c                neo_pixel
  .bss.rgb_buffer
-                0x0000000020029288       0x40 ./peripherals/bsp.o
-                0x0000000020029288                rgb_buffer
- .bss.rgb_led   0x00000000200292c8        0x4 ./peripherals/bsp.o
-                0x00000000200292c8                rgb_led
- .bss.sConfig   0x00000000200292cc       0x18 ./peripherals/bsp.o
-                0x00000000200292cc                sConfig
+                0x0000000020029280       0x40 ./peripherals/bsp.o
+                0x0000000020029280                rgb_buffer
+ .bss.rgb_led   0x00000000200292c0        0x4 ./peripherals/bsp.o
+                0x00000000200292c0                rgb_led
+ .bss.sConfig   0x00000000200292c4       0x18 ./peripherals/bsp.o
+                0x00000000200292c4                sConfig
+ .bss.sys_led_status
+                0x00000000200292dc        0x4 ./peripherals/bsp.o
  .bss.RTC_SemaphoreID
-                0x00000000200292e4        0x4 ./peripherals/clock.o
+                0x00000000200292e0        0x4 ./peripherals/clock.o
  .bss.FD_MutexID
-                0x00000000200292e8        0x4 ./peripherals/fd.o
- .bss.FD_size   0x00000000200292ec        0x4 ./peripherals/fd.o
-                0x00000000200292ec                FD_size
+                0x00000000200292e4        0x4 ./peripherals/fd.o
+ .bss.FD_size   0x00000000200292e8        0x4 ./peripherals/fd.o
+                0x00000000200292e8                FD_size
  .bss.scratch_sector
-                0x00000000200292f0        0x4 ./peripherals/fd.o
+                0x00000000200292ec        0x4 ./peripherals/fd.o
  .bss.FDSPI_CommandSemaphoreID
-                0x00000000200292f4        0x4 ./peripherals/fd_spi.o
+                0x00000000200292f0        0x4 ./peripherals/fd_spi.o
  .bss.FDSPI_DataSemaphoreID
-                0x00000000200292f8        0x4 ./peripherals/fd_spi.o
+                0x00000000200292f4        0x4 ./peripherals/fd_spi.o
  .bss.FDSPI_MutexID
-                0x00000000200292fc        0x4 ./peripherals/fd_spi.o
+                0x00000000200292f8        0x4 ./peripherals/fd_spi.o
  .bss.FDSPI_StatusSemaphoreID
-                0x0000000020029300        0x4 ./peripherals/fd_spi.o
- .bss.SpiError  0x0000000020029304        0x1 ./peripherals/fd_spi.o
- *fill*         0x0000000020029305        0x3 
+                0x00000000200292fc        0x4 ./peripherals/fd_spi.o
+ .bss.SpiError  0x0000000020029300        0x1 ./peripherals/fd_spi.o
+ *fill*         0x0000000020029301        0x3 
  .bss.EraseInitStruct
-                0x0000000020029308        0xc ./peripherals/flash.o
+                0x0000000020029304        0xc ./peripherals/flash.o
  .bss.FLASH_MutexID
-                0x0000000020029314        0x4 ./peripherals/flash.o
- .bss.os_state  0x0000000020029318        0x4 ./peripherals/flash.o
+                0x0000000020029310        0x4 ./peripherals/flash.o
+ .bss.os_state  0x0000000020029314        0x4 ./peripherals/flash.o
  .bss.fpu_string
-                0x000000002002931c       0x28 ./peripherals/fpu.o
- .bss.FatFs_FD  0x0000000020029344      0x23c ./peripherals/fs.o
-                0x0000000020029344                FatFs_FD
- .bss.FatFs_SD  0x0000000020029580      0x23c ./peripherals/fs.o
-                0x0000000020029580                FatFs_SD
- .bss.dj        0x00000000200297bc       0x38 ./peripherals/fs.o
-                0x00000000200297bc                dj
- .bss.fno       0x00000000200297f4      0x118 ./peripherals/fs.o
-                0x00000000200297f4                fno
- .bss.line      0x000000002002990c      0x12c ./peripherals/fs.o
-                0x000000002002990c                line
+                0x0000000020029318       0x28 ./peripherals/fpu.o
+ .bss.FatFs_FD  0x0000000020029340      0x23c ./peripherals/fs.o
+                0x0000000020029340                FatFs_FD
+ .bss.FatFs_SD  0x000000002002957c      0x23c ./peripherals/fs.o
+                0x000000002002957c                FatFs_SD
+ .bss.dj        0x00000000200297b8       0x38 ./peripherals/fs.o
+                0x00000000200297b8                dj
+ .bss.fno       0x00000000200297f0      0x118 ./peripherals/fs.o
+                0x00000000200297f0                fno
+ .bss.line      0x0000000020029908      0x12c ./peripherals/fs.o
+                0x0000000020029908                line
  .bss.mkfs_scratch
-                0x0000000020029a38        0x4 ./peripherals/fs.o
-                0x0000000020029a38                mkfs_scratch
- .bss.path      0x0000000020029a3c       0xff ./peripherals/fs.o
-                0x0000000020029a3c                path
- *fill*         0x0000000020029b3b        0x1 
- .bss.pattern   0x0000000020029b3c       0x14 ./peripherals/fs.o
-                0x0000000020029b3c                pattern
+                0x0000000020029a34        0x4 ./peripherals/fs.o
+                0x0000000020029a34                mkfs_scratch
+ .bss.path      0x0000000020029a38       0xff ./peripherals/fs.o
+                0x0000000020029a38                path
+ *fill*         0x0000000020029b37        0x1 
+ .bss.pattern   0x0000000020029b38       0x14 ./peripherals/fs.o
+                0x0000000020029b38                pattern
  .bss.IIC_MutexID
-                0x0000000020029b50        0x4 ./peripherals/iic.o
-                0x0000000020029b50                IIC_MutexID
+                0x0000000020029b4c        0x4 ./peripherals/iic.o
+                0x0000000020029b4c                IIC_MutexID
  .bss.IIC_SemaphoreID
-                0x0000000020029b54        0x4 ./peripherals/iic.o
+                0x0000000020029b50        0x4 ./peripherals/iic.o
  .bss.IIC_Status
-                0x0000000020029b58        0x4 ./peripherals/iic.o
+                0x0000000020029b54        0x4 ./peripherals/iic.o
  .bss.IIC3_MutexID
-                0x0000000020029b5c        0x4 ./peripherals/iic3.o
-                0x0000000020029b5c                IIC3_MutexID
+                0x0000000020029b58        0x4 ./peripherals/iic3.o
+                0x0000000020029b58                IIC3_MutexID
  .bss.IIC3_SemaphoreID
-                0x0000000020029b60        0x4 ./peripherals/iic3.o
-                0x0000000020029b60                IIC3_SemaphoreID
+                0x0000000020029b5c        0x4 ./peripherals/iic3.o
+                0x0000000020029b5c                IIC3_SemaphoreID
  .bss.IIC3_Status
-                0x0000000020029b64        0x4 ./peripherals/iic3.o
-                0x0000000020029b64                IIC3_Status
+                0x0000000020029b60        0x4 ./peripherals/iic3.o
+                0x0000000020029b60                IIC3_Status
  .bss.MEMS_DRDY_SemaphoreID
-                0x0000000020029b68        0x4 ./peripherals/mems.o
-                0x0000000020029b68                MEMS_DRDY_SemaphoreID
+                0x0000000020029b64        0x4 ./peripherals/mems.o
+                0x0000000020029b64                MEMS_DRDY_SemaphoreID
  .bss.assert_occurred
-                0x0000000020029b6c        0x4 ./peripherals/myassert.o
+                0x0000000020029b68        0x4 ./peripherals/myassert.o
  .bss.CurrentFont
-                0x0000000020029b70        0x1 ./peripherals/oled.o
+                0x0000000020029b6c        0x1 ./peripherals/oled.o
  .bss.CurrentPosX
-                0x0000000020029b71        0x1 ./peripherals/oled.o
+                0x0000000020029b6d        0x1 ./peripherals/oled.o
  .bss.CurrentPosY
-                0x0000000020029b72        0x1 ./peripherals/oled.o
- *fill*         0x0000000020029b73        0x1 
+                0x0000000020029b6e        0x1 ./peripherals/oled.o
+ *fill*         0x0000000020029b6f        0x1 
  .bss.display_buffer
-                0x0000000020029b74        0x4 ./peripherals/oled.o
+                0x0000000020029b70        0x4 ./peripherals/oled.o
  .bss.oledReady
-                0x0000000020029b78        0x1 ./peripherals/oled.o
+                0x0000000020029b74        0x1 ./peripherals/oled.o
  .bss.CurrentDisplay
-                0x0000000020029b79        0x1 ./peripherals/plex.o
+                0x0000000020029b75        0x1 ./peripherals/plex.o
  .bss.CurrentFont
-                0x0000000020029b7a        0x1 ./peripherals/plex.o
+                0x0000000020029b76        0x1 ./peripherals/plex.o
  .bss.CurrentFrame
-                0x0000000020029b7b        0x1 ./peripherals/plex.o
+                0x0000000020029b77        0x1 ./peripherals/plex.o
  .bss.CurrentPosX
-                0x0000000020029b7c        0x1 ./peripherals/plex.o
- *fill*         0x0000000020029b7d        0x3 
+                0x0000000020029b78        0x1 ./peripherals/plex.o
+ *fill*         0x0000000020029b79        0x3 
  .bss.frame_buffer
-                0x0000000020029b80       0x78 ./peripherals/plex.o
+                0x0000000020029b7c       0x78 ./peripherals/plex.o
  .bss.RTSPI_MutexID
-                0x0000000020029bf8        0x4 ./peripherals/rt_spi.o
-                0x0000000020029bf8                RTSPI_MutexID
+                0x0000000020029bf4        0x4 ./peripherals/rt_spi.o
+                0x0000000020029bf4                RTSPI_MutexID
  .bss.RTSPI_SemaphoreID
-                0x0000000020029bfc        0x4 ./peripherals/rt_spi.o
+                0x0000000020029bf8        0x4 ./peripherals/rt_spi.o
  .bss.SpiStatus
-                0x0000000020029c00        0x4 ./peripherals/rt_spi.o
- *fill*         0x0000000020029c04        0x4 
- .bss.CardInfo  0x0000000020029c08       0x48 ./peripherals/sd.o
-                0x0000000020029c08                CardInfo
- .bss.SdStatus  0x0000000020029c50        0x1 ./peripherals/sd.o
-                0x0000000020029c50                SdStatus
- *fill*         0x0000000020029c51        0x1 
+                0x0000000020029bfc        0x4 ./peripherals/rt_spi.o
+ .bss.CardInfo  0x0000000020029c00       0x48 ./peripherals/sd.o
+                0x0000000020029c00                CardInfo
+ .bss.SdStatus  0x0000000020029c48        0x1 ./peripherals/sd.o
+                0x0000000020029c48                SdStatus
+ *fill*         0x0000000020029c49        0x1 
  .bss.flag_SDHC
-                0x0000000020029c52        0x2 ./peripherals/sd.o
-                0x0000000020029c52                flag_SDHC
+                0x0000000020029c4a        0x2 ./peripherals/sd.o
+                0x0000000020029c4a                flag_SDHC
  .bss.scratch_block
-                0x0000000020029c54      0x200 ./peripherals/sd.o
-                0x0000000020029c54                scratch_block
- .bss.sd_size   0x0000000020029e54        0x4 ./peripherals/sd.o
-                0x0000000020029e54                sd_size
+                0x0000000020029c4c      0x200 ./peripherals/sd.o
+                0x0000000020029c4c                scratch_block
+ .bss.sd_size   0x0000000020029e4c        0x4 ./peripherals/sd.o
+                0x0000000020029e4c                sd_size
  .bss.UART_MutexID
-                0x0000000020029e58        0x4 ./peripherals/uart.o
-                0x0000000020029e58                UART_MutexID
+                0x0000000020029e50        0x4 ./peripherals/uart.o
+                0x0000000020029e50                UART_MutexID
  .bss.UART_RxBuffer
-                0x0000000020029e5c        0x1 ./peripherals/uart.o
- *fill*         0x0000000020029e5d        0x3 
+                0x0000000020029e54        0x1 ./peripherals/uart.o
+ *fill*         0x0000000020029e55        0x3 
  .bss.UART_RxQueueId
-                0x0000000020029e60        0x4 ./peripherals/uart.o
+                0x0000000020029e58        0x4 ./peripherals/uart.o
  .bss.UART_RxThreadId
-                0x0000000020029e64        0x4 ./peripherals/uart.o
+                0x0000000020029e5c        0x4 ./peripherals/uart.o
  .bss.UART_TxBuffer
-                0x0000000020029e68        0x1 ./peripherals/uart.o
- *fill*         0x0000000020029e69        0x3 
+                0x0000000020029e60        0x1 ./peripherals/uart.o
+ *fill*         0x0000000020029e61        0x3 
  .bss.UART_TxQueueId
-                0x0000000020029e6c        0x4 ./peripherals/uart.o
+                0x0000000020029e64        0x4 ./peripherals/uart.o
  .bss.UART_TxThreadId
-                0x0000000020029e70        0x4 ./peripherals/uart.o
+                0x0000000020029e68        0x4 ./peripherals/uart.o
  .bss.CDC_RxQueueId
-                0x0000000020029e74        0x4 ./peripherals/usb_cdc.o
-                0x0000000020029e74                CDC_RxQueueId
+                0x0000000020029e6c        0x4 ./peripherals/usb_cdc.o
+                0x0000000020029e6c                CDC_RxQueueId
  .bss.CDC_ThreadID
-                0x0000000020029e78        0x4 ./peripherals/usb_cdc.o
-                0x0000000020029e78                CDC_ThreadID
+                0x0000000020029e70        0x4 ./peripherals/usb_cdc.o
+                0x0000000020029e70                CDC_ThreadID
  .bss.CDC_TxQueueId
-                0x0000000020029e7c        0x4 ./peripherals/usb_cdc.o
-                0x0000000020029e7c                CDC_TxQueueId
+                0x0000000020029e74        0x4 ./peripherals/usb_cdc.o
+                0x0000000020029e74                CDC_TxQueueId
  .bss.tx_buffer
-                0x0000000020029e80       0x40 ./peripherals/usb_cdc.o
- .bss.bitten    0x0000000020029ec0        0x4 ./peripherals/watchdog.o
+                0x0000000020029e78       0x40 ./peripherals/usb_cdc.o
+ .bss.bitten    0x0000000020029eb8        0x4 ./peripherals/watchdog.o
  .bss._cdcd_itf
-                0x0000000020029ec4      0x1d8 ./tinyusb/class/cdc/cdc_device.o
+                0x0000000020029ebc      0x1d8 ./tinyusb/class/cdc/cdc_device.o
  .bss._mscd_buf
-                0x000000002002a09c      0x200 ./tinyusb/class/msc/msc_device.o
+                0x000000002002a094      0x200 ./tinyusb/class/msc/msc_device.o
  .bss._mscd_itf
-                0x000000002002a29c       0x40 ./tinyusb/class/msc/msc_device.o
+                0x000000002002a294       0x40 ./tinyusb/class/msc/msc_device.o
  .bss._app_driver
-                0x000000002002a2dc        0x4 ./tinyusb/device/usbd.o
+                0x000000002002a2d4        0x4 ./tinyusb/device/usbd.o
  .bss._app_driver_count
-                0x000000002002a2e0        0x1 ./tinyusb/device/usbd.o
- *fill*         0x000000002002a2e1        0x3 
+                0x000000002002a2d8        0x1 ./tinyusb/device/usbd.o
+ *fill*         0x000000002002a2d9        0x3 
  .bss._ubsd_mutexdef
-                0x000000002002a2e4       0x50 ./tinyusb/device/usbd.o
+                0x000000002002a2dc       0x50 ./tinyusb/device/usbd.o
  .bss._usbd_dev
-                0x000000002002a334       0x33 ./tinyusb/device/usbd.o
- *fill*         0x000000002002a367        0x1 
+                0x000000002002a32c       0x33 ./tinyusb/device/usbd.o
+ *fill*         0x000000002002a35f        0x1 
  .bss._usbd_mutex
-                0x000000002002a368        0x4 ./tinyusb/device/usbd.o
- .bss._usbd_q   0x000000002002a36c        0x4 ./tinyusb/device/usbd.o
+                0x000000002002a360        0x4 ./tinyusb/device/usbd.o
+ .bss._usbd_q   0x000000002002a364        0x4 ./tinyusb/device/usbd.o
  .bss._usbd_qdef_buf
-                0x000000002002a370       0xc0 ./tinyusb/device/usbd.o
+                0x000000002002a368       0xc0 ./tinyusb/device/usbd.o
  .bss._ctrl_xfer
-                0x000000002002a430       0x14 ./tinyusb/device/usbd_control.o
+                0x000000002002a428       0x14 ./tinyusb/device/usbd_control.o
  .bss._usbd_ctrl_buf
-                0x000000002002a444       0x40 ./tinyusb/device/usbd_control.o
+                0x000000002002a43c       0x40 ./tinyusb/device/usbd_control.o
  .bss._desc_str
-                0x000000002002a484       0x42 ./tinyusb/usb_descriptors.o
- *fill*         0x000000002002a4c6        0x2 
+                0x000000002002a47c       0x42 ./tinyusb/usb_descriptors.o
+ *fill*         0x000000002002a4be        0x2 
  .bss._setup_packet
-                0x000000002002a4c8       0x18 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
+                0x000000002002a4c0       0x18 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
  .bss.ep_alloc_status
-                0x000000002002a4e0       0x20 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
+                0x000000002002a4d8       0x20 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
  .bss.ep_buf_ptr
-                0x000000002002a500        0x2 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
+                0x000000002002a4f8        0x2 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
  .bss.open_ep_count
-                0x000000002002a502        0x1 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
+                0x000000002002a4fa        0x1 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
  .bss.remoteWakeCountdown
-                0x000000002002a503        0x1 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
+                0x000000002002a4fb        0x1 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
  .bss.xfer_status
-                0x000000002002a504      0x140 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
- .bss.Ureg      0x000000002002a644        0x4 ./vi/vi.o
- .bss.YDreg     0x000000002002a648        0x4 ./vi/vi.o
- .bss.adding2q  0x000000002002a64c        0x4 ./vi/vi.o
- .bss.argbuf    0x000000002002a650        0x4 ./vi/vi.o
- .bss.args_buf  0x000000002002a654        0x4 ./vi/vi.o
+                0x000000002002a4fc      0x140 ./tinyusb/portable/st/stm32_fsdev/dcd_stm32_fsdev.o
+ .bss.Ureg      0x000000002002a63c        0x4 ./vi/vi.o
+ .bss.YDreg     0x000000002002a640        0x4 ./vi/vi.o
+ .bss.adding2q  0x000000002002a644        0x4 ./vi/vi.o
+ .bss.argbuf    0x000000002002a648        0x4 ./vi/vi.o
+ .bss.args_buf  0x000000002002a64c        0x4 ./vi/vi.o
  .bss.autoindent
-                0x000000002002a658        0x4 ./vi/vi.o
- .bss.c.3       0x000000002002a65c        0x1 ./vi/vi.o
- *fill*         0x000000002002a65d        0x3 
- .bss.ccol      0x000000002002a660        0x4 ./vi/vi.o
- .bss.cfn       0x000000002002a664        0x4 ./vi/vi.o
- .bss.cmd_buf   0x000000002002a668        0x4 ./vi/vi.o
- .bss.cmd_mode  0x000000002002a66c        0x4 ./vi/vi.o
- .bss.cmdcnt    0x000000002002a670        0x4 ./vi/vi.o
- .bss.columns   0x000000002002a674        0x4 ./vi/vi.o
+                0x000000002002a650        0x4 ./vi/vi.o
+ .bss.c.3       0x000000002002a654        0x1 ./vi/vi.o
+ *fill*         0x000000002002a655        0x3 
+ .bss.ccol      0x000000002002a658        0x4 ./vi/vi.o
+ .bss.cfn       0x000000002002a65c        0x4 ./vi/vi.o
+ .bss.cmd_buf   0x000000002002a660        0x4 ./vi/vi.o
+ .bss.cmd_mode  0x000000002002a664        0x4 ./vi/vi.o
+ .bss.cmdcnt    0x000000002002a668        0x4 ./vi/vi.o
+ .bss.columns   0x000000002002a66c        0x4 ./vi/vi.o
  .bss.context_end
-                0x000000002002a678        0x4 ./vi/vi.o
+                0x000000002002a670        0x4 ./vi/vi.o
  .bss.context_start
-                0x000000002002a67c        0x4 ./vi/vi.o
- .bss.crow      0x000000002002a680        0x4 ./vi/vi.o
+                0x000000002002a674        0x4 ./vi/vi.o
+ .bss.crow      0x000000002002a678        0x4 ./vi/vi.o
  .bss.cur_line.2
-                0x000000002002a684        0x4 ./vi/vi.o
- .bss.dot       0x000000002002a688        0x4 ./vi/vi.o
- .bss.editing   0x000000002002a68c        0x4 ./vi/vi.o
- .bss.end       0x000000002002a690        0x4 ./vi/vi.o
+                0x000000002002a67c        0x4 ./vi/vi.o
+ .bss.dot       0x000000002002a680        0x4 ./vi/vi.o
+ .bss.editing   0x000000002002a684        0x4 ./vi/vi.o
+ .bss.end       0x000000002002a688        0x4 ./vi/vi.o
  .bss.err_method
-                0x000000002002a694        0x4 ./vi/vi.o
+                0x000000002002a68c        0x4 ./vi/vi.o
  .bss.file_modified
-                0x000000002002a698        0x4 ./vi/vi.o
- .bss.fn_start  0x000000002002a69c        0x4 ./vi/vi.o
+                0x000000002002a690        0x4 ./vi/vi.o
+ .bss.fn_start  0x000000002002a694        0x4 ./vi/vi.o
  .bss.ignorecase
-                0x000000002002a6a0        0x4 ./vi/vi.o
- .bss.ioq       0x000000002002a6a4        0x4 ./vi/vi.o
+                0x000000002002a698        0x4 ./vi/vi.o
+ .bss.ioq       0x000000002002a69c        0x4 ./vi/vi.o
  .bss.ioq_start
-                0x000000002002a6a8        0x4 ./vi/vi.o
+                0x000000002002a6a0        0x4 ./vi/vi.o
  .bss.last_cksum.0
-                0x000000002002a6ac        0x4 ./vi/vi.o
+                0x000000002002a6a4        0x4 ./vi/vi.o
  .bss.last_forward_char
-                0x000000002002a6b0        0x1 ./vi/vi.o
- *fill*         0x000000002002a6b1        0x3 
+                0x000000002002a6a8        0x1 ./vi/vi.o
+ *fill*         0x000000002002a6a9        0x3 
  .bss.last_modifying_cmd
-                0x000000002002a6b4        0x4 ./vi/vi.o
+                0x000000002002a6ac        0x4 ./vi/vi.o
  .bss.last_search_pattern
-                0x000000002002a6b8        0x4 ./vi/vi.o
- .bss.line      0x000000002002a6bc        0x4 ./vi/vi.o
- .bss.mark      0x000000002002a6c0       0x70 ./vi/vi.o
+                0x000000002002a6b0        0x4 ./vi/vi.o
+ .bss.line      0x000000002002a6b4        0x4 ./vi/vi.o
+ .bss.mark      0x000000002002a6b8       0x70 ./vi/vi.o
  .bss.modifying_cmds
-                0x000000002002a730        0x4 ./vi/vi.o
- .bss.obufp.1   0x000000002002a734        0x4 ./vi/vi.o
- .bss.offset    0x000000002002a738        0x4 ./vi/vi.o
+                0x000000002002a728        0x4 ./vi/vi.o
+ .bss.obufp.1   0x000000002002a72c        0x4 ./vi/vi.o
+ .bss.offset    0x000000002002a730        0x4 ./vi/vi.o
  .bss.old_offset.4
-                0x000000002002a73c        0x4 ./vi/vi.o
- .bss.optind    0x000000002002a740        0x4 ./vi/vi.o
+                0x000000002002a734        0x4 ./vi/vi.o
+ .bss.optind    0x000000002002a738        0x4 ./vi/vi.o
  .bss.readbuffer
-                0x000000002002a744        0x4 ./vi/vi.o
- .bss.readonly  0x000000002002a748        0x4 ./vi/vi.o
- .bss.reg       0x000000002002a74c       0x70 ./vi/vi.o
- .bss.rows      0x000000002002a7bc        0x4 ./vi/vi.o
+                0x000000002002a73c        0x4 ./vi/vi.o
+ .bss.readonly  0x000000002002a740        0x4 ./vi/vi.o
+ .bss.reg       0x000000002002a744       0x70 ./vi/vi.o
+ .bss.rows      0x000000002002a7b4        0x4 ./vi/vi.o
  .bss.save_argc
-                0x000000002002a7c0        0x4 ./vi/vi.o
- .bss.screen    0x000000002002a7c4        0x4 ./vi/vi.o
+                0x000000002002a7b8        0x4 ./vi/vi.o
+ .bss.screen    0x000000002002a7bc        0x4 ./vi/vi.o
  .bss.screenbegin
-                0x000000002002a7c8        0x4 ./vi/vi.o
+                0x000000002002a7c0        0x4 ./vi/vi.o
  .bss.screensize
-                0x000000002002a7cc        0x4 ./vi/vi.o
+                0x000000002002a7c4        0x4 ./vi/vi.o
  .bss.showmatch
-                0x000000002002a7d0        0x4 ./vi/vi.o
- *fill*         0x000000002002a7d4        0x4 
- .bss.stack     0x000000002002a7d8        0x8 ./vi/vi.o
+                0x000000002002a7c8        0x4 ./vi/vi.o
+ *fill*         0x000000002002a7cc        0x4 
+ .bss.stack     0x000000002002a7d0        0x8 ./vi/vi.o
  .bss.status_buffer
-                0x000000002002a7e0        0x4 ./vi/vi.o
- .bss.tabstop   0x000000002002a7e4        0x4 ./vi/vi.o
- .bss.text      0x000000002002a7e8        0x4 ./vi/vi.o
+                0x000000002002a7d8        0x4 ./vi/vi.o
+ .bss.tabstop   0x000000002002a7dc        0x4 ./vi/vi.o
+ .bss.text      0x000000002002a7e0        0x4 ./vi/vi.o
  .bss.vi_readonly
-                0x000000002002a7ec        0x4 ./vi/vi.o
- .bss.__sf      0x000000002002a7f0      0x138 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-findfp.o)
-                0x000000002002a7f0                __sf
+                0x000000002002a7e4        0x4 ./vi/vi.o
+ .bss.__sf      0x000000002002a7e8      0x138 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-findfp.o)
+                0x000000002002a7e8                __sf
  .bss.__stdio_exit_handler
-                0x000000002002a928        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-findfp.o)
-                0x000000002002a928                __stdio_exit_handler
+                0x000000002002a920        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-findfp.o)
+                0x000000002002a920                __stdio_exit_handler
  .bss.__tzname_dst
-                0x000000002002a92c        0xc /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzset_r.o)
+                0x000000002002a924        0xc /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzset_r.o)
  .bss.__tzname_std
-                0x000000002002a938        0xc /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzset_r.o)
+                0x000000002002a930        0xc /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzset_r.o)
  .bss.prev_tzenv
-                0x000000002002a944        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzset_r.o)
+                0x000000002002a93c        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzset_r.o)
  .bss._daylight
-                0x000000002002a948        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzvars.o)
-                0x000000002002a948                _daylight
+                0x000000002002a940        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzvars.o)
+                0x000000002002a940                _daylight
  .bss._timezone
-                0x000000002002a94c        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzvars.o)
-                0x000000002002a94c                _timezone
- .bss.errno     0x000000002002a950        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-reent.o)
-                0x000000002002a950                errno
+                0x000000002002a944        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-tzvars.o)
+                0x000000002002a944                _timezone
+ .bss.errno     0x000000002002a948        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-reent.o)
+                0x000000002002a948                errno
  .bss.__lock___env_recursive_mutex
-                0x000000002002a954        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
-                0x000000002002a954                __lock___env_recursive_mutex
+                0x000000002002a94c        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
+                0x000000002002a94c                __lock___env_recursive_mutex
  .bss.__lock___malloc_recursive_mutex
-                0x000000002002a955        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
-                0x000000002002a955                __lock___malloc_recursive_mutex
+                0x000000002002a94d        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
+                0x000000002002a94d                __lock___malloc_recursive_mutex
  .bss.__lock___sfp_recursive_mutex
-                0x000000002002a956        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
-                0x000000002002a956                __lock___sfp_recursive_mutex
+                0x000000002002a94e        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
+                0x000000002002a94e                __lock___sfp_recursive_mutex
  .bss.__lock___tz_mutex
-                0x000000002002a957        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
-                0x000000002002a957                __lock___tz_mutex
+                0x000000002002a94f        0x1 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-lock.o)
+                0x000000002002a94f                __lock___tz_mutex
  .bss.__malloc_free_list
-                0x000000002002a958        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-mallocr.o)
-                0x000000002002a958                __malloc_free_list
+                0x000000002002a950        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-mallocr.o)
+                0x000000002002a950                __malloc_free_list
  .bss.__malloc_sbrk_start
-                0x000000002002a95c        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-mallocr.o)
-                0x000000002002a95c                __malloc_sbrk_start
+                0x000000002002a954        0x4 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/bin/../lib/gcc/arm-none-eabi/11.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m+fp/softfp/libc_nano.a(libc_a-mallocr.o)
+                0x000000002002a954                __malloc_sbrk_start
  *(COMMON)
-                0x000000002002a960                . = ALIGN (0x4)
-                0x000000002002a960                _ebss = .
-                0x000000002002a960                __bss_end__ = _ebss
+                0x000000002002a958                . = ALIGN (0x4)
+                0x000000002002a958                _ebss = .
+                0x000000002002a958                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x000000002002a960      0x800 load address 0x0000000008036be6
-                0x000000002002a960                . = ALIGN (0x8)
-                0x000000002002a960                PROVIDE (end = .)
+                0x000000002002a958      0x800 load address 0x0000000008036bde
+                0x000000002002a958                . = ALIGN (0x8)
+                0x000000002002a958                PROVIDE (end = .)
                 [!provide]                        PROVIDE (_end = .)
-                0x000000002002ad60                . = (. + _Min_Heap_Size)
- *fill*         0x000000002002a960      0x400 
-                0x000000002002b160                . = (. + _Min_Stack_Size)
- *fill*         0x000000002002ad60      0x400 
-                0x000000002002b160                . = ALIGN (0x8)
+                0x000000002002ad58                . = (. + _Min_Heap_Size)
+ *fill*         0x000000002002a958      0x400 
+                0x000000002002b158                . = (. + _Min_Stack_Size)
+ *fill*         0x000000002002ad58      0x400 
+                0x000000002002b158                . = ALIGN (0x8)
 
 /DISCARD/
  libc.a(*)
