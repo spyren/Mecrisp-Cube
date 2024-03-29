@@ -720,6 +720,8 @@ this is not needed because the levels on the Nucleo are already 3.3 V.
 Only the CD pin is missing, this could be handy to detect a microSD 
 card.
 
+[How to Use MMC/SDC](http://elm-chan.org/docs/mmc/mmc_e.html)
+
 <table>
   <tr>
     <td><img src="img/MMC-SD-miniSD-microSD-Color-Numbers-Names.gif"></td>
