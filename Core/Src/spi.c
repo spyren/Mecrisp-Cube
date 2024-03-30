@@ -247,7 +247,8 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* spiHandle)
     __HAL_LINKDMA(spiHandle,hdmatx,hdma_spi2_tx);
 
   /* USER CODE BEGIN SPI2_MspInit 1 */
-
+    HAL_NVIC_SetPriority(SPI2_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(SPI2_IRQn);
   /* USER CODE END SPI2_MspInit 1 */
   }
 }
@@ -303,7 +304,7 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
     HAL_DMA_DeInit(spiHandle->hdmarx);
     HAL_DMA_DeInit(spiHandle->hdmatx);
   /* USER CODE BEGIN SPI2_MspDeInit 1 */
-
+    HAL_NVIC_DisableIRQ(SPI2_IRQn);
   /* USER CODE END SPI2_MspDeInit 1 */
   }
 }

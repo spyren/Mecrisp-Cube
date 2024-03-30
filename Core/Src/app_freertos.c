@@ -32,6 +32,7 @@
 #include "flash.h"
 #include "bsp.h"
 #include "rt_spi.h"
+#include "sd_spi.h"
 #include "sd.h"
 #include "fd.h"
 #include "block.h"
@@ -113,6 +114,7 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 	RTSPI_init();
+	SDSPI_init();
 	BLOCK_init();
 	VI_init();
 	TINY_init();
@@ -160,7 +162,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setSysLED(SYSLED_POWER_ON); // dimmed green LED
+	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
 	ASSERT_init();
 	SD_init();
 	FD_init();

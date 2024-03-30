@@ -215,6 +215,7 @@ int main(void)
     Error_Handler();
   }
   MX_SPI1_Init();
+  MX_SPI2_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
   MX_TIM16_Init();
@@ -241,7 +242,7 @@ int main(void)
   if (i == 0) {
 	  ASSERT_fatal(0, ASSERT_HSEM_CLK48, 0);
   }
-  for (i=0; i<100; i++) {
+  for (i=0; i<1000; i++) {
 	  ; // wait a short period
   }
   /* USER CODE END 2 */

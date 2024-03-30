@@ -1,8 +1,8 @@
 /**
  *  @brief
- *      Serial Peripheral Interface (SPI) for SD, serial FD, MIP, and EPD
+ *      Serial Peripheral Interface (SPI1) for OLED, serial FD, and RGB LED.
  *
- *		Default is SD. SD is using 2EDGE (CPHA=1) and polarity high (CPOL=1), MODE3
+ *		RGB LED needs 2EDGE (CPHA=1) and polarity high (CPOL=1), MODE3
  *		The application is responsible for chip select and mode. To protect
  *		for race condition use the RTSPI_MutexID.
  *  @file
@@ -39,6 +39,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "rt_spi.h"
+#include "sd_spi.h"
 #include "myassert.h"
 
 
@@ -254,10 +255,11 @@ int RTSPI_Write(uint8_t Value) {
   * @retval None
   */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hspi);
-
-	osSemaphoreRelease(RTSPI_SemaphoreID);
+	if (hspi->Instance == SPI1) {
+		osSemaphoreRelease(RTSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI2) {
+		osSemaphoreRelease(SDSPI_SemaphoreID);
+	}
 }
 
 
@@ -268,10 +270,11 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
   * @retval None
   */
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hspi);
-
-  osSemaphoreRelease(RTSPI_SemaphoreID);
+	if (hspi->Instance == SPI1) {
+		osSemaphoreRelease(RTSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI2) {
+		osSemaphoreRelease(SDSPI_SemaphoreID);
+	}
 }
 
 
@@ -282,11 +285,13 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
   * @retval None
   */
 void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
-	/* Prevent unused argument(s) compilation warning */
-	UNUSED(hspi);
-
-	SpiStatus = -1;
-	osSemaphoreRelease(RTSPI_SemaphoreID);
+	if (hspi->Instance == SPI1) {
+		SpiStatus = -1;
+		osSemaphoreRelease(RTSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI2) {
+		SDSPI_SpiStatus = -1;
+		osSemaphoreRelease(SDSPI_SemaphoreID);
+	}
 }
 
 /**
@@ -296,9 +301,11 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
   */
 void HAL_SPI_AbortCpltCallback(SPI_HandleTypeDef *hspi)
 {
-  /* Prevent unused argument(s) compilation warning */
-  UNUSED(hspi);
-
-	SpiStatus = -2;
-	osSemaphoreRelease(RTSPI_SemaphoreID);
+	if (hspi->Instance == SPI1) {
+		SpiStatus = -2;
+		osSemaphoreRelease(RTSPI_SemaphoreID);
+	} else if (hspi->Instance == SPI2) {
+		SDSPI_SpiStatus = -2;
+		osSemaphoreRelease(SDSPI_SemaphoreID);
+	}
 }

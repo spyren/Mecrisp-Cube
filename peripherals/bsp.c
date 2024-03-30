@@ -109,8 +109,8 @@ uint32_t neo_pixel = 0;
 uint32_t rgb_led = 0;
 uint32_t rgb_buffer[16];
 static uint32_t adc_calibration;
-// static int sys_led_status = SYSLED_ACTIVATE;
-static int sys_led_status = 0;
+static int sys_led_status = SYSLED_ACTIVATE;
+// static int sys_led_status = 0;
 
 // Public Functions
 // ****************
