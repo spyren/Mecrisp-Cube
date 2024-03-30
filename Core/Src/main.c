@@ -196,7 +196,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
-//  MX_IPCC_Init();
+  MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
 
@@ -242,7 +242,7 @@ int main(void)
   if (i == 0) {
 	  ASSERT_fatal(0, ASSERT_HSEM_CLK48, 0);
   }
-  for (i=0; i<1000; i++) {
+  for (i=0; i<100; i++) {
 	  ; // wait a short period
   }
   /* USER CODE END 2 */
