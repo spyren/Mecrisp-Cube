@@ -62,9 +62,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define MEMS_INT1_Pin GPIO_PIN_2
-#define MEMS_INT1_GPIO_Port GPIOD
-#define MEMS_INT1_EXTI_IRQn EXTI2_IRQn
 #define FLASH_IO3_Pin GPIO_PIN_7
 #define FLASH_IO3_GPIO_Port GPIOD
 #define OLED_DC_Pin GPIO_PIN_9
@@ -75,13 +72,14 @@ void Error_Handler(void);
 #define FLASH_IO1_GPIO_Port GPIOD
 #define D2_Pin GPIO_PIN_12
 #define D2_GPIO_Port GPIOD
-#define MEMS_DRDY_Pin GPIO_PIN_1
-#define MEMS_DRDY_GPIO_Port GPIOE
-#define MEMS_DRDY_EXTI_IRQn EXTI1_IRQn
 #define MEMS_SCK_Pin GPIO_PIN_13
 #define MEMS_SCK_GPIO_Port GPIOB
 #define FLASH_NCS_Pin GPIO_PIN_3
 #define FLASH_NCS_GPIO_Port GPIOD
+#define SD_CLK_Pin GPIO_PIN_1
+#define SD_CLK_GPIO_Port GPIOD
+#define SD_CS_Pin GPIO_PIN_0
+#define SD_CS_GPIO_Port GPIOD
 #define B1_Pin GPIO_PIN_12
 #define B1_GPIO_Port GPIOC
 #define FLASH_IO2_Pin GPIO_PIN_6
@@ -98,12 +96,16 @@ void Error_Handler(void);
 #define STLINK_RX_GPIO_Port GPIOB
 #define D3_Pin GPIO_PIN_14
 #define D3_GPIO_Port GPIOD
+#define SD_DO_Pin GPIO_PIN_14
+#define SD_DO_GPIO_Port GPIOB
 #define D9_Pin GPIO_PIN_15
 #define D9_GPIO_Port GPIOD
 #define RGB_SELECT_Pin GPIO_PIN_1
 #define RGB_SELECT_GPIO_Port GPIOH
 #define OLED_CS_Pin GPIO_PIN_0
 #define OLED_CS_GPIO_Port GPIOH
+#define SD_DI_Pin GPIO_PIN_15
+#define SD_DI_GPIO_Port GPIOB
 #define OLED_RST_Pin GPIO_PIN_8
 #define OLED_RST_GPIO_Port GPIOC
 #define STLINK_TX_Pin GPIO_PIN_6
