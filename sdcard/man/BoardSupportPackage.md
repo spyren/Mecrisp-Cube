@@ -777,15 +777,15 @@ I2C Address (unshifted): 0x29
 
 | Connector        | Signal name   | STM32W5MMG pin   | Comment                    |
 |------------------|---------------|------------------|----------------------------|
-| CN5.1            |               | PD0, PA6         | SPI2_NSS, LPUART1_CTS      |
+| CN5.1            | SD_CS         | PD0, PA6         | SPI2_NSS, LPUART1_CTS      |
 | CN5.2            | , D1          | PD4, PB5         | SPI2_MOSI (1), LPUART1_TXD |
 | CN5.3            | , D0          | PC2, PC0         | SPI2_MISO (1), LPUART1_RXD |
-| CN5.4            |               | PD1, PB12        | SPI2_SCK, LPUART1_RTS      |
+| CN5.4            | SD_CLK        | PD1, PB12        | SPI2_SCK, LPUART1_RTS      |
 | CN5.5            |               | GND              | Ground                     |
 | CN5.6            |               | +5V              | Power                      |
 | CN5.7            | D15           | PB8              | I2C1_SCL                   |
-| CN5.8            |               | PB15             | SPI2_MOSI (2)              |
-| CN5.9            |               | PB14             | SPI2_MISO (2)              |
+| CN5.8            | SD_DI         | PB15             | SPI2_MOSI (2)              |
+| CN5.9            | SD_DO         | PB14             | SPI2_MISO (2)              |
 | CN5.10           | D14           | PA10             | I2C1_SDA                   |
 | CN5.11           | D4            | PE3              | INT                        |
 | CN5.12           |               | PD8              | STMOD+_RESET               |
