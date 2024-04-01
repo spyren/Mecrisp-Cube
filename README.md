@@ -255,7 +255,7 @@ The RGB LED  displays the status
   * *dimmed Green* LIPO fully charged
   * *dimmed Red* LIPO charging
   * *dimmed Blue* BLE connected
-  * *flashing Red* "disk" (serial flash or SD) write operation
+  * *flashing Green* "disk" (serial flash or SD) write operation
   * *flashing Yellow* "disk" (serial flash or SD) read operation
 
 
