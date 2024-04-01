@@ -82,8 +82,6 @@ handshaking, parity and other awkward things. Under Linux I recommend to
 disable the ModemManager, otherwise the ModemManager tries to configure
 the ACM with some escape sequences.
 
-After the first connect to the USB host the green LED is switched on.
-
 USB_USER CN1 Micro USB connector on the MB1355 Nucleo Board.
 USB_USER CN3 USB A plug on the MB1293 dongle.
 ```
@@ -165,11 +163,11 @@ The blue LED indicates a connection to a central device.
 ## Terminal Emulators
 
 Terminal emulator applications for PCs, e.g.:
-
--   [PuTTY](http://www.putty.org/) - Windows and Linux
--   [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
--   [Realterm](http://realterm.sourceforge.net/) - Windows
--   minicom, miniterm, microcom, CuteCom, screen - Linux
+ - [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -L` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
+ - [PuTTY](http://www.putty.org/) - Windows and Linux
+ - [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
+ - [Realterm](http://realterm.sourceforge.net/) - Windows
+ - microcom, minicom, miniterm, CuteCom, screen - Linux
 
 Terminal emulator for Android devices:
 
