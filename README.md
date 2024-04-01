@@ -135,7 +135,7 @@ machine (Flipper Zero) for development and testing purposes.
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
     * Use the built in Eclipse console (but no LF)
-    * for details see [TerminalIO]
+    * for details see [Terminal IO](sdcard/man/TerminalIO.md)
   * STM32CubeProgrammer or [qFlipper](https://docs.flipper.net/qflipper)
 
 
