@@ -43,7 +43,6 @@
 #include "iic3.h"
 #include "myassert.h"
 
-
 // Private function prototypes
 // ***************************
 
@@ -117,7 +116,7 @@ int IIC3_ready(void) {
  * @param[in]
  *     dev: I2C device number
  *  @return
- *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL
+ *      Return 0 for success, -1 I2C error, -2 abort, -3 HAL, -4 timeout
  */
 int IIC3_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
@@ -129,7 +128,9 @@ int IIC3_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	hal_status = HAL_I2C_Master_Receive_DMA(&hi2c3, dev<<1, RxBuffer, RxSize);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
+		if (osSemaphoreAcquire(IIC3_SemaphoreID, IIC3_TIMEOUT) == osErrorTimeout) {
+			hal_status = -4;
+		}
 	} else {
 		// can't get Message
 		IIC3_Status = -3;
@@ -166,8 +167,10 @@ int IIC3_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	// send the Message
 	hal_status = HAL_I2C_Master_Transmit_DMA(&hi2c3, dev<<1, TxBuffer, TxSize);
 	if (hal_status == HAL_OK) {
-		// blocked till message is received
-		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
+		// blocked till message is sent
+		if (osSemaphoreAcquire(IIC3_SemaphoreID, IIC3_TIMEOUT) == osErrorTimeout) {
+			hal_status = -4;
+		}
 	} else {
 		// can't get Message
 		IIC3_Status = -3;
@@ -207,8 +210,10 @@ int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, ui
 	// send the Message
 	hal_status = HAL_I2C_Master_Sequential_Transmit_DMA(&hi2c3, dev<<1, TxRxBuffer, TxSize, I2C_FIRST_FRAME);
 	if (hal_status == HAL_OK) {
-		// blocked till message is received
-		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
+		// blocked till message is sent
+		if (osSemaphoreAcquire(IIC3_SemaphoreID, IIC3_TIMEOUT) == osErrorTimeout) {
+			hal_status = -4;
+		}
 	} else {
 		// can't transmit Message
 		IIC3_Status = -3;
@@ -223,7 +228,12 @@ int IIC3_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, ui
 	hal_status = HAL_I2C_Master_Sequential_Receive_DMA(&hi2c3, dev<<1, TxRxBuffer, RxSize, I2C_LAST_FRAME);
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
-		osSemaphoreAcquire(IIC3_SemaphoreID, osWaitForever);
+		if (hal_status == HAL_OK) {
+			// blocked till message is received
+			if (osSemaphoreAcquire(IIC3_SemaphoreID, IIC3_TIMEOUT) == osErrorTimeout) {
+				hal_status = -4;
+			}
+		}
 	} else {
 		// can't get Message
 		IIC3_Status = -3;

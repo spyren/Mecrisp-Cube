@@ -34,6 +34,8 @@
 #ifndef INC_IIC_H_
 #define INC_IIC_H_
 
+#define IIC_TIMEOUT	500
+
 
 void IIC_init(void);
 int IIC_ready(void);

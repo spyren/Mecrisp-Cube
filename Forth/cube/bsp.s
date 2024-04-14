@@ -551,7 +551,7 @@ I2Cget:
 		Wortbirne Flag_visible, "I2Cput"
 I2Cput:
 		@ ( a size --  ) Put a message
-// int IIC33_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
+// int IIC3_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	movs	r2, tos			// dev

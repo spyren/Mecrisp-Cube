@@ -35,6 +35,7 @@
 #ifndef INC_IIC3_H_
 #define INC_IIC3_H_
 
+#define IIC3_TIMEOUT	500
 
 extern volatile int IIC3_Status;
 extern osSemaphoreId_t IIC3_SemaphoreID;
