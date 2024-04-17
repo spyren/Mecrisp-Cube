@@ -1418,17 +1418,23 @@ static void update_sysled(void) {
 	uint32_t rgb = 0;
 	if (sys_led_status & SYSLED_ACTIVATE) {
 		if (sys_led_status & SYSLED_DISK_READ_OPERATION) {
+			// bright green
+			rgb = 0x00FF00;
+		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
 			// bright yellow
 			rgb = 0xFFFF00;
-		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
-			// bright red
-			rgb = 0xFF0000;
 		} else if (sys_led_status & SYSLED_CHARGING) {
 			// red
 			rgb = 0x200000;
 		} else if (sys_led_status & SYSLED_FULLY_CHARGED) {
 			// green
 			rgb = 0x002000;
+		} else if (sys_led_status & SYSLED_POWER_ON) {
+			// white
+			rgb = 0x404040;
+		} else if (sys_led_status & SYSLED_ERROR) {
+			// red
+			rgb = 0x400000;
 		}
 		if (sys_led_status & SYSLED_BLE_CONNECTED) {
 			// add some blue

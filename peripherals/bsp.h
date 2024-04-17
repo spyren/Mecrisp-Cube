@@ -40,6 +40,8 @@ typedef enum {
 	SYSLED_CHARGING 			= 1 << 3,
 	SYSLED_FULLY_CHARGED 		= 1 << 4,
 	SYSLED_BLE_CONNECTED 		= 1 << 5,
+	SYSLED_POWER_ON 		    = 1 << 6,
+	SYSLED_ERROR	      	    = 1 << 7,
 } BSP_sysled_t;
 
 
