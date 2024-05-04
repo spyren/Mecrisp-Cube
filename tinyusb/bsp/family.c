@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Jerzy Kasenberg
+ * Copyright (c) 2019 Ha Thach (tinyusb.org)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,19 @@
  * This file is part of the TinyUSB stack.
  */
 
-#include "stm32wbxx_hal.h"
+#include "stm32f4xx_hal.h"
 #include "bsp/board_api.h"
 #include "board.h"
 
 //--------------------------------------------------------------------+
 // Forward USB interrupt events to TinyUSB IRQ Handler
 //--------------------------------------------------------------------+
-void USB_HP_IRQHandler(void)
-{
+void OTG_FS_IRQHandler(void) {
   tud_int_handler(0);
 }
 
-void USB_LP_IRQHandler(void)
-{
-  tud_int_handler(0);
+void OTG_HS_IRQHandler(void) {
+  tud_int_handler(1);
 }
 
 //--------------------------------------------------------------------+
@@ -46,55 +44,35 @@ void USB_LP_IRQHandler(void)
 //--------------------------------------------------------------------+
 UART_HandleTypeDef UartHandle;
 
-void board_init(void)
-{
-	// see main.c
-//  board_clock_init();
+void board_init(void) {
 
-  // Enable All GPIOs clocks
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
+	  GPIO_InitTypeDef GPIO_InitStruct;
 
-  UART_CLK_EN();
+#if 0  // see main.c (and other CubeMX generated files
+  board_clock_init();
+  //SystemCoreClockUpdate();
 
 #if CFG_TUSB_OS == OPT_OS_NONE
   // 1ms tick timer
   SysTick_Config(SystemCoreClock / 1000);
 #elif CFG_TUSB_OS == OPT_OS_FREERTOS
   // Explicitly disable systick to prevent its ISR runs before scheduler start
-//  SysTick->CTRL &= ~1U;
+  SysTick->CTRL &= ~1U;
 
   // If freeRTOS is used, IRQ priority is limit by max syscall ( smaller is higher )
-  NVIC_SetPriority(USB_HP_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
-  NVIC_SetPriority(USB_LP_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
+  NVIC_SetPriority(OTG_FS_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY );
 #endif
 
+  GPIO_InitTypeDef GPIO_InitStruct;
 
-  GPIO_InitTypeDef  GPIO_InitStruct;
-
-#if 0
   // LED
   GPIO_InitStruct.Pin = LED_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(LED_PORT, &GPIO_InitStruct);
 
-#if 0
-  // MCO configuration for System clock value verification PA8 will have SYSCLK / 2
-  GPIO_InitStruct.Pin = 8;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-  HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_SYSCLK, RCC_MCODIV_2);
-#endif
-
-//  board_led_write(false);
+  board_led_write(false);
 
   // Button
   GPIO_InitStruct.Pin = BUTTON_PIN;
@@ -105,83 +83,169 @@ void board_init(void)
 
 #ifdef UART_DEV
   // UART
-  GPIO_InitStruct.Pin       = UART_TX_PIN | UART_RX_PIN;
-  GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull      = GPIO_PULLUP;
-  GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Pin = UART_TX_PIN | UART_RX_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Alternate = UART_GPIO_AF;
   HAL_GPIO_Init(UART_GPIO_PORT, &GPIO_InitStruct);
 
-  UartHandle = (UART_HandleTypeDef){
-    .Instance        = UART_DEV,
-    .Init.BaudRate   = CFG_BOARD_UART_BAUDRATE,
-    .Init.WordLength = UART_WORDLENGTH_8B,
-    .Init.StopBits   = UART_STOPBITS_1,
-    .Init.Parity     = UART_PARITY_NONE,
-    .Init.HwFlowCtl  = UART_HWCONTROL_NONE,
-    .Init.Mode       = UART_MODE_TX_RX,
-    .Init.OverSampling = UART_OVERSAMPLING_16
+  UartHandle = (UART_HandleTypeDef) {
+      .Instance        = UART_DEV,
+      .Init.BaudRate   = CFG_BOARD_UART_BAUDRATE,
+      .Init.WordLength = UART_WORDLENGTH_8B,
+      .Init.StopBits   = UART_STOPBITS_1,
+      .Init.Parity     = UART_PARITY_NONE,
+      .Init.HwFlowCtl  = UART_HWCONTROL_NONE,
+      .Init.Mode       = UART_MODE_TX_RX,
+      .Init.OverSampling = UART_OVERSAMPLING_16
   };
   HAL_UART_Init(&UartHandle);
 #endif
 #endif
 
-  // USB Pins TODO double check USB clock and pin setup
-  // Configure USB DM and DP pins. This is optional, and maintained only for user guidance.
-  GPIO_InitStruct.Pin = (GPIO_PIN_11 | GPIO_PIN_12);
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  // If freeRTOS is used, IRQ priority is limit by max syscall ( smaller is higher )
+  NVIC_SetPriority(OTG_FS_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY );
+
+#if BOARD_TUD_RHPORT == 0
+  /* Configure USB FS GPIOs */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /* Configure USB D+ D- Pins */
+  GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_12;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  HAL_PWREx_EnableVddUSB();
-  __HAL_RCC_USB_CLK_ENABLE();
+  /* Configure VBUS Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* ID Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  // Enable USB OTG clock
+  __HAL_RCC_USB_OTG_FS_CLK_ENABLE();
+#else
+  /* Configure USB HS GPIOs */
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /* Configure USB D+ D- Pins */
+  GPIO_InitStruct.Pin = GPIO_PIN_14 | GPIO_PIN_15;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* Configure VBUS Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* ID Pin */
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF12_OTG_HS_FS;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  // Enable USB OTG clock
+  __HAL_RCC_USB_OTG_HS_CLK_ENABLE();
+#endif
+
+#ifdef STM32F412Zx
+  /* Configure POWER_SWITCH IO pin */
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+#endif
+
+  board_vbus_sense_init();
 }
 
 //--------------------------------------------------------------------+
 // Board porting API
 //--------------------------------------------------------------------+
 
-#if 0
-void board_led_write(bool state)
-{
-  HAL_GPIO_WritePin(LED_PORT, LED_PIN, state ? LED_STATE_ON : (1-LED_STATE_ON));
+#if 0  // see main.c (and other CubeMX generated files
+
+void board_led_write(bool state) {
+  GPIO_PinState pin_state = (GPIO_PinState) (state ? LED_STATE_ON : (1 - LED_STATE_ON));
+  HAL_GPIO_WritePin(LED_PORT, LED_PIN, pin_state);
 }
 
-uint32_t board_button_read(void)
-{
+uint32_t board_button_read(void) {
   return BUTTON_STATE_ACTIVE == HAL_GPIO_ReadPin(BUTTON_PORT, BUTTON_PIN);
 }
+#endif
 
-int board_uart_read(uint8_t* buf, int len)
-{
-  (void) buf; (void) len;
+size_t board_get_unique_id(uint8_t id[], size_t max_len) {
+  (void) max_len;
+  volatile uint32_t *stm32_uuid = (volatile uint32_t *) UID_BASE;
+  uint32_t *id32 = (uint32_t *) (uintptr_t) id;
+  uint8_t const len = 12;
+
+  id32[0] = stm32_uuid[0];
+  id32[1] = stm32_uuid[1];
+  id32[2] = stm32_uuid[2];
+
+  return len;
+}
+
+#if 0  // see main.c (and other CubeMX generated files
+int board_uart_read(uint8_t *buf, int len) {
+  (void) buf;
+  (void) len;
   return 0;
 }
 
-int board_uart_write(void const * buf, int len)
-{
+int board_uart_write(void const *buf, int len) {
 #ifdef UART_DEV
-  HAL_UART_Transmit(&UartHandle, (uint8_t*)(uintptr_t) buf, len, 0xffff);
+  HAL_UART_Transmit(&UartHandle, (uint8_t *) (uintptr_t) buf, len, 0xffff);
   return len;
 #else
   (void) buf; (void) len; (void) UartHandle;
   return 0;
 #endif
 }
+#endif
 
-#if CFG_TUSB_OS  == OPT_OS_NONE
+#if CFG_TUSB_OS == OPT_OS_NONE
 volatile uint32_t system_ticks = 0;
-void SysTick_Handler (void)
-{
+
+void SysTick_Handler(void) {
   HAL_IncTick();
   system_ticks++;
 }
+#endif
 
-uint32_t board_millis(void)
-{
+#if 0  // see main.c (and other CubeMX generated files
+uint32_t board_millis(void) {
   return system_ticks;
 }
 #endif
-#endif
 
+#if 0  // see main.c (and other CubeMX generated files
+void HardFault_Handler(void) {
+  __asm("BKPT #0\n");
+}
+
+// Required by __libc_init_array in startup code if we are compiling using
+// -nostdlib/-nostartfiles.
+void _init(void) {
+}
+#endif

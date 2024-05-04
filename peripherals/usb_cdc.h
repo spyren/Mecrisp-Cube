@@ -8,11 +8,11 @@
 #ifndef INC_USB_CDC_H_
 #define INC_USB_CDC_H_
 
-#define CDC_CONNECTED	0x01
-#define CDC_TX_READY	0x02
+#define CDC_CONNECTED		0x01
+#define CDC_DISCONNECTED	0x02
 
 extern osMessageQueueId_t CDC_RxQueueId;
-extern osEventFlagsId_t CDC_EvtFlagsID;
+extern osThreadId_t CDC_ThreadID;
 
 void CDC_init(void);
 int CDC_getc(void);

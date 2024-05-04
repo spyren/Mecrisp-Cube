@@ -32,7 +32,6 @@ extern "C"{
 #include <stdlib.h>
 #include <stdarg.h>
 
-
 #include "app_conf.h"
 
   /* -------------------------------- *

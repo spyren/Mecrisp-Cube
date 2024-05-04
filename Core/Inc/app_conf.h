@@ -22,9 +22,6 @@
 #ifndef APP_CONF_H
 #define APP_CONF_H
 
-#include "app_common.h"
-
-
 // Board Type
 // **********
 
@@ -55,16 +52,12 @@
 #define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
-/* if asserts are not required uncomment next line */
-#define CFG_ASSERT_ON
+/* if asserts are not required set define to 0 */
+#define CFG_ASSERT_ON	1
 
 /* if no logs are required uncomment next line */
 #define CFG_LOG_MSG  "0:/var/log/messages"
 
-#undef CFG_GAP_DEVICE_NAME
-#define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
-#undef CFG_GAP_DEVICE_NAME_LENGTH
-#define CFG_GAP_DEVICE_NAME_LENGTH      (13)
 
 /******************************************************************************
  * Application Config

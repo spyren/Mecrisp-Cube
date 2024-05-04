@@ -517,8 +517,6 @@ Forth:
 	beq		2f
 	bl		uart_terminal		// button2 pressed on reset -> uart terminal
 2:
-	welcome " by Matthias Koch. "
-
 	pushdatos
 	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
 	bl		fs_strlen
