@@ -43,6 +43,7 @@
 #include "iic.h"
 #include "oled.h"
 #include "plex.h"
+#include "dotstar.h"
 #include "myassert.h"
 
 /* USER CODE END Includes */

@@ -519,11 +519,15 @@ Forth:
 2:
 	welcome " by Matthias Koch. "
 
-	bl		cr
 	pushdatos
 	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
 	bl		fs_strlen
 	bl		stype
+	pushdatos
+	ldr		tos, =MecrispVersion
+	bl		fs_strlen
+	bl		stype
+	welcome " by Matthias Koch. "
 	pushdatos
 	ldr		tos, =BSP_Version	// print Cube and BLE version
 	bl		fs_strlen
@@ -538,6 +542,10 @@ Forth:
 	bl		stype
 	pushdatos
 	ldr		tos, =VI_Version	// print vi system version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =TINY_Version	// print TinyUSB system version
 	bl		fs_strlen
 	bl		stype
 

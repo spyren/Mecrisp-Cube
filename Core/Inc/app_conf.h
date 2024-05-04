@@ -24,6 +24,7 @@
 
 #include "app_common.h"
 
+
 // Board Type
 // **********
 
@@ -31,6 +32,7 @@
 #define BOARD_TYPE_MKR		2
 #define BOARD_TYPE_FEATHER	3
 #define BOARD_TYPE_FIREFLY	4
+#define BOARD_TYPE_FLIPPER	5
 
 #define BOARD_TYPE			BOARD_TYPE_FEATHER
 
@@ -38,21 +40,19 @@
 // ********
 
 #define MCU_TYPE		"STM32F4"
-#if BOARD_TYPE == BOARD_TYPE_FEATHER
-// Adafruit headers
 #define BOARD 			"Feather"
 #define RAM_FLASH_SIZE	"31/768 KiB"
-#else
-// Arduino UNO headers (Nucleo, Nucleo Dongle, Discovery)
-#define BOARD 			"Nucleo"
-#define RAM_FLASH_SIZE	"63/128"
-#endif
 
 // Greeting Message
 // ****************
 
-#define MECRISP_CUBE_TAG "1.5.0"
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE "  KiB RAM/FLASH dictionary (C) 2022 peter@spyr.ch\n"
+#ifdef DEBUG
+#define MECRISP_CUBE_TAG "1.6.0 deb"
+#else
+#define MECRISP_CUBE_TAG "1.6.0 rel"
+#endif
+
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required uncomment next line */
@@ -61,6 +61,10 @@
 /* if no logs are required uncomment next line */
 #define CFG_LOG_MSG  "0:/var/log/messages"
 
+#undef CFG_GAP_DEVICE_NAME
+#define CFG_GAP_DEVICE_NAME             "Mecrisp-Cube"
+#undef CFG_GAP_DEVICE_NAME_LENGTH
+#define CFG_GAP_DEVICE_NAME_LENGTH      (13)
 
 /******************************************************************************
  * Application Config
@@ -308,6 +312,7 @@ typedef enum
  ******************************************************************************/
 #define	OLED					1
 #define MIP						0
+#define LCDISPLAY				0
 #define PLEX					1
 #define EPD						0
 #define FPU_IP					1
