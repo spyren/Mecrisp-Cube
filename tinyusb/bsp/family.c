@@ -104,6 +104,9 @@ void board_init(void) {
 #endif
 #endif
 
+  // Explicitly disable systick to prevent its ISR runs before scheduler start
+  SysTick->CTRL &= ~1U;
+
   // If freeRTOS is used, IRQ priority is limit by max syscall ( smaller is higher )
   NVIC_SetPriority(OTG_FS_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY );
 

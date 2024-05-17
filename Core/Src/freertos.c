@@ -45,6 +45,7 @@
 #include "plex.h"
 #include "dotstar.h"
 #include "myassert.h"
+#include "tiny.h"
 
 /* USER CODE END Includes */
 
@@ -138,6 +139,7 @@ void MX_FREERTOS_Init(void) {
 	BLOCK_init();
 	FS_init();
 	VI_init();
+	TINY_init();
 
   /* USER CODE END Init */
 
