@@ -164,14 +164,13 @@ Logic
 
 exactly ANS, some logical extensions.
 ```
-arshift         ( x1 u -- x2 )  Arithmetric right-shift of u bit-places
-rshift          ( x1 u -- x2 ) 	Logical right-shift of u bit-places
-lshift          ( x1 u -- x2 ) 	Logical left-shift of u bit-places
 shr             ( x1 -- x2 ) 	Logical right-shift of one bit-place
 shl             ( x1 -- x2 ) 	Logical left-shift of one bit-place
 ror             ( x1 -- x2 ) 	Logical right-rotation of one bit-place
 rol             ( x1 -- x2 ) 	Logical left-rotation of one bit-place
-bic             ( x1 x2 -- x3 ) Bit clear, identical to “not and”
+arshift         ( x1 u -- x2 )  Arithmetric right-shift of u bit-places
+rshift          ( x1 u -- x2 ) 	Logical right-shift of u bit-places
+lshift          ( x1 u -- x2 ) 	Logical left-shift of u bit-places
 not             ( x1 -- x2 ) 	Invert all bits
 xor             ( x1 x2 -- x3 ) Bitwise Exclusive-OR
 or              ( x1 x2 -- x3 ) Bitwise OR
@@ -179,6 +178,7 @@ and             ( x1 x2 -- x3 ) Bitwise AND
 false           ( -- 0 )        False-Flag
 true            ( ---1 )        True-Flag
 clz             ( x1 -- u )     Count leading zeros
+bic             ( x1 x2 -- x3 ) Bit clear, identical to “not and”
 ```
 
 Single Number Math
@@ -186,26 +186,27 @@ Single Number Math
 
 Exactly ANS, some logical extensions.
 ```
-u/mod           ( u1 u2 -- u3 u4 )  32/32 = 32 rem 32 Division u1 / u2 = u4 remainder u3
-/mod            ( n1 n2 -- n3 n4 )  n1 / n2 = n4 rem n3
-mod             ( n1 n2 -- n3 )     n1 / n2 = remainder n3
-/               ( n1 n2 -- n3 )     n1 / n2 = n3
-\*              ( u1 n1 u2 n2 -- u3 n3 ) 	32*32 = 32 Multiplication
-min             ( n1 n2 -- n1 n2 )  Keeps smaller of top two items
-max             ( n1 n2 -- n1 n2 )  Keeps greater of top two items
-umin            ( u1 u2 -- u1 u2 )  Keeps unsigned smaller
-umax            ( u1 u2 -- u1 u2 )  Keeps unsigned greater
-2-              ( u1 n1 -- u2 n2 )  Subtracts two, optimized
-1-              ( u1 n1 -- u2 n2 )  Subtracts one, optimized
-2+              ( u1 n1 -- u2 n2 )  Adds two, optimized
-1+              ( u1 n1 -- u2 n2 )  Adds one, optimized
-even            ( u1 n1 -- u2 n2 )  Makes even. Adds one if uneven.
-2*              ( n1 -- n2 )        Arithmetric left-shift
-2/              ( n1 -- n2 )        Arithmetric right-shift
-abs             ( n -- u )          Absolute value
-negate          ( n1 -- n2 )        Negate
--               ( u1|n1 u2|n2 -- u3|n3 )    Subtraction
-+               ( u1|n1 u2|n2 -- u3|n3 )    Addition
++               ( u1|n1 u2|n2 -- u3|n3 )  Addition
+-               ( u1|n1 u2|n2 -- u3|n3 )  Subtraction
+*               ( u1|n1 u2|n2 -- u3|n3 )  32*32 = 32 Multiplication
+/               ( n1 n2 -- n3 )           n1 / n2 = n3
+*/              ( n1 n2 n3 -- n4 )        n1 * n2 / n3 = n4
+u/mod           ( u1 u2 -- u3 u4 )        32/32 = 32 rem 32 Division u1 / u2 = u4 remainder u3
+/mod            ( n1 n2 -- n3 n4 )        n1 / n2 = n4 rem n3
+mod             ( n1 n2 -- n3 )           n1 / n2 = remainder n3
+min             ( n1 n2 -- n1 n2 )        Keeps smaller of top two items
+max             ( n1 n2 -- n1 n2 )        Keeps greater of top two items
+umin            ( u1 u2 -- u1 u2 )        Keeps unsigned smaller
+umax            ( u1 u2 -- u1 u2 )        Keeps unsigned greater
+2-              ( u1 n1 -- u2 n2 )        Subtracts two, optimized
+1-              ( u1 n1 -- u2 n2 )        Subtracts one, optimized
+2+              ( u1 n1 -- u2 n2 )        Adds two, optimized
+1+              ( u1 n1 -- u2 n2 )        Adds one, optimized
+even            ( u1 n1 -- u2 n2 )        Makes even. Adds one if uneven.
+2*              ( n1 -- n2 )              Arithmetric left-shift
+2/              ( n1 -- n2 )              Arithmetric right-shift
+abs             ( n -- u )                Absolute value
+negate          ( n1 -- n2 )              Negate
 ```
 
 Double Number Math
@@ -213,16 +214,17 @@ Double Number Math
 
 exactly ANS, some logical extensions.
 ```
-um*             ( u1 u2 -- ud )                 32*32 = 64 Multiplication
-ud*             ( ud1 ud2 -- ud3 )              64*64 = 64 Multiplication
+d+              ( ud1|d1 ud2|d2 -- ud3|d3 )  Addition
+d-              ( ud1|d1 ud2|d2 -- ud3|d3 )  Subtraction
+d/              ( d1 d2 -- d3 )              d1 / d2 = d3
+ud*             ( ud1 ud2 -- ud3 )           64*64 = 64 Multiplication
+um*             ( u1 u2 -- ud )              32*32 = 64 Multiplication
 udm*            ( ud1 ud2 -- ud3-Low ud4-High ) 64*64=128 Multiplication
 um/mod          ( ud u1 -- u2 u3 )              ud / u1 = u3 remainder u2
 ud/mod          ( ud1 ud2 -- ud3 ud4 )          64/64 = 64 rem 64 Division ud1 / ud2 = ud4 remainder ud3
 m*              ( n1 n2 -- d ) 	        n1 * n2 = d
 m/mod           ( d n1 -- n2 n3 )       d / n1 = n3 remainder r2
 d/mod           ( d1 d2 -- d3 d4 )      d1 / d2 = d4 remainder d3
-d/              ( d1 d2 -- d3 )         d1 / d2 = d3
-*/              ( n1 n2 n3 -- n4 )      n1 * n2 / n3 = n4
 u*/             ( u1 u2 u3 -- u4 )      u1 * u2 / u3 = u4
 */mod           ( n1 n2 n3 -- n4 n5 )   n1 * n2 / n3 = n5 remainder n4
 u*/mod          ( u1 u2 u3 -- u4 u5 )   u1 * u2 / u3 = u5 remainder u4
@@ -232,7 +234,6 @@ dshl            ( ud1 -- ud2 ) 	        Logical left-shift, same as d2*
 dshr            ( ud1 -- ud2 ) 	        Logical right-shift
 dabs            ( d -- ud ) 	        Absolute value
 dnegate         ( d1 -- d2 )            Negate
-d-              ( ud1|d1 ud2|d2 -- ud3|d3 )     Subtraction
 ```
 
 Floating Point Math
