@@ -761,6 +761,7 @@ typedef enum
 #define PLEX					1
 #define EPD						0
 #define FPU_IP					1
+#define BUTTON					1
 
 // Thread flag, is set after BLE has been started
 #define BLE_IS_READY			0x01

@@ -55,6 +55,7 @@
 #include "epd.h"
 #endif
 #include "tiny.h"
+#include "button.h"
 
 
 
@@ -186,6 +187,8 @@ void MainThread(void *argument)
 		BSP_clearSysLED(SYSLED_POWER_ON);
 		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
 	}
+
+	BUTTON_init();
 
 	Forth();
 

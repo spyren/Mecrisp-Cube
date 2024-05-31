@@ -49,6 +49,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "bsp.h"
+#include "button.h"
 
 
 // Private function prototypes
@@ -1331,6 +1332,23 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	switch (GPIO_Pin) {
+#if BUTTON == 1
+	case GPIO_PIN_0:  // column 0 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_1:  // column 1 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_2:  // column 2 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_3:  // column 3 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_5:
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+#endif
 	case GPIO_PIN_4:  // D10
 		osSemaphoreRelease(EXTI_4_SemaphoreID);
 		break;
