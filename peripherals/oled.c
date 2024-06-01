@@ -285,11 +285,11 @@ void OLED_init(void) {
 	OLED_setPos(34, 2);
 	OLED_puts("CUBE4TH\r\n");
 
-	OLED_setFont(OLED_FONT6X8);
-	OLED_setPos(0, 5);
-	OLED_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
-	OLED_puts("Forth for the STM32WB\r\n");
-	OLED_puts("(c)2024 peter@spyr.ch");
+//	OLED_setFont(OLED_FONT6X8);
+//	OLED_setPos(0, 5);
+//	OLED_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
+//	OLED_puts("Forth for the STM32WB\r\n");
+//	OLED_puts("(c)2024 peter@spyr.ch");
 
 
 }

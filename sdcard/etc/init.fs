@@ -39,8 +39,8 @@ include /fsr/disassembler-m3.fs
 \ include /fsr/float.fs
 include /fsr/words4.fs
 include /fsr/rtos.fs
-include /fsr/blocks.fs
-include /fsr/fat.fs
+[IFDEF] block include /fsr/blocks.fs [THEN]
+[IFDEF] f_chdrive include /fsr/fat.fs  [THEN]
 include /fsr/redirection.fs
 
 CR 

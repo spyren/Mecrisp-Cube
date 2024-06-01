@@ -178,6 +178,9 @@ void MainThread(void *argument)
 #if EPD == 1
 	EPD_init();
 #endif
+#if BUTTON == 1
+	BUTTON_init();
+#endif
 
 	// wait till BLE is ready
 	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
@@ -190,7 +193,6 @@ void MainThread(void *argument)
 		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
 	}
 
-	BUTTON_init();
 
 	Forth();
 

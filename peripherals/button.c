@@ -83,9 +83,10 @@
 
 #if BUTTON == 1
 
+
 // Buffer Length
 // **************
-#define BUTTON_BUFFER_LENGTH	(20)
+#define BUTTON_BUFFER_LENGTH	(100)
 
 #define BUTTON_CHAR_RECEIVED	0x01
 #define KEYS	6
@@ -98,11 +99,28 @@
 #define BUTTON_ROW_COUNT	7
 #define BUTTON_COUNT		(BUTTON_COLUMN_COUNT * BUTTON_ROW_COUNT)
 
+#define BUTTON_CLOCK		15
+#define BUTTON_CALC			20
+#define BUTTON_SHIFT		25
+#define BUTTON_ON_OFF		30
+
+#define BUTTON_FLOAT		16
+#define BUTTON_DEC			17
+#define BUTTON_HEX			18
+#define BUTTON_BIN			19
+
+#define BUTTON_FIX			21
+#define BUTTON_ENG			22
+#define BUTTON_SCI			23
+
+#define BUTTON_VIEW			33
+
+enum float_format {FIX, ENG, SCI} ;
 
 // Private function prototypes
 // ***************************
 static void BUTTON_Thread(void *argument);
-
+static void put_key_string(uint8_t c);
 
 // Global Variables
 // ****************
@@ -164,6 +182,183 @@ static const PortPin_t PortPinRow_a[BUTTON_ROW_COUNT] = {
 		{ ROW6_GPIO_Port,    ROW6_Pin } ,
 };
 
+// float keyboard
+static const char  *keyboard[BUTTON_COUNT] = {
+		" pi\n", 			// 0, r0, c0 Pi
+		" 1e0 swap f/\n", 	// 1, r0, c1 1/x
+		" dup f*\n", 		// 2, r0, c2 x^2
+		" flog\n", 			// 3, r0, c3 log
+		" fln\n", 			// 4, r0, c4 ln
+
+		"", 				// 5, r1, c0 STO
+		"", 				// 6, r1, c1 RCL
+		" fsin\n", 			// 7, r1, c2 SIN
+		" fcos\n", 			// r1, c3 COS
+		" ftan\n", 			// r1, c4 TAN
+
+		"\n", 				// r2, c0 ENTER
+		" swap\n", 			// r2, c1 SWAP x<>y
+		" fnegate\n", 		// r2, c2 NEG
+		"e", 				// r2, c3 EXP
+		"\b", 				// r2, c4 BS
+
+		" clock\n", 		// r3, c0 CLOCK
+		"7", 				// r3, c1 7
+		"8", 				// r3, c2 8
+		"9", 				// r3, c3 9
+		" f/\n", 			// r3, c4 /
+
+		" calc\n", 			// r4, c0 CALC
+		"4", 				// r4, c1 4
+		"5", 				// r4, c2 5
+		"6", 				// r4, c3 6
+		" f*\n", 			// r4, c4 *
+
+		"", 				// r5, c0 f
+		"1", 				// r5, c1 1
+		"2", 				// r5, c2 2
+		"3", 				// r5, c3 3
+		" f-\n", 			// r5, c4 -
+
+		"", 				// r6, c0 on/off
+		"0", 				// r6, c1 0
+		".", 				// r6, c2 .
+		" dup fm.\n", 		// r6, c3 FCT
+		" f+\n", 			// r6, c4 +
+};
+
+// float shift keyboard
+static const char* keyboard_f[BUTTON_COUNT] = {
+		"", 				// r0, c0
+		" f**\n", 			// r0, c1 y^x7
+		" fsqrt\n", 		// r0, c2 SQRT
+		" 10**>f\n", 		// r0, c3 10^x
+		" fexp\n", 			// r0, c4 e^x
+
+		" fceil\n", 		// r1, c0 CEIL
+		" ffloor\n", 		// r1, c1 FLOOR
+		" fasin\n", 		// r1, c2 ASIN
+		" facos\n", 		// r1, c3 ACOS
+		" fatan\n", 		// r1, c4 ATAN
+
+		" dup\n", 			// r2, c0 DUP
+		" rot\n", 			// r2, c1 ROT
+		" fabs\n", 			// r2, c2 ABS
+		" f>s\n", 			// r2, c3 F>S
+		" drop\n", 		    // r2, c4 CLx
+
+		" reset\n", 		// r3, c0 EXIT
+		"", 				// r3, c1 FLOAT
+		" decimal\n", 		// r3, c2 DEC
+		" hex\n", 			// r3, c3 HEX
+		" binary\n", 		// r3, c4 BIN
+
+		" term\n", 			// r4, c0 TERM
+		"", 				// r4, c1 FIX
+		"", 				// r4, c2 ENG
+		"", 				// r4, c3 SCI
+		" set-precision\n", // r4, c4 PREC
+
+		"", 				// r5, c0 f
+		"p", 				// r5, c1 p
+		"n", 				// r5, c2 n
+		"u", 				// r5, c3 u
+		"m", 				// r5, c4 m
+
+		"", 				// r6, c0 on/off ^C
+		"k", 				// r6, c1 k
+		"M", 				// r6, c2 M
+		"G", 				// r6, c3 G
+		"T", 				// r6, c4 T
+};
+
+static const char* keyboard_int[BUTTON_COUNT] = {
+		"A", 				// r0, c0 A
+		"B", 				// r0, c1 B
+		"C", 				// r0, c2 C
+		"D", 				// r0, c3 D
+		"E", 				// r0, c4 E
+
+		"", 				// r1, c0
+		"", 				// r1, c1
+		" shl\n", 			// r1, c2 SL
+		" shr\n", 			// r1, c3 SR
+		"F", 				// r1, c4 F
+
+		"\n", 				// r2, c0 ENTER
+		" swap\n", 			// r2, c1 SWAP x<>y
+		" negate\n", 		// r2, c2 NEG
+		"", 				// r2, c3 EXP
+		"\b", 				// r2, c4 BS
+
+		" clock\n", 		// r3, c0 CLOCK
+		"7", 				// r3, c1 7
+		"8", 				// r3, c2 8
+		"9", 				// r3, c3 9
+		" /\n", 			// r3, c4 /
+
+		" calc\n", 			// r4, c0 CALC
+		"4", 				// r4, c1 4
+		"5", 				// r4, c2 5
+		"6", 				// r4, c3 6
+		" *\n", 			// r4, c4 *
+
+		"", 				// r5, c0 f
+		"1", 				// r5, c1 1
+		"2", 				// r5, c2 2
+		"3", 				// r5, c3 3
+		" -\n", 			// r5, c4 -
+
+		"", 				// r6, c0 on/off
+		"0", 				// r6, c1 0
+		".", 				// r6, c2 .
+		" dup fm.\n", 		// r6, c3 FCT
+		" +\n", 			// r6, c4 +
+};
+
+static const char* keyboard_int_f[BUTTON_COUNT] = {
+		"A", 				// r0, c0 A
+		"B", 				// r0, c1 B
+		"C", 				// r0, c2 C
+		"D", 				// r0, c3 D
+		"E", 				// r0, c4 E
+
+		"", 				// r1, c0
+		"", 				// r1, c1
+		" shl\n", 			// r1, c2 SL
+		" shr\n", 			// r1, c3 SR
+		"F", 				// r1, c4 F
+
+		" dup\n", 			// r2, c0 DUP
+		" rot\n", 			// r2, c1 ROT
+		" abs\n", 			// r2, c2 ABS
+		" s>f\n", 			// r2, c3 S>F
+		" drop\n", 		    // r2, c4 CLx
+
+		" reset\n", 		// r3, c0 EXIT
+		" float\n", 		// r3, c1 FLOAT
+		" decimal\n", 		// r3, c2 DEC
+		" hex\n", 			// r3, c3 HEX
+		" binary\n", 		// r3, c4 BIN
+
+		"", 				// r4, c0
+		"", 				// r4, c1
+		"", 				// r4, c2
+		"", 				// r4, c3
+		"", 				// r4, c4
+
+		"", 				// r5, c0 f
+		" xor\n", 			// r5, c1 XOR
+		" and\n", 			// r5, c2 AND
+		" not\n", 			// r5, c3 NOT
+		" or\n", 			// r5, c4 OR
+
+		"", // r6, c0
+		"", // r6, c1
+		"", // r6, c2
+		"", // r6, c3
+		"", // r6, c4
+};
 
 uint8_t button_state[BUTTON_COUNT];
 
@@ -172,7 +367,8 @@ uint8_t button_state[BUTTON_COUNT];
 
 /**
  *  @brief
- *      Initializes the BUTTON.
+ *      Initializes the BUTTON.			strcpy(str, keyboard_f[c]);
+ *
  *  @return
  *      None
  */
@@ -222,6 +418,7 @@ void BUTTON_init(void) {
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
+
 
 /**
  *  @brief
@@ -344,7 +541,7 @@ static void BUTTON_Thread(void *argument) {
 				if (new_state != button_state[button]) {
 					// button state has been changed
 					if (new_state == BUTTON_PRESSED) {
-						BUTTON_putkey('A'+button);
+						put_key_string(button);
 					}
 					button_state[button] = new_state;
 				}
@@ -354,6 +551,96 @@ static void BUTTON_Thread(void *argument) {
 			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_SET);
 		}
 
+	}
+}
+
+
+/**
+ *  @brief
+ *      Writes calculator key string into the key queue.
+ *  @param[in]
+ *      c  char to write (0 to 34)
+ *  @return
+ *      Return EOF on error, 0 on success.
+ */
+static void put_key_string(uint8_t c) {
+	char str[20];
+	int i;
+
+	static int shift = FALSE;
+	static int mode_float = TRUE;
+	static enum float_format float_f = ENG;
+
+	switch (c) {
+	case BUTTON_SHIFT:
+		shift = !shift;
+		break;
+	case BUTTON_ON_OFF:
+		break;
+	case BUTTON_CLOCK:
+		break;
+	case BUTTON_CALC:
+		break;
+	}
+
+	if (shift) {
+		switch (c) {
+		case BUTTON_FLOAT:
+			mode_float = TRUE;
+			break;
+		case BUTTON_DEC:
+			// fall through
+		case BUTTON_HEX:
+			// fall through
+		case BUTTON_BIN:
+			mode_float = FALSE;
+			break;
+		case BUTTON_FIX:
+			float_f = FIX;
+			break;
+		case BUTTON_ENG:
+			float_f = ENG;
+			break;
+		case BUTTON_SCI:
+			float_f = SCI;
+			break;
+		}
+		if (mode_float) {
+			strcpy(str, keyboard_f[c]);
+		} else {
+			strcpy(str, keyboard_int_f[c]);
+		}
+		if (c != BUTTON_SHIFT) {
+			shift = FALSE;
+		}
+	} else {
+		if (mode_float) {
+			if (c == BUTTON_VIEW) {
+				switch (float_f) {
+				case FIX:
+					strcpy(str, " dup f.\n");
+					break;
+				case ENG:
+					strcpy(str, " dup fm.\n");
+					break;
+				case SCI:
+					strcpy(str, " dup fs.\n");
+					break;
+				}
+			} else {
+				strcpy(str, keyboard[c]);
+			}
+		} else {
+			// integer
+			if (c == BUTTON_VIEW) {
+				strcpy(str, " dup .\n");
+			} else {
+				strcpy(str, keyboard_int[c]);
+			}
+		}
+	}
+	for (i=0; i<strlen(str); i++) {
+		osMessageQueuePut(BUTTON_QueueId, &str[i], 0, osWaitForever);
 	}
 }
 

@@ -149,6 +149,12 @@ CR .( redirection.fs loading ... )
 
 [IFDEF] lcd-emit : >lcd  hook-emit @  hook-emit? @  ['] lcd-emit hook-emit !  ['] lcd-emit? hook-emit? ! ; [THEN]
 
+\ button (calculator)
+\ *******************
+
+[IFDEF] button : <button hook-key @  hook-key? @  ['] button hook-key !  ['] button? hook-key? ! ; [THEN]
+
+
 \ terminate redirection
 \ ********************
 
