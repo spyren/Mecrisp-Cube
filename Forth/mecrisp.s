@@ -77,6 +77,7 @@
 .equ	EPD,				0
 .equ	FPU,				1
 .equ	BUTTON,				1
+.equ	SD_DRIVE,			0
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions

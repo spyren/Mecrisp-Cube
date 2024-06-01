@@ -52,7 +52,9 @@ typedef enum {
 /* Private variables ---------------------------------------------------------*/
 FATFS USERFatFs;    /* File system object for USER logical drive */
 FIL USERFile;       /* File  object for USER */
+#if SD_DRIVE == 1
 char USERPathSD[4];   /* USER logical drive path */
+#endif
 char USERPathFD[4];   /* USER logical drive path */
 /* USER CODE BEGIN PV */
 FS_FileOperationsTypeDef Appli_state = APPLICATION_IDLE;
@@ -79,16 +81,19 @@ int32_t MX_FATFS_Init(void) {
 
 	// init flash drive (0:)
 	if (FATFS_LinkDriver(&USER_FD_Driver, USERPathFD) != 0) {
-    return APP_ERROR;
-  }
+		return APP_ERROR;
+	}
 
+#if SD_DRIVE == 1
 	// init SD drive (1:)
 	if (FATFS_LinkDriver(&USER_SD_Driver, USERPathSD) != 0) {
 		return APP_ERROR;
-	} else {
-    Appli_state = APPLICATION_INIT;
-    return APP_OK;
-  }
+	}
+#endif
+
+	Appli_state = APPLICATION_INIT;
+	return APP_OK;
+
   /* USER CODE END FATFS_Init */
 }
 

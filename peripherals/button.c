@@ -337,7 +337,7 @@ static void BUTTON_Thread(void *argument) {
 		for (row=0; row < BUTTON_ROW_COUNT; row++) {
 			// set a row
 			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
-
+			osDelay(1);
 			for (column=0; column < BUTTON_COLUMN_COUNT; column++) {
 				// read column
 				new_state = HAL_GPIO_ReadPin(PortPinColumn_a[column].port,  PortPinColumn_a[column].pin);
@@ -347,8 +347,8 @@ static void BUTTON_Thread(void *argument) {
 						BUTTON_putkey('A'+button);
 					}
 					button_state[button] = new_state;
-					button++;
 				}
+				button++;
 			}
 
 			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_SET);

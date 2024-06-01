@@ -113,7 +113,6 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 	RTSPI_init();
-	BLOCK_init();
 	VI_init();
 	TINY_init();
 
@@ -161,7 +160,10 @@ void MainThread(void *argument)
   /* USER CODE BEGIN MainThread */
 	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
 	ASSERT_init();
+#if SD_DRIVE == 1
+	BLOCK_init();
 	SD_init();
+#endif
 	FD_init();
 	FS_init();
 #if OLED == 1

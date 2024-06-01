@@ -51,10 +51,11 @@ drive:
 	bl		FD_getSize	// drive 0
 	b		2f
 1:
+.if SD_DRIVE == 1
 	cmp		r0, #1
 	bne		2f
 	bl		SD_getSize	// drive 1
-
+.endif
 2:
 	pop		{pc}
 
@@ -73,11 +74,13 @@ number_blocks:
 	bne		1f
 	bl		FD_getBlocks
 	b		3f
+.if SD_DRIVE == 1
 1:
 	cmp		r0, #1
 	bne		2f
 	bl		SD_getBlocks
 	b		3f
+.endif
 2:
 	ldr		r0, =0		// invalid drive -> no blocks
 3:
@@ -85,6 +88,7 @@ number_blocks:
 	pop		{pc}
 
 
+.if SD_DRIVE == 1
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "empty-buffers"
 		@ ( -- ) Marks all block buffers as empty
@@ -153,7 +157,7 @@ flush:
 	push	{lr}
 	bl		BLOCK_flushBuffers
 	pop		{pc}
-
+.endif
 
 
 @ -----------------------------------------------------------------------------
@@ -306,6 +310,7 @@ mkdir:
 	movs	r0, tos		// get tos
 	movs	r1, psp		// get psp
 	bl		FS_mkdir
+
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
 	pop		{pc}
@@ -475,7 +480,7 @@ umount:
 	movs	psp, r1		// update psp
 	pop		{pc}
 
-
+.if SD_DRIVE == 1
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "chdrv"
 		@ ( -- ) change the default drive
@@ -489,7 +494,7 @@ chdrv:
 	movs	tos, r0		// update tos
 	movs	psp, r1		// update psp
 	pop		{pc}
-
+.endif
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "mkfs"
@@ -1516,7 +1521,7 @@ fs_f_chdir:
 	movs	tos, r0
 	pop		{pc}
 
-
+.if SD_DRIVE == 1
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_chdrive"
 		@  ( adr -- u )  Changes the current drive.
@@ -1530,7 +1535,7 @@ fs_f_chdrive:
 	bl		f_chdrive
 	movs	tos, r0
 	pop		{pc}
-
+.endif
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "f_getcwd"

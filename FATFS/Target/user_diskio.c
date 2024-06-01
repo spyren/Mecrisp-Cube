@@ -51,6 +51,7 @@ static volatile DSTATUS Stat = STA_NOINIT;
 /* USER CODE END DECL */
 
 /* Private function prototypes -----------------------------------------------*/
+#if SD_DRIVE == 1
 DSTATUS USER_SD_initialize (BYTE pdrv);
 DSTATUS USER_SD_status (BYTE pdrv);
 DRESULT USER_SD_read (BYTE pdrv, BYTE *buff, DWORD sector, UINT count);
@@ -60,6 +61,7 @@ DRESULT USER_SD_read (BYTE pdrv, BYTE *buff, DWORD sector, UINT count);
 #if _USE_IOCTL == 1
   DRESULT USER_SD_ioctl (BYTE pdrv, BYTE cmd, void *buff);
 #endif /* _USE_IOCTL == 1 */
+#endif
 
 DSTATUS USER_FD_initialize (BYTE pdrv);
 DSTATUS USER_FD_status (BYTE pdrv);
@@ -71,6 +73,7 @@ DRESULT USER_FD_read (BYTE pdrv, BYTE *buff, DWORD sector, UINT count);
   DRESULT USER_FD_ioctl (BYTE pdrv, BYTE cmd, void *buff);
 #endif /* _USE_IOCTL == 1 */
 
+#if SD_DRIVE == 1
 Diskio_drvTypeDef  USER_SD_Driver =
 {
   USER_SD_initialize,
@@ -83,6 +86,7 @@ Diskio_drvTypeDef  USER_SD_Driver =
   USER_SD_ioctl,
 #endif /* _USE_IOCTL == 1 */
 };
+#endif
 
 Diskio_drvTypeDef  USER_FD_Driver =
 {
@@ -99,6 +103,7 @@ Diskio_drvTypeDef  USER_FD_Driver =
 
 /* Private functions ---------------------------------------------------------*/
 
+#if SD_DRIVE == 1
 /**
   * @brief  Initializes a SD Drive
   * @param  pdrv: Physical drive number (0..)
@@ -257,7 +262,7 @@ DRESULT USER_SD_ioctl (
   /* USER CODE END IOCTL */
 }
 #endif /* _USE_IOCTL == 1 */
-
+#endif // SD_DRIVE == 1
 
 /**
   * @brief  Initializes a Flash Drive

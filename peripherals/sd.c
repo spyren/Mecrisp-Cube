@@ -43,7 +43,7 @@
 #include "sd.h"
 #include "bsp.h"
 
-
+#if SD_DRIVE == 1
 // Defines
 // *******
 #define SD_DUMMY_BYTE			0xFF
@@ -282,7 +282,7 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 	{
 		pCardInfo->LogBlockSize = SD_BLOCK_SIZE;
 		pCardInfo->CardBlockSize = SD_BLOCK_SIZE;
-		pCardInfo->CardCapacity =
+		pCardInfo->CardCapacity =SD_DRIVE == 1
 				(uint64_t)(pCardInfo->Csd.version.v2.DeviceSize + 1) *
 				1024ULL * (uint64_t) pCardInfo->LogBlockSize;
 		pCardInfo->LogBlockNbr = (pCardInfo->CardCapacity) / (pCardInfo->LogBlockSize);
@@ -309,7 +309,7 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
   *     pData: Pointer to the buffer that will contain the data to transmit
   * @param
   *     ReadAddr: Address from where data is to be read. The address is counted
-  *                   in blocks of 512bytes
+  *                   in blocks of 512bytesSD_DRIVE == 1
   * @param
   *     NumOfBlocks: Number of SD blocks to read
   * @retval
@@ -344,7 +344,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	/* Data transfer */
 	while (NumOfBlocks--) {
 		/* Send CMD17 (SD_CMD_READ_SINGLE_BLOCK) to read one block */
-		/* Check if the SD acknowledged the read block command: R1 response (0x00: no errors) */
+		/* Check if the SD acknowledged the read block cSD_DRIVE == 1ommand: R1 response (0x00: no errors) */
 		response = SD_SendCmd(SD_CMD_READ_SINGLE_BLOCK, addr, 0xFF, SD_ANSWER_R1_EXPECTED);
 		if ( response.r1 != SD_R1_NO_ERROR) {
 			goto error;
@@ -402,7 +402,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks) {
 	uint32_t offset = 0;
 	uint32_t addr;
-	uint8_t retr = SD_ERROR;
+	uint8_t retr = SD_ERROR;SD_DRIVE == 1
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
 
@@ -424,7 +424,7 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	addr = (WriteAddr * ((flag_SDHC == 1) ? 1 : BlockSize));
 
 	/* Data transfer */
-	while (NumOfBlocks--) {
+	while (NumOfBlocks--) {SD_DRIVE == 1
 		/* Send CMD24 (SD_CMD_WRITE_SINGLE_BLOCK) to write blocks  and
        Check if the SD acknowledged the write block command: R1 response (0x00: no errors) */
 		response = SD_SendCmd(SD_CMD_WRITE_SINGLE_BLOCK, addr, 0xFF, SD_ANSWER_R1_EXPECTED);
@@ -481,7 +481,7 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
   *     StartAddr: Start address in Blocks (Size of a block is 512bytes)
   * @param
   *     EndAddr: End address in Blocks (Size of a block is 512bytes)
-  * @retval
+  * @retvalSD_DRIVE == 1
   *     SD status
   */
 uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
@@ -600,7 +600,7 @@ static uint8_t SD_GetCSDRegister(SD_CSD* Csd) {
 			/* Byte 4/5 */
 			Csd->CardComdClasses = (CSD_Tab[4] << 4) | ((CSD_Tab[5] & 0xF0) >> 4);
 			Csd->RdBlockLen = CSD_Tab[5] & 0x0F;
-
+			SD_DRIVE == 1
 			/* Byte 6 */
 			Csd->PartBlockRead   = (CSD_Tab[6] & 0x80) >> 7;
 			Csd->WrBlockMisalign = (CSD_Tab[6] & 0x40) >> 6;
@@ -1094,4 +1094,4 @@ static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	return tmp;
 }
 
-
+#endif // SD_DRIVE == 1
