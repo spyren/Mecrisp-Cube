@@ -80,6 +80,8 @@
 #include "button.h"
 #include "myassert.h"
 #include "bsp.h"
+#include "usb_cdc.h"
+#include "oled.h"
 
 #if BUTTON == 1
 
@@ -248,15 +250,15 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		" drop\n", 		    // r2, c4 CLx
 
 		" reset\n", 		// r3, c0 EXIT
-		"", 				// r3, c1 FLOAT
-		" decimal\n", 		// r3, c2 DEC
-		" hex\n", 			// r3, c3 HEX
-		" binary\n", 		// r3, c4 BIN
+		" float\n",			// r3, c1 FLOAT
+		" decimal int\n", 	// r3, c2 DEC
+		" hex int\n", 		// r3, c3 HEX
+		" binary int\n", 	// r3, c4 BIN
 
 		" term\n", 			// r4, c0 TERM
-		"", 				// r4, c1 FIX
-		"", 				// r4, c2 ENG
-		"", 				// r4, c3 SCI
+		" fix\n",			// r4, c1 FIX
+		" eng\n", 			// r4, c2 ENG
+		" sci\n",			// r4, c3 SCI
 		" set-precision\n", // r4, c4 PREC
 
 		"", 				// r5, c0 f
@@ -337,9 +339,9 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 
 		" reset\n", 		// r3, c0 EXIT
 		" float\n", 		// r3, c1 FLOAT
-		" decimal\n", 		// r3, c2 DEC
-		" hex\n", 			// r3, c3 HEX
-		" binary\n", 		// r3, c4 BIN
+		" decimal int\n", 	// r3, c2 DEC
+		" hex int\n", 		// r3, c3 HEX
+		" binary int\n", 	// r3, c4 BIN
 
 		"", 				// r4, c0
 		"", 				// r4, c1
@@ -639,8 +641,22 @@ static void put_key_string(uint8_t c) {
 			}
 		}
 	}
-	for (i=0; i<strlen(str); i++) {
-		osMessageQueuePut(BUTTON_QueueId, &str[i], 0, osWaitForever);
+	if (strlen(str) == 1) {
+		// a single letter
+		osMessageQueuePut(CDC_RxQueueId, &str[0], 0, osWaitForever);
+		if (str[0] == 8) {
+			// backspace
+			OLED_putc(8);
+			OLED_putc(' ');
+			OLED_putc(8);
+		} else {
+			OLED_putc(str[0]);
+		}
+	} else {
+		for (i=0; i<strlen(str); i++) {
+			//		osMessageQueuePut(BUTTON_QueueId, &str[i], 0, osWaitForever);
+			osMessageQueuePut(CDC_RxQueueId, &str[i], 0, osWaitForever);
+		}
 	}
 }
 
