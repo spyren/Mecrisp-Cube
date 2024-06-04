@@ -42,6 +42,7 @@ include /fsr/rtos.fs
 [IFDEF] block include /fsr/blocks.fs [THEN]
 [IFDEF] f_chdrive include /fsr/fat.fs  [THEN]
 include /fsr/redirection.fs
+[IFDEF] button include /fsr/calculator.fs [THEN]
 
 CR 
 compiletoram? [IF] .( RAM Dictionary: ) [ELSE] .( FLASH Dictionary: ) [THEN]

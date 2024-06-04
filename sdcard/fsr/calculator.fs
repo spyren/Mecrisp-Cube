@@ -6,6 +6,22 @@ false variable integer	\ default is float number
 0 variable register 9 cells allot \ 10 registers
 register 10 cells 0 fill
 
+: term ( -- ) \ activate terminal
+  ['] cdc-emit hook-emit !
+  ['] cdc-emit? hook-emit? ! 
+  .greet 
+;
+
+: calc ( -- ) \ activate calculator
+  ['] null-emit hook-emit !
+  ['] null-emit? hook-emit? !
+;
+
+: clock ( -- ) \ activate clock
+  ['] null-emit hook-emit !
+  ['] null-emit? hook-emit? !
+;
+
 : float ( -- ) 
   false integer !
 ;
@@ -34,6 +50,8 @@ register 10 cells 0 fill
   cells register + @
 ;
 
+: r/s ( -- ) \ not used yet
+;
 
 : .element ( n -- )
   integer @ if

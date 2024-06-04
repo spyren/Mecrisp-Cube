@@ -186,15 +186,15 @@ static const PortPin_t PortPinRow_a[BUTTON_ROW_COUNT] = {
 
 // float keyboard
 static const char  *keyboard[BUTTON_COUNT] = {
-		" pi\n", 			// 0, r0, c0 Pi
-		" 1e0 swap f/\n", 	// 1, r0, c1 1/x
-		" dup f*\n", 		// 2, r0, c2 x^2
-		" flog\n", 			// 3, r0, c3 log
-		" fln\n", 			// 4, r0, c4 ln
+		" pi\n", 			// r0, c0 Pi
+		" 1e0 swap f/\n", 	// r0, c1 1/x
+		" dup f*\n", 		// r0, c2 x^2
+		" flog\n", 			// r0, c3 log
+		" fln\n", 			// r0, c4 ln
 
-		"", 				// 5, r1, c0 STO
-		"", 				// 6, r1, c1 RCL
-		" fsin\n", 			// 7, r1, c2 SIN
+		" STO\n", 			// r1, c0 STO
+		" RCL\n", 			// r1, c1 RCL
+		" fsin\n", 			// r1, c2 SIN
 		" fcos\n", 			// r1, c3 COS
 		" ftan\n", 			// r1, c4 TAN
 
@@ -225,14 +225,14 @@ static const char  *keyboard[BUTTON_COUNT] = {
 		"", 				// r6, c0 on/off
 		"0", 				// r6, c1 0
 		".", 				// r6, c2 .
-		" dup fm.\n", 		// r6, c3 FCT
+		" fct\n", 			// r6, c3 FCT
 		" f+\n", 			// r6, c4 +
 };
 
 // float shift keyboard
 static const char* keyboard_f[BUTTON_COUNT] = {
-		"", 				// r0, c0
-		" f**\n", 			// r0, c1 y^x7
+		" r/s\n", 			// r0, c0 R/S
+		" f**\n", 			// r0, c1 y^x
 		" fsqrt\n", 		// r0, c2 SQRT
 		" 10**>f\n", 		// r0, c3 10^x
 		" fexp\n", 			// r0, c4 e^x
@@ -267,7 +267,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		"u", 				// r5, c3 u
 		"m", 				// r5, c4 m
 
-		"", 				// r6, c0 on/off ^C
+		"", 				// r6, c0 on/off
 		"k", 				// r6, c1 k
 		"M", 				// r6, c2 M
 		"G", 				// r6, c3 G
@@ -649,6 +649,8 @@ static void put_key_string(uint8_t c) {
 			OLED_putc(8);
 			OLED_putc(' ');
 			OLED_putc(8);
+		} else if (str[0] == '\n' || str[0] == '\r') {
+			; // eat CR LF
 		} else {
 			OLED_putc(str[0]);
 		}

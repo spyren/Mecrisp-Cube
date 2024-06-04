@@ -591,6 +591,29 @@ button_q:
 	movs	tos, r0
 	pop		{pc}
 
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "null-emit"
+null_emit:
+        @ ( c -- ) Emit one character to null device
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	drop
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "null-emit?"
+null_qemit:
+        @ ( -- ? ) Always ready to send a character ?
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		UART_TxReady
+	movs	tos, #-1
+	pop		{pc}
+
+
 .endif // BUTTON == 1
 
 
