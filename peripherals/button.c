@@ -8,16 +8,16 @@
  *          C0       C1       C2       C3       C4
  *      +--------+--------+--------+--------+--------+
  *      | Pi     | 1/x    | x^2    | LOG    | LN     |
- *      |        | y^x    | SQRT   | 10^x   | e^x    |  R0
+ *      | R/S    | y^x    | SQRT   | 10^x   | e^x    |  R0
  *      | A      | B      | C      | D      | E      |
  *      | 0x20   | 0x21 ! | 0x22 " | 0x23 # | 0x24 $ |
  *      +--------+--------+--------+--------+--------+
- *      | STOx   | RCLx   | SIN    | COS    | TAN    |
+ *      | STO    | RCL    | SIN    | COS    | TAN    |
  *      | CEIL   | FLOOR  | ASIN   | ACOS   | ATAN   |  R1
  *      |        |        | SL     | SR     | F      |
  *      | 0x25 % | 0x26 & | 0x27 ' | 0x28 ( | 0x29 ) |
  *      +--------+--------+--------+--------+--------+
- *      | ENTER  | SWAP   | NEG    | EXP    | BS     |
+ *      | ENTER  | SWAP   | -      | EXP    | BS     |
  *      | DROP   | ROT    | ABS    | F>S    | CLx    |  R2
  *      |        |        |        | S>F    |        |
  *      | 0x2A * | 0x2B + | 0x2C , | 0x2D _ | 0x2E . |
@@ -39,7 +39,7 @@
  *      +--------+--------+--------+--------+--------+
  *      | ON/OFF | 0      | .      |        | +      |
  *      |        | k      | M      | G      | T      |  R6
- *      |        | 1'S    | 2'S    | UNSGN  |        |
+ *      |        | SGN    | UNSGN  |        |        |
  *      | 0x3E > | 0x3F ? | 0x40 @ | 0x41 A | 0x42 B |
  *      +--------+--------+--------+--------+--------+
  *
@@ -200,7 +200,7 @@ static const char  *keyboard[BUTTON_COUNT] = {
 
 		"\n", 				// r2, c0 ENTER
 		" swap\n", 			// r2, c1 SWAP x<>y
-		" fnegate\n", 		// r2, c2 NEG
+		"-", 		        // r2, c2 -
 		"e", 				// r2, c3 EXP
 		"\b", 				// r2, c4 BS
 
@@ -222,7 +222,7 @@ static const char  *keyboard[BUTTON_COUNT] = {
 		"3", 				// r5, c3 3
 		" f-\n", 			// r5, c4 -
 
-		"", 				// r6, c0 on/off
+		" on/off\n", 		// r6, c0 on/off
 		"0", 				// r6, c1 0
 		".", 				// r6, c2 .
 		" fct\n", 			// r6, c3 FCT
@@ -234,7 +234,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		" r/s\n", 			// r0, c0 R/S
 		" f**\n", 			// r0, c1 y^x
 		" fsqrt\n", 		// r0, c2 SQRT
-		" 10**>f\n", 		// r0, c3 10^x
+		" 10e f**\n", 		// r0, c3 10^x
 		" fexp\n", 			// r0, c4 e^x
 
 		" fceil\n", 		// r1, c0 CEIL
@@ -267,7 +267,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		"u", 				// r5, c3 u
 		"m", 				// r5, c4 m
 
-		"", 				// r6, c0 on/off
+		" on/off\n",		// r6, c0 on/off
 		"k", 				// r6, c1 k
 		"M", 				// r6, c2 M
 		"G", 				// r6, c3 G
@@ -289,7 +289,7 @@ static const char* keyboard_int[BUTTON_COUNT] = {
 
 		"\n", 				// r2, c0 ENTER
 		" swap\n", 			// r2, c1 SWAP x<>y
-		" negate\n", 		// r2, c2 NEG
+		"-", 				// r2, c2 NEG
 		"", 				// r2, c3 EXP
 		"\b", 				// r2, c4 BS
 
@@ -311,7 +311,7 @@ static const char* keyboard_int[BUTTON_COUNT] = {
 		"3", 				// r5, c3 3
 		" -\n", 			// r5, c4 -
 
-		"", 				// r6, c0 on/off
+		" on/off\n",		// r6, c0 on/off
 		"0", 				// r6, c1 0
 		".", 				// r6, c2 .
 		" dup fm.\n", 		// r6, c3 FCT
@@ -327,8 +327,8 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 
 		"", 				// r1, c0
 		"", 				// r1, c1
-		" shl\n", 			// r1, c2 SL
-		" shr\n", 			// r1, c3 SR
+		" shln\n", 			// r1, c2 SL
+		" shrn\n", 			// r1, c3 SR
 		"F", 				// r1, c4 F
 
 		" dup\n", 			// r2, c0 DUP
@@ -343,11 +343,11 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 		" hex int\n", 		// r3, c3 HEX
 		" binary int\n", 	// r3, c4 BIN
 
-		"", 				// r4, c0
-		"", 				// r4, c1
-		"", 				// r4, c2
-		"", 				// r4, c3
-		"", 				// r4, c4
+		" term\n", 			// r4, c0
+		" 64bit", 			// r4, c1
+		" 32bit", 			// r4, c2
+		" 16bit", 			// r4, c3
+		" 8bit", 			// r4, c4
 
 		"", 				// r5, c0 f
 		" xor\n", 			// r5, c1 XOR
@@ -355,11 +355,11 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 		" not\n", 			// r5, c3 NOT
 		" or\n", 			// r5, c4 OR
 
-		"", // r6, c0
-		"", // r6, c1
-		"", // r6, c2
-		"", // r6, c3
-		"", // r6, c4
+		" on/off\n", 		// r6, c0 on/off
+		" SGN\n", 			// r6, c1 SGN
+		" UNSGN\n", 		// r6, c2 UNSGN
+		"", 				// r6, c3
+		"", 				// r6, c4
 };
 
 uint8_t button_state[BUTTON_COUNT];

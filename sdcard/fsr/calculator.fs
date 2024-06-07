@@ -1,33 +1,74 @@
-\ 4th calculator
+\  @brief
+\      4TH Calculator
+\
+\      Interpret the words from the calculator keyboard (buttons).
+\      For details see peripherals/button.c.
+\  @file
+\      calculator.fs
+\  @author
+\      Peter Schmid, peter@spyr.ch
+\  @date
+\      2024-05-06
+\  @remark
+\      Language: Mecrisp-Stellaris Forth
+\  @copyright
+\      Peter Schmid, Switzerland
+\
+\      This project Mecrsip-Cube is free software: you can redistribute it
+\      and/or modify it under the terms of the GNU General Public License
+\      as published by the Free Software Foundation, either version 3 of
+\      the License, or (at your option) any later version.
+\
+\      Mecrsip-Cube is distributed in the hope that it will be useful, but
+\      WITHOUT ANY WARRANTY; without even the implied warranty of
+\      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+\      General Public License for more details.
+\
+\      You should have received a copy of the GNU General Public License
+\      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
+
 CR .( calculator.fs loading ... )
 
-false variable integer	\ default is float number
-0 variable notation 	\ 0 fix, 1 eng, 2 sci
+false variable integer? \ default is float number
+true  variable sign?    \ default with sign 
+0 variable notation     \ 0 fix, 1 eng, 2 sci
+' null-emit variable std-emit    \ standard emit
+' null-emit? variable std-emit?   \ standard emit
+
 0 variable register 9 cells allot \ 10 registers
 register 10 cells 0 fill
 
-: term ( -- ) \ activate terminal
-  ['] cdc-emit hook-emit !
-  ['] cdc-emit? hook-emit? ! 
+: calc ( -- ) \ activate calculator, no echo on terminal
+  ['] null-emit dup   hook-emit !   std-emit !
+  ['] null-emit? dup  hook-emit? !  std-emit? !
+  
+;
+
+: term ( -- ) \ activate terminal, but calculator ist still working
+  ['] cdc-emit dup   hook-emit !   std-emit !
+  ['] cdc-emit? dup  hook-emit? !  std-emit? !
   .greet 
 ;
 
-: calc ( -- ) \ activate calculator
-  ['] null-emit hook-emit !
-  ['] null-emit? hook-emit? !
-;
-
 : clock ( -- ) \ activate clock
-  ['] null-emit hook-emit !
-  ['] null-emit? hook-emit? !
+  ['] null-emit dup   hook-emit !   std-emit !
+  ['] null-emit? dup  hook-emit? !  std-emit? !
 ;
 
-: float ( -- ) 
-  false integer !
+: float ( -- ) \ use float numbers
+  false integer? !
 ;
 
-: int ( -- )
-  true integer !
+: int ( -- ) \ use integer numbers
+  true integer? !
+;
+
+: sgn ( -- ) \ print with sign
+  true sign? !
+;
+
+: unsgn ( -- ) \ print without sign
+  false sign? !
 ;
 
 : fix ( -- )
@@ -43,19 +84,46 @@ register 10 cells 0 fill
 ;
 
 : sto ( n u -- ) \ store n into register u (0 .. 9)
-  cells register + !
+  2dup dup 0 >= swap 9 <= and if 
+    swap cells register + ! 
+  else
+    2drop
+  then
 ;
 
 : rcl ( u -- n ) \ recall n from register u (0 .. 9)
-  cells register + @
+  dup dup 0 >= swap 9 <= and if 
+    cells register + @
+  else
+    drop
+  then
 ;
 
 : r/s ( -- ) \ not used yet
 ;
 
+: on/off ( -- ) \ not used yet
+;
+
+: 8bit ( -- ) \ not used yet
+;
+
+: 16bit ( -- ) \ not used yet
+;
+
+: 32bit ( -- ) \ not used yet
+;
+
+: 64bit ( -- ) \ not used yet
+;
+
 : .element ( n -- )
-  integer @ if
-    .
+  integer? @ if
+    sign? @ if
+      .
+    else
+      u.
+    then    
   else
     notation @ case
       0 of f. endof
@@ -82,17 +150,23 @@ register 10 cells 0 fill
     loop  
   then
   102 0 oledpos!
-  integer @ if 
+  integer? @ if 
     base @ case
       10 of ." DEC" endof
       16 of ." HEX" endof
       2  of ." BIN" endof
-    endcase  
+    endcase
+    94 1 oledpos!
+    sign? @ if
+      ." SIGN"
+    else
+      ." USGN"
+    then  
   else
     ." FLT"
   then
   0 3 oledpos!
-  ['] cdc-emit hook-emit ! \ redirect terminal to cdc
+  std-emit @ hook-emit ! \ redirect terminal to cdc
 ;
 
 \ extended prompt update the OLED
@@ -105,6 +179,7 @@ register 10 cells 0 fill
     .stack
   again
 ;
+
      
 : init init ['] prompt hook-quit ! ; \ make new prompt 
      
