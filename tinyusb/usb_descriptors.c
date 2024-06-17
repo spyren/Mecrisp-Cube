@@ -228,8 +228,8 @@ char const *string_desc_arr[] =
   "spyr.ch",                     // 1: Manufacturer
   "4TH Calculator",              // 2: Product
   NULL,                          // 3: Serials will use unique ID if possible
-  "4TH CDC",                 // 4: CDC Interface
-  "4TH MSC",                 // 5: MSC Interface
+  "4TH CDC",                     // 4: CDC Interface
+  "4TH MSC",                     // 5: MSC Interface
 };
 
 static uint16_t _desc_str[32 + 1];

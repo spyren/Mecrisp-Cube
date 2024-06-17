@@ -31,7 +31,7 @@ CR .( calculator.fs loading ... )
 
 false variable integer? \ default is float number
 true  variable sign?    \ default with sign 
-0 variable notation     \ 0 fix, 1 eng, 2 sci
+1 variable notation     \ 0 fix, 1 eng, 2 sci
 ' null-emit variable std-emit    \ standard emit
 ' null-emit? variable std-emit?   \ standard emit
 
@@ -83,16 +83,16 @@ register 10 cells 0 fill
   2 notation !
 ;
 
-: sto ( n u -- ) \ store n into register u (0 .. 9)
-  2dup dup 0 >= swap 9 <= and if 
-    swap cells register + ! 
+: sto ( n u -- n ) \ store n into register u (0 .. 9)
+  dup dup 0 >=  swap 9 <=  and if 
+    cells register + 2dup ! drop
   else
-    2drop
+    drop
   then
 ;
 
 : rcl ( u -- n ) \ recall n from register u (0 .. 9)
-  dup dup 0 >= swap 9 <= and if 
+  dup dup 0 >=  swap 9 <=  and if 
     cells register + @
   else
     drop
@@ -102,19 +102,11 @@ register 10 cells 0 fill
 : r/s ( -- ) \ not used yet
 ;
 
-: on/off ( -- ) \ not used yet
+: off ( -- ) \ not used yet
 ;
 
-: 8bit ( -- ) \ not used yet
-;
-
-: 16bit ( -- ) \ not used yet
-;
-
-: 32bit ( -- ) \ not used yet
-;
-
-: 64bit ( -- ) \ not used yet
+: octal ( -- )
+  8 base !
 ;
 
 : .element ( n -- )
@@ -152,9 +144,10 @@ register 10 cells 0 fill
   102 0 oledpos!
   integer? @ if 
     base @ case
-      10 of ." DEC" endof
-      16 of ." HEX" endof
-      2  of ." BIN" endof
+     16 of ." HEX" endof
+     10 of ." DEC" endof
+      8 of ." OCT" endof
+      2 of ." BIN" endof
     endcase
     94 1 oledpos!
     sign? @ if
@@ -169,13 +162,13 @@ register 10 cells 0 fill
   std-emit @ hook-emit ! \ redirect terminal to cdc
 ;
 
-\ extended prompt update the OLED
+\ extended prompt to update the OLED
 : init ;
 
 : prompt ( -- ) 
   begin 
     query interpret 
-    ."  ok." cr 
+    ." ok." cr 
     .stack
   again
 ;

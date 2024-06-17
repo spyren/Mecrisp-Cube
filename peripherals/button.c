@@ -10,37 +10,37 @@
  *      | Pi     | 1/x    | x^2    | LOG    | LN     |
  *      | R/S    | y^x    | SQRT   | 10^x   | e^x    |  R0
  *      | A      | B      | C      | D      | E      |
- *      | 0x20   | 0x21 ! | 0x22 " | 0x23 # | 0x24 $ |
+ *      | R/S    | SL     | SR     | RL     | RR     |
  *      +--------+--------+--------+--------+--------+
  *      | STO    | RCL    | SIN    | COS    | TAN    |
  *      | CEIL   | FLOOR  | ASIN   | ACOS   | ATAN   |  R1
- *      |        |        | SL     | SR     | F      |
- *      | 0x25 % | 0x26 & | 0x27 ' | 0x28 ( | 0x29 ) |
+ *      | STO    | RCL    |        |        | F      |
+ *      |        | SLn    | SRn    |        |        |
  *      +--------+--------+--------+--------+--------+
- *      | ENTER  | SWAP   | -      | EXP    | BS     |
- *      | DROP   | ROT    | ABS    | F>S    | CLx    |  R2
- *      |        |        |        | S>F    |        |
- *      | 0x2A * | 0x2B + | 0x2C , | 0x2D _ | 0x2E . |
+ *      | ENTER  | SWAP   | -      | E      | BS     |
+ *      | DUP    | ROT    | ABS    | F>S    | CLx    |  R2
+ *      | ENTER  | SWAP   | -      | E      | BS     |
+ *      | DUP    | ROT    | ABS    | S>F    | CLx    |
  *      +--------+--------+--------+--------+--------+
  *      | CLOCK  | 7      | 8      | 9      | /      |
- *      |        | FLOAT  | DEC    | HEX    | BIN    |  R3
- *      |        |        |        |        |        |
- *      | 0x2F / | 0x30 0 | 0x31 1 | 0x32 2 | 0x33 3 |
+ *      | FLOAT  | HEX    | DEC    | OCT    | BIN    |  R3
+ *      | CLOCK  | 7      | 8      | 9      | /      |
+ *      | FLOAT  | HEX    | DEC    | OCT    | BIN    |
  *      +--------+--------+--------+--------+--------+
  *      | CALC   | 4      | 5      | 6      | *      |
- *      |        | FIX    | ENG    | SCI    | PREC   |  R4
- *      |        |        |        |        |        |
- *      | 0x34 4 | 0x35 5 | 0x36 6 | 0x37 7 | 0x38 8 |
+ *      | TERM   | FIX    | ENG    | SCI    | PREC   |  R4
+ *      | CALC   | 4      | 5      | 6      | *      |
+ *      | TERM   | SIGN   | UNSGN  |        |        |
  *      +--------+--------+--------+--------+--------+
  *      | f      | 1      | 2      | 3      | -      |
- *      |        | p      | n      | u      | m      |  R5
- *      |        | XOR    | AND    | NOT    | OR     |
- *      | 0x39 9 | 0x3A : | 0x3B ; | 0x3C < | 0x3D = |
+ *      | f      | p      | n      | u      | m      |  R5
+ *      | f      | 1      | 2      | 3      | -      |
+ *      | f      | XOR    | AND    | NOT    | OR     |
  *      +--------+--------+--------+--------+--------+
- *      | ON/OFF | 0      | .      |        | +      |
- *      |        | k      | M      | G      | T      |  R6
- *      |        | SGN    | UNSGN  |        |        |
- *      | 0x3E > | 0x3F ? | 0x40 @ | 0x41 A | 0x42 B |
+ *      | C ON   | 0      | .      | FFCT   | +      |
+ *      | OFF    | k      | M      | G      | T      |  R6
+ *      | C ON   | 0      | .      | FCT    | +      |
+ *      | OFF    | /      | MOD    | /MOD   |        |
  *      +--------+--------+--------+--------+--------+
  *
  *  @file
@@ -106,9 +106,10 @@
 #define BUTTON_SHIFT		25
 #define BUTTON_ON_OFF		30
 
-#define BUTTON_FLOAT		16
+#define BUTTON_FLOAT		15
+#define BUTTON_HEX			16
 #define BUTTON_DEC			17
-#define BUTTON_HEX			18
+#define BUTTON_OCT			18
 #define BUTTON_BIN			19
 
 #define BUTTON_FIX			21
@@ -186,14 +187,14 @@ static const PortPin_t PortPinRow_a[BUTTON_ROW_COUNT] = {
 
 // float keyboard
 static const char  *keyboard[BUTTON_COUNT] = {
-		" pi\n", 			// r0, c0 Pi
+		" pi\n", 			// r0, c0 PiBUTTON_FLOAT
 		" 1e0 swap f/\n", 	// r0, c1 1/x
 		" dup f*\n", 		// r0, c2 x^2
 		" flog\n", 			// r0, c3 log
 		" fln\n", 			// r0, c4 ln
 
-		" STO\n", 			// r1, c0 STO
-		" RCL\n", 			// r1, c1 RCL
+		" sto\n", 			// r1, c0 STO
+		" rcl\n", 			// r1, c1 RCL
 		" fsin\n", 			// r1, c2 SIN
 		" fcos\n", 			// r1, c3 COS
 		" ftan\n", 			// r1, c4 TAN
@@ -201,7 +202,7 @@ static const char  *keyboard[BUTTON_COUNT] = {
 		"\n", 				// r2, c0 ENTER
 		" swap\n", 			// r2, c1 SWAP x<>y
 		"-", 		        // r2, c2 -
-		"e", 				// r2, c3 EXP
+		"e", 				// r2, c3 E
 		"\b", 				// r2, c4 BS
 
 		" clock\n", 		// r3, c0 CLOCK
@@ -222,10 +223,10 @@ static const char  *keyboard[BUTTON_COUNT] = {
 		"3", 				// r5, c3 3
 		" f-\n", 			// r5, c4 -
 
-		" on/off\n", 		// r6, c0 on/off
+		" quit\n\n", 		// r6, c0 C
 		"0", 				// r6, c1 0
 		".", 				// r6, c2 .
-		" fct\n", 			// r6, c3 FCT
+		" ffct\n", 			// r6, c3 FFCT
 		" f+\n", 			// r6, c4 +
 };
 
@@ -249,10 +250,10 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		" f>s\n", 			// r2, c3 F>S
 		" drop\n", 		    // r2, c4 CLx
 
-		" reset\n", 		// r3, c0 EXIT
-		" float\n",			// r3, c1 FLOAT
+		" float\n", 		// r3, c0 FLOAT
+		" hex int\n",		// r3, c1 HEX
 		" decimal int\n", 	// r3, c2 DEC
-		" hex int\n", 		// r3, c3 HEX
+		" octal int\n", 	// r3, c3 OCT
 		" binary int\n", 	// r3, c4 BIN
 
 		" term\n", 			// r4, c0 TERM
@@ -267,7 +268,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		"u", 				// r5, c3 u
 		"m", 				// r5, c4 m
 
-		" on/off\n",		// r6, c0 on/off
+		" off\n",		    // r6, c0 off
 		"k", 				// r6, c1 k
 		"M", 				// r6, c2 M
 		"G", 				// r6, c3 G
@@ -281,16 +282,16 @@ static const char* keyboard_int[BUTTON_COUNT] = {
 		"D", 				// r0, c3 D
 		"E", 				// r0, c4 E
 
-		"", 				// r1, c0
-		"", 				// r1, c1
-		" shl\n", 			// r1, c2 SL
-		" shr\n", 			// r1, c3 SR
+		" sto\n", 			// r1, c0 STO
+		" rcl\n", 			// r1, c1 RCL
+		"", 				// r1, c2
+		"", 				// r1, c3
 		"F", 				// r1, c4 F
 
 		"\n", 				// r2, c0 ENTER
 		" swap\n", 			// r2, c1 SWAP x<>y
-		"-", 				// r2, c2 NEG
-		"", 				// r2, c3 EXP
+		"-", 				// r2, c2 -
+		"e", 				// r2, c3 E
 		"\b", 				// r2, c4 BS
 
 		" clock\n", 		// r3, c0 CLOCK
@@ -311,25 +312,25 @@ static const char* keyboard_int[BUTTON_COUNT] = {
 		"3", 				// r5, c3 3
 		" -\n", 			// r5, c4 -
 
-		" on/off\n",		// r6, c0 on/off
+		"quit\n\n",			// r6, c0 C
 		"0", 				// r6, c1 0
 		".", 				// r6, c2 .
-		" dup fm.\n", 		// r6, c3 FCT
+		" fct\n", 			// r6, c3 FCT
 		" +\n", 			// r6, c4 +
 };
 
 static const char* keyboard_int_f[BUTTON_COUNT] = {
-		"A", 				// r0, c0 A
-		"B", 				// r0, c1 B
-		"C", 				// r0, c2 C
-		"D", 				// r0, c3 D
-		"E", 				// r0, c4 E
+		" r/s\n",			// r0, c0 R/S
+		" shl\n", 			// r0, c1 SL
+		" shr\n", 			// r0, c2 SR
+		" rol\n", 			// r0, c3 RL
+		" ror\n", 			// r0, c4 RR
 
 		"", 				// r1, c0
-		"", 				// r1, c1
-		" shln\n", 			// r1, c2 SL
-		" shrn\n", 			// r1, c3 SR
-		"F", 				// r1, c4 F
+		" lshift\n", 		// r1, c1 SLn
+		" rshift\n", 		// r1, c2 SRn
+		"", 				// r1, c3
+		"", 				// r1, c4
 
 		" dup\n", 			// r2, c0 DUP
 		" rot\n", 			// r2, c1 ROT
@@ -337,17 +338,17 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 		" s>f\n", 			// r2, c3 S>F
 		" drop\n", 		    // r2, c4 CLx
 
-		" reset\n", 		// r3, c0 EXIT
-		" float\n", 		// r3, c1 FLOAT
+		" float\n", 		// r3, c0 FLOAT
+		" hex int\n",		// r3, c1 HEX
 		" decimal int\n", 	// r3, c2 DEC
-		" hex int\n", 		// r3, c3 HEX
+		" octal int\n", 	// r3, c3 OCT
 		" binary int\n", 	// r3, c4 BIN
 
-		" term\n", 			// r4, c0
-		" 64bit", 			// r4, c1
-		" 32bit", 			// r4, c2
-		" 16bit", 			// r4, c3
-		" 8bit", 			// r4, c4
+		" term\n", 			// r4, c0 TERM
+		" sgn\n", 			// r4, c1 SIGN
+		" unsgn\n", 		// r4, c2 UNSGN
+		"", 				// r4, c3
+		"", 				// r4, c4
 
 		"", 				// r5, c0 f
 		" xor\n", 			// r5, c1 XOR
@@ -355,10 +356,10 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 		" not\n", 			// r5, c3 NOT
 		" or\n", 			// r5, c4 OR
 
-		" on/off\n", 		// r6, c0 on/off
-		" SGN\n", 			// r6, c1 SGN
-		" UNSGN\n", 		// r6, c2 UNSGN
-		"", 				// r6, c3
+		" off\n", 			// r6, c0 OFF
+		" */\n", 			// r6, c1 */
+		" mod\n", 			// r6, c2 MOD
+		" /mod\n", 			// r6, c3 /MOD
 		"", 				// r6, c4
 };
 
@@ -505,7 +506,7 @@ int BUTTON_putkey(const char c) {
   * @param
   * 	argument: Not used
   * @retval
-  * 	None
+  * 	NoneBUTTON_FLOAT
   */
 static void BUTTON_Thread(void *argument) {
 	int button;
@@ -590,9 +591,11 @@ static void put_key_string(uint8_t c) {
 		case BUTTON_FLOAT:
 			mode_float = TRUE;
 			break;
+		case BUTTON_HEX:
+			// fall through
 		case BUTTON_DEC:
 			// fall through
-		case BUTTON_HEX:
+		case BUTTON_OCT:
 			// fall through
 		case BUTTON_BIN:
 			mode_float = FALSE;
@@ -616,29 +619,12 @@ static void put_key_string(uint8_t c) {
 			shift = FALSE;
 		}
 	} else {
+		// not shifted
 		if (mode_float) {
-			if (c == BUTTON_VIEW) {
-				switch (float_f) {
-				case FIX:
-					strcpy(str, " dup f.\n");
-					break;
-				case ENG:
-					strcpy(str, " dup fm.\n");
-					break;
-				case SCI:
-					strcpy(str, " dup fs.\n");
-					break;
-				}
-			} else {
-				strcpy(str, keyboard[c]);
-			}
+			strcpy(str, keyboard[c]);
 		} else {
 			// integer
-			if (c == BUTTON_VIEW) {
-				strcpy(str, " dup .\n");
-			} else {
-				strcpy(str, keyboard_int[c]);
-			}
+			strcpy(str, keyboard_int[c]);
 		}
 	}
 	if (strlen(str) == 1) {
@@ -656,7 +642,6 @@ static void put_key_string(uint8_t c) {
 		}
 	} else {
 		for (i=0; i<strlen(str); i++) {
-			//		osMessageQueuePut(BUTTON_QueueId, &str[i], 0, osWaitForever);
 			osMessageQueuePut(CDC_RxQueueId, &str[i], 0, osWaitForever);
 		}
 	}
