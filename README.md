@@ -6,7 +6,7 @@
   </tr>
 </table> 
 
-# Mecrisp-Cube (master branch)
+# 4TH Calculator (Mecrisp-Cube calc branch)
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
