@@ -60,10 +60,8 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
   * 63 KiB RAM dictionary 
   * 128 KiB Flash Forth dictionary 
   * 50 KiB for C code 
-  * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
-  * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
-    * Internal Flash drive 0:, 384 KiB
-    * microSD drive 1: (optional, external SD adaptor)
+  * Serial console USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
+  * [Filesystem](/sdcard/man/FileSystem.md) (FAT), Internal Flash drive 0:, 384 KiB
   * Integration in STM32 Cube Ecosystem. 
     * Create C code from CubeMX for internal peripherals and use it in Forth
     * [Calling C Functions](/sdcard/man/CallingCFunction.md) from Forth and vice versa 
@@ -95,27 +93,13 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * 3 push buttons
+  * 1 push button
   * 3 LEDs
-  * 16 GPIO pins, D0 .. D15
-  * 6 ADC pins, A0 .. A5
+  * Keyboard wth 35 buttons
   * I2C
-  * SPI
-  * 3 PWM pins
-  * Input Capture / Output Compare
-  * 4 external interrupts (EXTI)
+    * OLED display 128x32 pixel 
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
-
-
-### External Peripherals (e.g. Feather Wings) 
-
-  * OLED Display 128x32, 128x64, I2C
-  * E-Ink FeatherWing 250x122 SPI
-  * NeoPixel
-  * CharlieWing
-  * NeoPixelWing
-  * DotStarWing 
 
 
 ## Getting Started
@@ -125,12 +109,20 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
 
 
 ### Prerequisites
-
-  * One of these boards
-    * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
-      Arduino™ Uno V3 and ST morpho connectors
-    * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
-  * Terminal emulator application for PC, e.g.: 
+ 
+  * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
+  * OLED display 128x32 pixels if it should fit into 2" x 3.5"
+  * 35 pcs push buttons, fit in 0.4" grid
+    * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
+    * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
+    * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
+  * USB Connector e.g.
+    * Adafruit USB Micro-B Breakout Board, DigiKey 1528-1383-ND, from $1 up
+    * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/MicroUSB Jack, $7
+    * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
+  * LiPo battery
+  * Terminal emulator application for PC, e.g.:
+    * TIO
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
