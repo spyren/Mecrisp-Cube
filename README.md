@@ -169,16 +169,15 @@ Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
 
 #### Solder push buttons
 Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
-Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
-
 
 #### Wire the buttons 
 Wire the buttons to columns and rows on the perfboard bottom layer. 
+Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
 
 #### Mount the dongle
 Remove the USB connector from the dongle. 
 Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper left corner. 
-If you do not use the BLE, cut the BLE antenna.
+If you do not want to use the BLE, cut off the BLE antenna.
 
 #### Mount USB Breakout
 Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer.
@@ -214,7 +213,7 @@ Only needed if you want to debug the board.
 
 
 ### Place the Diodes (optional)
-I use BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
+I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
 You can also use two 1N4148 diodes.
 
 #### Wire the USB connector
@@ -228,7 +227,7 @@ USB breakout without charger:
 | D+          | D+     |           | D+             |
 | D-          | D-     |           | D-             |
 
-or charger
+or with charger
 
 |*Description*|*Dongle*|*Function* | *USB Charger* |
 |-------------|--------|-----------|---------------|
@@ -257,6 +256,7 @@ Solder or glue the OLED Display to the perfboard top layer.
 Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
 
 #### Wire the Battery (optional)
+If the battery has a molex connector, no wiring/soledrin is required.
 
 #### Keyboard Overlay
 1. Print the keyboard overlay to heavy weight white paper
