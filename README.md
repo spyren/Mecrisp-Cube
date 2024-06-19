@@ -56,6 +56,23 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 ## Features
 
+### Calculator
+  * RPN
+  * Keyboard layout similar to HP 42
+  * Stack 64 elements
+  * 10 registers
+  * 3 top elements (x, y, and z) are displayed
+  * Floating-point
+    * Single precision floating-point IEEE.754
+    * Elementary arithmetic
+    * trigometric and exponential functions
+    * Display modes: fixed, scientific, engineering (metric units)
+  * Integer
+    * Hex, decimal, octal, and binary number base
+    * Signed (2's complement) and unsigned numbers
+    * Elementary arithmetic
+    * logical and shift operations
+  
 ### Standard Mecrisp-Cube features
   * 63 KiB RAM dictionary 
   * 128 KiB Flash Forth dictionary 
@@ -111,7 +128,7 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
 ### Prerequisites
  
   * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
-  * OLED display 128x32 pixels if it should fit into 2" x 3.5"
+  * OLED display 0.91" 128x32 pixels, $5
   * 35 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
