@@ -404,7 +404,7 @@ USB-CDC is the default console.
 
 #### LEDs as Status Indicator
 
-The RGB LED  displays the status
+The LEDs on the dongle displays the status
   * *Green* USB enumerated
   * *Red* Error occured
   * *Blue* BLE connected
