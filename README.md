@@ -8,8 +8,8 @@
 
 # 4TH Calculator (Mecrisp-Cube calc branch)
 
-Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
+## About Forth
 Forth is an interactive and extensible language, with built-in lexical analysis 
 (tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
 4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
@@ -36,6 +36,8 @@ May the Forth Be With You!
 
 
 ## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
+
+For this project you only need the dongle.
 
 If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
 you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
@@ -89,8 +91,8 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
       key and emit block the calling thread. 
   * USB
     * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
-      serial communication via USB
-    * Redirect console I/O like cdc-emit, cdc-key
+      serial communication via USB, redirect console I/O like cdc-emit, cdc-key
+    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS). You can use your Forth system as a flash drive (also thumb drive [US], memory stick [UK], and pen drive/pendrive elsewhere)
   * BLE 5.0 GAP Peripheral Role (STM32WB)
     * DIS Device Information Service
     * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
@@ -122,7 +124,7 @@ For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.m
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
-machine (WB55 Nucleo or Dongle) for development and testing purposes. 
+machine (Calculator, WB55 Dongle) for development and testing purposes. 
 
 
 ### Prerequisites
@@ -135,27 +137,83 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
   * USB Connector e.g.
     * Adafruit USB Micro-B Breakout Board, DigiKey 1528-1383-ND, from $1 up
-    * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/MicroUSB Jack, $7
-    * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
-  * LiPo battery
+    * With Micro-Lipo Charger
+      * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/MicroUSB Jack, $7
+      * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
+  * LiPo battery (optional)
   * Terminal emulator application for PC, e.g.:
-    * TIO
+    * tio tio --map ICRNL,INLCRNL /dev/ttyACM0 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
     * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
-  * STM32CubeProgrammer (optional)
+  * STM32CubeProgrammer
+
+### Build th
+
+|*Description*|*Dongle*|*Function* | *Calculator* | *JTAG 10pin*|
+|-------------|--------|-----------|--------------|-------------|
+| GND         | CN1.1  | GND       | GND          | 3, 5, 9     |
+| NRST        | CN1.2  | RES       | RST          | 10          |
+| PA13        | CN1.3  | SWDIO     | -            | 2           |
+| PA14        | CN1.4  | SWDCLK    | -            | 4           |
+| PB3         | CN1.5  | SWO       | ROW0         |             |
+| 3V3         | CN1.6  | 3V3       | 3V3          | 1           |
+| PB2         | CN1.7  |           | ROW1         |             |
+| PA5         | CN1.8  | D13       | COL4         |             |
+| PA6         | CN1.9  | D12       | ROW2         |             |
+| PA7         | CN1.10 | D11       | ROW3         |             |
+| PB8         | CN2.1  | D15 SCL   | SCL Display  |             |
+| PB9         | CN2.2  | D14 SDA   | SDA Display  |             |
+| PA0         | CN2.3  | A3        | COL0         |             |
+| PA2         | CN2.4  | D1        | COL2         |             |
+| PA3         | CN2.5  | D0        | COL3         |             |
+| PB6         | CN2.6  | UARTRX    | ROW4         |             |
+| PA9         | CN2.7  | D9        | ROW5         |             |
+| PA8         | CN2.8  | D6        | ROW6         |             |
+| GND         | CN2.9  | GND       | GND          |             |
+| PA1         | CN2.10 | A2        | COL1         |             |
 
 
-### Flash the Mecrisp-Cube Firmware
 
-Flash the Mecrisp-Cube [binary](/Release/MecrispCube.bin) `MecrispCube.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFS.bin) 
-`MecrispCubeFS.bin` to the WB55 Nucleo. Using the built-in USB DFU bootloader.
+### Flash the 4TH Calculator Firmware
 
- 1. Connect the Nucleo Board USB ST-LINK to the PC
- 1. Copy binary (MecrispCube.bin or better the MecrispCubeFS.bin) to the USB mass storage NODE_WB55RG 
+Flash the 4TH Calculator [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCubeCalcFS.bin` to the WB55 Nucleo dongle. Using the built-in USB DFU bootloader.
+
+The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in 
+boot-loader. This bootloader works via USB. As programming tool I use the 
+CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
+
+<pre>
+$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
+$ <b>cubepgmcli -c port=USB1 -e [0 191]</b>
+$ <b>cubepgmcli -c port=USB1 -d MecrispCubeCalcFS.bin 0x8000000 </b>
+$ <b>cubepgmcli -c port=USB1 -ob displ</b>
+</pre>
+
+
+### Update BLE Stack (optional)
+
+You can find the BLE Stack and FUS in 
+[STM32CubeWB](https://www.st.com/en/embedded-software/stm32cubewb.html)
+or from [GitHub](https://github.com/STMicroelectronics/STM32CubeWB), 
+in the directory `Projects/STM32WB_Copro_Wireless_Binaries`. 
+At time of writing the FUS is Version 1.2.0, the stack v1.19.1. The STM32CubeProgrammer is v2.16.0.
+
+Nucleo board: Using USB_USER interface and the built-in bootloader (activate with jumper between CN7.5 and CN7.7)
+<pre>
+$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
+$ <b>cd STM32Cube_FW_WB_V1.19.1/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
+$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CB000 firstinstall=1</b>
+</pre>
+
+Alternate way to erase the flash memory (change the Memory Read Protection from Level 1 to level 0):
+<pre>
+$ <b>cubepgmcli -c port=swd -ob rdp=0xbb</b>
+$ <b>cubepgmcli -c port=swd -rdu</b>
+</pre>
 
 
 ### Use the Terminal (USB CDC)
@@ -333,86 +391,6 @@ The STM tools work on Linux, Windows, and Mac.
 
 Tab size is 4 for C and assembler source files. 
 Append `?ts=4` to the URL to change the tab-size.
-
-
-## Flash Mecrisp-Cube to the Target
-
-Alternate ways to flash Mecrisp-Cube to the target. For the easy way see 
-MecrispCubeWB#Prerequisites. 
-
-
-### Nucleo Board
-
-Connect Nucleo's ST-LINK USB to you PC. Erase the flash e.g. by `openOCD`, 
-we use 768 KiB %ICON{right}% 192 sectors. 
-<pre>
-$ <b>telnet localhost 4444</b>
-Trying ::1...
-telnet: connect to address ::1: Connection refused
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-Open On-Chip Debugger
-> <b>reset init</b>
-Unable to match requested speed 500 kHz, using 480 kHz
-Unable to match requested speed 500 kHz, using 480 kHz
-target halted due to debug-request, current mode: Thread 
-xPSR: 0x01000000 pc: 0x08003aae msp: 0x20000430
-> <b>flash erase_sector 0 0 192</b>
-erased sectors 0 through 192 on flash bank 0 in 4.583453s
-> <b>flash write_image mecrisp-stellaris-stm32wb55.hex</b>
-device idcode = 0x20016495 (STM32WB5x - Rev: 2.1)
-flash size = 1024kbytes
-flash mode : single-bank
-Padding 4 bytes to keep 8-byte write size
-block write succeeded
-wrote 15404 bytes from file mecrisp-stellaris-stm32wb55.hex in 0.329747s (45.620 KiB/s)
-
-> <b>shutdown</b>
-shutdown command invoked
-Connection closed by foreign host.
-</pre>
-
-
-### USB Dongle
-
-The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in 
-boot-loader. This bootloader works via USB. As programming tool I use the 
-CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
-
-<pre>
-$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
-$ <b>cubepgmcli -c port=USB1 -e [0 191]</b>
-$ <b>cubepgmcli -c port=USB1 -d Release/MecrispCube.bin 0x8000000 </b>
-$ <b>cubepgmcli -c port=USB1 -ob displ</b>
-</pre>
-
-BTW you can flash the Nucleo Board in the same way. 
-
-
-### Update BLE Stack
-
-You can find the BLE Stack and FUS in 
-[STM32CubeWB](https://www.st.com/en/embedded-software/stm32cubewb.html)
-or from [GitHub](https://github.com/STMicroelectronics/STM32CubeWB), 
-in the directory `Projects/STM32WB_Copro_Wireless_Binaries`. 
-At time of writing the FUS is Version 1.2.0, the stack v1.17.3. The STM32CubeProgrammer is v2.14.0.
-
-Nucleo board: Using USB_USER interface and the built-in bootloader (activate with jumper between CN7.5 and CN7.7)
-<pre>
-$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
-$ <b>cd STM32Cube_FW_WB_V1.14.1/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
-$ <b>cubepgmcli -c port=USB1 -fwdelete</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_FUS_fw.bin 0x080EC000 firstinstall=0</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_FUS_fw_for_fus_0_5_3.bin 0x080EC000 firstinstall=0</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CB000 firstinstall=1</b>
-</pre>
-
-Alternate way to erase the flash memory (change the Memory Read Protection from Level 1 to level 0):
-<pre>
-$ <b>cubepgmcli -c port=swd -ob rdp=0xbb</b>
-$ <b>cubepgmcli -c port=swd -rdu</b>
-</pre>
 
 
 ## Versioning
