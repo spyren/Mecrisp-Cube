@@ -310,7 +310,8 @@ Connect the WB55 Dongle USB to the PC. Start the terminal emulator application o
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
 For tio
 ```
-tio -l
+$ tio -L
+
 ```
 
 I set the putty terminal configuration to 
