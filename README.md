@@ -149,9 +149,9 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
     * With Micro-Lipo Charger
       * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/MicroUSB Jack, $7
       * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
-  * LiPo battery (optional)
+  * LiPo battery (optional) e.g. Renata ICP422339PR
   * Terminal emulator application for PC, e.g.:
-    * tio tio --map ICRNL,INLCRNL /dev/ttyACM0 
+    * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
@@ -159,6 +159,7 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
     * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
   * Hot glue or double sided mounting tape e.g. Tesa 55750
+  * Laminating machine (optional) 
   * STM32CubeProgrammer
 
 ### Build the Hardware
@@ -178,7 +179,7 @@ Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper l
 If you do not use the BLE, cut the BLE antenna.
 
 #### Mount USB Breakout
-Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer
+Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer.
 
 #### Wire the buttons to the dongle
 Wire the button rows and columns to the dongle.
@@ -211,8 +212,12 @@ Only needed if you want to debug the board.
 
 
 ### Place the Diodes (optional)
+I use BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
+You can also use two 1N4148 diodes.
 
 #### Wire the USB connector
+
+USB breakout without charger:
 
 |*Description*|*Dongle*|*Function* | *USB Breakout* |
 |-------------|--------|-----------|----------------|
@@ -235,11 +240,6 @@ or charger
 | 5 V         | 5 V         |           | Anode 1 |
 | BAT         | BAT         |           | Anode 2 |
 
-#### Mount the Battery (optional)
-
-#### Wire the Battery (optional)
-
-
 #### Mount the OLED Display
 Solder or glue the OLED Display to the perfboard top layer.
 
@@ -250,6 +250,18 @@ Solder or glue the OLED Display to the perfboard top layer.
 | 3V3         | CN1.6  | 3V3       | 3V3          |
 | PB8         | CN2.1  | D15 SCL   | SCL          |
 | PB9         | CN2.2  | D14 SDA   | SDA          |
+
+#### Mount the Battery (optional)
+Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
+
+#### Wire the Battery (optional)
+
+#### Keyboard Overlay
+1. Print the keyboard overlay to heavy weight white paper
+2. Cut out the overlay
+3. Laminate the overlay
+4. Cut out the laminated overlay
+5. Cut holes for the push buttons
 
 
 ### Flash the 4TH Calculator Firmware
@@ -262,10 +274,10 @@ CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubepr
 
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
-$ <b>cubepgmcli -c port=USB1 -e [0 191]</b>
 $ <b>cubepgmcli -c port=USB1 -d MecrispCubeCalcFS.bin 0x8000000 </b>
-$ <b>cubepgmcli -c port=USB1 -ob displ</b>
 </pre>
+
+Or use the STM32CubeProgrammer GUI.
 
 
 ### Update BLE Stack (optional)
@@ -292,8 +304,13 @@ $ <b>cubepgmcli -c port=swd -rdu</b>
 
 ### Use the Terminal (USB CDC)
 
-Connect the WB55 Nucleo USB to the PC. Start the terminal emulator application on the PC. 
+Connect the WB55 Dongle USB to the PC. Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
+For tio
+```
+tio -l
+```
+
 I set the putty terminal configuration to 
 
   * Implicit CR in every LF 
@@ -303,7 +320,12 @@ I set the putty terminal configuration to
   * Keyboard Function: Keys VT100
   * Remote character set: CP850
 
-The greeting screen should apear after startup:
+For tio
+```
+tio --map ICRNL,INLCRNL /dev/ttyACM0 
+```
+
+The greeting screen should apear after pushing the TERMINAL button on the Calculator:
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
