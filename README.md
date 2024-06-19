@@ -167,8 +167,10 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 #### Cut the perfboard
 Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
 
-#### Solder the 35 push buttons
+#### Solder push buttons
 Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
+Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
+
 
 #### Wire the buttons 
 Wire the buttons to columns and rows on the perfboard bottom layer. 
@@ -396,10 +398,7 @@ The compiled word `hello` needs only 14 bytes in the dictionary.
 
 #### Special Functions on Startup 
 
-USB-CDC is the default console.
-  * *SW1* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
-  * *SW2* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
-  * *SW3* do not include `0:/etc/rc.local`
+  * *SW1* do not include `0:/etc/rc.local` on startup
 
 
 #### LEDs as Status Indicator
