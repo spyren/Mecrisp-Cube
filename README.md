@@ -164,23 +164,25 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 ### Build the Hardware
 
 #### Cut the perfboard
-To 2" x 3.5" () dimension.
+Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
 
 #### Solder the 35 push buttons
-to the perfboard top layer. 
+Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
 
 #### Wire the buttons 
-columns and rows
+Wire the buttons to columns and rows on the perfboard bottom layer. 
 
 #### Mount the dongle
 Remove the USB connector from the dongle. 
 Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper left corner. 
 If you do not use the BLE, cut the BLE antenna.
 
-#### Mount USB Break Out
-Glue (hot glue, mounting tape) the USB Break Out or the Adafruit Micro-Lipo Charger to the perfboard bottom layer
+#### Mount USB Breakout
+Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer
 
-#### Wire the button rows and columns to the dongle
+#### Wire the buttons to the dongle
+Wire the button rows and columns to the dongle.
+
 |*Description*|*Dongle*|*Function* | *Calculator* |
 |-------------|--------|-----------|--------------|
 | PB3         | CN1.5  | SWO       | ROW0         |
@@ -197,6 +199,8 @@ Glue (hot glue, mounting tape) the USB Break Out or the Adafruit Micro-Lipo Char
 | PA5         | CN1.8  | D13       | COL4         |
 
 #### Wire the JTAG SWD (optional)
+Only needed if you want to debug the board.
+
 |*Description*|*Dongle*|*Function* | *JTAG 10pin* |
 |-------------|--------|-----------|--------------|
 | GND         | CN1.1  | GND       |  3, 5, 9     |
@@ -205,13 +209,36 @@ Glue (hot glue, mounting tape) the USB Break Out or the Adafruit Micro-Lipo Char
 | PA14        | CN1.4  | SWDCLK    |  4           |
 | 3V3         | CN1.6  | 3V3       |  1           |
 
+
+### Place the Diodes (optional)
+
 #### Wire the USB connector
-|*Description*|*Dongle*|*Function* | *USB Break Out* |
-|-------------|--------|-----------|-----------------|
-| GND         | CN2.9  | GND       | GND             |
-| 3V3         | CN1.6  | 3V3       | 3V3             |
-| 3V3         | CN1.6  | 3V3       | 3V3             |
-| 3V3         | CN1.6  | 3V3       | 3V3             |
+
+|*Description*|*Dongle*|*Function* | *USB Breakout* |
+|-------------|--------|-----------|----------------|
+| GND         | GND    | GND       | GND            |
+| 5 V         | 5 V    | 5 V       | 5 V            |
+| D+          | D+     |           | D+             |
+| D-          | D-     |           | D-             |
+
+or charger
+
+|*Description*|*Dongle*|*Function* | *USB Charger* |
+|-------------|--------|-----------|---------------|
+| GND         | GND    | GND       | GND           |
+| 5 V         | 5 V    | 5 V       | Diode Cathode |
+| D+          | D+     |           | D+            |
+| D-          | D-     |           | D-            |
+
+|*Description*|*USB Charger*|*Function* | *Diode* |
+|-------------|-------------|-----------|---------|
+| 5 V         | 5 V         |           | Anode 1 |
+| BAT         | BAT         |           | Anode 2 |
+
+#### Mount the Battery (optional)
+
+#### Wire the Battery (optional)
+
 
 #### Mount the OLED Display
 Solder or glue the OLED Display to the perfboard top layer.
@@ -223,7 +250,6 @@ Solder or glue the OLED Display to the perfboard top layer.
 | 3V3         | CN1.6  | 3V3       | 3V3          |
 | PB8         | CN2.1  | D15 SCL   | SCL          |
 | PB9         | CN2.2  | D14 SDA   | SDA          |
-
 
 
 ### Flash the 4TH Calculator Firmware
