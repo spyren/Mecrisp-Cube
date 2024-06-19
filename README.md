@@ -10,8 +10,9 @@
 I am using HP calculators for about 45 years. I wrote my very first program on a HP-41. 
 There are many excellent HP calculator emulators for PCs and smart phones and HP still sells pocket 
 [calculators]([https://www.hp.com/us-en/calculators.html](https://hpofficesupply.com/product-category/calculators/)).
-The HP-15 Collector’s Edition and shall emulate the HP-16, but it is landscape and not cheap.
-Why should I build one?
+Why should I build one? The HP-15 Collector’s Edition could be the right one and it even can emulate the HP-16, 
+but it is landscape and not cheap. 
+
 A small pocket calculator for programmers and engineers, a mix between HP-42 and HP-16 would be nice to have.
 
 It is a good opportunity to show how good Forth works on modern hardware.
