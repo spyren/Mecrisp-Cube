@@ -155,17 +155,22 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 
 ### Build the Hardware
 
-#### Cut the perfboard to 2" x 3.5" () dimension
+#### Cut the perfboard
+To 2" x 3.5" () dimension.
 
-#### Solder the 35 push buttons to the perfboard top layer
+#### Solder the 35 push buttons
+to the perfboard top layer. 
 
-#### Wire the button columns and rows
+#### Wire the buttons 
+columns and rows
 
-#### Remove the USB connector from the dongle
+#### Mount the dongle
+Remove the USB connector from the dongle. 
+Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper left corner. 
+If you do not use the BLE, cut the BLE antenna.
 
-#### Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer
-
-#### Glue (hot glue, mounting tape) the Adafruit Micro-Lipo Charger to the perfboard bottom layer
+#### Mount USB Break Out
+Glue (hot glue, mounting tape) the USB Break Out or the Adafruit Micro-Lipo Charger to the perfboard bottom layer
 
 #### Wire the button rows and columns to the dongle
 |*Description*|*Dongle*|*Function* | *Calculator* |
@@ -200,7 +205,8 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 | 3V3         | CN1.6  | 3V3       | 3V3             |
 | 3V3         | CN1.6  | 3V3       | 3V3             |
 
-#### Solder or glue the OLED Display
+#### Mount the OLED Display
+Solder or glue the OLED Display to the perfboard top layer.
 
 #### Wire the OLED
 |*Description*|*Dongle*|*Function* | *OLED*       |
@@ -427,63 +433,26 @@ Tab size is 4 for C and assembler source files.
 Append `?ts=4` to the URL to change the tab-size.
 
 
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/spyren/Mecrisp-Cube/tags). 
-
-### v1.0.0 Initial Release
-* USART0 default terminal console, 115200 Baud, 20 KiB Rx buffer
-* USB-CDC secondary terminal console, type `cdc` to change console, back with `uart`.
-* 512 KiB Flash dictionary, 60 KiB RAM dictionary
-### v1.2.2 FatFs/BLE/RTOS Release
-* CMSIS-RTOS, FreeRTOS Kernel V10.2.1
-* FatFs R0.12c, some Unix like command line tools
-* BLE Cable Replacement Service.
-### v1.3.3 FatFs/BLE/RTOS/vi Release
-* CMSIS-RTOS, FreeRTOS Kernel V10.2.1
-* FatFs R0.12c, some Unix like command line tools
-* BLE Cable Replacement Service.
-* tiny vi - part of BusyBox 
-### v1.4.1 OLED/FlashDrive Release
-* Mecrisp-Stellaris RA 
-* Flash Drive
-* OLED driver, I2C, timer, RTC
-* Markdown docs
-### v1.4.3 F405 Release
-* Own Tags for F405 and WB55 chips
-* `0:/etc/rc.local` startup script
-* 2 MiB flash drive for F405
-### v1.5.0 FPU Release
-* Support for Floating-Point Unit
-* EPD driver
-* Watchdog and Asserts
-### v1.5.1 Flipper Release
-* LCD driver (Flipper)
-* Docu on GitHub
-
-
 ## Authors
 
 * **Peter Schmid** - *Initial work* - [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube)
 * **Matthias Koch** - *Forth on ARM Cortex M0/M4* - [Mecrisp Stellaris](http://mecrisp.sourceforge.net/)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
 
 ## License
 
-This project *Mecrsip-Cube* is free software: you can redistribute it
+This project *4TH Calculator* is free software: you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
-*Mecrsip-Cube* is distributed in the hope that it will be useful,
+*4TH Calculator* is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
-with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
+with *4TH Calculator*. If not, see http://www.gnu.org/licenses/.
 
 
 ## Acknowledgments
