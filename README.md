@@ -155,58 +155,61 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 
 ### Build the Hardware
 
-1. Cut the perfboard to 2" x 3.5" () dimension
-2. Solder the 35 push buttons to the perfboard top layer
-3. Wire the button columns and rows
-4. Remove the USB connector from the dongle
-5. Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer
-6. Glue (hot glue, mounting tape) the Adafruit Micro-Lipo Charger to the perfboard bottom layer
-7. Wire the button rows and columns to the dongle
-|*Description*|*Dongle*|*Function* | *Calculator* | *JTAG 10pin*|
-|-------------|--------|-----------|--------------|-------------|
-| PB3         | CN1.5  | SWO       | ROW0         |             |
-| PB2         | CN1.7  |           | ROW1         |             |
-| PA5         | CN1.8  | D13       | COL4         |             |
-| PA6         | CN1.9  | D12       | ROW2         |             |
-| PA7         | CN1.10 | D11       | ROW3         |             |
-| PA0         | CN2.3  | A3        | COL0         |             |
-| PA2         | CN2.4  | D1        | COL2         |             |
-| PA3         | CN2.5  | D0        | COL3         |             |
-| PB6         | CN2.6  | UARTRX    | ROW4         |             |
-| PA9         | CN2.7  | D9        | ROW5         |             |
-| PA8         | CN2.8  | D6        | ROW6         |             |
-| PA1         | CN2.10 | A2        | COL1         |             |
-8. Wire the USB connector
-|*Description*|*Dongle*|*Function* | *USB Break Out* | *JTAG 10pin*|
-|-------------|--------|-----------|-----------------|-------------|
-| GND         | CN1.1  | GND       | GND             | 3, 5, 9     |
-| 3V3         | CN1.6  | 3V3       | 3V3             | 1           |
-| GND         | CN2.9  | GND       | GND             |             |
+#### Cut the perfboard to 2" x 3.5" () dimension
 
-|*Description*|*Dongle*|*Function* | *Calculator* | *JTAG 10pin*|
-|-------------|--------|-----------|--------------|-------------|
-| GND         | CN1.1  | GND       | GND          | 3, 5, 9     |
-| NRST        | CN1.2  | RES       | RST          | 10          |
-| PA13        | CN1.3  | SWDIO     | -            | 2           |
-| PA14        | CN1.4  | SWDCLK    | -            | 4           |
-| PB3         | CN1.5  | SWO       | ROW0         |             |
-| 3V3         | CN1.6  | 3V3       | 3V3          | 1           |
-| PB2         | CN1.7  |           | ROW1         |             |
-| PA5         | CN1.8  | D13       | COL4         |             |
-| PA6         | CN1.9  | D12       | ROW2         |             |
-| PA7         | CN1.10 | D11       | ROW3         |             |
-| PB8         | CN2.1  | D15 SCL   | SCL Display  |             |
-| PB9         | CN2.2  | D14 SDA   | SDA Display  |             |
-| PA0         | CN2.3  | A3        | COL0         |             |
-| PA2         | CN2.4  | D1        | COL2         |             |
-| PA3         | CN2.5  | D0        | COL3         |             |
-| PB6         | CN2.6  | UARTRX    | ROW4         |             |
-| PA9         | CN2.7  | D9        | ROW5         |             |
-| PA8         | CN2.8  | D6        | ROW6         |             |
-| GND         | CN2.9  | GND       | GND          |             |
-| PA1         | CN2.10 | A2        | COL1         |             |
+#### Solder the 35 push buttons to the perfboard top layer
 
-2. fff
+#### Wire the button columns and rows
+
+#### Remove the USB connector from the dongle
+
+#### Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer
+
+#### Glue (hot glue, mounting tape) the Adafruit Micro-Lipo Charger to the perfboard bottom layer
+
+#### Wire the button rows and columns to the dongle
+|*Description*|*Dongle*|*Function* | *Calculator* |
+|-------------|--------|-----------|--------------|
+| PB3         | CN1.5  | SWO       | ROW0         |
+| PB2         | CN1.7  |           | ROW1         |
+| PA6         | CN1.9  | D12       | ROW2         |
+| PA7         | CN1.10 | D11       | ROW3         |
+| PB6         | CN2.6  | UARTRX    | ROW4         |
+| PA9         | CN2.7  | D9        | ROW5         |
+| PA8         | CN2.8  | D6        | ROW6         |
+| PA0         | CN2.3  | A3        | COL0         |
+| PA1         | CN2.10 | A2        | COL1         |
+| PA2         | CN2.4  | D1        | COL2         |
+| PA3         | CN2.5  | D0        | COL3         |
+| PA5         | CN1.8  | D13       | COL4         |
+
+#### Wire the JTAG SWD (optional)
+|*Description*|*Dongle*|*Function* | *JTAG 10pin* |
+|-------------|--------|-----------|--------------|
+| GND         | CN1.1  | GND       |  3, 5, 9     |
+| NRST        | CN1.2  | RES       |  10          |
+| PA13        | CN1.3  | SWDIO     |  2           |
+| PA14        | CN1.4  | SWDCLK    |  4           |
+| 3V3         | CN1.6  | 3V3       |  1           |
+
+#### Wire the USB connector
+|*Description*|*Dongle*|*Function* | *USB Break Out* |
+|-------------|--------|-----------|-----------------|
+| GND         | CN2.9  | GND       | GND             |
+| 3V3         | CN1.6  | 3V3       | 3V3             |
+| 3V3         | CN1.6  | 3V3       | 3V3             |
+| 3V3         | CN1.6  | 3V3       | 3V3             |
+
+#### Solder or glue the OLED Display
+
+#### Wire the OLED
+|*Description*|*Dongle*|*Function* | *OLED*       |
+|-------------|--------|-----------|--------------|
+| GND         | CN1.1  | GND       | GND          |
+| 3V3         | CN1.6  | 3V3       | 3V3          |
+| PB8         | CN2.1  | D15 SCL   | SCL          |
+| PB9         | CN2.2  | D14 SDA   | SDA          |
+
 
 
 ### Flash the 4TH Calculator Firmware
