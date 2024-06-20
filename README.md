@@ -7,13 +7,18 @@
 </table> 
 
 # 4TH Calculator (Mecrisp-Cube calc branch)
-I am using HP calculators for about 45 years. I wrote my very first program on a HP-41. 
+I am using HP calculators for more than 45 years. I wrote my very first program on a HP-41. 
 There are many excellent HP calculator emulators for PCs and smart phones and HP still sells pocket 
 [calculators]([https://www.hp.com/us-en/calculators.html](https://hpofficesupply.com/product-category/calculators/)).
 Why should I build one by myself? The HP-15 Collector’s Edition could be the right one and it even can emulate the HP-16, 
 but it is landscape and not cheap. 
 
 A small pocket calculator for programmers and engineers, a mix between HP-42 and HP-16 would be nice to have.
+This projetc fill the bill, at least for me.
+
+I had all the parts in my drawer, leftovers from other projects. But other parts can easily be used.
+The display is a bit small for my eyes, I will build another calculator with a bigger display and a 128x64 reolution, 
+but this calculator will exceed the business crad dimension.
 
 It is a good opportunity to show how good Forth works on modern hardware.
 
@@ -474,7 +479,7 @@ There is already a data stack, but with 64 elements and not only x, y, z, and t 
 The calculator keyboard acts as an ordinary keyboard (terminal), but one key can send several characters (string), 
 e.g. the key **COS** sends a string `" fcos\n"`. The interpreter executes the float cosinus on the top of the stack. 
 After the successful execution of a line, the stack content is then shown on the display. 
-Digits (**0..9**, **A..F**) are forwarded to the display and are interpreted after hitting the ENTER key. 
+Digits (**0..9**, **A..F**) are forwarded to the display and are interpreted after hitting the **ENTER** key. 
 If you connect a terminal and hit the **TERM** key, you can see how the interpreter works. 
 
 For implementation details see
