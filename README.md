@@ -265,7 +265,13 @@ If the battery has a molex connector, no wiring/soledrin is required.
 
 #### Keyboard Overlay
 
-<img src="/sdcard/man/img/overlay.svg">
+<table>
+  <tr>
+    <td><img src="/sdcard/man/img/overlay.svg">
+ </td>
+    <td><img src="/sdcard/man/img/overlay.png"></td>
+  </tr>
+</table> 
 
 1. Print the keyboard overlay to heavy weight white paper
 2. Cut out the overlay
