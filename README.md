@@ -41,7 +41,7 @@ It is a good opportunity to show how good Forth works on modern hardware.
     * Elementary arithmetic
     * logical and shift operations
   
-### Standard Mecrisp-Cube features
+### Standard Mecrisp-Cube Forth Features
   * 63 KiB RAM dictionary 
   * 128 KiB Flash Forth dictionary 
   * 50 KiB for C code 
