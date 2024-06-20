@@ -33,5 +33,6 @@
 #define INC_TINY_H_
 
 void TINY_init(void);
+extern int volatile TINY_tud_cdc_connected;
 
 #endif /* INC_TINY_H_ */

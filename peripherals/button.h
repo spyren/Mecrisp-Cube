@@ -36,6 +36,7 @@ extern osMutexId_t BUTTON_MutexID;
 extern osSemaphoreId_t BUTTON_SemaphoreID;
 
 void BUTTON_init(void);
+void BUTTON_OnOff(void);
 int BUTTON_getc(void);
 int BUTTON_Ready(void);
 int BUTTON_putkey(const char c);

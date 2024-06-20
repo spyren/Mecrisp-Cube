@@ -72,6 +72,8 @@
 // ********************
 #include "cmsis_os.h"
 #include <stdio.h>
+#include "stm32_lpm_if.h"
+#include "stm32_lpm.h"
 
 // Application include files
 // *************************
@@ -82,6 +84,7 @@
 #include "bsp.h"
 #include "usb_cdc.h"
 #include "oled.h"
+#include "tiny.h"
 
 #if BUTTON == 1
 
@@ -268,7 +271,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		"u", 				// r5, c3 u
 		"m", 				// r5, c4 m
 
-		" off\n",		    // r6, c0 off
+		" onoff\n",		    // r6, c0 off
 		"k", 				// r6, c1 k
 		"M", 				// r6, c2 M
 		"G", 				// r6, c3 G
@@ -356,7 +359,7 @@ static const char* keyboard_int_f[BUTTON_COUNT] = {
 		" not\n", 			// r5, c3 NOT
 		" or\n", 			// r5, c4 OR
 
-		" off\n", 			// r6, c0 OFF
+		" onoff\n", 		// r6, c0 OFF
 		" */\n", 			// r6, c1 */
 		" mod\n", 			// r6, c2 MOD
 		" /mod\n", 			// r6, c3 /MOD
@@ -395,6 +398,11 @@ void BUTTON_init(void) {
 	}
 
 	BUTTON_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	if (BUTTON_SemaphoreID == NULL) {
+		Error_Handler();
+	}
+
+	BUTTON_MutexID = osMutexNew(&BUTTON_MutexAttr);
 	if (BUTTON_SemaphoreID == NULL) {
 		Error_Handler();
 	}
@@ -497,6 +505,72 @@ int BUTTON_putkey(const char c) {
 }
 
 
+/**
+ *  @brief
+ *      Go into stop mode till on-button is pressed
+ *
+ *  @return
+ *      None
+ */
+void BUTTON_OnOff(void) {
+	int row;
+
+	OLED_off();
+
+	osMutexAcquire(BUTTON_MutexID, 100);
+	HAL_NVIC_DisableIRQ(EXTI1_IRQn);
+	HAL_NVIC_DisableIRQ(EXTI2_IRQn);
+	HAL_NVIC_DisableIRQ(EXTI3_IRQn);
+	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+
+	// deactivate all rows except the last one
+	for (row=0; row<(BUTTON_ROW_COUNT-1); row++) {
+		HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_SET);
+	}
+	HAL_GPIO_WritePin(PortPinRow_a[BUTTON_ROW_COUNT-1].port,
+			          PortPinRow_a[BUTTON_ROW_COUNT-1].pin, GPIO_PIN_RESET);
+
+	// wait till off-button is released
+	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) == BUTTON_PRESSED) {
+		osDelay(10);
+	}
+	osDelay(10);
+
+	if (TINY_tud_cdc_connected) {
+		// USB connected -> do not go into stop mode
+		// wait till on-button is pressed
+		while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) != BUTTON_PRESSED) {
+			osDelay(10);
+		}
+	} else {
+		// wakeup on EXTI0 (column 0)
+
+		PWR_EnterStopMode();
+		PWR_ExitStopMode();
+	}
+
+	// wait till off-button is released
+	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) == BUTTON_PRESSED) {
+		osDelay(10);
+	}
+	osDelay(10);
+
+	OLED_on();
+
+	// activate all rows
+	for (row=0; row<BUTTON_ROW_COUNT; row++) {
+		HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
+	}
+	HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+	osMutexRelease(BUTTON_MutexID);
+
+}
+
+
 // Private Functions
 // *****************
 
@@ -520,13 +594,17 @@ static void BUTTON_Thread(void *argument) {
 	// Infinite loop
 	for(;;) {
 		// activate all rows
+		osMutexAcquire(BUTTON_MutexID, osWaitForever);
 		for (row=0; row<BUTTON_ROW_COUNT; row++) {
 			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
 		}
+		osMutexRelease(BUTTON_MutexID);
 
 		// wait for button event
 		osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
 		osDelay(10);	// wait for debouncing
+
+		osMutexAcquire(BUTTON_MutexID, osWaitForever);
 
 		// deactivate all rows
 		for (row=0; row<BUTTON_ROW_COUNT; row++) {
@@ -554,6 +632,8 @@ static void BUTTON_Thread(void *argument) {
 			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_SET);
 		}
 
+		osMutexRelease(BUTTON_MutexID);
+
 	}
 }
 
@@ -572,7 +652,6 @@ static void put_key_string(uint8_t c) {
 
 	static int shift = FALSE;
 	static int mode_float = TRUE;
-	static enum float_format float_f = ENG;
 
 	switch (c) {
 	case BUTTON_SHIFT:
@@ -599,15 +678,6 @@ static void put_key_string(uint8_t c) {
 			// fall through
 		case BUTTON_BIN:
 			mode_float = FALSE;
-			break;
-		case BUTTON_FIX:
-			float_f = FIX;
-			break;
-		case BUTTON_ENG:
-			float_f = ENG;
-			break;
-		case BUTTON_SCI:
-			float_f = SCI;
 			break;
 		}
 		if (mode_float) {

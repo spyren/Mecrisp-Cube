@@ -593,6 +593,17 @@ button_q:
 
 
 @ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "OnOff"
+onoff:
+        @ ( --  ) go into stop mode till on-button is pressed
+// void BUTTON_OnOff(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		BUTTON_OnOff
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "null-emit"
 null_emit:
         @ ( c -- ) Emit one character to null device

@@ -36,6 +36,10 @@ print_greet:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	pushdatos
+	ldr		tos, =ForthCalculator	// print 4TH Calculator
+	bl		fs_strlen
+	bl		stype
+	pushdatos
 	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
 	bl		fs_strlen
 	bl		stype

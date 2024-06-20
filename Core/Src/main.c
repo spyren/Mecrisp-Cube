@@ -145,6 +145,8 @@ const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
 const char MecrispVersion[] = "  * ";
 const char rc_local[] = RC_LOCAL;
 
+const char ForthCalculator[] = FORTH_CALCULATOR;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

@@ -326,8 +326,21 @@ Connect the WB55 Dongle USB to the PC. Start the terminal emulator application o
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
 With `tio` you can list available devices
 ```
-$ tio -L
+$ tio -l
+Device            TID     Uptime [s] Driver           Description
+----------------- ---- ------------- ---------------- --------------------------
+/dev/ttyACM0      38E5      8567.913 cdc_acm          ST-Link VCP Ctrl
+/dev/ttyACM1      PESx       873.742 cdc_acm          4TH CDC
 
+By-id
+--------------------------------------------------------------------------------
+/dev/serial/by-id/usb-spyr.ch_4TH_Calculator_43003F0013504D5943373420-if00
+/dev/serial/by-id/usb-STMicroelectronics_STLINK-V3_002700073156501320323443-if02
+
+By-path
+--------------------------------------------------------------------------------
+/dev/serial/by-path/pci-0000:00:14.0-usb-0:2:1.0
+/dev/serial/by-path/pci-0000:00:14.0-usb-0:1:1.2
 ```
 
 I set the putty terminal configuration to 
@@ -339,20 +352,22 @@ I set the putty terminal configuration to
   * Keyboard Function: Keys VT100
   * Remote character set: CP850
 
-For tio
+With `tio`
 ```
-tio --map ICRNL,INLCRNL /dev/ttyACM0 
+tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-spyr.ch_4TH_Calculator_43003F0013504D5943373420-if00 
 ```
 
 The greeting screen should apear after pushing the **TERM** button on the Calculator:
 ```
-Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
-
-Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 2023 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics
+4TH Calculator
+--------------
+Mecrisp-Cube 1.6.0 deb for STM32WB Nucleo, 63/128 KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch
+  * Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
+  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics 
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
-include 0:/etc/rc.local
+  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+  * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)
 ```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
 ```

@@ -102,7 +102,19 @@ register 10 cells 0 fill
 : r/s ( -- ) \ not used yet
 ;
 
+: ffct ( -- ) \ user defined float function
+;
+
+: fct ( -- ) \ user defined integer function
+;
+
+$ae01 variable display_off
+$af01 variable display_on
+
 : off ( -- ) \ not used yet
+  display_off oledcmd
+  \ wait for key
+  display_on oledcmd
 ;
 
 : octal ( -- )

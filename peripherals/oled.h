@@ -88,6 +88,8 @@
 typedef enum {OLED_FONT6X8, OLED_FONT8X8, OLED_FONT8X16, OLED_FONT12X16} OLED_FontT;
 
 void OLED_init(void);
+void OLED_off(void);
+void OLED_on(void);
 void OLED_sendCommand(const uint8_t *command);
 void OLED_clear(void);
 void OLED_update(void);
