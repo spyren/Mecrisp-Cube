@@ -17,8 +17,8 @@ A small pocket calculator for programmers and engineers, a mix between HP-42 and
 This projetc fill the bill, at least for me.
 
 I had all the parts in my drawer, leftovers from other projects. But other parts can easily be used.
-The display is a bit small for my eyes, I will build another calculator with a bigger display and a 128x64 reolution, 
-but this calculator will exceed the business crad dimension.
+The display is a bit small for my eyes, I will build another calculator with a bigger display and a 128x64 resolution, 
+but this calculator will exceed the business card dimension.
 
 It is a good opportunity to show how good Forth works on modern hardware.
 
