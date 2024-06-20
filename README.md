@@ -173,9 +173,11 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
 
 #### Solder push buttons
+<img src="/sdcard/man/img/buttons.jpg" width="200">
 Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
 
 #### Wire the buttons 
+<img src="/sdcard/man/img/button-row-column.jpg" width="200">
 Wire the buttons to columns and rows on the perfboard bottom layer. 
 Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
 
@@ -342,7 +344,7 @@ For tio
 tio --map ICRNL,INLCRNL /dev/ttyACM0 
 ```
 
-The greeting screen should apear after pushing the TERMINAL button on the Calculator:
+The greeting screen should apear after pushing the **TERM** button on the Calculator:
 ```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
