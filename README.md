@@ -267,9 +267,9 @@ If the battery has a molex connector, no wiring/soledrin is required.
 
 <table>
   <tr>
-    <td><img src="/sdcard/man/img/overlay.svg">
+    <td><img src="/sdcard/man/img/overlay.svg" width="200">
  </td>
-    <td><img src="/sdcard/man/img/overlay.png"></td>
+    <td><img src="/sdcard/man/img/overlay.png" width="200"></td>
   </tr>
 </table> 
 
