@@ -264,6 +264,9 @@ Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer.
 If the battery has a molex connector, no wiring/soledrin is required.
 
 #### Keyboard Overlay
+
+<img src="/sdcard/man/img/overlay.svg">
+
 1. Print the keyboard overlay to heavy weight white paper
 2. Cut out the overlay
 3. Laminate the overlay
