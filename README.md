@@ -22,53 +22,6 @@ but this calculator will exceed the business card dimension.
 
 It is a good opportunity to show how good Forth works on modern hardware.
 
-## About Forth
-Forth is an interactive and extensible language, with built-in lexical analysis 
-(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
-4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
-
-Forth is perfect for embedded systems where some sort of user interactivity 
-like CLI and extensibility (at runtime) are needed. 
-
-C & Forth in the 21st Century. C and Forth are both about 50 years old. 
-The combination of the strength of this two worlds results in a powerful 
-system that outperforms other much newer systems like Python. 
-Good design withstands the test of time.
-
-The goal of Mecrisp-Cube is to be a complete Forth programming environment 
-for STM32 MCUs. There are three flavors (branches) available:
-
-  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
-    [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
-    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
-    In work [Flipper Zero](../Flipper) (`Flipper`):
-  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
-  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
-
-May the Forth Be With You!
-
-
-## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
-
-For this project you only need the dongle.
-
-If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
-you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
-
-The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
-and LEDs and switches (buttons).
-
-STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
-Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
-Developed with the same technology as the ultra-low power STM32L4 microcontrollers, 
-the STM32WB MCU series provides the same digital and analog peripherals suitable 
-for applications requiring an extended battery life and complex functionalities. 
-If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
-Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
-
-![](/sdcard/man/img/stm32wb-nucleo.jpg)
-
-
 ## Features
 
 ### Calculator
@@ -132,6 +85,53 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
     * OLED display 128x32 pixel 
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
+
+
+## About Forth
+Forth is an interactive and extensible language, with built-in lexical analysis 
+(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
+4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
+
+Forth is perfect for embedded systems where some sort of user interactivity 
+like CLI and extensibility (at runtime) are needed. 
+
+C & Forth in the 21st Century. C and Forth are both about 50 years old. 
+The combination of the strength of this two worlds results in a powerful 
+system that outperforms other much newer systems like Python. 
+Good design withstands the test of time.
+
+The goal of Mecrisp-Cube is to be a complete Forth programming environment 
+for STM32 MCUs. There are three flavors (branches) available:
+
+  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
+    [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
+    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
+    In work [Flipper Zero](../Flipper) (`Flipper`):
+  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
+  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+
+May the Forth Be With You!
+
+
+## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
+
+For this project you only need the dongle.
+
+If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
+you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
+
+The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
+and LEDs and switches (buttons).
+
+STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
+Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
+Developed with the same technology as the ultra-low power STM32L4 microcontrollers, 
+the STM32WB MCU series provides the same digital and analog peripherals suitable 
+for applications requiring an extended battery life and complex functionalities. 
+If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
+Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
+
+![](/sdcard/man/img/stm32wb-nucleo.jpg)
 
 
 ## Getting Started
