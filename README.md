@@ -325,10 +325,10 @@ $ <b>cubepgmcli -c port=swd -rdu</b>
 Connect the WB55 Dongle USB to the PC. Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
 With `tio` you can list available devices
-`
+```
 $ tio -L
 
-`
+```
 
 I set the putty terminal configuration to 
 
@@ -340,12 +340,12 @@ I set the putty terminal configuration to
   * Remote character set: CP850
 
 For tio
-`
+```
 tio --map ICRNL,INLCRNL /dev/ttyACM0 
-`
+```
 
 The greeting screen should apear after pushing the **TERM** button on the Calculator:
-`
+```
 Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 
 Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 2023 peter@spyr.ch
@@ -353,11 +353,11 @@ Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 202
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
 include 0:/etc/rc.local
-`
+```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
-`
+```
 23 5 / .
-`
+```
 This looks like this on your terminal (**bold** is the Forth answer):
 <pre>
 23 5 / .[CR] <b>4  ok.</b>
@@ -367,13 +367,13 @@ If you don't like it, [change it](/sdcard/man/FileSystem.md#shell-prompt).
 `[CR]` is the Enter-key.
 
 Type in your first Forth program (create a word in the RAM dictionray):
-`
+```
 : hello ." World" ;
-`
+```
 and execute the the program
-`
+```
 hello 
-`
+```
 again the terminal output:
 <pre>
 : hello ." World" ;[CR]  <b>ok.</b>
@@ -381,10 +381,10 @@ hello[CR] <b>World ok.</b>
 </pre>
 The program `hello` ist not persistent, after power cycle or even reset the RAM dictionray is erased. 
 But it is easy to add a word to the Flash dictionray:
-`
+```
 compiletoflash
 : hello ." World" ;
-`
+```
 The program source is not saved, only the executable machine code is compiled into the flash. 
 You can use the built-in editor [vi](/sdcard/man/EditorVi.md) and save your source to the 
 [filesystem](/sdcard/man/FileSystem.md) either on internal flash drive `0:` or on the microSD card drive `1:`.
@@ -393,7 +393,7 @@ The following part is only for people who are interested how Forth works and hav
 the ARM Assembler.
 There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but it is stored 
 as `00` `B5`):
-`
+```
 see hello
 08043558: B500  push { lr }
 0804355A: F7BF  bl  08002BE4  -->  .' World'
@@ -402,13 +402,13 @@ see hello
 08043560: 726F
 08043562: 646C
 08043564: BD00  pop { pc }
-`
+```
 The dictionray entry looks like this (you can see the 'hello' and the string constant 'World'):
-`
+```
 $08043558 10 dump
 08043550 :  00 00 05 68 65 6C 6C 6F   00 B5 BF F7 43 FB 05 57  | ...hello  ....C..W |
 08043560 :  6F 72 6C 64 00 BD 00 00   FF FF FF FF FF FF FF FF  | orld....  ........ |
-`
+```
 The compiled word `hello` needs only 14 bytes in the dictionary.
 
 ### Buttons, LED
