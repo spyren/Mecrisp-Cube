@@ -76,7 +76,7 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
     * Single precision floating-point IEEE.754
     * Elementary arithmetic
     * trigometric and exponential functions
-    * Display modes: fixed, scientific, engineering (metric units)
+    * Display modes: fixed, scientific, engineering (metric unit prefix)
   * Integer
     * Hex, decimal, octal, and binary number base
     * Signed (2's complement) and unsigned numbers
