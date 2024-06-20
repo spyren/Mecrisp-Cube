@@ -473,8 +473,11 @@ The idea behind this is to use as much of the Forth interpreter as possible.
 There is already a data stack, but with 64 elements and not only x, y, z, and t registers. 
 The calculator keyboard acts as an ordinary keyboard (terminal), but one key can send several characters (strings), 
 e.g. the key COS sends a string " fcos\n". The interpreter executes the float cosinus on the top of the stack. 
-After the successful execution of a line, the stack content is then shown on the display.
+After the successful execution of a line, the stack content is then shown on the display. 
+Digits (0..9, A..F) are forwarded to the display and are interpreted after hitting the ENTER key. 
+If you connect a terminal and hit the TERM key, you can see how the interpreter works. 
 
+For implementation details see
 * [button.c](peripherals/button.c)
 * [calculator.fs](sdcard/fsr/calculator.fs)
 
