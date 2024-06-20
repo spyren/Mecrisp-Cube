@@ -217,7 +217,7 @@ Only needed if you want to debug the board.
 | 3V3         | CN1.6  | 3V3       |  1           |
 
 
-### Place the Diodes (optional)
+#### Place the Diodes (optional)
 I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
 You can also use two 1N4148 diodes.
 
