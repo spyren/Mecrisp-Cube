@@ -280,7 +280,7 @@ If the battery has a molex connector, no wiring/soledrin is required.
 5. Cut holes for the push buttons
 
 
-### Flash the 4TH Calculator Firmware
+#### Flash the 4TH Calculator Firmware
 
 Flash the 4TH Calculator [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCubeCalcFS.bin` to the WB55 Nucleo dongle. Using the built-in USB DFU bootloader.
 
@@ -296,7 +296,7 @@ $ <b>cubepgmcli -c port=USB1 -d MecrispCubeCalcFS.bin 0x8000000 </b>
 Or use the STM32CubeProgrammer GUI.
 
 
-### Update BLE Stack (optional)
+#### Update BLE Stack (optional)
 
 You can find the BLE Stack and FUS in 
 [STM32CubeWB](https://www.st.com/en/embedded-software/stm32cubewb.html)
