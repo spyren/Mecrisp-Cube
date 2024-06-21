@@ -291,15 +291,15 @@ boot-loader. This bootloader works via USB. As programming tool I use the
 CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
 
 1. For programming the switch SW2 has to be in position BOOT0.
-2. Connect USB with the computer.
-3. Flash the firmware with STM32CubeProgrammer, either with the CLI or the GUI
+2. Connect the dongle USB with the computer.
+3. Flash the firmware with STM32CubeProgrammer, either with the CLI (see below) or the GUI (open file .., Download)
+4. Disconnect dongle from the computer.
+5. Set the switch SW2 to position 0.
+
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
 $ <b>cubepgmcli -c port=USB1 -d MecrispCubeCalcFS.bin 0x8000000 </b>
 </pre>
-4. Disconnect dongle from the computer.
-5. Set the switch SW2 to position 0.
-
 
 #### Update BLE Stack (optional)
 
@@ -309,17 +309,16 @@ or from [GitHub](https://github.com/STMicroelectronics/STM32CubeWB),
 in the directory `Projects/STM32WB_Copro_Wireless_Binaries`. 
 At time of writing the FUS is Version 1.2.0, the stack v1.19.1. The STM32CubeProgrammer is v2.16.0.
 
-Nucleo board: Using USB_USER interface and the built-in bootloader (activate with jumper between CN7.5 and CN7.7)
+1. For programming the switch SW2 has to be in position BOOT0.
+2. Connect the dongle USB with the computer.
+3. Flash the firmware with STM32CubeProgrammer, either with the CLI (see below) or the GUI (use the firmware upgrade service, start address usually 0x080CE000)
+4. Disconnect dongle from the computer.
+5. Set the switch SW2 to position 0.
+
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
 $ <b>cd STM32Cube_FW_WB_V1.19.1/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CB000 firstinstall=1</b>
-</pre>
-
-Alternate way to erase the flash memory (change the Memory Read Protection from Level 1 to level 0):
-<pre>
-$ <b>cubepgmcli -c port=swd -ob rdp=0xbb</b>
-$ <b>cubepgmcli -c port=swd -rdu</b>
+$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CE000 firstinstall=1</b>
 </pre>
 
 
