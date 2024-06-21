@@ -290,12 +290,15 @@ The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in
 boot-loader. This bootloader works via USB. As programming tool I use the 
 CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
 
+1. For programming the switch SW2 has to be in position BOOT0.
+2. Connect USB with the computer.
+3. Flash the firmware with STM32CubeProgrammer, either with the CLI or the GUI
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
 $ <b>cubepgmcli -c port=USB1 -d MecrispCubeCalcFS.bin 0x8000000 </b>
 </pre>
-
-Or use the STM32CubeProgrammer GUI.
+4. Disconnect dongle from the computer.
+5. Set the switch SW2 to position 0.
 
 
 #### Update BLE Stack (optional)
