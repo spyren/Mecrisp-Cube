@@ -593,7 +593,7 @@ with *4TH Calculator*. If not, see http://www.gnu.org/licenses/.
 
 * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
 * [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
-* https://jeelabs.org/article/1612b/ Forth in 7 easy steps, **Jean-Claude Wippler**
+* [Learn X in Y minutes](https://learnxinyminutes.com/docs/forth/) Where X=Forth
 * https://forth-ev.de/ Forth-Gesellschaft e.V.
 * https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
 
