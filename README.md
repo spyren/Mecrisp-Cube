@@ -39,7 +39,7 @@ It is a good opportunity to show how good Forth works on modern hardware.
   <tr>
     <td><img src="/sdcard/man/img/calculator-top.jpg" width="500">
  </td>
-    <td><img src="/sdcard/man/img/calculator-bottom.jpg" width="500"></td>
+    <td><img src="/sdcard/man/img/calculator-bottom.jpg" width="400"></td>
   </tr>
 </table> 
 
