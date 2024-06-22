@@ -173,7 +173,7 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 
 ### Build the Hardware
 
-![calculator](/sdcard/man/img/schematc.png)
+![schematic](/sdcard/man/img/schematic.png)
 
 #### Cut the perfboard
 Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
