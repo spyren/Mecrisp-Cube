@@ -34,7 +34,15 @@ It is a good opportunity to show how good Forth works on modern hardware.
     * Signed (2's complement) and unsigned numbers
     * Elementary arithmetic
     * logical and shift operations
-  
+
+<table>
+  <tr>
+    <td><img src="/sdcard/man/img/calculator-top.jpg" width="500">
+ </td>
+    <td><img src="/sdcard/man/img/calculator-bottom.jpg" width="500"></td>
+  </tr>
+</table> 
+
 ### Standard Mecrisp-Cube Forth Features
   * 63 KiB RAM dictionary 
   * 128 KiB Flash Forth dictionary 
