@@ -215,6 +215,8 @@ Only needed if you want to debug the board.
 
 
 #### Place the Diodes (optional)
+<img src="/sdcard/man/img/diode-bat54c.jpg" width="200">
+
 I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
 You can also use two 1N4148 diodes.
 
