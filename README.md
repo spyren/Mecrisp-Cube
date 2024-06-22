@@ -253,7 +253,7 @@ Solder or glue the OLED Display to the perfboard top layer.
 |*Description*|*Dongle*|*Function* | *OLED*       |
 |-------------|--------|-----------|--------------|
 | GND         | CN1.1  | GND       | GND          |
-| 3V3         | CN1.6  | 3V3       | 3V3          |
+| 3V3         | CN1.6  | 3V3       | VCC          |
 | PB8         | CN2.1  | D15 SCL   | SCL          |
 | PB9         | CN2.2  | D14 SDA   | SDA          |
 
@@ -261,7 +261,7 @@ Solder or glue the OLED Display to the perfboard top layer.
 Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
 
 #### Wire the Battery (optional)
-If the battery has a molex connector, no wiring/soledrin is required.
+If the battery has a molex connector, no wiring/solderin is required.
 
 #### Keyboard Overlay
 
@@ -273,7 +273,7 @@ If the battery has a molex connector, no wiring/soledrin is required.
   </tr>
 </table> 
 
-1. Print the keyboard overlay to heavy weight white paper
+1. Print the keyboard overlay on heavy weight white paper
 2. Cut out the overlay
 3. Laminate the overlay
 4. Cut out the laminated overlay
