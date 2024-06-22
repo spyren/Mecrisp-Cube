@@ -7,7 +7,7 @@
 </table> 
 
 # 4TH Calculator (Mecrisp-Cube calc branch)
-I am using HP calculators for more than 45 years. I wrote my very first program on a HP-41. 
+I am using HP calculators for more than 45 years and wrote my very first program on a HP-41. 
 There are many excellent HP calculator emulators for PCs and smart phones and HP still sells pocket 
 [calculators]([https://www.hp.com/us-en/calculators.html](https://hpofficesupply.com/product-category/calculators/)).
 Why should I build one by myself? The HP-15 Collector’s Edition could be the right one and it even can emulate the HP-16, 
@@ -58,7 +58,9 @@ It is a good opportunity to show how good Forth works on modern hardware.
   * USB
     * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
       serial communication via USB, redirect console I/O like cdc-emit, cdc-key
-    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS). You can use your Forth system as a flash drive (also thumb drive [US], memory stick [UK], and pen drive/pendrive elsewhere)
+    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS).
+      You can use your Forth system as a flash drive (also thumb drive [US], memory stick [UK],
+      and pen drive/pendrive elsewhere)
   * BLE 5.0 GAP Peripheral Role (STM32WB)
     * DIS Device Information Service
     * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
