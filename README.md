@@ -1,10 +1,4 @@
-<table>
-  <tr>
-    <td><img src="/sdcard/man/img/nucleo-header.jpg">
- </td>
-    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
-  </tr>
-</table> 
+[!](/sdcard/man/img/calculator-header.jpg)
 
 # 4TH Calculator (Mecrisp-Cube calc branch)
 I am using HP calculators for more than 45 years and wrote my very first program on a HP-41. 
@@ -163,8 +157,7 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
-    * Use the built in Eclipse console (but no LF)
-    * for details see [/sdcard/man/TerminalIO.md]
+    * for details see [Terminal-IO](/sdcard/man/TerminalIO.md)
   * Hot glue or double sided mounting tape e.g. Tesa 55750
   * Laminating machine (optional) 
   * STM32CubeProgrammer
