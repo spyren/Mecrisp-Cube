@@ -164,7 +164,7 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
     * Use the built in Eclipse console (but no LF)
-    * for details see [TerminalIO]
+    * for details see [/sdcard/man/TerminalIO.md]
   * Hot glue or double sided mounting tape e.g. Tesa 55750
   * Laminating machine (optional) 
   * STM32CubeProgrammer
