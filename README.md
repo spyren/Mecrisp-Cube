@@ -285,7 +285,7 @@ If the battery has a molex connector, no wiring/solderin is required.
 2. Cut out the overlay
 3. Laminate the overlay
 4. Cut out the laminated overlay
-5. Cut holes for the push buttons
+5. Cut holes for the push buttons, I use a leather puncher (4 mm holes)
 
 
 #### Flash the 4TH Calculator Firmware
@@ -294,7 +294,7 @@ Flash the 4TH Calculator [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCu
 
 The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in 
 boot-loader. This bootloader works via USB. As programming tool I use the 
-CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
+the [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
 
 1. For programming the switch SW2 has to be in position BOOT0.
 2. Connect the dongle USB with the computer.
@@ -324,7 +324,7 @@ At time of writing the FUS is Version 1.2.0, the stack v1.19.1. The STM32CubePro
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
 $ <b>cd STM32Cube_FW_WB_V1.19.1/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CE000 firstinstall=1</b>
+$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CE000 firstinstall=0</b>
 </pre>
 
 
@@ -332,7 +332,7 @@ $ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CE0
 
 Connect the WB55 Dongle USB to the PC. Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
-With `tio` you can list available devices
+With `tio` you can list available devices, look for 4TH devices
 ```
 $ tio -l
 Device            TID     Uptime [s] Driver           Description
@@ -351,7 +351,7 @@ By-path
 /dev/serial/by-path/pci-0000:00:14.0-usb-0:1:1.2
 ```
 
-I set the putty terminal configuration to 
+I set the terminal configuration (e.g. putty) to 
 
   * Implicit CR in every LF 
   * Local echo: off
@@ -388,6 +388,9 @@ This looks like this on your terminal (**bold** is the Forth answer):
 The `ok.` is the Forth prompt and apears at the end of the line (Forth does it differently, like most things ;-). 
 If you don't like it, [change it](/sdcard/man/FileSystem.md#shell-prompt). 
 `[CR]` is the Enter-key.
+
+The display on the calculator is also updated. The display number mode is probably FLOAT, to see decimal values, hit
+the **DEC** button.
 
 Type in your first Forth program (create a word in the RAM dictionray):
 ```
