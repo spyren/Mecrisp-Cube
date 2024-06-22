@@ -215,12 +215,13 @@ Only needed if you want to debug the board.
 
 
 #### Place the Diodes (optional)
-<img src="/sdcard/man/img/diode-bat54c.jpg" width="200">
+<img src="/sdcard/man/img/diode-bat54c.jpg" width="500">
 
 I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
 You can also use two 1N4148 diodes.
 
 #### Wire the USB connector
+<img src="/sdcard/man/img/calculator-bottom-cut.jpg" width="500">
 
 USB breakout without charger:
 
