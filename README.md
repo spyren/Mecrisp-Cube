@@ -1,4 +1,4 @@
-[!](/sdcard/man/img/calculator-header.jpg)
+![calculator](/sdcard/man/img/calculator-header.jpg)
 
 # 4TH Calculator (Mecrisp-Cube calc branch)
 I am using HP calculators for more than 45 years and wrote my very first program on a HP-41. 
