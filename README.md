@@ -34,12 +34,13 @@ It is a good opportunity to show how good Forth works on modern hardware.
     * Signed (2's complement) and unsigned numbers
     * Elementary arithmetic
     * logical and shift operations
+  * Forth programmable
 
 <table>
   <tr>
     <td><img src="/sdcard/man/img/calculator-top.jpg" width="500">
  </td>
-    <td><img src="/sdcard/man/img/calculator-bottom.jpg" width="400"></td>
+    <td><img src="/sdcard/man/img/calculator-bottom.jpg" width="450"></td>
   </tr>
 </table> 
 
