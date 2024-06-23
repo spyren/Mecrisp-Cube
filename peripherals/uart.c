@@ -43,6 +43,7 @@
 #include "main.h"
 #include "uart.h"
 #include "myassert.h"
+#include "stm32_lpm.h"
 
 // Rx/Tx Buffer Length
 // *******************
@@ -86,7 +87,8 @@ static const osThreadAttr_t UART_RxThreadAttr = {
 osMutexId_t UART_MutexID;
 const osMutexAttr_t UART_MutexAttr = {
 		NULL,				// no name required
-		osMutexPrioInherit,	// attr_bits
+		osMutexPrioInherit,	// attr_bits#include "stm32_lpm.h"
+
 		NULL,				// memory for control block
 		0U					// size for control block
 };
@@ -460,6 +462,7 @@ static void UART_TxThread(void *argument) {
 		// blocked till a character is in the Tx queue
 		status = osMessageQueueGet(UART_TxQueueId, &UART_TxBuffer, 0, osWaitForever);
 		if (status == osOK) {
+			UTIL_LPM_SetStopMode(1U << CFG_LPM_UART, UTIL_LPM_DISABLE);
 			// only one thread is allowed to use the UART
 			osMutexAcquire(UART_MutexID, osWaitForever);
 			// send the character
@@ -471,6 +474,7 @@ static void UART_TxThread(void *argument) {
 
 			// blocked till character is sent
 			status = osThreadFlagsWait(UART_CHAR_SENT, osFlagsWaitAny, 5);
+			UTIL_LPM_SetStopMode(1U << CFG_LPM_RTSPI, UTIL_LPM_ENABLE);
 		} else {
 			// can't read the queue
 			Error_Handler();
@@ -482,6 +486,8 @@ static void UART_TxThread(void *argument) {
 /**
   * @brief
   * 	Function implementing the UART Rx thread.
+  *
+  * 	Not LPM capable
   * @param
   * 	argument: Not used
   * @retval

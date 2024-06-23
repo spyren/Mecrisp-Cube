@@ -50,6 +50,7 @@
 #include "main.h"
 #include "bsp.h"
 #include "button.h"
+#include "stm32_lpm.h"
 
 
 // Private function prototypes
@@ -602,6 +603,7 @@ int BSP_getAnalogPin(int pin_number) {
 	int return_value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -615,6 +617,7 @@ int BSP_getAnalogPin(int pin_number) {
 	}
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return_value = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop_IT(&hadc1);
@@ -636,6 +639,7 @@ int BSP_getVref(void) {
 	int value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -654,6 +658,7 @@ int BSP_getVref(void) {
 	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
 }
@@ -673,6 +678,7 @@ int BSP_getVbat(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -691,6 +697,7 @@ int BSP_getVbat(void) {
 	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return 3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) ;
 }
@@ -710,6 +717,7 @@ int BSP_getCpuTemperature(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -728,6 +736,7 @@ int BSP_getCpuTemperature(void) {
 	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_TEMPERATURE(ref_voltage_mv, value, ADC_RESOLUTION_12B);
 }

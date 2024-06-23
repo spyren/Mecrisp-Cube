@@ -131,6 +131,9 @@ static void put_key_string(uint8_t c);
 // Global Variables
 // ****************
 
+// Locale Variables
+// ****************
+static uint8_t startup = TRUE;
 
 // Hardware resources
 // ******************
@@ -505,7 +508,8 @@ int BUTTON_putkey(const char c) {
 }
 
 
-/**
+/**	uint8_t startup = TRUE;
+ *
  *  @brief
  *      Go into stop mode till on-button is pressed
  *
@@ -518,6 +522,7 @@ void BUTTON_OnOff(void) {
 	OLED_off();
 
 	osMutexAcquire(BUTTON_MutexID, 100);
+	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI1_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI2_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI3_IRQn);
@@ -536,17 +541,9 @@ void BUTTON_OnOff(void) {
 	}
 	osDelay(10);
 
-	if (TINY_tud_cdc_connected) {
-		// USB connected -> do not go into stop mode
-		// wait till on-button is pressed
-		while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) != BUTTON_PRESSED) {
-			osDelay(10);
-		}
-	} else {
-		// wakeup on EXTI0 (column 0)
-
-		PWR_EnterStopMode();
-		PWR_ExitStopMode();
+	// wait till on-button is pressed
+	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) != BUTTON_PRESSED) {
+		osDelay(10);
 	}
 
 	// wait till off-button is released
@@ -561,6 +558,7 @@ void BUTTON_OnOff(void) {
 	for (row=0; row<BUTTON_ROW_COUNT; row++) {
 		HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
 	}
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 	HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
@@ -653,16 +651,24 @@ static void put_key_string(uint8_t c) {
 	static int shift = FALSE;
 	static int mode_float = TRUE;
 
-	switch (c) {
-	case BUTTON_SHIFT:
+	if (startup) {
+		switch (c) {
+		case BUTTON_ON_OFF:
+			// fallthru
+		case BUTTON_CLOCK:
+			// fallthru
+			break;
+		case BUTTON_CALC:
+			startup = FALSE;
+			break;
+		default:
+			// ignore
+			return;
+		}
+	}
+
+	if (c == BUTTON_SHIFT) {
 		shift = !shift;
-		break;
-	case BUTTON_ON_OFF:
-		break;
-	case BUTTON_CLOCK:
-		break;
-	case BUTTON_CALC:
-		break;
 	}
 
 	if (shift) {

@@ -64,6 +64,7 @@
 
 #include "app_common.h"
 #include "cmsis_os.h"
+#include "stm32_lpm.h"
 
 #include "usb_cdc.h"
 
@@ -139,6 +140,7 @@ void tud_umount_cb(void) {
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en) {
   (void) remote_wakeup_en;
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_USB, UTIL_LPM_ENABLE);
 }
 
 // Invoked when usb bus is resumed

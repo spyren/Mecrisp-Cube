@@ -27,17 +27,20 @@
 #include "stm32wbxx_hal.h"
 #include "bsp/board_api.h"
 #include "board.h"
+#include "stm32_lpm.h"
 
 //--------------------------------------------------------------------+
 // Forward USB interrupt events to TinyUSB IRQ Handler
 //--------------------------------------------------------------------+
 void USB_HP_IRQHandler(void)
 {
+  UTIL_LPM_SetStopMode(1U << CFG_LPM_USB, UTIL_LPM_DISABLE);
   tud_int_handler(0);
 }
 
 void USB_LP_IRQHandler(void)
 {
+  UTIL_LPM_SetStopMode(1U << CFG_LPM_USB, UTIL_LPM_DISABLE);
   tud_int_handler(0);
 }
 
