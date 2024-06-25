@@ -25,4 +25,7 @@ Middlewares/ST/STM32_WPAN/utilities/utilities_common.h
 Middlewares/Third_Party/
 RemoteSystemsTempFiles/
 Utilities/
+sdcard/man/kicad/kicad-backups
+sdcard/man/kicad/4TH_calculator/kicad-backups
+sdcard/man/kicad/4TH_calculator/4TH_calculator-backups
 
