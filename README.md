@@ -95,12 +95,17 @@ You have to convert
 float to integer <kbd>**F&#8594;S**</kbd> if you want to use a float number in the integer mode 
 or vice versa <kbd>**S&#8594;F**</kbd>. 
 
+> [!WARNING]
+> If you enter a number with a <kbd>**.**</kbd> but without an exponent e.g. `12.34` Forth interprets 
+> this as a double cell integer and put `0` to the x register and `1234` to the y register.
+
 <kbd>**R&#8595;**</kbd> is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
 
 <kbd>**STO**</kbd> and <kbd>**RCL**</kbd> takes x as register index 0..9. 
 
-If there is an error, the entire stack will be erased. No error message is showed on display,
-but you can see the error message in the terminal.
+> [!CAUTION]
+> If there is an error, the entire stack will be erased. No error message is showed on display,
+> but you can see the error message in the terminal.
 
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
