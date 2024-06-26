@@ -81,6 +81,12 @@ It is a good opportunity to show how good Forth works on modern hardware.
   * [Assertion and Logging](/sdcard/man/assert.md)
 
 
+## How to Use the Calculator
+
+There are a few differences in operation compared to HP calculators. 
+This applies in particular to entering numbers.
+Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `10e12`.
+
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
   * 1 push button
