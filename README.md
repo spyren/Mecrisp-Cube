@@ -107,6 +107,8 @@ or vice versa <kbd>**S&#8594;F**</kbd>.
 > If there is an error, the entire stack will be erased. No error message is showed on display,
 > but you can see the error message in the terminal.
 
+[RPN crash course](https://www.hpmuseum.org/rpn.htm#learn).
+
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
