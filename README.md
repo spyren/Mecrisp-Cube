@@ -88,19 +88,17 @@ This applies in particular to entering numbers.
 Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `10e12`, 
 or end in a metric unit prefix like `10k`, `270n`, `3.3u`.
 
-**ENTER** reads the number and push it onto the stack. An **ENTER** without a number do not
+<kbd>**ENTER**</kbd> reads the number and push it onto the stack. An <kbd>**ENTER**</kbd> without a number do not
 duplicate the x register (top of stack). If you want to duplicate, you have to use **DUP**.
 A stack element is always 32 bit, the content can be float or integer. You have to convert
-float to integer **F&#8594;S** or vice versa **S&#8594;F**. 
+float to integer <kbd>**F&#8594;S**</kbd> or vice versa <kbd>**S&#8594;F**</kbd>. 
 
-**R&#8595;** is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
+<kbd>**R&#8595;**</kbd> is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
 
-**STO** and **RCL** takes x as register index 0..9. 
+<kbd>**STO**</kbd> and <kbd>**RCL**</kbd> takes x as register index 0..9. 
 
 If there is an error, the entire stack will be erased. No error message is showed on display,
 but you can see the error message in the terminal.
-
-<kbd>**ENTER**</kbd>
 
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
