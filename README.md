@@ -85,7 +85,7 @@ It is a good opportunity to show how good Forth works on modern hardware.
 
 There are a few differences in operation compared to HP calculators. 
 This applies in particular to entering numbers.
-Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `10e12`, 
+Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `-10e-12`, 
 or end in a metric unit prefix like `10k`, `270n`, `3.3u`.
 
 <kbd>**ENTER**</kbd> reads the number and push it onto the stack. An <kbd>**ENTER**</kbd> without a number do not
@@ -540,7 +540,7 @@ There is already a data stack, but with 64 elements and not only x, y, z, and t 
 The calculator keyboard acts as an ordinary keyboard (terminal), but one key can send several characters (string), 
 e.g. the key <kbd>**COS**</kbd> sends a string `" fcos\n"`. The interpreter executes the float cosinus on the top of the stack. 
 After the successful execution of a line, the stack content is then shown on the display. 
-Digits (<kbd>**0**</kbd> .. <kbd>**9**</kbd>, <kbd>**A**</kbd> .. <kbd>**F**</kbd>) are 
+Digits (<kbd>**0**</kbd> .. <kbd>**9**</kbd>, <kbd>**A**</kbd> .. <kbd>**F**</kbd>, <kbd>**&plusmn;**</kbd>,  <kbd>**.**</kbd>) are 
 forwarded to the display and are interpreted after hitting the <kbd>**ENTER**</kbd> key. 
 If you connect a terminal and hit the <kbd>**TERM**</kbd> key, you can see how the interpreter works. 
 
