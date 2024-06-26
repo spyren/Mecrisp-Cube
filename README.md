@@ -90,8 +90,10 @@ or end in a metric unit prefix like `10k`, `270n`, `3.3u`.
 
 <kbd>**ENTER**</kbd> reads the number and push it onto the stack. An <kbd>**ENTER**</kbd> without a number do not
 duplicate the x register (top of stack). If you want to duplicate, you have to use <kbd>**DUP**</kbd>.
-A stack element is always 32 bit, the content can be float or integer. You have to convert
-float to integer <kbd>**F&#8594;S**</kbd> or vice versa <kbd>**S&#8594;F**</kbd>. 
+A stack element is always 32 bit, the content can be float or integer. 
+You have to convert
+float to integer <kbd>**F&#8594;S**</kbd> if you want to use a float number in the integer mode 
+or vice versa <kbd>**S&#8594;F**</kbd>. 
 
 <kbd>**R&#8595;**</kbd> is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
 
