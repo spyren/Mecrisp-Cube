@@ -81,6 +81,35 @@ It is a good opportunity to show how good Forth works on modern hardware.
   * [Assertion and Logging](/sdcard/man/assert.md)
 
 
+## How to Use the Calculator
+
+There are a few differences in operation compared to HP calculators. 
+This applies in particular to entering numbers.
+Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `-10e-12`, 
+or end in a metric unit prefix like `10k`, `270n`, `3.3u`.
+
+<kbd>**ENTER**</kbd> reads the number and push it onto the stack. An <kbd>**ENTER**</kbd> without a number do not
+duplicate the x register (top of stack). If you want to duplicate, you have to use <kbd>**DUP**</kbd>.
+A stack element is always 32 bit, the content can be float or integer. 
+You have to convert
+float to integer <kbd>**F&#8594;S**</kbd> if you want to use a float number in the integer mode 
+or vice versa <kbd>**S&#8594;F**</kbd>. 
+
+> [!WARNING]
+> If you enter a number with a <kbd>**.**</kbd> but without an exponent e.g. `12.34` Forth interprets 
+> this as a double cell integer and put `0` to the x register and `1234` to the y register.
+
+<kbd>**R&#8595;**</kbd> is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
+
+<kbd>**STO**</kbd> and <kbd>**RCL**</kbd> takes x as register index 0..9. 
+
+> [!CAUTION]
+> If there is an error, the entire stack will be erased. No error message is showed on display,
+> but you can see the error message in the terminal.
+
+[RPN crash course](https://www.hpmuseum.org/rpn.htm#learn).
+
+
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
   * 1 push button
@@ -369,7 +398,7 @@ With `tio`
 tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-spyr.ch_4TH_Calculator_43003F0013504D5943373420-if00 
 ```
 
-The greeting screen should apear after pushing the **TERM** button on the Calculator:
+The greeting screen should apear after pushing the <kbd>**TERM**</kbd> button on the Calculator:
 ```
 4TH Calculator
 --------------
@@ -394,7 +423,7 @@ If you don't like it, [change it](/sdcard/man/FileSystem.md#shell-prompt).
 `[CR]` is the Enter-key.
 
 The display on the calculator is also updated. The display number mode is probably FLOAT, to see decimal values, hit
-the **DEC** button.
+the <kbd>**DEC**</kbd> button.
 
 Type in your first Forth program (create a word in the RAM dictionray):
 ```
@@ -518,10 +547,11 @@ Project -> Build Project
 The idea behind this is to use as much of the Forth interpreter as possible. 
 There is already a data stack, but with 64 elements and not only x, y, z, and t registers. 
 The calculator keyboard acts as an ordinary keyboard (terminal), but one key can send several characters (string), 
-e.g. the key **COS** sends a string `" fcos\n"`. The interpreter executes the float cosinus on the top of the stack. 
+e.g. the key <kbd>**COS**</kbd> sends a string `" fcos\n"`. The interpreter executes the float cosinus on the top of the stack. 
 After the successful execution of a line, the stack content is then shown on the display. 
-Digits (**0..9**, **A..F**) are forwarded to the display and are interpreted after hitting the **ENTER** key. 
-If you connect a terminal and hit the **TERM** key, you can see how the interpreter works. 
+Digits (<kbd>**0**</kbd> .. <kbd>**9**</kbd>, <kbd>**A**</kbd> .. <kbd>**F**</kbd>, <kbd>**&plusmn;**</kbd>,  <kbd>**.**</kbd>) are 
+forwarded to the display and are interpreted after hitting the <kbd>**ENTER**</kbd> key. 
+If you connect a terminal and hit the <kbd>**TERM**</kbd> key, you can see how the interpreter works. 
 
 For implementation details see
 * [button.c](peripherals/button.c)
