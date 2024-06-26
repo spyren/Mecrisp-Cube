@@ -510,6 +510,7 @@ remote: Compressing objects: 100% (860/860), done.
 remote: Total 8334 (delta 1458), reused 2059 (delta 1335), pack-reused 6114
 Receiving objects: 100% (8334/8334), 108.93 MiB | 13.49 MiB/s, done.
 Resolving deltas: 100% (5788/5788), done.
+psi@homer:~> git checkout calc 
 ```
 
 Import the project into the IDE:
@@ -520,7 +521,7 @@ Copy project into workspace
 Browse to Mecrisp-Cube directory
 ```
 
-Generate code from the STM32CubeMX `MecrispCube.ioc` file:
+Generate code from the STM32CubeMX `MecrispCubeCalc.ioc` file:
 
 ```
 Project -> Generate Code 
