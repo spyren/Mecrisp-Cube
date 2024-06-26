@@ -483,8 +483,6 @@ The LEDs on the dongle displays the status
   * *Green* USB enumerated
   * *Red* Error occured
   * *Blue* BLE connected
-  * *flashing Red* "disk" (serial flash or SD) write operation
-  * *flashing Yellow* "disk" (serial flash or SD) read operation
 
 
 ## Installing Development Environment 
