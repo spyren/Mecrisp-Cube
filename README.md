@@ -83,6 +83,8 @@ It is a good opportunity to show how good Forth works on modern hardware.
 
 ## How to Use the Calculator
 
+If the MECRISP CUBE4TH logo is shown, start the calculator with <kbd>**CALC**</kbd>.
+
 There are a few differences in operation compared to HP calculators. 
 This applies in particular to entering numbers.
 Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `-10e-12`, 
@@ -164,6 +166,8 @@ the STM32WB MCU series provides the same digital and analog peripherals suitable
 for applications requiring an extended battery life and complex functionalities. 
 If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
 Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
+
+The same MCU is used in the Flipper Zero.
 
 ![](/sdcard/man/img/stm32wb-nucleo.jpg)
 
