@@ -256,7 +256,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		" f>s\n", 			// r2, c3 F>S
 		" drop\n", 		    // r2, c4 CLx
 
-		" float\n", 		// r3, c0 FLOAT
+		" decimal float\n", // r3, c0 FLOAT
 		" hex int\n",		// r3, c1 HEX
 		" decimal int\n", 	// r3, c2 DEC
 		" octal int\n", 	// r3, c3 OCT
