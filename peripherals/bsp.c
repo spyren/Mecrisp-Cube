@@ -105,8 +105,8 @@ extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
 
 static uint32_t adc_calibration;
-static int sys_led_status = SYSLED_ACTIVATE;
-// static int sys_led_status = 0;
+//static int sys_led_status = SYSLED_ACTIVATE;
+static int sys_led_status = 0;
 
 
 // Public Functions

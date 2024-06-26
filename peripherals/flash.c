@@ -42,6 +42,7 @@
 #include "main.h"
 #include "flash.h"
 #include "myassert.h"
+#include "stm32_lpm.h"
 
 #define PROCESS_ID	11
 
@@ -117,6 +118,7 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FLASH, UTIL_LPM_DISABLE);
 
 	aquire_flash(FALSE);
 
@@ -134,6 +136,7 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 	release_flash(FALSE);
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FLASH, UTIL_LPM_ENABLE);
 	osMutexRelease(FLASH_MutexID);
 
 	if (return_value != HAL_OK) {
@@ -159,6 +162,7 @@ int FLASH_erasePage(uint32_t Address) {
 
 	// only one thread is allowed to use the flash
 	osMutexAcquire(FLASH_MutexID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FLASH, UTIL_LPM_DISABLE);
 
 	aquire_flash(TRUE);
 
@@ -178,6 +182,7 @@ int FLASH_erasePage(uint32_t Address) {
 
 	release_flash(TRUE);
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FLASH, UTIL_LPM_ENABLE);
 	osMutexRelease(FLASH_MutexID);
 	return return_value;
 }

@@ -514,7 +514,7 @@
  */
 #ifdef DEBUG
 // debug configuration
-#define CFG_LPM_SUPPORTED    1
+#define CFG_LPM_SUPPORTED    0
 #else
 // release configuration
 #define CFG_LPM_SUPPORTED    1
