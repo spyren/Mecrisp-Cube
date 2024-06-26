@@ -85,7 +85,15 @@ It is a good opportunity to show how good Forth works on modern hardware.
 
 There are a few differences in operation compared to HP calculators. 
 This applies in particular to entering numbers.
-Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `10e12`.
+Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `10e12`, 
+or end in a metric unit prefix like `10k`, `270n`, `3.3u`.
+
+**ENTER** reads the number and push it onto the stack. An **ENTER** without a number do not
+duplicate the x register (top of stack). If you want to duplicate, you have to use **DUP**.
+A stack element is always 32 bit, the content can be float or integer. You have to convert
+float to integer **F&#8594;S** or vice versa **S>F**. <kbd>ENTER</kbd>
+
+If there is an error, the entire stack will be erased.  
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
