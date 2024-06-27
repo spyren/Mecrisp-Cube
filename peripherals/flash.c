@@ -6,6 +6,8 @@
  *      The STM32WB has only one flash bank and the access to the flash
  *      during program/erase is not possible.
  *      Erase takes about 20 ms, program 2 ms.
+ *
+ *      Flash process is not real time!
  *  @file
  *      flash.c
  *  @author
@@ -71,7 +73,6 @@ static const osMutexAttr_t FLASH_MutexAttr = {
 
 // Variable used for Erase procedure
 static FLASH_EraseInitTypeDef EraseInitStruct;
-static uint32_t os_state;
 
 // Public Functions
 // ****************
@@ -127,10 +128,6 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 	data.word[0] = word1;
 	data.word[1] = word2;
-	if (HAL_FLASHEx_IsOperationSuspended()) {
-		osDelay(2);
-//		Error_Handler();
-	}
 	return_value = HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, Address,
 				data.doubleword);
 
@@ -149,7 +146,8 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 
 /**
- *  @brief
+ *  @brief//	osKernelRestoreLock(os_state);
+ *
  *      Erases a page (4 KiB) in the flash.
  *  @param[in]
  *      Address  first byte
@@ -195,14 +193,9 @@ int FLASH_erasePage(uint32_t Address) {
 // for details see AN5289 chapter 4.7 Flash memory management
 
 int aquire_flash(uint8_t Erase) {
-	int tries = 0;
 
 	while (HAL_HSEM_FastTake(2)) {
-		; // busy wait
-		if (tries++ > 100) {
-			ASSERT_fatal(0, ASSERT_FLASH_UNLOCK, 0);
-		}
-		osDelay(1);
+		;
 	}
 
 	ASSERT_fatal(HAL_FLASH_Unlock() != HAL_ERROR, ASSERT_FLASH_UNLOCK, 0);
@@ -211,35 +204,23 @@ int aquire_flash(uint8_t Erase) {
 		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_ON);
 	}
 
-	tries = 0;
 	while (TRUE) {
-		if (tries++ > 10000) {
-			// more than 20 s
-			ASSERT_fatal(0, ASSERT_FLASH_UNLOCK, 0);
-			tries = 0;
-		}
-
 		// PESD bit set?
 		if (LL_FLASH_IsActiveFlag_OperationSuspended()) {
-			// wait for PESD Flag
-			osDelay(2);
 			continue;
 		}
 
 		// enter critical section
-		os_state = osKernelLock();
-//		taskENTER_CRITICAL();
+		taskENTER_CRITICAL();
 
 		if (HAL_HSEM_IsSemTaken(6)) {
 			// exit critical section
-			osKernelRestoreLock(os_state);
-			osDelay(2);
+			taskEXIT_CRITICAL();
 			continue; // busy wait
 		}
 		if (HAL_HSEM_FastTake(7)) {
 			// exit critical section
-			osKernelRestoreLock(os_state);
-			osDelay(2);
+			taskEXIT_CRITICAL();
 			continue; // busy wait
 		}
 
@@ -254,7 +235,11 @@ int release_flash(uint8_t Erase) {
 	HAL_HSEM_Release(7, 0);
 
 	// exit critical section
-	osKernelRestoreLock(os_state);
+	taskEXIT_CRITICAL();
+
+	while (__HAL_FLASH_GET_FLAG(FLASH_FLAG_CFGBSY)) {
+		 ;
+	}
 
 	if (Erase) {
 		SHCI_C2_FLASH_EraseActivity(ERASE_ACTIVITY_OFF);
