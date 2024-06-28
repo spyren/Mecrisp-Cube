@@ -88,7 +88,7 @@ If the MECRISP CUBE4TH logo is shown, start the calculator with <kbd>**CALC**</k
 There are a few differences in operation compared to HP calculators. 
 This applies in particular to entering numbers.
 Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `-10e-12`, 
-or end in a metric unit prefix like `10k`, `270n`, `3.3u`.
+or end in a metric unit prefix like `10k`, `270n`, `3.3u`. 
 
 <kbd>**ENTER**</kbd> reads the number and push it onto the stack. An <kbd>**ENTER**</kbd> without a number do not
 duplicate the x register (top of stack). If you want to duplicate, you have to use <kbd>**DUP**</kbd>.
@@ -103,7 +103,7 @@ or vice versa <kbd>**S&#8594;F**</kbd>.
 
 <kbd>**R&#8595;**</kbd> is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
 
-<kbd>**STO**</kbd> and <kbd>**RCL**</kbd> takes x as register index 0..9. 
+<kbd>**STO**</kbd> and <kbd>**RCL**</kbd> takes x as register index 0..9 (postfix notation). 
 
 > [!CAUTION]
 > If there is an error, the entire stack will be erased. No error message is showed on display,
@@ -556,6 +556,11 @@ Digits (<kbd>**0**</kbd> .. <kbd>**9**</kbd>, <kbd>**A**</kbd> .. <kbd>**F**</kb
 forwarded to the display and are interpreted after hitting the <kbd>**ENTER**</kbd> key. 
 If you connect a terminal and hit the <kbd>**TERM**</kbd> key, you can see how the interpreter works. 
 
+Strict postfix notation, more like [RPL](https://www.hpmuseum.org/rpl.htm) than [RPN](https://www.hpmuseum.org/rpnvers.htm), 
+I would call it RPF, F stays for Forth. The stack element is 32 bit and can contain a 32 bit floating-point number or 32 bit integer.
+A RPL stack element is an object and can contain real numbers, complex numbers, binary numbers (binary/hex/octal), lists, 
+arrays, algebraic expressions, and even programs.
+ 
 For implementation details see
 * [button.c](peripherals/button.c)
 * [calculator.fs](sdcard/fsr/calculator.fs)
