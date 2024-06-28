@@ -95,7 +95,7 @@ duplicate the x register (top of stack). If you want to duplicate, you have to u
 A stack element is always 32 bit, the content can be float or integer. 
 You have to convert
 float to integer <kbd>**F&#8594;S**</kbd> if you want to use a float number in the integer mode 
-or vice versa <kbd>**S&#8594;F**</kbd>. 
+or vice versa <kbd>**S&#8594;F**</kbd>. <kbd>**ENTER**</kbd> works in the same way as on the HP-48.
 
 > [!WARNING]
 > If you enter a number with a <kbd>**.**</kbd> but without an exponent e.g. `12.34` Forth interprets 
