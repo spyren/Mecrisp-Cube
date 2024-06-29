@@ -431,6 +431,9 @@ void BUTTON_init(void) {
 	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
+	// wake up from stop
+	LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0 | LL_EXTI_LINE_1 | LL_EXTI_LINE_2 | LL_EXTI_LINE_3 | LL_EXTI_LINE_5);
+	LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_0 | LL_EXTI_LINE_1 | LL_EXTI_LINE_2 | LL_EXTI_LINE_3 | LL_EXTI_LINE_5);
 }
 
 
@@ -522,7 +525,7 @@ void BUTTON_OnOff(void) {
 	OLED_off();
 
 	osMutexAcquire(BUTTON_MutexID, 100);
-	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+//	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI1_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI2_IRQn);
 	HAL_NVIC_DisableIRQ(EXTI3_IRQn);
@@ -541,10 +544,16 @@ void BUTTON_OnOff(void) {
 	}
 	osDelay(10);
 
-	// wait till on-button is pressed
-	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) != BUTTON_PRESSED) {
-		osDelay(10);
+	// wait for button event
+	if (osSemaphoreGetCount(BUTTON_SemaphoreID)) {
+		osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
 	}
+	osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
+
+//	// wait till on-button is pressed
+//	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) != BUTTON_PRESSED) {
+//		osDelay(10);
+//	}
 
 	// wait till off-button is released
 	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) == BUTTON_PRESSED) {

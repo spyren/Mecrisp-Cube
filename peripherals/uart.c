@@ -7,6 +7,7 @@
  *      CMSIS-RTOS queues as buffers.
  *      CR is end of line for Rx.
  *      LF is end of line for Tx.
+ *      UART Rx can not be LPM.
  *  @file
  *      uart.c
  *  @author

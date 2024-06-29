@@ -146,7 +146,7 @@ int FLASH_programDouble(uint32_t Address, uint32_t word1, uint32_t word2) {
 
 
 /**
- *  @brief//	osKernelRestoreLock(os_state);
+ *  @brief
  *
  *      Erases a page (4 KiB) in the flash.
  *  @param[in]
@@ -191,6 +191,7 @@ int FLASH_erasePage(uint32_t Address) {
 
 // the STM32WB has only one single flash bank, but 2 CPUs
 // for details see AN5289 chapter 4.7 Flash memory management
+// everything that God has forbidden..
 
 int aquire_flash(uint8_t Erase) {
 
