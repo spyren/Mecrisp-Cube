@@ -177,9 +177,9 @@
 // ****************
 
 #ifdef DEBUG
-#define MECRISP_CUBE_TAG "1.6.0 deb"
+#define MECRISP_CUBE_TAG "1.6.1 deb"
 #else
-#define MECRISP_CUBE_TAG "1.6.0 rel"
+#define MECRISP_CUBE_TAG "1.6.1 rel"
 #endif
 
 #define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
@@ -830,7 +830,8 @@ typedef enum
   CFG_LPM_FLASH,
   CFG_LPM_IIC,
   CFG_LPM_RTSPI,
-  CFG_LPM_UART,
+  CFG_LPM_UART_TX,
+  CFG_LPM_UART_RX,
   /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
