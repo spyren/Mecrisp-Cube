@@ -550,11 +550,6 @@ void BUTTON_OnOff(void) {
 	}
 	osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
 
-//	// wait till on-button is pressed
-//	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) != BUTTON_PRESSED) {
-//		osDelay(10);
-//	}
-
 	// wait till off-button is released
 	while (HAL_GPIO_ReadPin(PortPinColumn_a[0].port,  PortPinColumn_a[0].pin) == BUTTON_PRESSED) {
 		osDelay(10);
@@ -598,14 +593,15 @@ static void BUTTON_Thread(void *argument) {
 		button_state[button] = BUTTON_RELEASED;
 	}
 
+	// activate all rows
+	osMutexAcquire(BUTTON_MutexID, osWaitForever);
+	for (row=0; row<BUTTON_ROW_COUNT; row++) {
+		HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
+	}
+	osMutexRelease(BUTTON_MutexID);
+
 	// Infinite loop
 	for(;;) {
-		// activate all rows
-		osMutexAcquire(BUTTON_MutexID, osWaitForever);
-		for (row=0; row<BUTTON_ROW_COUNT; row++) {
-			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
-		}
-		osMutexRelease(BUTTON_MutexID);
 
 		// wait for button event
 		osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
@@ -639,6 +635,15 @@ static void BUTTON_Thread(void *argument) {
 			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_SET);
 		}
 
+		// activate all rows
+		for (row=0; row<BUTTON_ROW_COUNT; row++) {
+			HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
+		}
+		osDelay(1);
+
+		if (osSemaphoreGetCount(BUTTON_SemaphoreID)) {
+			osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
+		}
 		osMutexRelease(BUTTON_MutexID);
 
 	}
