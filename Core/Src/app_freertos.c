@@ -54,6 +54,9 @@
 #if EPD == 1
 #include "epd.h"
 #endif
+#if QUAD == 1
+#include "quad.h"
+#endif
 #include "tiny.h"
 
 
@@ -158,7 +161,7 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setSysLED(SYSLED_POWER_ON); // dimmed green LED
+	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
 	ASSERT_init();
 	SD_init();
 	FD_init();
@@ -174,6 +177,9 @@ void MainThread(void *argument)
 #endif
 #if EPD == 1
 	EPD_init();
+#endif
+#if QUAD == 1
+	QUAD_init();
 #endif
 
 	// wait till BLE is ready
