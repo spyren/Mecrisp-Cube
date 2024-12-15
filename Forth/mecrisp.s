@@ -76,6 +76,9 @@
 .equ	PLEX,				1
 .equ	EPD,				0
 .equ	FPU,				1
+.equ	QUAD,				1
+.equ	BUTTON,				1
+.equ	POWER,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions

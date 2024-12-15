@@ -802,3 +802,42 @@ clear_sysled:
 	pop		{pc}
 
 
+// POWER words only if needed
+.if POWER == 1
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "shutdown"
+shutdown:
+	@ ( --  )      Halt (power off) the MCU and wait for wake up
+// void POWER_halt(void);
+@ -----------------------------------------------------------------------------
+	bl		POWER_halt
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "halt?"
+get_halt:
+	@ ( -- flags ) Get power switch for halt
+// int POWER_getSwitch()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		POWER_getSwitch
+	movs	tos, r0
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "halt!"
+set_halt:
+	@ ( flags -- ) Set power switch for halt
+// int POWER_setSwitch()
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos
+	drop
+	bl		POWER_setSwitch
+	pop		{pc}
+
+.endif // POWER
+

@@ -38,8 +38,8 @@
 
 void QUAD_init(void);
 void QUAD_clear(void);
-void QUAD_setPosX(uint8_t x);
-uint8_t QUAD_getPosX();
+void QUAD_setPos(uint8_t x);
+uint8_t QUAD_getPos();
 int QUAD_putc(int c);
 int QUAD_puts(const char *s);
 void QUAD_shutdown(uint8_t status);

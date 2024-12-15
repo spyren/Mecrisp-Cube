@@ -261,7 +261,7 @@ int QUAD_putc(int c) {
 	if (quadReady) {
 		if (c == '\r') {
 			// carriage return
-			QUAD_setPosX(0);
+			QUAD_setPos(0);
 		} else {
 			frame_buffer[CurrentPosX*2]   = quad_font_table[c] & 0xff;
 			frame_buffer[CurrentPosX*2+1] = quad_font_table[c] >> 8;
@@ -318,7 +318,7 @@ int QUAD_Ready(void) {
  *  @return
  *      none
  */
-void QUAD_setPosX(uint8_t x) {
+void QUAD_setPos(uint8_t x) {
 	if (x >= 0 && x < QUAD_X_RESOLUTION) {
 		// valid position
 		CurrentPosX = x;
@@ -332,7 +332,7 @@ void QUAD_setPosX(uint8_t x) {
  *  @return
  *      X horizontal position, max. 3
  */
-uint8_t QUAD_getPosX() {
+uint8_t QUAD_getPos() {
 	return CurrentPosX;
 }
 
