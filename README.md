@@ -173,6 +173,7 @@ Mecrisp-Cube 1.6.1 deb for STM32WB Nucleo, 63/128 KiB RAM/FLASH dictionary (C) 2
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
   * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
   * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
+
 include 0:/etc/rc.local
 ```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
@@ -442,6 +443,9 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ### v1.5.1 Flipper Release
 * LCD driver (Flipper)
 * Docu on GitHub
+### v1.6.0 Calculator Release
+* tinyUSB
+* 4th Caclculator
 
 
 ## Authors
