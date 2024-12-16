@@ -115,7 +115,8 @@ For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.m
   * NeoPixel
   * CharlieWing
   * NeoPixelWing
-  * DotStarWing 
+  * DotStarWing
+  * Quad Alphanumeric Display
 
 
 ## Getting Started
@@ -130,7 +131,8 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
     * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
       Arduino™ Uno V3 and ST morpho connectors
     * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
-  * Terminal emulator application for PC, e.g.: 
+  * Terminal emulator application for PC, e.g.:
+    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
@@ -164,12 +166,13 @@ I set the putty terminal configuration to
 
 The greeting screen should apear after startup:
 ```
-Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
-
-Mecrisp-Cube 1.5.0 for STM32WB Flipper, 63/128  KiB RAM/FLASH dictionary (C) 2023 peter@spyr.ch
-  * Firmware Package STM32Cube FW_WB V1.17.3, USB-CDC, BLE Stack 5.3 (C) 2023 STMicroelectronics
+Mecrisp-Cube 1.6.1 deb for STM32WB Nucleo, 63/128 KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch
+  * Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
+  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics 
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
   * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
+  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+  * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
 include 0:/etc/rc.local
 ```
 Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
