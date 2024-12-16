@@ -129,7 +129,7 @@ machine (Flipper Zero) for development and testing purposes.
   * [Flipper Zero](https://flipperzero.one/) with STM32WB55 MCU (Cortex ARM M4) runs at a 32 MHz (the Bluetooth stack runs on a Cortex ARM M0+ core). 
   * Optional: [ST-Link V3 Developer Board](https://docs.flipper.net/development/hardware/devboard-stlinkv3) or you can build your own e.g. with a [STLINK-V3MINI](https://www.st.com/en/development-tools/stlink-v3mini.html) and some cables, see [JTAG_SWD_Adaptor](/sdcard/man/BoardSupportPackage.md#jtagswd-adaptor)
   * Terminal emulator application for PC, e.g.:
-    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -L` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
+    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
