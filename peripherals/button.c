@@ -42,6 +42,7 @@
 #include "myassert.h"
 #include "power.h"
 #include "bsp.h"
+#include "quad.h"
 
 #if BUTTON == 1
 
@@ -136,6 +137,16 @@ static uint8_t button_state[BUTTON_COUNT];
  *      None
  */
 void BUTTON_init(void) {
+	int i;
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+	for (i=0; i<BUTTON_COUNT; i++) {
+	    GPIO_InitStruct.Pin = PortPin_a[i].pin;
+	    HAL_GPIO_Init(PortPin_a[i].port, &GPIO_InitStruct);
+	}
+
 	// Create the queue(s)
 	// creation of  buttonQueue
 	BUTTON_QueueId = osMessageQueueNew(BUTTON_BUFFER_LENGTH, sizeof(uint8_t),
@@ -219,6 +230,46 @@ int BUTTON_putkey(const char c) {
 		return EOF;
 	}
 
+}
+
+
+/**
+ *  @brief
+ *      Go into stop mode till on-button is pressed
+ *
+ *  @return
+ *      None
+ */
+void BUTTON_OnOff(void) {
+
+	QUAD_shutdown(0);
+
+	osMutexAcquire(BUTTON_MutexID, 100);
+//	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
+
+	// wait till off-button is released
+	while (HAL_GPIO_ReadPin(BUTTON_POWER_GPIO_Port,  BUTTON_POWER_Pin) == BUTTON_PRESSED) {
+		osDelay(10);
+	}
+	osDelay(10);
+
+	// wait for button event
+//	if (osSemaphoreGetCount(BUTTON_SemaphoreID)) {
+//		osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
+//	}
+//	osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
+
+	// wait till off-button is released
+	while (HAL_GPIO_ReadPin(BUTTON_POWER_GPIO_Port,  BUTTON_POWER_Pin) == BUTTON_PRESSED) {
+		osDelay(10);
+	}
+	osDelay(10);
+
+	QUAD_shutdown(1);
+
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+	osMutexRelease(BUTTON_MutexID);
 }
 
 

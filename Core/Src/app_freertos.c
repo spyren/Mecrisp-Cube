@@ -57,6 +57,9 @@
 #if QUAD == 1
 #include "quad.h"
 #endif
+#if BUTTON == 1
+#include "button.h"
+#endif
 #include "tiny.h"
 
 
@@ -107,6 +110,9 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+#if POWER == 1
+	POWER_init();
+#endif
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
@@ -180,6 +186,9 @@ void MainThread(void *argument)
 #endif
 #if QUAD == 1
 	QUAD_init();
+#endif
+#if BUTTON == 1
+	BUTTON_init();
 #endif
 
 	// wait till BLE is ready

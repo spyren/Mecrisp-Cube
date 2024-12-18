@@ -39,8 +39,12 @@
 #include "clock.h"
 #include "power.h"
 #include "button.h"
+#if OLED == 1
 #include "oled.h"
+#endif
+#if QUAD == 1
 #include "quad.h"
+#endif
 
 #if POWER == 1
 
@@ -157,7 +161,9 @@ void POWER_halt(void) {
 
 		// switch off peripherals
 //		OLED_shutdown(0);
+#if QUAD == 1
 		QUAD_shutdown(0);
+#endif
 
 		// request halt
 		RTC_Backup.power_param |= POWER_SHUTDOWN;
