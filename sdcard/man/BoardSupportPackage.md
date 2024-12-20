@@ -646,7 +646,7 @@ message strlen Marquee
   * https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html
   * [Schematic Nucleo Board MB1355](https://www.st.com/content/ccc/resource/technical/layouts_and_diagrams/schematic_pack/group1/7d/a3/e7/cc/3b/94/45/46/MB1355-WB55RG-C02_Schematic/files/MB1355-WB55RG-C02_Schematic.pdf/jcr:content/translations/en.MB1355-WB55RG-C02_Schematic.pdf)
   * [Schematic Nucleo Dongle MB1293](https://www.st.com/content/ccc/resource/technical/layouts_and_diagrams/schematic_pack/group0/6f/4a/27/3b/7d/c4/43/f8/mb1293_schematics/files/MB1293-WB55CGU-C02_schematic.pdf/jcr:content/translations/en.MB1293-WB55CGU-C02_schematic.pdf)
-
+    [dongle](img/dongle.png)
 
 ### Arduino Pinout 
 
