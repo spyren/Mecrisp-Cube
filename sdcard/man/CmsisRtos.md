@@ -153,7 +153,8 @@ terminate  ( -- )               Causes the task executing this word to cease ope
 suspend    ( addr -- ior)       Force the task whose TCB is at addr to suspend operation indefinitely. !osThreadSuspend
 resume     ( addr -- ior)       Cause the task whose TCB is at addr to resume operation at the point at which it !osThreadResume 
                                 was SUSPENDed (or where the task called STOP).
-halt       ( addr -- )          Cause the task whose TCB is at addr to cease operation permanently, but to remain instantiated. 
+halt       ( addr -- )          Caution! not working yet.
+				Cause the task whose TCB is at addr to cease operation permanently, but to remain instantiated. 
                                 The task may be reactivated (through start-task).
 kill       ( addr -- )          Cause the task whose TCB is at addr to cease operation and release all its TCB memory. 
 
