@@ -764,7 +764,7 @@ typedef enum
 #define FPU_IP					1
 #define BUTTON					1
 #define POWER					1
-
+#define SD_DRIVE                0
 // Thread flag, is set after BLE has been started
 #define BLE_IS_READY			0x01
 

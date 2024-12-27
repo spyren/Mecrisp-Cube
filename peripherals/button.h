@@ -34,14 +34,14 @@
 
 extern osMutexId_t BUTTON_MutexID;
 
-#define BUTTON_MINUTE_Pin			A2_Pin
-#define BUTTON_MINUTE_GPIO_Port		A2_GPIO_Port
-#define BUTTON_SECOND_Pin			D0_Pin
-#define BUTTON_SECOND_GPIO_Port		D0_GPIO_Port
-#define BUTTON_START_STOP_Pin		D1_Pin
-#define BUTTON_START_STOP_GPIO_Port	D1_GPIO_Port
-#define BUTTON_POWER_Pin			A3_Pin
-#define BUTTON_POWER_GPIO_Port		A3_GPIO_Port
+#define BUTTON_D_Pin			A2_Pin
+#define BUTTON_D_GPIO_Port		A2_GPIO_Port
+#define BUTTON_C_Pin			D0_Pin
+#define BUTTON_C_GPIO_Port		D0_GPIO_Port
+#define BUTTON_B_Pin			D1_Pin
+#define BUTTON_B_GPIO_Port		D1_GPIO_Port
+#define BUTTON_A_Pin			A3_Pin
+#define BUTTON_A_GPIO_Port		A3_GPIO_Port
 
 
 void BUTTON_init(void);

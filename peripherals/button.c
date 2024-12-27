@@ -65,10 +65,10 @@
 static void BUTTON_Thread(void *argument);
 
 typedef enum {
-	BUTTON_MINUTE,		// 1
-	BUTTON_SECOND,		// 2
-	BUTTON_START_STOP,	// 3
-	BUTTON_POWER,		// 4
+	BUTTON_D,		// 1
+	BUTTON_C,		// 2
+	BUTTON_B,		// 3
+	BUTTON_A,		// 4
 	BUTTON_COUNT
 } button_t;
 
@@ -81,17 +81,17 @@ typedef struct {
 } PortPin_t;
 
 static const PortPin_t PortPin_a[BUTTON_COUNT] = {
-		{ BUTTON_MINUTE_GPIO_Port,    	BUTTON_MINUTE_Pin } ,
-		{ BUTTON_SECOND_GPIO_Port,  	BUTTON_SECOND_Pin } ,
-		{ BUTTON_START_STOP_GPIO_Port,  BUTTON_START_STOP_Pin } ,
-		{ BUTTON_POWER_GPIO_Port,  		BUTTON_POWER_Pin } ,
+		{ BUTTON_D_GPIO_Port,    	BUTTON_D_Pin } ,
+		{ BUTTON_C_GPIO_Port,  		BUTTON_C_Pin } ,
+		{ BUTTON_B_GPIO_Port,  		BUTTON_B_Pin } ,
+		{ BUTTON_A_GPIO_Port,  		BUTTON_A_Pin } ,
 };
 
 static const char char_a[BUTTON_COUNT] = {
-		'm',
-		's',
-		'S',
-		'p',
+		'd',
+		'c',
+		'b',
+		'a',
 };
 
 // Hardware resources
@@ -248,7 +248,7 @@ void BUTTON_OnOff(void) {
 //	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
 
 	// wait till off-button is released
-	while (HAL_GPIO_ReadPin(BUTTON_POWER_GPIO_Port,  BUTTON_POWER_Pin) == BUTTON_PRESSED) {
+	while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port,  BUTTON_A_Pin) == BUTTON_PRESSED) {
 		osDelay(10);
 	}
 	osDelay(10);
@@ -260,7 +260,7 @@ void BUTTON_OnOff(void) {
 //	osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
 
 	// wait till off-button is released
-	while (HAL_GPIO_ReadPin(BUTTON_POWER_GPIO_Port,  BUTTON_POWER_Pin) == BUTTON_PRESSED) {
+	while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port,  BUTTON_A_Pin) == BUTTON_PRESSED) {
 		osDelay(10);
 	}
 	osDelay(10);

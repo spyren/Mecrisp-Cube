@@ -61,8 +61,9 @@
 #include "button.h"
 #endif
 #include "tiny.h"
-
-
+#if POWER == 1
+#include "power.h"
+#endif
 
 /* USER CODE END Includes */
 

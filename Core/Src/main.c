@@ -121,6 +121,9 @@
 #include "fs.h"
 #include "clock.h"
 #include "myassert.h"
+#if POWER == 1
+#include "power.h"
+#endif
 
 /* USER CODE END Includes */
 
