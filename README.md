@@ -6,54 +6,7 @@
   </tr>
 </table> 
 
-# Mecrisp-Cube (master branch)
-
-Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
-
-Forth is an interactive and extensible language, with built-in lexical analysis 
-(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
-4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
-
-Forth is perfect for embedded systems where some sort of user interactivity 
-like CLI and extensibility (at runtime) are needed. 
-
-C & Forth in the 21st Century. C and Forth are both about 50 years old. 
-The combination of the strength of this two worlds results in a powerful 
-system that outperforms other much newer systems like Python. 
-Good design withstands the test of time.
-
-The goal of Mecrisp-Cube is to be a complete Forth programming environment 
-for STM32 MCUs. There are three flavors (branches) available:
-
-  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
-    [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
-    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
-    In work [Flipper Zero](../Flipper) (`Flipper`).
-    Special releases [4TH Calculator](../calc) (`calc`), 
-  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
-  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
-
-May the Forth Be With You!
-
-
-## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
-
-If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
-you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
-
-The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
-and LEDs and switches (buttons).
-
-STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
-Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
-Developed with the same technology as the ultra-low power STM32L4 microcontrollers, 
-the STM32WB MCU series provides the same digital and analog peripherals suitable 
-for applications requiring an extended battery life and complex functionalities. 
-If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
-Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
-
-![](/sdcard/man/img/stm32wb-nucleo.jpg)
-
+# Egg Timer (Mecrisp-Cube egg branch)
 
 ## Features
 
@@ -99,15 +52,11 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * 3 push buttons
-  * 3 LEDs
-  * 16 GPIO pins, D0 .. D15
-  * 6 ADC pins, A0 .. A5
+  * 4 push buttons
+  * Piezo Buzzer
+  * Keyboard wth 35 buttons
   * I2C
-  * SPI
-  * 3 PWM pins
-  * Input Capture / Output Compare
-  * 4 external interrupts (EXTI)
+    * Quad  display 128x32 pixel 
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
@@ -130,20 +79,124 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
 
 
 ### Prerequisites
-
-  * One of these boards
-    * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
-      Arduino™ Uno V3 and ST morpho connectors
-    * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
+ 
+  * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
+  * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
+  * Quad display , $5
+  * 4 pcs push buttons
+  * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
+  * LiPo battery (optional) e.g. Renata ICP422339PR
   * Terminal emulator application for PC, e.g.:
-    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
+    * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
-    * Use the built in Eclipse console (but no LF)
-    * for details see [TerminalIO]
-  * STM32CubeProgrammer (optional)
+    * for details see [Terminal-IO](/sdcard/man/TerminalIO.md)
+  * Hot glue or double sided mounting tape e.g. Tesa 55750
+  * Laminating machine (optional) 
+  * STM32CubeProgrammer
+
+### Build the Hardware
+
+![schematic](/sdcard/man/img/schematic.png)
+
+#### Cut the perfboard
+Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
+
+#### Glue push buttons
+<img src="/sdcard/man/img/buttons.jpg" width="200">
+Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
+
+#### Wire the buttons 
+<img src="/sdcard/man/img/button-row-column.jpg" width="200">
+Wire the buttons to columns and rows on the perfboard bottom layer. 
+Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
+
+#### Mount the dongle
+Remove the USB connector from the dongle. 
+Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper left corner. 
+If you do not want to use the BLE, cut off the BLE antenna.
+
+#### Mount USB Breakout
+Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer.
+
+#### Wire the buttons to the dongle
+Wire the button rows and columns to the dongle.
+
+|*Description*|*Dongle*|*Function* | *Egg Timer * |
+|-------------|--------|-----------|--------------|
+| PA0         | CN2.3  | A3        | On/Off       |
+| PA1         | CN2.10 | A2        |          |
+| PA2         | CN2.4  | D1        |          |
+| PA3         | CN2.5  | D0        |          |
+
+#### Wire the JTAG SWD (optional)
+Only needed if you want to debug the board.
+
+|*Description*|*Dongle*|*Function* | *JTAG 10pin* |
+|-------------|--------|-----------|--------------|
+| GND         | CN1.1  | GND       |  3, 5, 9     |
+| NRST        | CN1.2  | RES       |  10          |
+| PA13        | CN1.3  | SWDIO     |  2           |
+| PA14        | CN1.4  | SWDCLK    |  4           |
+| 3V3         | CN1.6  | 3V3       |  1           |
+
+
+#### Place the Diodes (optional)
+<img src="/sdcard/man/img/diode-bat54c.jpg" width="500">
+
+I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
+You can also use two 1N4148 diodes.
+
+#### Wire the USB connector
+<img src="/sdcard/man/img/calculator-bottom-cut.jpg" width="500">
+
+|*Description*|*Dongle*|*Function* | *USB Charger* |
+|-------------|--------|-----------|---------------|
+| GND         | GND    | GND       | GND           |
+| 5 V         | 5 V    | 5 V       | Diode Cathode |
+| D+          | D+     |           | D+            |
+| D-          | D-     |           | D-            |
+
+|*Description*|*USB Charger*|*Function* | *Diode* |
+|-------------|-------------|-----------|---------|
+| 5 V         | 5 V         |           | Anode 1 |
+| BAT         | BAT         |           | Anode 2 |
+
+#### Mount the Quad Alphanumeric Display
+Solder the Quad Alphanumeric Display to the perfboard top layer.
+
+#### Wire the Quad Alphanumeric Display
+|*Description*|*Dongle*|*Function* | *Quad*       |
+|-------------|--------|-----------|--------------|
+| GND         | CN1.1  | GND       | GND          |
+| 3V3         | CN1.6  | 3V3       | VCC          |
+| PB8         | CN2.1  | D15 SCL   | SCL          |
+| PB9         | CN2.2  | D14 SDA   | SDA          |
+
+#### Mount the Battery
+Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
+
+#### Wire the Battery (optional)
+If the battery has a molex connector, no wiring/solderin is required.
+
+#### Keyboard Overlay
+
+<table>
+  <tr>
+    <td><img src="/sdcard/man/img/overlay.svg" width="200">
+ </td>
+    <td><img src="/sdcard/man/img/overlay.png" width="200"></td>
+  </tr>
+</table> 
+
+1. Print the keyboard overlay on heavy weight white paper
+2. Cut out the overlay
+3. Laminate the overlay
+4. Cut out the laminated overlay
+5. Cut holes for the push buttons, I use a leather puncher (4 mm holes)
+
 
 
 ### Flash the Mecrisp-Cube Firmware
