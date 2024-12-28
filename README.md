@@ -48,13 +48,6 @@ for development and testing purposes.
   * 4 pcs push buttons, e.g. [STEMMA Wired Tactile Push-Button Pack](https://www.adafruit.com/product/4431), $7
   * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
   * LiPo battery (optional) e.g. Renata ICP422339PR
-  * Terminal emulator application for PC, e.g.:
-    * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
-    * [PuTTY](http://www.putty.org/) - Windows and Linux
-    * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
-    * [Realterm](http://realterm.sourceforge.net/) - Windows
-    * minicom, microcom, screen - Linux
-    * for details see [Terminal-IO](/sdcard/man/TerminalIO.md)
   * Hot glue or double sided mounting tape e.g. Tesa 55750
   * Laminating machine (optional) 
   * STM32CubeProgrammer
@@ -84,10 +77,10 @@ Wire the buttons to the dongle. Pullups are integrated in the MCU.
 
 |*Description*|*Dongle*|*Function* | *Egg Timer * |
 |-------------|--------|-----------|--------------|
-| PA0         | CN2.3  | A3        | a On/Off       |
-| PA1         | CN2.10 | A2        | b             |
-| PA2         | CN2.4  | D1        | c             |
-| PA3         | CN2.5  | D0        | d             |
+| PA0         | CN2.3  | A3        | a on/off     |
+| PA1         | CN2.10 | A2        | b sec        |
+| PA2         | CN2.4  | D1        | c min        |
+| PA3         | CN2.5  | D0        | d start/stop |
 
 #### Wire the JTAG SWD (optional)
 Only needed if you want to debug the board.
