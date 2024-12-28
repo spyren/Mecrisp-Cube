@@ -28,7 +28,8 @@ for STM32 MCUs. There are three flavors (branches) available:
   * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
     [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
     [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
-    In work [Flipper Zero](../Flipper) (`Flipper`):
+    In work [Flipper Zero](../Flipper) (`Flipper`).
+    Special releases [4TH Calculator](../calc) (`calc`), 
   * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
   * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
