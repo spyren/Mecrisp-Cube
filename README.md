@@ -8,10 +8,21 @@
 
 # Egg Timer (Mecrisp-Cube egg branch)
 
+An altoid tin box project. 
+
+https://en.wikipedia.org/wiki/Egg_timer
+
+An egg timer or kitchen timer is a device whose primary function is to assist in timing during cooking; 
+the name comes from the first timers initially being used for the timing of cooking eggs. 
+Early designs simply counted down for a specific period of time.
+
 ## Features
 
-### 
+  * Count down max. 99'59" time period
+  * Alarm
+  * Start/stop
 
+    
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
   * 4 push buttons (GPIO)
@@ -31,6 +42,7 @@ for development and testing purposes.
 ### Prerequisites
  
   * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
+  * Altoid tin box
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
   * Display , [Adafruit Quad Alphanumeric FeatherWing Display](https://www.adafruit.com/product/3131) $10
   * 4 pcs push buttons, e.g. [STEMMA Wired Tactile Push-Button Pack](https://www.adafruit.com/product/4431), $7
@@ -54,32 +66,28 @@ for development and testing purposes.
 #### Cut the perfboard
 Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
 
-#### Glue push buttons
+#### Glue or solder push buttons
 <img src="/sdcard/man/img/buttons.jpg" width="200">
-Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
-
-#### Wire the buttons 
-<img src="/sdcard/man/img/button-row-column.jpg" width="200">
-Wire the buttons to columns and rows on the perfboard bottom layer. 
-Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
+Glue or solder the 4 push buttons to the perfboard top layer. 
 
 #### Mount the dongle
 Remove the USB connector from the dongle. 
-Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper left corner. 
+Glue (hot glue, mounting tape) or solder the dongle to the perfboard. 
 If you do not want to use the BLE, cut off the BLE antenna.
 
 #### Mount USB Breakout
-Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer.
+Glue (hot glue, mounting tape) or solder the USB Breakout or the 
+Adafruit Micro-Lipo Charger to the perfboard.
 
 #### Wire the buttons to the dongle
-Wire the button rows and columns to the dongle.
+Wire the buttons to the dongle. Pullups are integrated in the MCU.
 
 |*Description*|*Dongle*|*Function* | *Egg Timer * |
 |-------------|--------|-----------|--------------|
-| PA0         | CN2.3  | A3        | On/Off       |
-| PA1         | CN2.10 | A2        |          |
-| PA2         | CN2.4  | D1        |          |
-| PA3         | CN2.5  | D0        |          |
+| PA0         | CN2.3  | A3        | a On/Off       |
+| PA1         | CN2.10 | A2        | b             |
+| PA2         | CN2.4  | D1        | c             |
+| PA3         | CN2.5  | D0        | d             |
 
 #### Wire the JTAG SWD (optional)
 Only needed if you want to debug the board.
@@ -92,11 +100,11 @@ Only needed if you want to debug the board.
 | PA14        | CN1.4  | SWDCLK    |  4           |
 | 3V3         | CN1.6  | 3V3       |  1           |
 
-
 #### Place the Diodes (optional)
 <img src="/sdcard/man/img/diode-bat54c.jpg" width="500">
 
-I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
+I use a BAT54C double schottky diode in SOT23 package. 
+Solder the diode to the perfboard. 
 You can also use two 1N4148 diodes.
 
 #### Wire the USB connector
@@ -145,9 +153,7 @@ If the battery has a molex connector, no wiring/solderin is required.
 2. Cut out the overlay
 3. Laminate the overlay
 4. Cut out the laminated overlay
-5. Cut holes for the push buttons, I use a leather puncher (4 mm holes)
-
-
+5. Cut holes for the push buttons
 
 ### Flash the Mecrisp-Cube Firmware
 
@@ -156,108 +162,6 @@ Flash the Mecrisp-Cube [binary](/Release/MecrispCube.bin) `MecrispCube.bin` or b
 
  1. Connect the Nucleo Board USB ST-LINK to the PC
  1. Copy binary (MecrispCube.bin or better the MecrispCubeFS.bin) to the USB mass storage NODE_WB55RG 
-
-
-### Use the Terminal (USB CDC)
-
-Connect the WB55 Nucleo USB to the PC. Start the terminal emulator application on the PC. 
-Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
-I set the putty terminal configuration to 
-
-  * Implicit CR in every LF 
-  * Local echo: off
-  * Local line editing: off
-  * Keyboard Backspace: Control-H
-  * Keyboard Function: Keys VT100
-  * Remote character set: CP850
-
-The greeting screen should apear after startup:
-```
-Mecrisp-Cube 1.6.1 deb for STM32WB Nucleo, 63/128 KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch
-  * Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
-  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics 
-  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
-  * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
-  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
-  * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
-
-include 0:/etc/rc.local
-```
-Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
-```
-23 5 / .
-```
-This looks like this on your terminal (**bold** is the Forth answer):
-<pre>
-23 5 / .[CR] <b>4  ok.</b>
-</pre>
-The `ok.` is the Forth prompt and apears at the end of the line (Forth does it differently, like most things ;-). 
-If you don't like it, [change it](/sdcard/man/FileSystem.md#shell-prompt). 
-`[CR]` is the Enter-key.
-
-Type in your first Forth program (create a word in the RAM dictionray):
-```
-: hello ." World" ;
-```
-and execute the the program
-```
-hello 
-```
-again the terminal output:
-<pre>
-: hello ." World" ;[CR]  <b>ok.</b>
-hello[CR] <b>World ok.</b>
-</pre>
-The program `hello` ist not persistent, after power cycle or even reset the RAM dictionray is erased. 
-But it is easy to add a word to the Flash dictionray:
-```
-compiletoflash
-: hello ." World" ;
-```
-The program source is not saved, only the executable machine code is compiled into the flash. 
-You can use the built-in editor [vi](/sdcard/man/EditorVi.md) and save your source to the 
-[filesystem](/sdcard/man/FileSystem.md) either on internal flash drive `0:` or on the microSD card drive `1:`.
-
-The following part is only for people who are interested how Forth works and have knowledge about 
-the ARM Assembler.
-There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but it is stored 
-as `00` `B5`):
-```
-see hello
-08043558: B500  push { lr }
-0804355A: F7BF  bl  08002BE4  -->  .' World'
-0804355C: FB43
-0804355E: 5705
-08043560: 726F
-08043562: 646C
-08043564: BD00  pop { pc }
-```
-The dictionray entry looks like this (you can see the 'hello' and the string constant 'World'):
-```
-$08043558 10 dump
-08043550 :  00 00 05 68 65 6C 6C 6F   00 B5 BF F7 43 FB 05 57  | ...hello  ....C..W |
-08043560 :  6F 72 6C 64 00 BD 00 00   FF FF FF FF FF FF FF FF  | orld....  ........ |
-```
-The compiled word `hello` needs only 14 bytes in the dictionary.
-
-### Buttons, LED
-
-#### Special Functions on Startup 
-
-USB-CDC is the default console.
-  * *SW1* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
-  * *SW2* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
-  * *SW3* do not include `0:/etc/rc.local`
-
-
-#### LEDs as Status Indicator
-
-The RGB LED  displays the status
-  * *Green* USB enumerated
-  * *Red* Error occured
-  * *Blue* BLE connected
-  * *flashing Red* "disk" (serial flash or SD) write operation
-  * *flashing Yellow* "disk" (serial flash or SD) read operation
 
 
 ## Installing Development Environment 
