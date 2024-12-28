@@ -18,7 +18,7 @@ Early designs simply counted down for a specific period of time.
 
 ## Features
 
-  * Count down max. 99'59" time period
+  * Count down max. 99:59 time period
   * Alarm
   * Start/stop
 
