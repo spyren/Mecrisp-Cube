@@ -72,10 +72,13 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
     * CMSIS-RTOS API to use FreeRTOS from Forth.
     * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware,
       key and emit block the calling thread. 
-  * USB
+  * USB (tinyUSB)
     * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
-      serial communication via USB
-    * Redirect console I/O like cdc-emit, cdc-key
+      serial communication via USB, Redirect console I/O like cdc-emit, cdc-key
+    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS).
+      You can use your Forth system as a flash drive (also thumb drive [US],
+      memory stick [UK], and pen drive/pendrive elsewhere) with two LUNs:
+      0 for flash disk, 1 for microSD disk. 
   * BLE 5.0 GAP Peripheral Role (STM32WB)
     * DIS Device Information Service
     * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
