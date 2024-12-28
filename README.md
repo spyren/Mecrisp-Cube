@@ -28,7 +28,8 @@ for STM32 MCUs. There are three flavors (branches) available:
   * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
     [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
     [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
-    In work [Flipper Zero](../Flipper) (`Flipper`):
+    In work [Flipper Zero](../Flipper) (`Flipper`).
+    Special releases [4TH Calculator](../calc) (`calc`), 
   * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
   * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
 
@@ -72,10 +73,13 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
     * CMSIS-RTOS API to use FreeRTOS from Forth.
     * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware,
       key and emit block the calling thread. 
-  * USB
+  * USB (tinyUSB)
     * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
-      serial communication via USB
-    * Redirect console I/O like cdc-emit, cdc-key
+      serial communication via USB, Redirect console I/O like cdc-emit, cdc-key
+    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS).
+      You can use your Forth system as a flash drive (also thumb drive [US],
+      memory stick [UK], and pen drive/pendrive elsewhere) with two LUNs:
+      0 for flash disk, 1 for microSD disk. 
   * BLE 5.0 GAP Peripheral Role (STM32WB)
     * DIS Device Information Service
     * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
@@ -445,7 +449,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Docu on GitHub
 ### v1.6.0 Calculator Release
 * tinyUSB
-* 4th Caclculator
+* 4th Calculator
 
 
 ## Authors

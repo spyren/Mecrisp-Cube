@@ -13,6 +13,7 @@ There are other displays with different technologies:
   * LCD Liquid Crystall Display (e.g. Flipper Zero)
   * EPD Electronic Paper Display
   * MIP
+  * QUAD alphanumeric display (LED segment display)
 
 Driver [oled.c](/peripherals/oled.c), fonts from https://www.mikrocontroller.net/topic/54860.
 
