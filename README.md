@@ -10,80 +10,30 @@
 
 ## Features
 
-### Standard Mecrisp-Cube features
-  * 63 KiB RAM dictionary 
-  * 128 KiB Flash Forth dictionary 
-  * 50 KiB for C code 
-  * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
-  * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
-    * Internal Flash drive 0:, 384 KiB
-    * microSD drive 1: (optional, external SD adaptor)
-  * Integration in STM32 Cube Ecosystem. 
-    * Create C code from CubeMX for internal peripherals and use it in Forth
-    * [Calling C Functions](/sdcard/man/CallingCFunction.md) from Forth and vice versa 
-  * [RTOS](/sdcard/man/CmsisRtos.md)
-    * Forth as CMSIS-RTOS thread.
-    * CMSIS-RTOS API to use FreeRTOS from Forth.
-    * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware,
-      key and emit block the calling thread. 
-  * USB (tinyUSB)
-    * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
-      serial communication via USB, Redirect console I/O like cdc-emit, cdc-key
-    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS).
-      You can use your Forth system as a flash drive (also thumb drive [US],
-      memory stick [UK], and pen drive/pendrive elsewhere) with two LUNs:
-      0 for flash disk, 1 for microSD disk. 
-  * BLE 5.0 GAP Peripheral Role (STM32WB)
-    * DIS Device Information Service
-    * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
-    * [CRS](/sdcard/man/TerminalIO.md#ble-cable-replacement-serial-communication-api)
-      Cable Replacement Server service (proprietary service from STM, similar to
-      Classic Bluetooth SPP).
-      Redirect console I/O like crs-emit, crs-key. 
-  * Floating-Point Unit [FPU](/sdcard/man/fpu.md)
-    * Support for the floating-point unit FPU, single precision for M4F MPUs
-      and double precision for M7 MPUs
-    * CMSIS-DSP 
-  * [vi](/sdcard/man/EditorVi.md) editor
-  * Real Time Clock [RTC](/sdcard/man/RealTimeClock.md)
-  * [Watchdog](/sdcard/man/watchdog.md)
-  * [Assertion and Logging](/sdcard/man/assert.md)
-
+### 
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * 4 push buttons
-  * Piezo Buzzer
-  * Keyboard wth 35 buttons
+  * 4 push buttons (GPIO)
+  * Piezo Buzzer (PWM)
   * I2C
-    * Quad  display 128x32 pixel 
+    * Quad Alphanumeric display 
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
 
-### External Peripherals (e.g. Feather Wings) 
-
-  * OLED Display 128x32, 128x64, I2C
-  * E-Ink FeatherWing 250x122 SPI
-  * NeoPixel
-  * CharlieWing
-  * NeoPixelWing
-  * DotStarWing
-  * Quad Alphanumeric Display
-
-
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local 
-machine (WB55 Nucleo or Dongle) for development and testing purposes. 
+These instructions will get you a copy of the project up and running on your egg timer 
+for development and testing purposes. 
 
 
 ### Prerequisites
  
   * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
-  * Quad display , $5
-  * 4 pcs push buttons
+  * Display , [Adafruit Quad Alphanumeric FeatherWing Display](https://www.adafruit.com/product/3131) $10
+  * 4 pcs push buttons, e.g. [STEMMA Wired Tactile Push-Button Pack](https://www.adafruit.com/product/4431), $7
   * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
   * LiPo battery (optional) e.g. Renata ICP422339PR
   * Terminal emulator application for PC, e.g.:
