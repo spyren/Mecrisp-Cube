@@ -448,7 +448,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Docu on GitHub
 ### v1.6.0 Calculator Release
 * tinyUSB
-* 4th Caclculator
+* 4th Calculator
 
 
 ## Authors
