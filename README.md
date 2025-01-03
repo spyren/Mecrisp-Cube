@@ -18,7 +18,7 @@ Early designs simply counted down for a specific period of time.
 
 ## Features
 
-  * Count down max. 99'59" time period
+  * Count down max. 99:59 time period
   * Alarm
   * Start/stop
 
@@ -44,7 +44,9 @@ for development and testing purposes.
   * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
   * Altoid tin box
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
-  * Display , [Adafruit Quad Alphanumeric FeatherWing Display](https://www.adafruit.com/product/3131) $10
+  * Display
+    * [Adafruit Quad Alphanumeric FeatherWing Display](https://www.adafruit.com/product/3131) $10
+    * [SparkFun Qwiic Alphanumeric Display](https://www.sparkfun.com/products/16919)
   * 4 pcs push buttons, e.g. [STEMMA Wired Tactile Push-Button Pack](https://www.adafruit.com/product/4431), $7
   * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
   * LiPo battery (optional) e.g. Renata ICP422339PR
