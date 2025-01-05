@@ -592,6 +592,8 @@ button_q:
 	pop		{pc}
 
 
+.if BUTTON_MATRIX == 1
+// button matrix (keyboard)
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "OnOff"
 onoff:
@@ -602,7 +604,11 @@ onoff:
 	bl		BUTTON_OnOff
 	pop		{pc}
 
+.endif // BUTTON_MATRIX
+.endif // BUTTON == 1
 
+
+// null device
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, "null-emit"
 null_emit:
@@ -623,9 +629,6 @@ null_qemit:
 	bl		UART_TxReady
 	movs	tos, #-1
 	pop		{pc}
-
-
-.endif // BUTTON == 1
 
 
 // C Interface to some Forth Words

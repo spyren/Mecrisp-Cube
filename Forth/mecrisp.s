@@ -67,8 +67,8 @@
 .equ	CRS_TERMINAL,		3
 .equ	CDC_NULL_TERMINAL,	4	// cdc-key and null-emit
 
-.equ	DEFAULT_TERMINAL, CDC_NULL_TERMINAL
-//.equ	DEFAULT_TERMINAL, CDC_TERMINAL
+//.equ	DEFAULT_TERMINAL, CDC_NULL_TERMINAL
+.equ	DEFAULT_TERMINAL, CDC_TERMINAL
 
 .equ	TERMINAL_AUTO,		1
 
@@ -77,7 +77,10 @@
 .equ	PLEX,				1
 .equ	EPD,				0
 .equ	FPU,				1
+.equ	QUAD,				1
 .equ	BUTTON,				1
+.equ	BUTTON_MATRIX,		1
+.equ	POWER,				1
 .equ	SD_DRIVE,			0
 
 @ -----------------------------------------------------------------------------

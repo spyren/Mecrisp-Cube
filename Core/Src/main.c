@@ -121,6 +121,9 @@
 #include "fs.h"
 #include "clock.h"
 #include "myassert.h"
+#if POWER == 1
+#include "power.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -169,6 +172,9 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+#if POWER == 1
+	POWER_startup();
+#endif
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

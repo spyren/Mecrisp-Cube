@@ -54,8 +54,16 @@
 #if EPD == 1
 #include "epd.h"
 #endif
-#include "tiny.h"
+#if QUAD == 1
+#include "quad.h"
+#endif
+#if BUTTON == 1
 #include "button.h"
+#endif
+#include "tiny.h"
+#if POWER == 1
+#include "power.h"
+#endif
 
 
 
@@ -105,6 +113,9 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+#if POWER == 1
+	POWER_init();
+#endif
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
