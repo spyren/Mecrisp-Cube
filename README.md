@@ -16,6 +16,8 @@ but this calculator will exceed the business card dimension.
 
 It is a good opportunity to show how good Forth works on modern hardware.
 
+Also featured in HACKADAY [4TH Calculator](https://hackaday.io/project/196655-4th-calculator).
+
 ## Features
 
 ### Calculator
