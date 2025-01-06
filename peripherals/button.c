@@ -678,21 +678,21 @@ static void put_key_string(uint8_t c) {
 	static int shift = FALSE;
 	static int mode_float = TRUE;
 
-//	if (startup) {
-//		switch (c) {
-//		case BUTTON_ON_OFF:
-//			// fallthru
-//		case BUTTON_CLOCK:
-//			// fallthru
-//			break;
-//		case BUTTON_CALC:
-//			startup = FALSE;
-//			break;
-//		default:
-//			// ignore
-//			return;
-//		}
-//	}
+	if (startup) {
+		switch (c) {
+		case BUTTON_ON_OFF:
+			// fallthru
+		case BUTTON_CLOCK:
+			// fallthru
+			break;
+		case BUTTON_CALC:
+			startup = FALSE;
+			break;
+		default:
+			// ignore
+			return;
+		}
+	}
 
 	if (c == BUTTON_SHIFT) {
 		shift = !shift;
