@@ -43,7 +43,7 @@
 #include "sd.h"
 #include "bsp.h"
 
-
+#if SD_DRIVE == 1
 // Defines
 // *******
 #define SD_DUMMY_BYTE			0xFF
@@ -1094,4 +1094,4 @@ static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	return tmp;
 }
 
-
+#endif // SD_DRIVE == 1

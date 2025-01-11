@@ -30,6 +30,48 @@
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, ".greet"
+print_greet:
+		@ ( --  ) print greeting
+@ -----------------------------------------------------------------------------
+	push	{lr}
+@	pushdatos
+@	ldr		tos, =ForthCalculator	// print 4TH Calculator
+@	bl		fs_strlen
+@	bl		stype
+	pushdatos
+	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =MecrispVersion
+	bl		fs_strlen
+	bl		stype
+	welcome " by Matthias Koch. "
+	pushdatos
+	ldr		tos, =BSP_Version	// print Cube and BLE version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =RTOS_Version	// print RTOS version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =FS_Version	// print file system version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =VI_Version	// print vi system version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =TINY_Version	// print TinyUSB system version
+	bl		fs_strlen
+	bl		stype
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1!"
 set_led1:
 		@ ( n --  ) set LED1 (blue)
@@ -840,4 +882,5 @@ set_halt:
 	pop		{pc}
 
 .endif // POWER
+
 

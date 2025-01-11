@@ -65,6 +65,8 @@
 #include "power.h"
 #endif
 
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -122,7 +124,6 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 	RTSPI_init();
-	BLOCK_init();
 	VI_init();
 	TINY_init();
 
@@ -168,9 +169,13 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
+//	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
+	BSP_setLED2(TRUE);
 	ASSERT_init();
+#if SD_DRIVE == 1
+	BLOCK_init();
 	SD_init();
+#endif
 	FD_init();
 	FS_init();
 #if OLED == 1
@@ -185,9 +190,6 @@ void MainThread(void *argument)
 #if EPD == 1
 	EPD_init();
 #endif
-#if QUAD == 1
-	QUAD_init();
-#endif
 #if BUTTON == 1
 	BUTTON_init();
 #endif
@@ -196,12 +198,16 @@ void MainThread(void *argument)
 	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
 		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		BSP_clearSysLED(SYSLED_POWER_ON);
+//		BSP_clearSysLED(SYSLED_POWER_ON);
+		BSP_setLED2(FALSE);
 	} else {
 		// timeout -> BLE (CPU2) not started, flash operations not possible
-		BSP_clearSysLED(SYSLED_POWER_ON);
-		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
+//		BSP_clearSysLED(SYSLED_POWER_ON);
+//		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
+		BSP_setLED2(FALSE);
+		BSP_setLED3(TRUE);
 	}
+
 
 	Forth();
 

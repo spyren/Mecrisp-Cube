@@ -49,6 +49,8 @@
 #include "app_common.h"
 #include "main.h"
 #include "bsp.h"
+#include "button.h"
+#include "stm32_lpm.h"
 
 
 // Private function prototypes
@@ -103,8 +105,8 @@ extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
 
 static uint32_t adc_calibration;
-static int sys_led_status = SYSLED_ACTIVATE;
-// static int sys_led_status = 0;
+//static int sys_led_status = SYSLED_ACTIVATE;
+static int sys_led_status = 0;
 
 
 // Public Functions
@@ -601,6 +603,7 @@ int BSP_getAnalogPin(int pin_number) {
 	int return_value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -614,6 +617,7 @@ int BSP_getAnalogPin(int pin_number) {
 	}
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return_value = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop_IT(&hadc1);
@@ -635,6 +639,7 @@ int BSP_getVref(void) {
 	int value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -653,6 +658,7 @@ int BSP_getVref(void) {
 	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
 }
@@ -672,6 +678,7 @@ int BSP_getVbat(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -690,6 +697,7 @@ int BSP_getVbat(void) {
 	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return 3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) ;
 }
@@ -709,6 +717,7 @@ int BSP_getCpuTemperature(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -727,6 +736,7 @@ int BSP_getCpuTemperature(void) {
 	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_TEMPERATURE(ref_voltage_mv, value, ADC_RESOLUTION_12B);
 }
@@ -1331,6 +1341,23 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	switch (GPIO_Pin) {
+#if BUTTON_MATRIX == 1
+	case GPIO_PIN_0:  // column 0 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_1:  // column 1 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_2:  // column 2 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_3:  // column 3 button
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+	case GPIO_PIN_5:
+		osSemaphoreRelease(BUTTON_SemaphoreID);
+		break;
+#endif
 	case GPIO_PIN_4:  // D10
 		osSemaphoreRelease(EXTI_4_SemaphoreID);
 		break;

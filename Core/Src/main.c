@@ -148,6 +148,8 @@ const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
 const char MecrispVersion[] = "  * ";
 const char rc_local[] = RC_LOCAL;
 
+const char ForthCalculator[] = FORTH_CALCULATOR;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -173,7 +175,6 @@ int main(void)
 #if POWER == 1
 	POWER_startup();
 #endif
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -201,7 +202,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
-  MX_IPCC_Init();
+//  MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
  

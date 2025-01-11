@@ -32,6 +32,7 @@ const struct UTIL_LPM_Driver_s UTIL_PowerDriver =
   PWR_EnterSleepMode,
   PWR_ExitSleepMode,
 
+
   PWR_EnterStopMode,
   PWR_ExitStopMode,
 
@@ -139,7 +140,7 @@ void PWR_ExitOffMode(void)
 void PWR_EnterStopMode(void)
 {
 /* USER CODE BEGIN PWR_EnterStopMode_1 */
-	BSP_setLED1(0);
+	BSP_setLED2(0);
 /* USER CODE END PWR_EnterStopMode_1 */
   /**
    * When HAL_DBGMCU_EnableDBGStopMode() is called to keep the debugger active in Stop Mode,
@@ -196,8 +197,7 @@ void PWR_ExitStopMode(void)
 
   HAL_ResumeTick();
 /* USER CODE BEGIN PWR_ExitStopMode_2 */
-	BSP_setLED1(1);
-
+	BSP_setLED2(1);
 /* USER CODE END PWR_ExitStopMode_2 */
   return;
 }

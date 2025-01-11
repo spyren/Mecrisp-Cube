@@ -226,7 +226,7 @@ char const *string_desc_arr[] =
 {
   (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
   "spyr.ch",                     // 1: Manufacturer
-  "CUBE4TH",                     // 2: Product
+  "Nucleo",                      // 2: Product
   NULL,                          // 3: Serials will use unique ID if possible
   "4TH CDC",                     // 4: CDC Interface
   "4TH MSC",                     // 5: MSC Interface

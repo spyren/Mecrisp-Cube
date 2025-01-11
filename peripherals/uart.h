@@ -31,7 +31,6 @@
  */
 
 
-
 #ifndef INC_UART_H_
 #define INC_UART_H_
 
@@ -49,5 +48,6 @@ void UART_setBaudrate(const int baudrate);
 void UART_setWordLength(const int wordlength);
 void UART_setParityBit(const int paritybit);
 void UART_setStopBits(const int stopbits);
+void UART_setRxLPM(int lpm);
 
 #endif /* INC_UART_H_ */

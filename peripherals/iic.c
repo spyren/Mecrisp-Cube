@@ -41,6 +41,7 @@
 #include "i2c.h"
 #include "iic.h"
 #include "myassert.h"
+#include "stm32_lpm.h"
 
 
 // Private function prototypes
@@ -122,6 +123,7 @@ int IIC_ready(void) {
 int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
@@ -137,6 +139,7 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 		IIC_Status = -3;
 	}
 	osMutexRelease(IIC_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_ENABLE);
 	if (IIC_Status != 0) {
 		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
@@ -162,6 +165,7 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
@@ -177,6 +181,7 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 		IIC_Status = -3;
 	}
 	osMutexRelease(IIC_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_ENABLE);
 	if (IIC_Status != 0) {
 		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}
@@ -205,6 +210,7 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev) {
 	HAL_StatusTypeDef hal_status = HAL_OK;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the IIC
 	osMutexAcquire(IIC_MutexID, osWaitForever);
 	IIC_Status = 0;
@@ -222,6 +228,7 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 	if (IIC_Status != 0) {
 		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 		osMutexRelease(IIC_MutexID);
+		UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_ENABLE);
 		return IIC_Status;
 	}
 
@@ -237,6 +244,7 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 		IIC_Status = -3;
 	}
 	osMutexRelease(IIC_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_IIC, UTIL_LPM_ENABLE);
 	if (IIC_Status != 0) {
 		ASSERT_nonfatal(0, ASSERT_I2C, 0);
 	}

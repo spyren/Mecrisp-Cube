@@ -2,6 +2,7 @@
  *  @brief
  *      Power management e.g. low power, shutdown, charging and the like.
  *
+ *		Needs BUTTON_A or calculator keyboard matrix.
  *  @file
  *      power.c
  *  @author
@@ -77,7 +78,7 @@ uint8_t GAUGE_UpdateBatState = TRUE;
  *  @brief
  *      Check for startup or halt/shutdown.
  *
- *      Called direct after reset. Using WKUP1 (PA0)
+ *      Called direct after reset. Using WKUP1 (PA0) or WKUP2 (PC?)
  *  @return
  *      None
  */
@@ -101,16 +102,37 @@ void POWER_startup(void) {
 		    __disable_irq();
 //		    __HAL_RCC_GPIOC_CLK_ENABLE();
 		    __HAL_RCC_GPIOA_CLK_ENABLE();
-		    GPIO_InitStruct.Pin = BUTTON_A_Pin;
+
+#if BUTTON == 1
+#if BUTTON_MATRIX == 1
+		    // calculator keyboard matrix
+		    int i;
+
+		    // using COL0 and ROW6 (on/off button)
+		    GPIO_InitStruct.Pin = COL0_Pin;
 		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
 		    GPIO_InitStruct.Pull = GPIO_PULLUP;
-		    HAL_GPIO_Init(BUTTON_A_GPIO_Port, &GPIO_InitStruct);
+		    HAL_GPIO_Init(COL0_GPIO_Port, &GPIO_InitStruct);
+		    GPIO_InitStruct.Pin = ROW6_Pin;
+		    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+		    GPIO_InitStruct.Pull = GPIO_NOPULL;
+		    HAL_GPIO_Init(ROW6_GPIO_Port, &GPIO_InitStruct);
 
-		    while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port, BUTTON_A_Pin) == GPIO_PIN_RESET) {
+		    // activate only last row
+			HAL_GPIO_WritePin(ROW6_GPIO_Port, ROW6_Pin, GPIO_PIN_RESET);
+
+			for (i=0; i<100000; i++) {
+				; // wait for ports
+			}
+
+			while (HAL_GPIO_ReadPin(COL0_GPIO_Port, COL0_Pin) == GPIO_PIN_RESET) {
 		    	; // wait till button release
-		    }
+			}
 
-		    __HAL_GPIO_EXTI_CLEAR_IT(BUTTON_A_Pin);
+		    __HAL_GPIO_EXTI_CLEAR_IT(COL0_Pin);
+		    __HAL_GPIO_EXTI_CLEAR_FLAG(COL0_Pin);
+		    __NVIC_ClearPendingIRQ(EXTI0_IRQn);
+
 		    HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
 		    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
@@ -125,12 +147,46 @@ void POWER_startup(void) {
 		    HAL_PWREx_DisableInternalWakeUpLine();
 		    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW, PWR_CORE_CPU1);
 #ifndef DEBUG
-			DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
+		    DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
 #endif
-//    		HAL_PWREx_EnterSHUTDOWNMode();
-    		HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+		    //HAL_PWREx_EnterSHUTDOWNMode();
+		    HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
 
-    		// should never reach this code, only for debugging
+#else
+		    // using BUTTON_A
+		    GPIO_InitStruct.Pin = BUTTON_A_Pin;
+		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+		    GPIO_InitStruct.Pull = GPIO_PULLUP;
+		    HAL_GPIO_Init(BUTTON_A_GPIO_Port, &GPIO_InitStruct);
+
+		    while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port, BUTTON_A_Pin) == GPIO_PIN_RESET) {
+		    	; // wait till button release
+		    }
+
+		    __HAL_GPIO_EXTI_CLEAR_IT(BUTTON_A_Pin);
+		    HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+		    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+		    __NVIC_ClearPendingIRQ(EXTI0_IRQn);
+
+		    LL_EXTI_DisableIT_0_31( (~0) );
+		    LL_EXTI_DisableIT_32_63( (~0) );
+		    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_0);
+		    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
+
+		    // shutdown, exit into POR, wake up on falling edge (PA0, BUTTON_A_Pin, PWR_WAKEUP_PIN1_LOW)
+		    // POWER button is the power switch
+		    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF1);
+		    HAL_PWREx_DisableInternalWakeUpLine();
+		    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW, PWR_CORE_CPU1);
+#ifndef DEBUG
+		    DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
+#endif
+		    //HAL_PWREx_EnterSHUTDOWNMode();
+		    HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+#endif
+#endif
+
+    		// should never reach this code (except exit from stop), only for debugging
     		HAL_NVIC_SystemReset();
 		}
 	}
@@ -163,7 +219,9 @@ void POWER_halt(void) {
 		// RTC is up and running and low power shutdown is activated
 
 		// switch off peripherals
-//		OLED_shutdown(0);
+#if OLED == 1
+		OLED_off();
+#endif
 #if QUAD == 1
 		QUAD_shutdown(0);
 #endif

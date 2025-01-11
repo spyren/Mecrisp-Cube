@@ -1,13 +1,24 @@
 /**
  *  @brief
- *      Buffered Flipper buttons (keyboard)
+ *  	Simple buttons (4) or matrix buttons (5x7)
+ *
+ *  	Simple Buttons
+ *  	e.g. for egg timer
+ *      Like a keyboard with the characters m (for minutes), s (seconds), S (start/stop),
+ *      p (power on/off).
+ *
+ *  	Matrix Buttons
+ *      Buffered calculator buttons
+ *
+ *      Columns are input ports with pull up resistors and interrupts,
+ *      rows are open drain output ports.
  *
  *  @file
- *      uart.h
+ *      button.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2020-02-19
+ *      2024-12-15
  *  @remark
  *      Language: C, STM32CubeIDE GCC
  *  @copyright
@@ -27,13 +38,22 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
-
-
 #ifndef INC_BUTTON_H_
 #define INC_BUTTON_H_
 
 extern osMutexId_t BUTTON_MutexID;
 
+void BUTTON_init(void);
+int BUTTON_getc(void);
+int BUTTON_Ready(void);
+int BUTTON_putkey(const char c);
+
+#if BUTTON_MATRIX == 1
+extern osSemaphoreId_t BUTTON_SemaphoreID;
+
+void BUTTON_OnOff(void);
+
+#else
 #define BUTTON_D_Pin			A2_Pin
 #define BUTTON_D_GPIO_Port		A2_GPIO_Port
 #define BUTTON_C_Pin			D0_Pin
@@ -44,9 +64,6 @@ extern osMutexId_t BUTTON_MutexID;
 #define BUTTON_A_GPIO_Port		A3_GPIO_Port
 
 
-void BUTTON_init(void);
-int BUTTON_getc(void);
-int BUTTON_Ready(void);
-int BUTTON_putkey(const char c);
+#endif
 
 #endif /* INC_BUTTON_H_ */
