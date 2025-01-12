@@ -6,149 +6,141 @@
   </tr>
 </table> 
 
-# Egg Timer (Mecrisp-Cube egg branch)
+# Mecrisp-Cube (master branch)
 
-An altoid tin box project. 
+Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
 
-https://en.wikipedia.org/wiki/Egg_timer
+Forth is an interactive and extensible language, with built-in lexical analysis 
+(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
+4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
 
-An egg timer or kitchen timer is a device whose primary function is to assist in timing during cooking; 
-the name comes from the first timers initially being used for the timing of cooking eggs. 
-Early designs simply counted down for a specific period of time.
+Forth is perfect for embedded systems where some sort of user interactivity 
+like CLI and extensibility (at runtime) are needed. 
+
+C & Forth in the 21st Century. C and Forth are both about 50 years old. 
+The combination of the strength of this two worlds results in a powerful 
+system that outperforms other much newer systems like Python. 
+Good design withstands the test of time.
+
+The goal of Mecrisp-Cube is to be a complete Forth programming environment 
+for STM32 MCUs. There are three flavors (branches) available:
+
+  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
+    [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
+    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
+    In work [Flipper Zero](../Flipper) (`Flipper`):
+  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
+  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+
+May the Forth Be With You!
+
+
+## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
+
+If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
+you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
+
+The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
+and LEDs and switches (buttons).
+
+STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
+Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
+Developed with the same technology as the ultra-low power STM32L4 microcontrollers, 
+the STM32WB MCU series provides the same digital and analog peripherals suitable 
+for applications requiring an extended battery life and complex functionalities. 
+If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
+Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
+
+![](/sdcard/man/img/stm32wb-nucleo.jpg)
+
 
 ## Features
 
-  * Count down max. 99:59 time period
-  * Alarm
-  * Start/stop
+### Standard Mecrisp-Cube features
+  * 63 KiB RAM dictionary 
+  * 128 KiB Flash Forth dictionary 
+  * 50 KiB for C code 
+  * Serial console UART / USB CDC / BLE [Terminal-IO](/sdcard/man/TerminalIO.md)
+  * [Filesystem](/sdcard/man/FileSystem.md) (FAT)
+    * Internal Flash drive 0:, 384 KiB
+    * microSD drive 1: (optional, external SD adaptor)
+  * Integration in STM32 Cube Ecosystem. 
+    * Create C code from CubeMX for internal peripherals and use it in Forth
+    * [Calling C Functions](/sdcard/man/CallingCFunction.md) from Forth and vice versa 
+  * [RTOS](/sdcard/man/CmsisRtos.md)
+    * Forth as CMSIS-RTOS thread.
+    * CMSIS-RTOS API to use FreeRTOS from Forth.
+    * Buffered terminal I/O (5 KiB buffer for UART Rx). Interrupt driven and RTOS aware,
+      key and emit block the calling thread. 
+  * USB
+    * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
+      serial communication via USB
+    * Redirect console I/O like cdc-emit, cdc-key
+  * BLE 5.0 GAP Peripheral Role (STM32WB)
+    * DIS Device Information Service
+    * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
+    * [CRS](/sdcard/man/TerminalIO.md#ble-cable-replacement-serial-communication-api)
+      Cable Replacement Server service (proprietary service from STM, similar to
+      Classic Bluetooth SPP).
+      Redirect console I/O like crs-emit, crs-key. 
+  * Floating-Point Unit [FPU](/sdcard/man/fpu.md)
+    * Support for the floating-point unit FPU, single precision for M4F MPUs
+      and double precision for M7 MPUs
+    * CMSIS-DSP 
+  * [vi](/sdcard/man/EditorVi.md) editor
+  * Real Time Clock [RTC](/sdcard/man/RealTimeClock.md)
+  * [Watchdog](/sdcard/man/watchdog.md)
+  * [Assertion and Logging](/sdcard/man/assert.md)
 
-    
+
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * 4 push buttons (GPIO)
-  * Piezo Buzzer (PWM)
+  * 3 push buttons
+  * 3 LEDs
+  * 16 GPIO pins, D0 .. D15
+  * 6 ADC pins, A0 .. A5
   * I2C
-    * Quad Alphanumeric display 
+  * SPI
+  * 3 PWM pins
+  * Input Capture / Output Compare
+  * 4 external interrupts (EXTI)
 
 For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
 
 
+### External Peripherals (e.g. Feather Wings) 
+
+  * OLED Display 128x32, 128x64, I2C
+  * E-Ink FeatherWing 250x122 SPI
+  * NeoPixel
+  * CharlieWing
+  * NeoPixelWing
+  * DotStarWing
+  * Quad Alphanumeric Display
+
+
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your egg timer 
-for development and testing purposes. 
+These instructions will get you a copy of the project up and running on your local 
+machine (WB55 Nucleo or Dongle) for development and testing purposes. 
 
 
 ### Prerequisites
- 
-  * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
-  * Altoid tin box
-  * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
-  * Display
-    * [Adafruit Quad Alphanumeric FeatherWing Display](https://www.adafruit.com/product/3131) $10
-    * [SparkFun Qwiic Alphanumeric Display](https://www.sparkfun.com/products/16919)
-  * 4 pcs push buttons, e.g. [STEMMA Wired Tactile Push-Button Pack](https://www.adafruit.com/product/4431), $7
-  * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
-  * LiPo battery (optional) e.g. Renata ICP422339PR
-  * Hot glue or double sided mounting tape e.g. Tesa 55750
-  * Laminating machine (optional) 
-  * STM32CubeProgrammer
 
-### Build the Hardware
+  * One of these boards
+    * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
+      Arduino™ Uno V3 and ST morpho connectors
+    * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
+  * Terminal emulator application for PC, e.g.:
+    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
+    * [PuTTY](http://www.putty.org/) - Windows and Linux
+    * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
+    * [Realterm](http://realterm.sourceforge.net/) - Windows
+    * minicom, microcom, screen - Linux
+    * Use the built in Eclipse console (but no LF)
+    * for details see [TerminalIO]
+  * STM32CubeProgrammer (optional)
 
-![schematic](/sdcard/man/img/schematic.png)
-
-#### Cut the perfboard
-Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
-
-#### Glue or solder push buttons
-<img src="/sdcard/man/img/buttons.jpg" width="200">
-Glue or solder the 4 push buttons to the perfboard top layer. 
-
-#### Mount the dongle
-Remove the USB connector from the dongle. 
-Glue (hot glue, mounting tape) or solder the dongle to the perfboard. 
-If you do not want to use the BLE, cut off the BLE antenna.
-
-#### Mount USB Breakout
-Glue (hot glue, mounting tape) or solder the USB Breakout or the 
-Adafruit Micro-Lipo Charger to the perfboard.
-
-#### Wire the buttons to the dongle
-Wire the buttons to the dongle. Pullups are integrated in the MCU.
-
-|*Description*|*Dongle*|*Function* | *Egg Timer * |
-|-------------|--------|-----------|--------------|
-| PA0         | CN2.3  | A3        | a on/off     |
-| PA1         | CN2.10 | A2        | b sec        |
-| PA2         | CN2.4  | D1        | c min        |
-| PA3         | CN2.5  | D0        | d start/stop |
-
-#### Wire the JTAG SWD (optional)
-Only needed if you want to debug the board.
-
-|*Description*|*Dongle*|*Function* | *JTAG 10pin* |
-|-------------|--------|-----------|--------------|
-| GND         | CN1.1  | GND       |  3, 5, 9     |
-| NRST        | CN1.2  | RES       |  10          |
-| PA13        | CN1.3  | SWDIO     |  2           |
-| PA14        | CN1.4  | SWDCLK    |  4           |
-| 3V3         | CN1.6  | 3V3       |  1           |
-
-#### Place the Diodes (optional)
-<img src="/sdcard/man/img/diode-bat54c.jpg" width="500">
-
-I use a BAT54C double schottky diode in SOT23 package. 
-Solder the diode to the perfboard. 
-You can also use two 1N4148 diodes.
-
-#### Wire the USB connector
-<img src="/sdcard/man/img/calculator-bottom-cut.jpg" width="500">
-
-|*Description*|*Dongle*|*Function* | *USB Charger* |
-|-------------|--------|-----------|---------------|
-| GND         | GND    | GND       | GND           |
-| 5 V         | 5 V    | 5 V       | Diode Cathode |
-| D+          | D+     |           | D+            |
-| D-          | D-     |           | D-            |
-
-|*Description*|*USB Charger*|*Function* | *Diode* |
-|-------------|-------------|-----------|---------|
-| 5 V         | 5 V         |           | Anode 1 |
-| BAT         | BAT         |           | Anode 2 |
-
-#### Mount the Quad Alphanumeric Display
-Solder the Quad Alphanumeric Display to the perfboard top layer.
-
-#### Wire the Quad Alphanumeric Display
-|*Description*|*Dongle*|*Function* | *Quad*       |
-|-------------|--------|-----------|--------------|
-| GND         | CN1.1  | GND       | GND          |
-| 3V3         | CN1.6  | 3V3       | VCC          |
-| PB8         | CN2.1  | D15 SCL   | SCL          |
-| PB9         | CN2.2  | D14 SDA   | SDA          |
-
-#### Mount the Battery
-Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
-
-#### Wire the Battery (optional)
-If the battery has a molex connector, no wiring/solderin is required.
-
-#### Keyboard Overlay
-
-<table>
-  <tr>
-    <td><img src="/sdcard/man/img/overlay.svg" width="200">
- </td>
-    <td><img src="/sdcard/man/img/overlay.png" width="200"></td>
-  </tr>
-</table> 
-
-1. Print the keyboard overlay on heavy weight white paper
-2. Cut out the overlay
-3. Laminate the overlay
-4. Cut out the laminated overlay
-5. Cut holes for the push buttons
 
 ### Flash the Mecrisp-Cube Firmware
 
@@ -157,6 +149,108 @@ Flash the Mecrisp-Cube [binary](/Release/MecrispCube.bin) `MecrispCube.bin` or b
 
  1. Connect the Nucleo Board USB ST-LINK to the PC
  1. Copy binary (MecrispCube.bin or better the MecrispCubeFS.bin) to the USB mass storage NODE_WB55RG 
+
+
+### Use the Terminal (USB CDC)
+
+Connect the WB55 Nucleo USB to the PC. Start the terminal emulator application on the PC. 
+Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
+I set the putty terminal configuration to 
+
+  * Implicit CR in every LF 
+  * Local echo: off
+  * Local line editing: off
+  * Keyboard Backspace: Control-H
+  * Keyboard Function: Keys VT100
+  * Remote character set: CP850
+
+The greeting screen should apear after startup:
+```
+Mecrisp-Cube 1.6.1 deb for STM32WB Nucleo, 63/128 KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch
+  * Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
+  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics 
+  * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
+  * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN
+  * tiny vi - part of BusyBox (C) 2000, 2001 Sterling Huxley
+  * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)Mecrisp-Stellaris RA 2.5.4 by Matthias Koch.
+
+include 0:/etc/rc.local
+```
+Use the interpreter ([reverse polnish notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation), like HP calculators):
+```
+23 5 / .
+```
+This looks like this on your terminal (**bold** is the Forth answer):
+<pre>
+23 5 / .[CR] <b>4  ok.</b>
+</pre>
+The `ok.` is the Forth prompt and apears at the end of the line (Forth does it differently, like most things ;-). 
+If you don't like it, [change it](/sdcard/man/FileSystem.md#shell-prompt). 
+`[CR]` is the Enter-key.
+
+Type in your first Forth program (create a word in the RAM dictionray):
+```
+: hello ." World" ;
+```
+and execute the the program
+```
+hello 
+```
+again the terminal output:
+<pre>
+: hello ." World" ;[CR]  <b>ok.</b>
+hello[CR] <b>World ok.</b>
+</pre>
+The program `hello` ist not persistent, after power cycle or even reset the RAM dictionray is erased. 
+But it is easy to add a word to the Flash dictionray:
+```
+compiletoflash
+: hello ." World" ;
+```
+The program source is not saved, only the executable machine code is compiled into the flash. 
+You can use the built-in editor [vi](/sdcard/man/EditorVi.md) and save your source to the 
+[filesystem](/sdcard/man/FileSystem.md) either on internal flash drive `0:` or on the microSD card drive `1:`.
+
+The following part is only for people who are interested how Forth works and have knowledge about 
+the ARM Assembler.
+There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but it is stored 
+as `00` `B5`):
+```
+see hello
+08043558: B500  push { lr }
+0804355A: F7BF  bl  08002BE4  -->  .' World'
+0804355C: FB43
+0804355E: 5705
+08043560: 726F
+08043562: 646C
+08043564: BD00  pop { pc }
+```
+The dictionray entry looks like this (you can see the 'hello' and the string constant 'World'):
+```
+$08043558 10 dump
+08043550 :  00 00 05 68 65 6C 6C 6F   00 B5 BF F7 43 FB 05 57  | ...hello  ....C..W |
+08043560 :  6F 72 6C 64 00 BD 00 00   FF FF FF FF FF FF FF FF  | orld....  ........ |
+```
+The compiled word `hello` needs only 14 bytes in the dictionary.
+
+### Buttons, LED
+
+#### Special Functions on Startup 
+
+USB-CDC is the default console.
+  * *SW1* [CRS](TerminalIO) (Bluetooth Cable Replacement Service) is standard console
+  * *SW2* [UART](TerminalIO#UART_Serial_Communication_API) is standard console
+  * *SW3* do not include `0:/etc/rc.local`
+
+
+#### LEDs as Status Indicator
+
+The RGB LED  displays the status
+  * *Green* USB enumerated
+  * *Red* Error occured
+  * *Blue* BLE connected
+  * *flashing Red* "disk" (serial flash or SD) write operation
+  * *flashing Yellow* "disk" (serial flash or SD) read operation
 
 
 ## Installing Development Environment 
@@ -351,7 +445,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * Docu on GitHub
 ### v1.6.0 Calculator Release
 * tinyUSB
-* 4th Calculator
+* 4th Caclculator
 
 
 ## Authors
