@@ -390,7 +390,7 @@ void BSP_setDigitalPin(int pin_number, int state) {
 
 /**
  *  @brief
- *	    Gets the digital iUTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);nput port pin (D0 .. D15).
+ *	    Gets the digital input port pin (D0 .. D15).
  *
  *	@param[in]
  *      pin_number    0 to 15.

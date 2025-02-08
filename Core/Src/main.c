@@ -222,6 +222,7 @@ int main(void)
   MX_I2C1_Init();
 //  MX_WWDG_Init();
   MX_AES1_Init();
+  MX_RNG_Init();
   MX_PKA_Init();
   MX_CRC_Init();
 //  MX_USB_PCD_Init();
