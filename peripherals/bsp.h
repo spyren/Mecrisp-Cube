@@ -33,6 +33,17 @@
 #ifndef INC_BSP_H_
 #define INC_BSP_H_
 
+typedef enum {
+	SYSLED_ACTIVATE 			= 1 << 0,
+	SYSLED_DISK_READ_OPERATION 	= 1 << 1,
+	SYSLED_DISK_WRITE_OPERATION = 1 << 2,
+	SYSLED_CHARGING 			= 1 << 3,
+	SYSLED_FULLY_CHARGED 		= 1 << 4,
+	SYSLED_BLE_CONNECTED 		= 1 << 5,
+	SYSLED_POWER_ON 		    = 1 << 6,
+	SYSLED_ERROR	      	    = 1 << 7,
+} BSP_sysled_t;
+
 void BSP_init(void);
 
 void BSP_setLED1(int state);
@@ -70,5 +81,7 @@ void BSP_setNeoPixel(uint32_t rgb);
 int BSP_getNeoPixel(void);
 void BSP_setNeoPixels(uint32_t *buffer, uint32_t len);
 
+void BSP_setSysLED(BSP_sysled_t status);
+void BSP_clearSysLED(BSP_sysled_t status);
 
 #endif /* INC_BSP_H_ */

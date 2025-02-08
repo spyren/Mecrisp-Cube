@@ -851,6 +851,10 @@ set_precision:
 	drop
 	bx 			lr
 
+
+// Words Using C Math Library
+// **************************
+
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible, ">float"
 to_float:
@@ -884,10 +888,6 @@ fnumber:
 	mov			tos, #1		// success
 1:
 	pop			{pc}
-
-
-// Words Using C Math Library
-// **************************
 
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "fsin"
@@ -929,7 +929,7 @@ fasin:
 @ -----------------------------------------------------------------------------
 	push	{lr}
 	mov 	r0, tos
-	bl		fasin
+	bl		asinf
 	mov 	tos, r0
 	pop		{pc}
 

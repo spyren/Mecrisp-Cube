@@ -566,6 +566,71 @@ epdfont:
 .endif // EPD == 1
 
 
+// BUTTON words only if needed
+.if BUTTON == 1
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "button"
+button:
+        @ ( -- c ) Receive one character
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BUTTON_getc
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "button?"
+button_q:
+        @ ( -- ? ) Is there a key press ?
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BUTTON_Ready
+	movs	tos, r0
+	pop		{pc}
+
+
+.if BUTTON_MATRIX == 1
+// button matrix (keyboard)
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "OnOff"
+onoff:
+        @ ( --  ) go into stop mode till on-button is pressed
+// void BUTTON_OnOff(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		BUTTON_OnOff
+	pop		{pc}
+
+.endif // BUTTON_MATRIX
+.endif // BUTTON == 1
+
+
+// null device
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "null-emit"
+null_emit:
+        @ ( c -- ) Emit one character to null device
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	drop
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "null-emit?"
+null_qemit:
+        @ ( -- ? ) Always ready to send a character ?
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		UART_TxReady
+	movs	tos, #-1
+	pop		{pc}
+
+
 // C Interface to some Forth Words
 //********************************
 

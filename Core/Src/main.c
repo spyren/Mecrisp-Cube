@@ -11,7 +11,7 @@
  *
  *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
  *       20 KiB Forth Core
- *      150 KiB Middleware (debug 250 KiB)
+ *      186 KiB Middleware (debug 187 KiB, only 128 font chars)
  *
  *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
  *      128 KiB Flash Dictionary
@@ -29,19 +29,17 @@
  *
  *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
  *       1 KiB Stack         (for startup and ISRs, MSP)
- *       1 KiB Heap          (maybe not needed)
- *       1 KiB UART Tx Buffer
- *       5 KiB UART Rx Buffer
- *       4 KiB CDC Rx/Tx Buffer
- *       2 KiB CDC RxQueue
+ *       2 KiB Heap          (maybe not needed)
  *       4 KiB Flash erase Buffer
+ *       4 KiB Block Buffer
  *      10 KiB global variables
- *      80 KiB RTOS Heap (about 9 KiB free)
+ *      90 KiB RTOS Heap (about 17 KiB free)
  *         Thread Stack size
  *              4 KiB Forth (main)
  *              1 KiB UART_Tx
- *              1 KiB UART_Rx
- *              1 KiB CDC
+ *              5 KiB UART_Rx
+ *              2 KiB CDC_Rx
+ *            0.5 KiB CDC_Tx
  *              1 KiB CRS
  *              1 KiB HRS
  *              1 KiB HCI_USER_EVT
@@ -49,6 +47,7 @@
  *              1 KiB SHCI_USER_EVT
  *
  *             40 KiB vi text buffer
+ *     107 KiB
  *
  *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
  *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
@@ -122,6 +121,9 @@
 #include "fs.h"
 #include "clock.h"
 #include "myassert.h"
+#if POWER == 1
+#include "power.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -143,6 +145,7 @@
 
 /* USER CODE BEGIN PV */
 const char MecrispCubeVersion[] = MECRISP_CUBE_VERSION;
+const char MecrispVersion[] = "  * ";
 const char rc_local[] = RC_LOCAL;
 
 /* USER CODE END PV */
@@ -167,6 +170,10 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+#if POWER == 1
+  POWER_startup();
+#endif
+	   /* USER CODE END 1 */
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -203,22 +210,21 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_USART1_UART_Init();
   MX_RTC_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
+  MX_SPI1_Init();
   if (MX_FATFS_Init() != APP_OK) {
     Error_Handler();
   }
   MX_TIM2_Init();
   MX_I2C1_Init();
 //  MX_WWDG_Init();
-  MX_USART1_UART_Init();
-  MX_SPI1_Init();
-//  MX_USB_PCD_Init();
   MX_AES1_Init();
-  MX_CRC_Init();
-  MX_RNG_Init();
   MX_PKA_Init();
+  MX_CRC_Init();
+//  MX_USB_PCD_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
@@ -229,13 +235,20 @@ int main(void)
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
    */
-  LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID);
+  int i = 100;
+  while (LL_HSEM_1StepLock(HSEM, CFG_HW_CLK48_CONFIG_SEMID) && i > 0) {
+    // lock failed
+    i--;
+  }
 
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();  /* Init code for STM32_WPAN */
-//  MX_APPE_Init();
+
+  /* Init code for STM32_WPAN */
+  MX_APPE_Init();
+
   /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init();
 
@@ -277,14 +290,12 @@ void SystemClock_Config(void)
   * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSI
-                              |RCC_OSCILLATORTYPE_LSI1|RCC_OSCILLATORTYPE_HSE
-                              |RCC_OSCILLATORTYPE_LSE;
+		                         |RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -344,6 +355,32 @@ void PeriphCommonClock_Config(void)
     Error_Handler();
   }
   /* USER CODE BEGIN Smps */
+  // USB clock configuration
+  RCC_CRSInitTypeDef RCC_CRSInitStruct= {0};
+  __HAL_RCC_CRS_CLK_ENABLE();
+
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USB;
+  PeriphClkInitStruct.UsbClockSelection    = RCC_USBCLKSOURCE_HSI48;
+  HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+
+  /*Enable CRS Clock*/
+  __HAL_RCC_CRS_CLK_ENABLE();
+
+  /* Default Synchro Signal division factor (not divided) */
+  RCC_CRSInitStruct.Prescaler = RCC_CRS_SYNC_DIV1;
+
+  /* Set the SYNCSRC[1:0] bits according to CRS_Source value */
+  RCC_CRSInitStruct.Source = RCC_CRS_SYNC_SOURCE_USB;
+
+  /* HSI48 is synchronized with USB SOF at 1KHz rate */
+  RCC_CRSInitStruct.ReloadValue =  __HAL_RCC_CRS_RELOADVALUE_CALCULATE(48000000, 1000);
+  RCC_CRSInitStruct.ErrorLimitValue = RCC_CRS_ERRORLIMIT_DEFAULT;
+
+  /* Set the TRIM[5:0] to the default value */
+  RCC_CRSInitStruct.HSI48CalibrationValue = RCC_CRS_HSI48CALIBRATION_DEFAULT;
+
+  /* Start automatic synchronization */
+  HAL_RCCEx_CRSConfig(&RCC_CRSInitStruct);
 
   /* USER CODE END Smps */
 }

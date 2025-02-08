@@ -26,13 +26,19 @@
 #include "bsp/board_api.h"
 #include "tusb.h"
 #include "fd.h"
+#if SD_DRIVE == 1
 #include "sd.h"
+#endif
 
 #if CFG_TUD_MSC
 
 // Invoked to determine max LUN
 uint8_t tud_msc_get_maxlun_cb(void) {
+#if SD_DRIVE == 1
   return 2; // dual LUN
+#else
+  return 1; // single LUN
+#endif
 }
 
 
@@ -46,6 +52,7 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16
 	  memcpy(vendor_id  , vid0, strlen(vid0));
 	  memcpy(product_id , pid0, strlen(pid0));
 	  memcpy(product_rev, rev0, strlen(rev0));
+#if SD_DRIVE == 1
   } else {
 	  const char vid1[] = "spyr.ch";
 	  const char pid1[] = "CUBE4TH SD";
@@ -53,6 +60,7 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16
 	  memcpy(vendor_id  , vid1, strlen(vid1));
 	  memcpy(product_id , pid1, strlen(pid1));
 	  memcpy(product_rev, rev1, strlen(rev1));
+#endif
   }
 
 }
@@ -72,11 +80,14 @@ void tud_msc_capacity_cb(uint8_t lun, uint32_t* block_count, uint16_t* block_siz
 		FD_getSize();
 		*block_count = FD_getBlocks()*2;
 		*block_size  = 512;
+#if SD_DRIVE == 1
 	} else {
 		SD_getSize();
 		*block_count = SD_getBlocks()*2;
 		*block_size  = 512;
+#endif
 	}
+
 }
 
 // Invoked when received Start Stop Unit command
@@ -106,12 +117,14 @@ int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void* buff
 			return -1;
 		}
 		FD_ReadBlocks(buffer, lba, 1);
+#if SD_DRIVE == 1
 	} else {
 		if ( lba >= (SD_getBlocks()*2) ) {
 			// out of flash disk
 			return -1;
 		}
 		SD_ReadBlocks(buffer, lba, 1);
+#endif
 	}
 	return (int32_t) bufsize;
 }
@@ -125,14 +138,15 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t* 
 			return -1;
 		}
 		FD_WriteBlocks(buffer, lba, 1);
+#if SD_DRIVE == 1
 	} else {
 		if ( lba >= (SD_getBlocks()*2) ) {
 			// out of flash disk
 			return -1;
 		}
 		SD_WriteBlocks(buffer, lba, 1);
+#endif
 	}
-
 	return (int32_t) bufsize;
 }
 

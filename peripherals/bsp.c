@@ -52,14 +52,17 @@
 #include "usart.h"
 #include "spi.h"
 #include "bsp.h"
+#include "button.h"
+#include "stm32_lpm.h"
 
 
 // Private function prototypes
 // ***************************
+static void update_sysled(void);
 
 // Global Variables
 // ****************
-const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.14.1, USB-CDC, BLE Stack 5.3 (C) 2022 STMicroelectronics \n";
+const char BSP_Version[] = "  * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics \n";
 extern TIM_HandleTypeDef htim2;
 
 // Hardware resources
@@ -107,6 +110,8 @@ extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
 static uint32_t adc_calibration;
 
+//static int sys_led_status = SYSLED_ACTIVATE;
+static int sys_led_status = 0;
 
 // Public Functions
 // ****************
@@ -176,7 +181,7 @@ void BSP_init(void) {
 	// ADC calibration
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
-//	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
+	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
 
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_1;
@@ -385,7 +390,7 @@ void BSP_setDigitalPin(int pin_number, int state) {
 
 /**
  *  @brief
- *	    Gets the digital input port pin (D0 .. D15).
+ *	    Gets the digital iUTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);nput port pin (D0 .. D15).
  *
  *	@param[in]
  *      pin_number    0 to 15.
@@ -428,6 +433,7 @@ int BSP_getAnalogPin(int pin_number) {
 	int return_value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -441,6 +447,7 @@ int BSP_getAnalogPin(int pin_number) {
 	}
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return_value = HAL_ADC_GetValue(&hadc1);
 	HAL_ADC_Stop_IT(&hadc1);
@@ -451,7 +458,7 @@ int BSP_getAnalogPin(int pin_number) {
 
 /**
  *  @brief
- *	    Get the Vref
+ *	    Get the Vref intern
  *
  *		The Vref is actually the VDDA
  *  @return
@@ -461,6 +468,7 @@ int BSP_getVref(void) {
 	int value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -475,9 +483,10 @@ int BSP_getVref(void) {
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
 }
@@ -497,6 +506,7 @@ int BSP_getVbat(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -514,10 +524,11 @@ int BSP_getVbat(void) {
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 	HAL_GPIO_WritePin(VBAT_EN_GPIO_Port, VBAT_EN_Pin, GPIO_PIN_RESET);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	// internal voltage divider 2/1, external 27k/100k
 	return (3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) * 100 ) / 127 ;
@@ -538,6 +549,7 @@ int BSP_getCpuTemperature(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -552,9 +564,10 @@ int BSP_getCpuTemperature(void) {
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_TEMPERATURE(ref_voltage_mv, value, ADC_RESOLUTION_12B);
 }
@@ -577,7 +590,9 @@ static const PortPinMode_t DigitalPortPinMode_a[] = {
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
 	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
 	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	// 8 I2C opendrain pullup
-	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   GPIO_AF7_USART1 }	// 9 USART1 pullup
+	{ GPIO_MODE_AF_PP,     GPIO_PULLUP,   GPIO_AF7_USART1 },//  9 UART
+    { GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF5_SPI1 },  // 10 SPI
+    { GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 }               // 11 analog
 };
 /**
  *  @brief
@@ -1278,4 +1293,76 @@ void BSP_setNeoPixels(uint32_t *buffer, uint32_t len) {
 	osDelay(1);
 }
 
+
+/**
+ *  @brief
+ *	    Set the system LED.
+ *
+ *		SYSLED_ACTIVATE 			= 1 << 0,
+ *		SYSLED_DISK_READ_OPERATION 	= 1 << 1, yellow
+ *		SYSLED_DISK_WRITE_OPERATION = 1 << 2, red
+ *		SYSLED_CHARGING 			= 1 << 3, dimmed red
+ *		SYSLED_FULLY_CHARGED 		= 1 << 4, dimmed green
+ *		SYSLED_BLE_CONNECTED 		= 1 << 5, dimmed blue
+ *	@param[in]
+ *      status
+ *  @return
+ *      none
+ *
+ */
+void BSP_setSysLED(BSP_sysled_t status) {
+	sys_led_status |= status;
+	update_sysled();
+}
+
+/**
+ *  @brief
+ *	    Clear the system LED.
+ *
+ *		SYSLED_ACTIVATE 			= 1 << 0,
+ *		SYSLED_DISK_READ_OPERATION 	= 1 << 1,
+ *		SYSLED_DISK_WRITE_OPERATION = 1 << 2,
+ *		SYSLED_CHARGING 			= 1 << 3,
+ *		SYSLED_FULLY_CHARGED 		= 1 << 4,
+ *		SYSLED_BLE_CONNECTED 		= 1 << 5,
+ *	@param[in]
+ *      status
+ *  @return
+ *      none
+ *
+ */
+void BSP_clearSysLED(BSP_sysled_t status) {
+	sys_led_status &= ~status;
+	update_sysled();
+}
+
+static void update_sysled(void) {
+	uint32_t rgb = 0;
+	if (sys_led_status & SYSLED_ACTIVATE) {
+		if (sys_led_status & SYSLED_DISK_READ_OPERATION) {
+			// bright green
+			rgb = 0x00FF00;
+		} else if (sys_led_status & SYSLED_DISK_WRITE_OPERATION) {
+			// bright yellow
+			rgb = 0xFFFF00;
+		} else if (sys_led_status & SYSLED_CHARGING) {
+			// red
+			rgb = 0x200000;
+		} else if (sys_led_status & SYSLED_FULLY_CHARGED) {
+			// green
+			rgb = 0x002000;
+		} else if (sys_led_status & SYSLED_POWER_ON) {
+			// white
+			rgb = 0x404040;
+		} else if (sys_led_status & SYSLED_ERROR) {
+			// red
+			rgb = 0x400000;
+		}
+		if (sys_led_status & SYSLED_BLE_CONNECTED) {
+			// add some blue
+			rgb |= 0x000020;
+		}
+		BSP_setNeoPixel(rgb);
+	}
+}
 

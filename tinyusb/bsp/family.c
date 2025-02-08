@@ -27,17 +27,20 @@
 #include "stm32wbxx_hal.h"
 #include "bsp/board_api.h"
 #include "board.h"
+#include "stm32_lpm.h"
 
 //--------------------------------------------------------------------+
 // Forward USB interrupt events to TinyUSB IRQ Handler
 //--------------------------------------------------------------------+
 void USB_HP_IRQHandler(void)
 {
+  UTIL_LPM_SetStopMode(1U << CFG_LPM_USB, UTIL_LPM_DISABLE);
   tud_int_handler(0);
 }
 
 void USB_LP_IRQHandler(void)
 {
+  UTIL_LPM_SetStopMode(1U << CFG_LPM_USB, UTIL_LPM_DISABLE);
   tud_int_handler(0);
 }
 
@@ -184,4 +187,23 @@ uint32_t board_millis(void)
 }
 #endif
 #endif
+
+
+size_t board_get_unique_id(uint8_t id[], size_t max_len) {
+
+	uint32_t uid[3]; // STM32 MCUs have 96 bit (12 bytes) UIDs
+	uid[0] = HAL_GetUIDw0();
+	uid[1] = HAL_GetUIDw1();
+	uid[2] = HAL_GetUIDw2();
+
+	int len; // Note max_len is typically 16
+	if (max_len < 12) {
+		len = max_len;
+	} else {
+		len = 12;
+	}
+	memcpy(id, uid, len);
+
+	return len;
+}
 

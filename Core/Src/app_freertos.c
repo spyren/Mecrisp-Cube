@@ -54,7 +54,16 @@
 #if EPD == 1
 #include "epd.h"
 #endif
+#if QUAD == 1
+#include "quad.h"
+#endif
+#if BUTTON == 1
+#include "button.h"
+#endif
 #include "tiny.h"
+#if POWER == 1
+#include "power.h"
+#endif
 
 
 
@@ -104,7 +113,9 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-	MX_APPE_Init();
+#if POWER == 1
+    POWER_init();
+#endif
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
@@ -113,7 +124,6 @@ void MX_FREERTOS_Init(void) {
 	CDC_init();
 	FLASH_init();
 	RTSPI_init();
-	BLOCK_init();
 	VI_init();
 	TINY_init();
 
@@ -141,7 +151,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-//	MX_APPE_Init();
+
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -160,9 +170,13 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-	BSP_setNeoPixel(0);
+  BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
+//    BSP_setLED2(TRUE);
 	ASSERT_init();
-	SD_init();
+#if SD_DRIVE == 1
+    BLOCK_init();
+    SD_init();
+#endif
 	FD_init();
 	FS_init();
 #if OLED == 1
@@ -177,18 +191,22 @@ void MainThread(void *argument)
 #if EPD == 1
 	EPD_init();
 #endif
-
-	osDelay(10);
+#if BUTTON == 1
+    BUTTON_init();
+#endif
 
 	// wait till BLE is ready
 	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
 		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
 		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-		// BSP_clearSysLED();
+      BSP_clearSysLED(SYSLED_POWER_ON);
+//        BSP_setLED2(FALSE);
 	} else {
 		// timeout -> BLE (CPU2) not started, flash operations not possible
-		// ASSERT_nonfatal(0, ASSERT_CPU2_HARD_FAULT, * ((uint32_t *) SRAM2A_BASE+4));
-		// BSP_setSysLED(SYSLED_BLE_CONNECTED);
+        BSP_clearSysLED(SYSLED_POWER_ON);
+        BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
+//        BSP_setLED2(FALSE);
+//        BSP_setLED3(TRUE);
 	}
 
 	Forth();

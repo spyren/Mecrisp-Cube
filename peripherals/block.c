@@ -40,7 +40,7 @@
 #include "fd.h"
 #include "myassert.h"
 
-
+#if SD_DRIVE == 1
 // Defines
 // *******
 
@@ -157,7 +157,9 @@ void BLOCK_update(void) {
  *      If a block buffer is assigned for block u, return its start address, a-addr.
  *      Otherwise, assign a block buffer for block u (if the assigned block buffer
  *      has been updated, transfer the contents to mass storage), read the block i
- *      to the block buffer and return its start address, a-addr.
+ *      to the block buffer and return its start address, a-addr.		Appli_state = APPLICATION_INIT;
+		return APP_OK;
+ *
  *  @param[in]
  *  	block_number
  *  @return
@@ -351,8 +353,10 @@ static int get_block(int block_number, int buffer_index) {
 	int ret_value;
 	if (DriveNumber == 0) {
 		ret_value= FD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+#if SD_DRIVE == 1
 	} else if (DriveNumber == 1) {
 		ret_value= SD_ReadBlocks(&BLOCK_Buffers[buffer_index].Data[0], block_number*2, 2);
+#endif
 	} else {
 		ret_value = SD_ERROR;
 	}
@@ -399,9 +403,11 @@ static int save_buffer(int buffer_index) {
 	if (DriveNumber == 0) {
 		ret_value = FD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0],
 				BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+#if SD_DRIVE == 1
 	} else if (DriveNumber == 1) {
 		ret_value = SD_WriteBlocks(&BLOCK_Buffers[buffer_index].Data[0],
 				BLOCK_Buffers[buffer_index].BlockNumber*2, 2);
+#endif
 	} else {
 		ret_value = SD_ERROR;
 	}
@@ -411,5 +417,4 @@ static int save_buffer(int buffer_index) {
 	return ret_value;
 }
 
-
-
+#endif // SD_DRIVE == 1

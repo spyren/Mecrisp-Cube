@@ -1268,6 +1268,7 @@ uint64_t FS_mount(uint64_t forth_stack) {
 				strcpy(line, ": Can't mount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#if SD_DRIVE == 1
 		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
 			SD_getSize();
 			fr = f_mount(&FatFs_SD, "1:", 0);
@@ -1276,6 +1277,7 @@ uint64_t FS_mount(uint64_t forth_stack) {
 				strcpy(line, ": Can't mount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#endif
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": unknown drive");
@@ -1328,6 +1330,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 				strcpy(line, ": Can't unmount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#if SD_DRIVE == 1
 		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
 			SD_getSize();
 			fr = f_mount(0, "1:", 0);
@@ -1336,6 +1339,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 				strcpy(line, ": Can't unmount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#endif
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": unknown drive");

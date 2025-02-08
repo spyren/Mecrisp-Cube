@@ -41,8 +41,9 @@
 #include "main.h"
 #include "rt_spi.h"
 #include "sd.h"
+#include "bsp.h"
 
-
+#if SD_DRIVE == 1
 // Defines
 // *******
 #define SD_DUMMY_BYTE			0xFF
@@ -321,6 +322,8 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
 
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
+
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
@@ -377,6 +380,7 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 
 	osMutexRelease(RTSPI_MutexID);
 
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	/* Return the reponse */
 	return retr;
 }
@@ -401,6 +405,8 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	uint8_t retr = SD_ERROR;
 	SD_CmdAnswer_typedef response;
 	uint16_t BlockSize = SD_BLOCK_SIZE;
+
+	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 	// only one thread is allowed to use the SPI
 	osMutexAcquire(RTSPI_MutexID, osWaitForever);
@@ -462,6 +468,7 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 
 	osMutexRelease(RTSPI_MutexID);
 
+	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	/* Return the reponse */
 	return retr;
 }
@@ -1039,6 +1046,7 @@ static void SD_IO_CSState(uint8_t val) {
 	} else {
 		HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
 	}
+	HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
 }
 
 
@@ -1076,4 +1084,4 @@ static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	return tmp;
 }
 
-
+#endif // SD_DRIVE == 1

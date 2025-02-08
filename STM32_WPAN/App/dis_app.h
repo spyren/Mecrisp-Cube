@@ -65,9 +65,9 @@ extern "C" {
 #undef DISAPP_FIRMWARE_REVISION_NUMBER
 #undef DISAPP_SOFTWARE_REVISION_NUMBER
 #define DISAPP_MANUFACTURER_NAME              "spyr.ch"
-#define DISAPP_MODEL_NUMBER                   "Mecrisp-Cube-WBfeather"
+#define DISAPP_MODEL_NUMBER                   "Mecrisp-Cube-Firefly"
 #define DISAPP_SERIAL_NUMBER                  "1"
-#define DISAPP_FIRMWARE_REVISION_NUMBER       "1.14.1"
+#define DISAPP_FIRMWARE_REVISION_NUMBER       "1.17.3"
 #define DISAPP_SOFTWARE_REVISION_NUMBER       MECRISP_CUBE_TAG
 
 /* USER CODE END EM */
