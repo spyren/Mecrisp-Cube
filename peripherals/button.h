@@ -47,23 +47,67 @@ void BUTTON_init(void);
 int BUTTON_getc(void);
 int BUTTON_Ready(void);
 int BUTTON_putkey(const char c);
+void BUTTON_OnOff(void);
 
+#if BUTTON == 1
 #if BUTTON_MATRIX == 1
 extern osSemaphoreId_t BUTTON_SemaphoreID;
 
-void BUTTON_OnOff(void);
+#define COL0_Pin 		A0_Pin
+#define COL0_GPIO_Port 	A0_GPIO_Port
+#define COL1_Pin 		A1_Pin
+#define COL1_GPIO_Port 	A1_GPIO_Port
+#define COL2_Pin 		A2_Pin
+#define COL2_GPIO_Port	A2_GPIO_Port
+#define COL3_Pin 		A3_Pin
+#define COL3_GPIO_Port	A3_GPIO_Port
+#define COL4_Pin 		D4_Pin
+#define COL4_GPIO_Port	D4_GPIO_Port
+#define ROW0_Pin 		D2_Pin
+#define ROW0_GPIO_Port	D2_GPIO_Port
+#define ROW1_Pin 		D3_Pin
+#define ROW1_GPIO_Port	D3_GPIO_Port
+#define ROW2_Pin 		D5_Pin
+#define ROW2_GPIO_Port	D5_GPIO_Port
+#define ROW3_Pin		D6_Pin
+#define ROW3_GPIO_Port	D7_GPIO_Port
+#define ROW4_Pin		D8_Pin
+#define ROW4_GPIO_Port	D8_Port
+#define ROW5_Pin		D9_Pin
+#define ROW5_GPIO_Port	D9_GPIO_Port
+#define ROW6_Pin		D13_Pin
+#define ROW6_GPIO_Port	D13_GPIO_Port
+
+#define COL0_IRQ		EXTI0_IRQn
+#define COL1_IRQ		EXTI1_IRQn
+#define COL2_IRQ		EXTI2_IRQn
+#define COL3_IRQ		EXTI3_IRQn
+#define COL4_IRQ		EXTI4_IRQn
+
+#define COL0_EXTI_LINE	LL_EXTI_LINE_0
+#define COL1_EXTI_LINE	LL_EXTI_LINE_1
+#define COL2_EXTI_LINE	LL_EXTI_LINE_2
+#define COL3_EXTI_LINE	LL_EXTI_LINE_3
+#define COL4_EXTI_LINE	LL_EXTI_LINE_4
+
 
 #else
-#define BUTTON_D_Pin			A2_Pin
-#define BUTTON_D_GPIO_Port		A2_GPIO_Port
-#define BUTTON_C_Pin			D0_Pin
-#define BUTTON_C_GPIO_Port		D0_GPIO_Port
-#define BUTTON_B_Pin			D1_Pin
-#define BUTTON_B_GPIO_Port		D1_GPIO_Port
-#define BUTTON_A_Pin			A3_Pin
-#define BUTTON_A_GPIO_Port		A3_GPIO_Port
+#define BUTTON_G_Pin			D8_Pin
+#define BUTTON_G_GPIO_Port		D8_GPIO_Port
+#define BUTTON_F_Pin			D7_Pin
+#define BUTTON_F_GPIO_Port		D7_GPIO_Port
+#define BUTTON_E_Pin			D6_Pin
+#define BUTTON_E_GPIO_Port		D6_GPIO_Port
+#define BUTTON_D_Pin			D5_Pin
+#define BUTTON_D_GPIO_Port		D5_GPIO_Port
+#define BUTTON_C_Pin			D4_Pin
+#define BUTTON_C_GPIO_Port		D4_GPIO_Port
+#define BUTTON_B_Pin			D3_Pin
+#define BUTTON_B_GPIO_Port		D3_GPIO_Port
+#define BUTTON_A_Pin			D2_Pin
+#define BUTTON_A_GPIO_Port		D2_GPIO_Port
 
-
+#endif
 #endif
 
 #endif /* INC_BUTTON_H_ */

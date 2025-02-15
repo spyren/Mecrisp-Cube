@@ -74,11 +74,11 @@
 
 .equ	OLED,				1
 .equ	MIP,				0
-.equ	PLEX,				1
+.equ	PLEX,				0
 .equ	EPD,				0
 .equ	FPU,				1
 .equ	QUAD,				0
-.equ	BUTTON,				0
+.equ	BUTTON,				1
 .equ	BUTTON_MATRIX,		0
 .equ	POWER,				1
 .equ	SD_DRIVE,			0
@@ -448,7 +448,7 @@ Forth:
 	ldr		r0, =Fprecision
 	ldr		r1, =2
 	str		r1, [r0]
-.endif // EPD == 1
+.endif
 
 // set the local storage pointer to the user variables
 	ldr		r0, =0	// current task xTaskToQuery = 0
@@ -535,10 +535,10 @@ Forth:
 	cmp		r0, #0
 	bne		3f
     // include 0:/etc/rc.local
-    pushdatos
-   	ldr		tos, =rc_local
-    bl		fs_strlen
-    bl		included
+//    pushdatos
+//   	ldr		tos, =rc_local
+//    bl		fs_strlen
+//    bl		included
 3:
 	@ Ready to fly !
 .include "boot.s"

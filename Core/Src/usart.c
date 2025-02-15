@@ -79,15 +79,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(uartHandle->Instance==USART1)
   {
-  /* USER CODE BEGIN USART1_MspInit 0 */
-	  if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
-		  // Pull-Ups for the dongle, protect from BREAK if NC
-		  GPIO_InitStruct.Pull = GPIO_PULLUP;
-	  } else {
-		  GPIO_InitStruct.Pull = GPIO_NOPULL;
-	  }
+	/* USER CODE BEGIN USART1_MspInit 0 */
 
-  /* USER CODE END USART1_MspInit 0 */
+    /* USER CODE END USART1_MspInit 0 */
 
   /** Initializes the peripherals clock
   */

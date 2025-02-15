@@ -107,7 +107,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     /**ADC1 GPIO Configuration
     PA0     ------> ADC1_IN5
     */
-    GPIO_InitStruct.Pin = A0_Pin;
+    GPIO_InitStruct.Pin = A0_Pin|A1_Pin|A2_Pin|A3_Pin|A4_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(A0_GPIO_Port, &GPIO_InitStruct);

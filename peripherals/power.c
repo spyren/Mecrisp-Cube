@@ -97,10 +97,10 @@ void POWER_startup(void) {
 //			LL_C2_PWR_SetPowerMode(LL_PWR_MODE_STANDBY);
 
 #if BUTTON == 1
+		    GPIO_InitTypeDef GPIO_InitStruct = {0};
 #if BUTTON_MATRIX == 1
 		    // wakeup in debug mode
 		    // should also work on STOP2/Shutdown mode
-		    GPIO_InitTypeDef GPIO_InitStruct = {0};
 		    __disable_irq();
 //		    __HAL_RCC_GPIOC_CLK_ENABLE();
 		    __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -154,16 +154,16 @@ void POWER_startup(void) {
 
 #else
 		    // using BUTTON_A
-		    GPIO_InitStruct.Pin = BUTTON_A_Pin;
+		    GPIO_InitStruct.Pin = A0_Pin;
 		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
 		    GPIO_InitStruct.Pull = GPIO_PULLUP;
-		    HAL_GPIO_Init(BUTTON_A_GPIO_Port, &GPIO_InitStruct);
+		    HAL_GPIO_Init(A0_GPIO_Port, &GPIO_InitStruct);
 
-		    while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port, BUTTON_A_Pin) == GPIO_PIN_RESET) {
+		    while (HAL_GPIO_ReadPin(A0_GPIO_Port, A0_Pin) == GPIO_PIN_RESET) {
 		    	; // wait till button release
 		    }
 
-		    __HAL_GPIO_EXTI_CLEAR_IT(BUTTON_A_Pin);
+		    __HAL_GPIO_EXTI_CLEAR_IT(A0_Pin);
 		    HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
 		    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 		    __NVIC_ClearPendingIRQ(EXTI0_IRQn);
@@ -173,7 +173,7 @@ void POWER_startup(void) {
 		    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_0);
 		    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
 
-		    // shutdown, exit into POR, wake up on falling edge (PA0, BUTTON_A_Pin, PWR_WAKEUP_PIN1_LOW)
+		    // shutdown, exit into POR, wake up on falling edge (PA0, A0_Pin, PWR_WAKEUP_PIN1_LOW)
 		    // POWER button is the power switch
 		    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF1);
 		    HAL_PWREx_DisableInternalWakeUpLine();

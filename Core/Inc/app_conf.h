@@ -847,11 +847,11 @@ typedef enum
 #define	OLED					1
 #define MIP						0
 #define LCDISPLAY				0
-#define PLEX					1
+#define PLEX					0
 #define EPD						0
 #define QUAD                    0
 #define FPU_IP                  1
-#define BUTTON                  0
+#define BUTTON                  1
 #define BUTTON_MATRIX           0
 #define POWER                   1
 #define SD_DRIVE                0

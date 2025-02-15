@@ -6,10 +6,14 @@
  *        - Switches (SW1)
  *        - Digital port pins D0 to D15
  *        - Analog port pins A0 to A4
- *        - PWM: D3 TIM1CH3, D6 TIM1CH1, D9 TIM1CH2
+ *        - PWM:  D0 TIM1CH3, D1 TIM1CH2, A4 TIM1CH1
+ *        - Timer
+ *          - Input capture TIM2CH2 A1
+ *          - Output compare TIM2CH1 D13, TIM2CH3 A2, TIM2CH4 A3
+ *        - EXTI: D3, D5, D6, D7
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory), D10 CS for SD
- *        - Timer Capture/Compare
- *        - NeoPixel D8
+ *        - NeoPixel D9
+ *        - Buttons D2, D3, D4, D5, D6, D7, D8
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -100,7 +104,6 @@ static osSemaphoreId_t EXTI_1_SemaphoreID;
 static osSemaphoreId_t EXTI_2_SemaphoreID;
 static osSemaphoreId_t EXTI_3_SemaphoreID;
 static osSemaphoreId_t EXTI_4_SemaphoreID;
-static osSemaphoreId_t EXTI_9_5_SemaphoreID;
 
 
 // Private Variables
@@ -171,10 +174,6 @@ void BSP_init(void) {
 	}
 	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	if (EXTI_4_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-	EXTI_9_5_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_9_5_SemaphoreID == NULL) {
 		Error_Handler();
 	}
 
@@ -998,7 +997,7 @@ void BSP_waitOC(int pin_number) {
  *  @brief
  *	    Sets the EXTI port pin mode
  *	@param[in]
- *	    pin_number D2=2 (PB5), D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
+ *	    pin_number D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
  *	@param[in]
  *      mode  0 rising edge, 1 falling edge, 2 both edges, 3 none
  *  @return
@@ -1011,10 +1010,6 @@ void BSP_setModeEXTI(int pin_number, uint32_t mode) {
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 
 	switch (pin_number) {
-	case 2:
-		GPIO_InitStruct.Pin = D2_Pin;
-		port = D2_GPIO_Port;
-		break;
 	case 3:
 		GPIO_InitStruct.Pin = D3_Pin;
 		port = D3_GPIO_Port;
@@ -1060,7 +1055,7 @@ void BSP_setModeEXTI(int pin_number, uint32_t mode) {
  *  @brief
  *      Waits for EXTI line (interrupt driven by port pin edge)
  *	@param[in]
- *	    pin_number D2=2 (PB5), D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
+ *	    pin_number D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
  *	@param[in]
  *      timeout  in ms
  *  @return
@@ -1069,9 +1064,6 @@ void BSP_setModeEXTI(int pin_number, uint32_t mode) {
 int BSP_waitEXTI(int pin_number, int32_t timeout) {
 	osStatus_t status;
 	switch (pin_number) {
-	case 2:
-		status = osSemaphoreAcquire(EXTI_9_5_SemaphoreID, timeout);
-		break;
 	case 3:
 		status = osSemaphoreAcquire(EXTI_4_SemaphoreID, timeout);
 		break;
@@ -1197,7 +1189,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
   * @retval None
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	//    pin_number D2=2 (PB5), D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
+	//    pin_number D3=3 (PB4), D5=5 (PB3), D6=6 (PB2), D7=7 (PB1)
 	switch (GPIO_Pin) {
 	case GPIO_PIN_1:  // D7
 		osSemaphoreRelease(EXTI_1_SemaphoreID);
@@ -1210,10 +1202,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 		break;
 	case GPIO_PIN_4:  // D3
 		osSemaphoreRelease(EXTI_4_SemaphoreID);
-		break;
-	case GPIO_PIN_5:  // D2
-		osSemaphoreRelease(EXTI_9_5_SemaphoreID);
-		break;
 		break;
 
 	}
@@ -1241,7 +1229,7 @@ void BSP_setNeoPixel(uint32_t rgb) {
 	BACKUP_PRIMASK();
 	DISABLE_IRQ();
 
-	BSP_neopixelDataTx(D8_GPIO_Port, D8_Pin, rgb);
+	BSP_neopixelDataTx(D9_GPIO_Port, D9_Pin, rgb);
 
 	RESTORE_PRIMASK();
 

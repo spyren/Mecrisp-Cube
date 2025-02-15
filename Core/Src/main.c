@@ -18,9 +18,8 @@
  *
  *      FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
  *      384 KiB future use for built in flash drive
-
+ *
  *      FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-
  *      STM32WB55C: 256 KiB RAM
  *
  *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
@@ -225,7 +224,7 @@ int main(void)
   MX_RNG_Init();
   MX_PKA_Init();
   MX_CRC_Init();
-//  MX_USB_PCD_Init();
+//  MX_USB_PCD_Init(); // see tinyusb/bsp/family.c
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1

@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "myassert.h"
+#include "app_conf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -240,6 +241,8 @@ void FLASH_IRQHandler(void)
 }
 
 #if BUTTON == 1
+#if BUTTON_MATRIX == 1
+
 /**
   * @brief This function handles EXTI line0 interrupt.
   */
@@ -247,6 +250,7 @@ void EXTI0_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
+#endif
 #endif
 
 /**
@@ -303,24 +307,6 @@ void EXTI4_IRQHandler(void)
   /* USER CODE BEGIN EXTI4_IRQn 1 */
 
   /* USER CODE END EXTI4_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-#if BUTTON == 1
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
-#else
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-#endif
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /**
@@ -499,7 +485,7 @@ void IPCC_C1_RX_IRQHandler(void)
 {
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 0 */
 
-	/* USER CODE END IPCC_C1_RX_IRQn 0 */
+  /* USER CODE END IPCC_C1_RX_IRQn 0 */
   HAL_IPCC_RX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_RX_IRQn 1 */
   /* USER CODE END IPCC_C1_RX_IRQn 1 */
@@ -512,7 +498,7 @@ void IPCC_C1_TX_IRQHandler(void)
 {
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 0 */
 
-	/* USER CODE END IPCC_C1_TX_IRQn 0 */
+  /* USER CODE END IPCC_C1_TX_IRQn 0 */
   HAL_IPCC_TX_IRQHandler(&hipcc);
   /* USER CODE BEGIN IPCC_C1_TX_IRQn 1 */
 

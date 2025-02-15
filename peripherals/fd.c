@@ -42,6 +42,7 @@
 #include "sd.h"
 #include "flash.h"
 #include "myassert.h"
+#include "bsp.h"
 
 
 // Defines
@@ -138,12 +139,16 @@ int FD_getBlocks(void) {
 uint8_t FD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	uint8_t retr = SD_ERROR;
 
+	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
+
 	if (FD_START_ADDRESS + (ReadAddr+NumOfBlocks)*FD_BLOCK_SIZE <= FD_END_ADDRESS) {
 		// valid blocks
 		memcpy(pData, (uint8_t *) FD_START_ADDRESS + ReadAddr*FD_BLOCK_SIZE,
 				NumOfBlocks*FD_BLOCK_SIZE);
 		retr = SD_OK;
 	}
+
+	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	/* Return the reponse */
 	return retr;
 }
@@ -170,6 +175,8 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	uint8_t retr = SD_ERROR;
 	int i;
 	uint8_t block_field; // bit0 block0, bit1 block1 ..
+
+	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 	uint32_t base_block_adr = WriteAddr & (~ (FD_BLOCKS_PER_PAGE -1));
 
@@ -223,6 +230,7 @@ uint8_t FD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 		retr = SD_ERROR;
 	}
 
+	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	/* Return the response */
 	return retr;
 }

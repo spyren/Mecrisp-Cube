@@ -196,13 +196,13 @@ void MainThread(void *argument)
 #endif
 
 	// wait till BLE is ready
-	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
-		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
-		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-      BSP_clearSysLED(SYSLED_POWER_ON);
-//        BSP_setLED2(FALSE);
-	} else {
-		// timeout -> BLE (CPU2) not started, flash operations not possible
+    if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
+    	// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
+    	SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+    	BSP_clearSysLED(SYSLED_POWER_ON);
+    	BSP_setLED1(FALSE);
+    } else {
+    	// timeout -> BLE (CPU2) not started, flash operations not possible
         BSP_clearSysLED(SYSLED_POWER_ON);
         BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
 //        BSP_setLED2(FALSE);

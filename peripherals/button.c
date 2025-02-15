@@ -110,6 +110,7 @@
 #define BUTTON_RELEASED		GPIO_PIN_SET
 
 #define DEBOUNCE_TIME		20							// 20 ms
+		'd',
 
 #define BUTTON_COLUMN_COUNT	5
 #define BUTTON_ROW_COUNT	7
@@ -182,24 +183,25 @@ static const osMessageQueueAttr_t button_Queue_attributes = {
 typedef struct {
 	GPIO_TypeDef* port;
 	uint16_t pin;
+	IRQn_Type irq;
 } PortPin_t;
 
 static const PortPin_t PortPinColumn_a[BUTTON_COLUMN_COUNT] = {
-		{ COL0_GPIO_Port,    COL0_Pin } ,
-		{ COL1_GPIO_Port,    COL1_Pin } ,
-		{ COL2_GPIO_Port,    COL2_Pin } ,
-		{ COL3_GPIO_Port,    COL3_Pin } ,
-		{ COL4_GPIO_Port,    COL4_Pin } ,
+		{ COL0_GPIO_Port,    COL0_Pin,	COL0_IRQ } ,
+		{ COL1_GPIO_Port,    COL1_Pin,	COL1_IRQ } ,
+		{ COL2_GPIO_Port,    COL2_Pin,	COL2_IRQ } ,
+		{ COL3_GPIO_Port,    COL3_Pin,	COL3_IRQ } ,
+		{ COL4_GPIO_Port,    COL4_Pin,	COL4_IRQ } ,
 };
 
 static const PortPin_t PortPinRow_a[BUTTON_ROW_COUNT] = {
-		{ ROW0_GPIO_Port,    ROW0_Pin } ,
-		{ ROW1_GPIO_Port,    ROW1_Pin } ,
-		{ ROW2_GPIO_Port,    ROW2_Pin } ,
-		{ ROW3_GPIO_Port,    ROW3_Pin } ,
-		{ ROW4_GPIO_Port,    ROW4_Pin } ,
-		{ ROW5_GPIO_Port,    ROW5_Pin } ,
-		{ ROW6_GPIO_Port,    ROW6_Pin } ,
+		{ ROW0_GPIO_Port,    ROW0_Pin,	0 } ,
+		{ ROW1_GPIO_Port,    ROW1_Pin,	0 } ,
+		{ ROW2_GPIO_Port,    ROW2_Pin,	0 } ,
+		{ ROW3_GPIO_Port,    ROW3_Pin,	0 } ,
+		{ ROW4_GPIO_Port,    ROW4_Pin,	0 } ,
+		{ ROW5_GPIO_Port,    ROW5_Pin,	0 } ,
+		{ ROW6_GPIO_Port,    ROW6_Pin,	0 } ,
 };
 
 // float keyboard
@@ -212,7 +214,7 @@ static const char  *keyboard[BUTTON_COUNT] = {
 
 		" sto\n", 			// r1, c0 STO
 		" rcl\n", 			// r1, c1 RCL
-		" fsin\n", 			// r1, c2 SIN
+		" fsin\n", 			// r1, c2 SINEXTI4_IRQn
 		" fcos\n", 			// r1, c3 COS
 		" ftan\n", 			// r1, c4 TAN
 
@@ -243,7 +245,7 @@ static const char  *keyboard[BUTTON_COUNT] = {
 		" quit\n\n", 		// r6, c0 C
 		"0", 				// r6, c1 0
 		".", 				// r6, c2 .
-		" ffct\n", 			// r6, c3 FFCT
+		" ffct\n", 			// r6, c3 FFCTEXTI4_IRQn
 		" f+\n", 			// r6, c4 +
 };
 
@@ -265,7 +267,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 		" rot\n", 			// r2, c1 ROT
 		" fabs\n", 			// r2, c2 ABS
 		" f>s\n", 			// r2, c3 F>S
-		" drop\n", 		    // r2, c4 CLx
+		" drop\n", 		    // r2, c4 CLxEXTI4_IRQn
 
 		" decimal float\n", // r3, c0 FLOAT
 		" hex int\n",		// r3, c1 HEX
@@ -287,7 +289,7 @@ static const char* keyboard_f[BUTTON_COUNT] = {
 
 		" shutdown\n",		// r6, c0 off
 		"k", 				// r6, c1 k
-		"M", 				// r6, c2 M
+		"M", 				// r6, c2 MEXTI4_IRQn
 		"G", 				// r6, c3 G
 		"T", 				// r6, c4 T
 };
@@ -314,7 +316,7 @@ static const char* keyboard_int[BUTTON_COUNT] = {
 
 		" clock\n", 		// r3, c0 CLOCK
 		"7", 				// r3, c1 7
-		"8", 				// r3, c2 8
+		"8", 				// r3, c2 8EXTI4_IRQn
 		"9", 				// r3, c3 9
 		" /\n", 			// r3, c4 /
 
@@ -403,6 +405,8 @@ void BUTTON_init(void) {
 	for (i=0; i<BUTTON_COLUMN_COUNT; i++) {
 	    GPIO_InitStruct.Pin = PortPinColumn_a[i].pin;
 	    HAL_GPIO_Init(PortPinColumn_a[i].port, &GPIO_InitStruct);
+		HAL_NVIC_SetPriority(PortPinColumn_a[i].irq, 5, 0);
+		HAL_NVIC_EnableIRQ(PortPinColumn_a[i].irq);
 	}
 
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
@@ -433,20 +437,9 @@ void BUTTON_init(void) {
 	BUTTON_ThreadId = osThreadNew(BUTTON_Thread, NULL, &BUTTON_ThreadAttr);
 	ASSERT_fatal(BUTTON_ThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
 
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-	HAL_NVIC_SetPriority(EXTI1_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-	HAL_NVIC_SetPriority(EXTI2_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-	HAL_NVIC_SetPriority(EXTI3_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn, 5, 0);
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-
 	// wake up from stop
-	LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0 | LL_EXTI_LINE_1 | LL_EXTI_LINE_2 | LL_EXTI_LINE_3 | LL_EXTI_LINE_5);
-	LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_0 | LL_EXTI_LINE_1 | LL_EXTI_LINE_2 | LL_EXTI_LINE_3 | LL_EXTI_LINE_5);
+	LL_EXTI_EnableIT_0_31(COL0_EXTI_LINE | COL1_EXTI_LINE | COL2_EXTI_LINE | COL3_EXTI_LINE | COL4_EXTI_LINE);
+	LL_EXTI_EnableRisingTrig_0_31(COL0_EXTI_LINE | COL1_EXTI_LINE | COL2_EXTI_LINE | COL3_EXTI_LINE | COL4_EXTI_LINE);
 }
 
 
@@ -538,11 +531,11 @@ void BUTTON_OnOff(void) {
 	OLED_off();
 
 	osMutexAcquire(BUTTON_MutexID, 100);
-//	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
-	HAL_NVIC_DisableIRQ(EXTI1_IRQn);
-	HAL_NVIC_DisableIRQ(EXTI2_IRQn);
-	HAL_NVIC_DisableIRQ(EXTI3_IRQn);
-	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+//	HAL_NVIC_DisableIRQ(COL0_IRQ);
+	HAL_NVIC_DisableIRQ(COL1_IRQ);
+	HAL_NVIC_DisableIRQ(COL2_IRQ);
+	HAL_NVIC_DisableIRQ(COL3_IRQ);
+	HAL_NVIC_DisableIRQ(COL4_IRQ);
 
 	// deactivate all rows except the last one
 	for (row=0; row<(BUTTON_ROW_COUNT-1); row++) {
@@ -575,11 +568,11 @@ void BUTTON_OnOff(void) {
 	for (row=0; row<BUTTON_ROW_COUNT; row++) {
 		HAL_GPIO_WritePin(PortPinRow_a[row].port, PortPinRow_a[row].pin, GPIO_PIN_RESET);
 	}
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-	HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-	HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	// activate interrupts
+	HAL_NVIC_EnableIRQ(COL1_IRQ);
+	HAL_NVIC_EnableIRQ(COL2_IRQ);
+	HAL_NVIC_EnableIRQ(COL3_IRQ);
+	HAL_NVIC_EnableIRQ(COL4_IRQ);
 
 	osMutexRelease(BUTTON_MutexID);
 
@@ -770,10 +763,13 @@ static void put_key_string(uint8_t c) {
 static void BUTTON_Thread(void *argument);
 
 typedef enum {
-	BUTTON_D,		// 1
-	BUTTON_C,		// 2
-	BUTTON_B,		// 3
-	BUTTON_A,		// 4
+	BUTTON_G,		// 1
+	BUTTON_F,		// 2
+	BUTTON_E,		// 3
+	BUTTON_D,		// 4
+	BUTTON_C,		// 5
+	BUTTON_B,		// 6
+	BUTTON_A,		// 7
 	BUTTON_COUNT
 } button_t;
 
@@ -786,6 +782,9 @@ typedef struct {
 } PortPin_t;
 
 static const PortPin_t PortPin_a[BUTTON_COUNT] = {
+		{ BUTTON_G_GPIO_Port,    	BUTTON_G_Pin } ,
+		{ BUTTON_F_GPIO_Port,    	BUTTON_F_Pin } ,
+		{ BUTTON_E_GPIO_Port,    	BUTTON_E_Pin } ,
 		{ BUTTON_D_GPIO_Port,    	BUTTON_D_Pin } ,
 		{ BUTTON_C_GPIO_Port,  		BUTTON_C_Pin } ,
 		{ BUTTON_B_GPIO_Port,  		BUTTON_B_Pin } ,
@@ -793,6 +792,9 @@ static const PortPin_t PortPin_a[BUTTON_COUNT] = {
 };
 
 static const char char_a[BUTTON_COUNT] = {
+		'g',
+		'f',
+		'e',
 		'd',
 		'c',
 		'b',
@@ -845,7 +847,7 @@ void BUTTON_init(void) {
 	int i;
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
 	for (i=0; i<BUTTON_COUNT; i++) {
 	    GPIO_InitStruct.Pin = PortPin_a[i].pin;
@@ -947,7 +949,9 @@ int BUTTON_putkey(const char c) {
  */
 void BUTTON_OnOff(void) {
 
+#if QUAD == 1
 	QUAD_shutdown(0);
+#endif
 
 	osMutexAcquire(BUTTON_MutexID, 100);
 //	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
@@ -970,7 +974,9 @@ void BUTTON_OnOff(void) {
 	}
 	osDelay(10);
 
+#if QUAD == 1
 	QUAD_shutdown(1);
+#endif
 
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
