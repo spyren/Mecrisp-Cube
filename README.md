@@ -1,6 +1,11 @@
 # Mecrisp-Cube
 
 Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
+
+Unfortunately the STM32WB Feather Development Board is no longer available. But there is a very good substitute the Firefly designed by Tlera Corp. The pinout is very similar to Arduino UNO but with the size of an Arduino Nano (or a Teensy). The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
+
+Instant real-time programming with Forth. 
+
 The STM32WB Nucleo Board is working out of the box yet. See also [Mecrisp Cube](https://spyr.ch/twiki/bin/view/MecrispCube).
 
 ## Getting Started
