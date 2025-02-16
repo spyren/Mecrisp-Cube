@@ -1,3 +1,11 @@
+<table>
+  <tr>
+    <td><img src="/sdcard/man/img/firefly-header.jpg">
+ </td>
+    <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
+  </tr>
+</table> 
+
 # Mecrisp-Cube (Firefly Branch)
 
 Forth is an interactive and extensible language, with built-in lexical analysis (tokenizer, parser) and 
