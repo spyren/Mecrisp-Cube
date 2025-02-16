@@ -40,6 +40,8 @@ similar to Arduino UNO but with the size of an Arduino Nano (or a Teensy).
 
 The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
 
+![](/sdcard/man/img/firefly-feather.jpg)
+
 Instant real-time programming with Forth. 
 
 
