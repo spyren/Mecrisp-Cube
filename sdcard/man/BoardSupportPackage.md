@@ -370,6 +370,215 @@ switch1? .
 The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
 There is no debouncing for the `switchx?` words.
 
+# Feather Wings
+
+## Nucleo Arduino - Feather Adaptor
+
+Feather adaptor built with a 
+[Arduino Proto Shield Uno rev3](https://store.arduino.cc/products/proto-shield-rev3-uno-size). 
+There is also a Grove I2C interface for an
+[Octopus 128x64 OLED-Display](https://www.distrelec.ch/de/octopus-128x64-oled-display-pi-supply-pis-1277/p/30163414),
+a [microSD adaptor](FileSystem.md#home-brewed-microsd-adapter-for-stm32wb55-nucleodongle-spi) (SPI),
+and a Neopixel.
+
+![](img/nucleo-feather-adaptor.jpg)
+
+
+| Nucleo right| Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|-------------|----------|----------|--------------|-----------|------------|
+| PB8         | I2C1     | D15 SCL  | JP3.11 SCL   |           | SCL  Pin1  |
+| PB9         | I2C1     | D14 SDA  | JP3.12 SDA   |           | SDA  Pin2  |
+| AVDD        |          | AREF     |              |           |            |
+| GND         |          | GND      | JP1.13 GND   | Pin3, Pin6| GND  Pin4  |
+| PA5         | SPI1     | D13      | JP1.6  SCK   | Pin5      |            |
+| PA6         | SPI1     | D12      | JP1.4  MISO  | Pin7      |            |
+| PA7         | SPI1     | D11      | JP1.5  MOSI  | Pin2      |            |
+| PA4         | (SPI)    | D10      | JP3.7  D10   | Pin1      |            |
+| PA9         |          | D9       | JP3.8  D9    |           |            |
+| PC12        | Neopixel | D8       |              |           |            |
+| PC13        |          | D7       |              |           |            |
+| PA8         |          | D6       | JP3.9  D6    |           |            |
+| PA15        |          | D5       | JP3.10 D5    |           |            |
+| PC10        |          | D4       |              |           |            |
+| PA10        |          | D3       |              |           |            |
+| PC6         |          | D2       |              |           |            |
+| PA2         | UART     | D1 Tx    | JP1.2  D1    |           |            |
+| PA3         | UART     | D0 rx    | JP1.3  D0    |           |            |
+
+| Nucleo left | Function | Arduino  |  Feather     | Micro-SD  | Grove      |
+|-------------|----------|----------|--------------|-----------|------------|
+| NC          |          | IOREF    |              |           |            |
+| NRST        |          | RESET    | JP1.16 RST   |           |            |
+| 3V3         |          | 3.3V     | JP1.14/15 3V3| Pin4      | VCC Pin3   |
+| 5V          |          | 5V       | JP3.3  USB   |           |            |
+| GND         |          | GND      |              |           |            |
+| GND         |          | GND      |              |           |            |
+| VIN         |          | Vin      |              |           |            |
+| PC0         |          | A0       | JP1.12 A0    |           |            |
+| PC1         |          | A1       | JP1.11 A1    |           |            |
+| PA1         |          | A2       | JP1.10 A2    |           |            |
+| PA0         |          | A3       | JP1.9  A3    |           |            |
+| PC3         |          | A4       | JP1.8  A4    |           |            |
+| PC2         |          | A5       | JP1.7  A5    |           |            |
+|             |          |          | JP3.1  VBAT  |           |            |
+|             |          |          | JP3.2  EN    |           |            |
+
+## Neopixel
+
+NeoPixel is Adafruit's brand of individually addressable red-green-blue (RGB) LED. 
+They are based on the WS2812 LED and WS2811 driver, where the WS2811 is integrated 
+into the LED, for reduced footprint. Adafruit manufactures several products with 
+NeoPixels with form factors such as strips, rings, matrices, Arduino shields, traditional 
+five-millimeter cylinder LED and individual NeoPixel with or without a PCB. 
+The control protocol for NeoPixels is based on only one communication wire. 
+
+### Single NeoPixel
+
+For the Nucleo I use D8 for the Neopixel. It takes about 30 us to set one Neopixel, 
+during this time the interrupts are disabled. 
+
+<pre>
+3 8 dmod           \ D8 output
+$ff0000 neopixel!   \ red LED 100 % brightness
+</pre>
+
+### NeoPixel Wing with 32 Pixels
+
+NeoPixelWing uses the D6 as datapin for the Neopixels. 
+
+Switch on the first 4 NeoPixels
+```forth
+3 6 dmod                       \ D6 output
+32 cells buffer: pixelbuffer    \ create buffer for the neopixels
+$ff0000 pixelbuffer !            \ 1st Neopixel red
+$00ff00 pixelbuffer 1 cells + !   \ 2nd Neopixel green
+$0000ff pixelbuffer 2 cells + !    \ 3th Neopixel blue
+$7f7f7f pixelbuffer 3 cells + !     \ 4th Neopixel white 50 %
+pixelbuffer 4 neopixels
+```
+
+Switch on all 32 NeoPixels
+```forth
+create pixels 
+$010000 , $020000 , $040000 , $080000 , $100000 , $200000 , $400000 , $800000 , \ 1st row red
+$008000 , $004000 , $002000 , $001000 , $000800 , $000400 , $000200 , $000100 , \ 2nd row green
+$000001 , $000002 , $000004 , $000008 , $000010 , $000020 , $000040 , $000080 , \ 3th row blue
+$808080 , $404040 , $202020 , $101010 , $080808 , $040404 , $020202 , $010101 , \ 4th row white
+pixels 32 neopixels
+```
+It takes about 30 us to set one Neopixel, for 32 Pixels it takes nearly 1 ms, 
+during this time the interrupts are disabled. Consider this for RT programs 
+and interrupt latency.
+
+
+## CharlieWing Plex LED Display
+
+### Plex Words
+
+`plex-emit` works like the standard word `emit`. It blocks the calling thread,
+as long as the character is not written to the Plex display (less than 300 us
+for a 6x8 character and 400 kHz I2C).
+Horizontal (x) position is in pixel (0 to 15). The plex display is default shutdown,
+to switch on `1 plexshutdown`. 
+
+Implentation [plex.c](/peripherals/plex.c).
+
+```
+plex-emit    ( c -- )           Emit a character (writes a character to the Plex display)
+plex-emit?   ( -- f )           Plex ready to get a character (I2C not busy)
+
+hook-emit    ( -- a- )          Hooks for redirecting terminal IO on the fly
+hook-emit?   ( -- a- )    
+
+plexpos!     ( u -- )           Set Plex cursor position/column u
+plexpos@     (  -- u )          Get the current Plex cursor position
+plexclr      (  --  )           clear the Plex display, set the cursor to 0
+plexfont     ( u -- )           Select the font, u: 0 6x8, 1 8x8
+plexpwm      ( u -- )           default PWM 1 .. 255 (brightness)
+plexshutdown ( f -- )           1 activate Plex dispaly, 0 shutdown display
+
+plexcolumn!  ( u1 u2 n -- )     write LEDs (7 pixels) u2 at the position/column u1 (0 to 15) with the brightness n
+plexcolumn@  ( u1 -- u2 )       read LEDs at position/column u1   
+plexpixel!   ( u1 u2 n -- )     write one pixel at column u1 and row u2 with brightness n
+plexpixel@   ( u1 u2 -- f )     read one pixel at column u1 and row u2
+
+plexframe!   ( u -- )           Set the active frame u (0 .. 7) for write and read
+plexframe@   (  -- u )          Get the active frame u
+plexdisplay! ( u -- )           Show the display frame u
+plexdisplay@ (  -- u )          Which frame is showed
+```
+
+### Sample Programs
+
+Adafruit 15x7 [CharliePlex](https://learn.adafruit.com/adafruit-15x7-7x15-charlieplex-led-matrix-charliewing-featherwing) LED Matrix Display.
+Driver is the IS31FL3731 [datasheet](https://www.issi.com/WW/pdf/31FL3731.pdf).
+
+#### Count Down
+
+```forth
+1 plexshutdown
+0 0 100 plexpixel!
+1 1 200 plexpixel!
+
+: count-down ( -- )
+  plexclr
+ -1 -1 -1 alarm!  \ an alarm every second
+  wait-alarm  
+  10 0 do
+    1 plexpos!
+    i 1 + 25 * plexpwm  \ set brightness
+    i 0 = if 
+      [char] 1 plex-emit
+      [char] 0 plex-emit
+    else
+      [char] 0 plex-emit
+      10 i - [char] 0 + plex-emit
+    then
+    wait-alarm  
+  loop
+   0 $ff -1 plexcolumn!
+  14 $ff -1 plexcolumn!
+  1 plexpos!
+  [char] 0 dup plex-emit plex-emit 
+  cr ." Launch!" cr
+;
+```
+
+#### Marquee
+
+```forth
+: LCD>plex ( u -- ) \ copy LCD from column u to plex
+  15 0 do \ write 15 charlie columns
+    dup i + dup 126 mod swap 126 /  ( u -- u x y)
+    lcdpos! lcdcolumn@  \ read LCD column
+    i swap 50 plexcolumn! \ write PLEX column
+  loop
+  drop
+;
+
+: Marquee ( c- u -- ) \ marquee a string on charlie plex
+  lcdclr  0 lcdfont 
+  2dup >lcd 2swap type >term  \ write string to LCD
+  nip ( c- u -- u )
+  3 - \ remove trailing spaces
+  begin
+    dup 6 *  0 do \ all string columns, a char is 6 pixels wide
+      i LCD>plex
+      40 osDelay drop
+      switch1? if leave then
+    loop 
+  switch1? until
+  drop ( u -- )
+;
+
+1 plexshutdown
+
+200 buffer: message
+message .str"    MECRISP-CUBE REAL-TIME FORTH ON THE GO!   "
+message strlen Marquee
+```
+
+# Pinouts
 
 
 
