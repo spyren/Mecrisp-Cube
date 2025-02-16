@@ -12,11 +12,7 @@ the strength of this two worlds results in a powerful system that outperforms ot
 newer systems like Python. Good design withstands the test of time.
 
 The goal of Mecrisp-Cube is to be a complete Forth programming environment for STM32 MCUs. 
-There are three flavors (branches) available:Mecrisp-Stellaris Forth for the STM32 Cube ecosystem. 
-
-The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
-
-Instant real-time programming with Forth. 
+There are three flavors (branches) available:
 
   * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
     [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
@@ -33,6 +29,11 @@ May the Forth Be With You!
 Unfortunately the STM32WB Feather Development Board is no longer available. 
 But there is a very good substitute the Firefly designed by Tlera Corp. The pinout is very 
 similar to Arduino UNO but with the size of an Arduino Nano (or a Teensy). 
+
+The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
+
+Instant real-time programming with Forth. 
+
 
 ## Features
 
