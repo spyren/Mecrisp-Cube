@@ -590,6 +590,7 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 ## JTAG/SWD
 
 | *JTAG Pin*  | *JTAG STM 14pin* | *JP3 Firefly*  | *JP7 Firefly* | *Description*  |
+|-------------|------------------|----------------|---------------|----------------|
 |             | 1                |                |               | NC             |
 |             | 2                |                |               | NC             |
 | 1           | 3                | 3              |               | 3V3 VDD        |
