@@ -580,6 +580,31 @@ message strlen Marquee
 
 # Pinouts
 
+Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html). 
+
+![](img/firefly-pins.jpg)
+
+   * Firefly https://www.tindie.com/products/tleracorp/firefly-ble-development-board/
+   * Katydid https://www.tindie.com/products/tleracorp/katydid-wearable-ble-sensor-board 
+
+## JTAG/SWD
+
+| *JTAG Pin*  | *JTAG STM 14pin* | *JP3 Firefly*  | *JP7 Firefly* | *Description*  |
+|             | 1                |                |               | NC             |
+|             | 2                |                |               | NC             |
+| 1           | 3                | 3              |               | 3V3 VDD        |
+| 2           | 4                | 5              |               | SWDIO          |
+| 3           | 5                | 2              |               | GND            |
+| 4           | 6                | 6              |               | SWCLK          |
+| 5           | 7                | 2              |               | GND            |
+| 6           | 8                |                |               | SWO            |
+| 7           | 9                |                |               | NC             |
+| 8           | 10               |                |               | NC             |
+| 9           | 11               | 2              |               | GND_DETECT     |
+| 10          | 12               | 4              |               | NRST           |
+|             | 13               |                | 5 (PA10)      | D0 UART_TX     |
+|             | 14               |                | 4 (PA9)       | D1 UART_RX     |
+
 
 
 \-- [PeterSchmid - 2020-04-11]
