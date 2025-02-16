@@ -236,277 +236,6 @@ All channels (input capture / output compare) use the same time base.
 ;
 ```
 
-## Output Compare
-
-Output compare TIM2: D0 (TIM2CH4), D1 (TIM2CH3), D5 (TIM2CH1)
-```forth
-7 0 dmod \ output compare for D0
-7 1 dmod \ output compare for D1
-7 5 dmod \ output compare for D5
-
-: oc-toggle ( -- )
-  5000000 ICOCperiod! \ 5 s period
-  ICOCstart
-  3 0 OCmod  1000000 0 OCstart \ toggle D0 after 1 s
-  3 1 OCmod  2000000 1 OCstart \ toggle D1 after 2 s
-  3 5 OCmod  3000000 5 OCstart \ toggle D5 after 3 s 
-  begin
-     waitperiod
-     cr .time
-  key? until
-  key drop 
-;
-```
-
-When you abort (hit any key) the program, the timer still runs and controls 
-the port pins. To stop the port pins:
-<pre>
-0 OCstop  1 OCstop  5 OCstop  
-</pre>
-
-Or change the prescale to make it faster or slower:
-<pre>
-1 ICOCprescale
-</pre>
-
-
-## Input Capture
-
-This sample program measures the time between the edges on port A2. 
-If no event occurs within 2 seconds, "timeout" is issued. 
-Hit any key to abort program.
-```forth
-: ic-test ( -- )
-  6 18 dmod \ input capture on A2
-  ICOCstart
-  2 ICstart  \ both edges
-  ICOCcount@ ( -- count )
-  begin
-    2000 \ 2 s timeout
-    ICwait ( -- old-capture capture ) 
-    cr
-    dup 0= if
-      ." timeout" drop
-    else 
-      dup rot ( -- capture capture old-capture )
-      - . ." us"
-    then
-  key? until
-  key drop
-  drop
-  ICstop
-;
-```
-If  you use a push button for D13, there could be several events on pressing the push button once.
-This is called bouncing. 
-Bouncing time is about 250 us for my push button.
-
-
-# Using EXTI line
-
-GPIO pins D2, D4, D7 and D10 can be used as an EXTI line, D4 and D7 share the same EXTI line. 
-EXTIs are external interrupt lines, D2 uses EXTI_9_5 (EXTI Line 9..5 interrupt), 
-D2 EXTI_9_5, D4 EXTI_15_10, D7 EXTI_15_10, and D10 EXTI_4. 
-
-If  you use a push button for D2, there could be several events on pressing the push button once.
-This is called bouncing. 
-For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
-
-```forth
-: exti-test ( -- )# Using Input Capture and Output Compare
-
-## Time Base
-
-Default timer resolution is 1 us. The 32 bit TIMER2 is used as time base 
-for Input Capture / Output Compare. For a 5 s period 5'000'000 cycles are needed. 
-All channels (input capture / output compare) use the same time base.
-
-```forth
-: period ( -- )
-  5000000 ICOCperiod! \ 5 s period
-  ICOCstart
-  begin
-     waitperiod
-     cr .time
-  key? until
-  key drop 
-;
-```
-
-## Output Compare
-
-Output compare TIM2: D0 (TIM2CH4), D1 (TIM2CH3), D5 (TIM2CH1)
-```forth
-7 0 dmod \ output compare for D0
-7 1 dmod \ output compare for D1
-7 5 dmod \ output compare for D5
-
-: oc-toggle ( -- )
-  5000000 ICOCperiod! \ 5 s period
-  ICOCstart
-  3 0 OCmod  1000000 0 OCstart \ toggle D0 after 1 s
-  3 1 OCmod  2000000 1 OCstart \ toggle D1 after 2 s
-  3 5 OCmod  3000000 5 OCstart \ toggle D5 after 3 s 
-  begin
-     waitperiod
-     cr .time
-  key? until
-  key drop 
-;
-```
-
-When you abort (hit any key) the program, the timer still runs and controls 
-the port pins. To stop the port pins:
-<pre>
-0 OCstop  1 OCstop  5 OCstop  
-</pre>
-
-Or change the prescale to make it faster or slower:
-<pre>
-1 ICOCprescale
-</pre>
-
-
-## Input Capture
-
-This sample program measures the time between the edges on port A2. 
-If no event occurs within 2 seconds, "timeout" is issued. 
-Hit any key to abort program.
-```forth
-: ic-test ( -- )
-  6 18 dmod \ input capture on A2
-  ICOCstart
-  2 ICstart  \ both edges
-  ICOCcount@ ( -- count )
-  begin
-    2000 \ 2 s timeout
-    ICwait ( -- old-capture capture ) 
-    cr
-    dup 0= if
-      ." timeout" drop
-    else 
-      dup rot ( -- capture capture old-capture )
-      - . ." us"
-    then
-  key? until
-  key drop
-  drop
-  ICstop
-;
-```
-If  you use a push button for D13, there could be several events on pressing the push button once.
-This is called bouncing. 
-Bouncing time is about 250 us for my push button.
-
-
-# Using EXTI line
-
-GPIO pins D2, D4, D7 and D10 can be used as an EXTI line, D4 and D7 share the same EXTI line. 
-EXTIs are external interrupt lines, D2 uses EXTI_9_5 (EXTI Line 9..5 interrupt), 
-D2 EXTI_9_5, D4 EXTI_15_10, D7 EXTI_15_10, and D10 EXTI_4. 
-
-If  you use a push button for D2, there could be several events on pressing the push button once.
-This is called bouncing. 
-For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
-
-```forth
-: exti-test ( -- )
-  2 2 EXTImod \ both edges on D2
-  begin
-    2000 2 EXTIwait \ wait for edge on D2 with 2 s timeout
-    cr
-    0= if
-      2 dpin@ if
-        ." rising edge"
-      else
-        ." falling edge"
-      then 
-    else
-      ." timeout"
-    then
-  key? until
-  key drop
-;
-```
-
-# Using Push Buttons
-
-## Switches
-
-Most development boards have at least a switch or a push button, 
-the Nucleo has 3 switches and Dongle has 1 switche.
-
-```
-switch1? .
-```
-The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
-There is no debouncing for the `switchx?` words.
-
-  2 2 EXTImod \ both edges on D2
-  begin
-    2000 2 EXTIwait \ wait for edge on D2 with 2 s timeout
-    cr
-    0= if
-      2 dpin@ if
-        ." rising edge"
-      else
-        ." falling edge"
-      then 
-    else
-      ." timeout"
-    then
-  key? until
-  key drop
-;
-```
-
-# Using Push Buttons
-
-## Switches
-
-Most development boards have at least a switch or a push button, 
-the Nucleo has 3 switches and Dongle has 1 switche.
-
-```
-switch1? .
-```
-The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
-There is no debouncing for the `switchx?` words.
-
-      i 0 pwmpin! 
-      i neopixel! 
-      i 50 = if 
-        1000 \ give some more time to get back
-      else
-        200
-      then 
-      osDelay drop
-    10 +loop
-  key? until 
-  key drop
-;
-```
-
-```forth
-640 pwmprescale 
-5 0 dmod   \ set D0 to PWM
-11 16 dmod   \ set A0/D16 to analog
-
-: slowservo ( -- ) 
-  begin
-    100 50 do
-      i 0 pwmpin! 
-      50 osDelay drop
-    1 +loop
-    50 100 do
-      i 0 pwmpin! 
-      50 osDelay drop
-    -1 +loop
-  key? until 
-  key drop
-;
-```
-
 # Using Input Capture and Output Compare
 
 ## Time Base
@@ -529,18 +258,18 @@ All channels (input capture / output compare) use the same time base.
 
 ## Output Compare
 
-Output compare TIM2: D0 (TIM2CH4), D1 (TIM2CH3), D5 (TIM2CH1)
+Output compare TIM2: D13=13 (!TIM2CH1), A2=18 (!TIM2CH3), A3=19 (!TIM1CH4) 
 ```forth
-7 0 dmod \ output compare for D0
-7 1 dmod \ output compare for D1
-7 5 dmod \ output compare for D5
+7 13 dmod \ output compare for D13
+7 18 dmod \ output compare for A2/D18
+7 19 dmod \ output compare for A3/D19
 
 : oc-toggle ( -- )
   5000000 ICOCperiod! \ 5 s period
   ICOCstart
-  3 0 OCmod  1000000 0 OCstart \ toggle D0 after 1 s
-  3 1 OCmod  2000000 1 OCstart \ toggle D1 after 2 s
-  3 5 OCmod  3000000 5 OCstart \ toggle D5 after 3 s 
+  3 13 OCmod  1000000 13 OCstart \ toggle D13 after 1 s
+  3 18 OCmod  2000000 18 OCstart \ toggle A2 after 2 s
+  3 19 OCmod  3000000 19 OCstart \ toggle A3 after 3 s 
   begin
      waitperiod
      cr .time
@@ -563,12 +292,15 @@ Or change the prescale to make it faster or slower:
 
 ## Input Capture
 
-This sample program measures the time between the edges on port A2. 
+This sample program measures the time between the edges on port A1. 
 If no event occurs within 2 seconds, "timeout" is issued. 
+
+Input capture port pin: A1 (!TIM2CH2)
+
 Hit any key to abort program.
 ```forth
 : ic-test ( -- )
-  6 18 dmod \ input capture on A2
+  6 17 dmod \ input capture on A1
   ICOCstart
   2 ICstart  \ both edges
   ICOCcount@ ( -- count )
@@ -588,29 +320,31 @@ Hit any key to abort program.
   ICstop
 ;
 ```
-If  you use a push button for D13, there could be several events on pressing the push button once.
+If  you use a push button for A1, there could be several events on pressing the push button once.
 This is called bouncing. 
 Bouncing time is about 250 us for my push button.
 
 
 # Using EXTI line
 
-GPIO pins D2, D4, D7 and D10 can be used as an EXTI line, D4 and D7 share the same EXTI line. 
-EXTIs are external interrupt lines, D2 uses EXTI_9_5 (EXTI Line 9..5 interrupt), 
-D2 EXTI_9_5, D4 EXTI_15_10, D7 EXTI_15_10, and D10 EXTI_4. 
+GPIO pins D3, D5, D6 and D7 can be used as an EXTI line. 
+EXTIs are external interrupt lines, D3 uses EXTI_4 (EXTI Line 4 interrupt), 
+D5 EXTI_3, D6 EXTI_2, and D7 EXTI_1. 
 
-If  you use a push button for D2, there could be several events on pressing the push button once.
+EXTI port pins: D3 (PB4), D5 (PB3), D6 (PB2), D7 (PB1)
+
+If  you use a push button for D3, there could be several events on pressing the push button once.
 This is called bouncing. 
 For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debouncing.pdf).
 
 ```forth
 : exti-test ( -- )
-  2 2 EXTImod \ both edges on D2
+  2 3 EXTImod \ both edges on D3
   begin
-    2000 2 EXTIwait \ wait for edge on D2 with 2 s timeout
+    2000 3 EXTIwait \ wait for edge on D3 with 2 s timeout
     cr
     0= if
-      2 dpin@ if
+      3 dpin@ if
         ." rising edge"
       else
         ." falling edge"
@@ -628,13 +362,15 @@ For details see [A Guide to Debouncing](https://my.eng.utah.edu/~cs5780/debounci
 ## Switches
 
 Most development boards have at least a switch or a push button, 
-the Nucleo has 3 switches and Dongle has 1 switche.
+the Firefly has 2 switches, one is the reset switch.
 
 ```
 switch1? .
 ```
 The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
 There is no debouncing for the `switchx?` words.
+
+
 
 
 \-- [PeterSchmid - 2020-04-11]
