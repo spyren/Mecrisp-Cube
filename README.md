@@ -113,7 +113,7 @@ For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.m
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
-machine (Firefly SBC) for development and testing purposes. 
+machine (Firefly BLE STM32WB55 Development Board) for development and testing purposes. 
 
 
 ### Prerequisites
@@ -128,12 +128,14 @@ machine (Firefly SBC) for development and testing purposes.
     * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
   * STM32CubeProgrammer (optional)
+  * ST-Link programming/debug adapter (optional)
 
 
 ### Flash the Mecrisp-Cube Firmware
 
 Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
-`MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. Using the built-in USB DFU bootloader.
+`MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. The Firefly does not have a SWD/JTAG connector but the SWD pins are available 
+on the Arduino connector. If you do not have a ST-LINK you can use the built-in USB DFU bootloader, for details see .
 
  1. Connect the Firefly Board USB ST-LINK to the PC
  1. Copy binary (MecrispCubeFirefly.bin or better the MecrispCubeFireflyFS.bin) to the USB mass storage NODE_WB55RG 
