@@ -9,20 +9,20 @@
 Board Support Package
 =====================
 
-The board support package for the !STM32WB Firefly Development Board is restricted to the 
+The board support package for the STM32WB Firefly Development Board is restricted to the 
 Arduino UNO R3 pin header and the onboard LED and switch (button). 
-The !STM32 has much more capabilities then 16 digital I/O pins, 5 analog input pins, 
-UART, SPI, and !I2C interfaces. But if you want to use the more advanced features you 
-can use the !CubeMX to create source code for the internal peripherals. 
+The STM32 has much more capabilities then 16 digital I/O pins, 5 analog input pins, 
+UART, SPI, and I2C interfaces. But if you want to use the more advanced features you 
+can use the CubeMX to create source code for the internal peripherals. 
 This project wants to show how to use the Cube Ecosystem for a Forth system (or vice versa) 
-and can't implement all features and possibilities the !STM32WB has. 
+and can't implement all features and possibilities the STM32WB has. 
 It is a good starting point for your project.
 
 
 Board Support Words
 ===================
 
-Defaults: Digital port pins D0 to D9 are inputs, except D9 is output for neopixel, D1 for UART Tx. 
+Defaults: Digital port pins D0 to D8 are inputs, except D9 is output for neopixel, D1 for UART Tx. 
 D10, D11, D12, and D13 are for the SD card. You are free to use the GPIO pins for other purposes.
 
 ```
@@ -131,7 +131,7 @@ Using the ADC (Analog Input Pins)
 =================================
 
 `apin@ ( a -- u )` returns the ADC value (12 bit, 0 .. 4095) from one of
-the analog pins A0 to A2 (0 .. 2). Here I use the A0 to control the
+the analog pins A0 to A4 (0 .. 4). Here I use the A0 to control the
 delay.
 
 ```forth
@@ -217,6 +217,7 @@ The BSPs default PWM frequency is 1 kHz, 50 Hz is 20 times slower. The divider i
 : servo ( -- ) 
   begin
     100 50 do# Using Input Capture and Output Compare
+
 
 ## Time Base
 
@@ -369,6 +370,7 @@ switch1? .
 ```
 The result is _0_. But if you press and hold the OK Button, the result will be _-1_. 
 There is no debouncing for the `switchx?` words.
+
 
 # Feather Wings
 
