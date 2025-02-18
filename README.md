@@ -137,7 +137,8 @@ machine (Firefly BLE STM32WB55 Development Board) for development and testing pu
 
 Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
 `MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. The Firefly does not have a SWD/JTAG connector but the SWD pins are available 
-on the Arduino connector. If you do not have a STLINK you can use the built-in USB DFU bootloader, for details see #flash-mecrisp-cube-to-the-target.
+on the Arduino connector. If you do not have a STLINK you can use the built-in USB DFU bootloader, for details see 
+[Flash Mecrisp-Cube to the Target](#flash-mecrisp-cube-to-the-target).
 
  1. Connect the Firefly Board to the STLINK and the STLINK to the USB PC
  1. Copy binary (MecrispCubeFirefly.bin or better the MecrispCubeFireflyFS.bin) to the USB mass storage NODE_WB55RG 
@@ -344,6 +345,8 @@ $ <b>cubepgmcli -c port=USB1 -d Release/MecrispCube.bin 0x8000000 </b>
 $ <b>cubepgmcli -c port=USB1 -ob displ</b>
 </pre>
 
+It may be easier for you if you use the STM32CubeProgrammer GUI. 
+
 
 ### Update BLE Stack
 
@@ -351,23 +354,18 @@ You can find the BLE Stack and FUS in
 [STM32CubeWB](https://www.st.com/en/embedded-software/stm32cubewb.html)
 or from [GitHub](https://github.com/STMicroelectronics/STM32CubeWB), 
 in the directory `Projects/STM32WB_Copro_Wireless_Binaries`. 
-At time of writing the FUS is Version 1.2.0, the stack v1.17.3. The STM32CubeProgrammer is v2.14.0.
+At time of writing the FUS is Version 1.2.0, the stack v1.21.0. The STM32CubeProgrammer is v2.18.0.
 
-Nucleo board: Using USB_USER interface and the built-in bootloader (activate with jumper between CN7.5 and CN7.7)
+For starting the bootloader see above. 
+
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
-$ <b>cd STM32Cube_FW_WB_V1.14.1/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
+$ <b>cd STM32Cube_FW_WB_V1.21.0/Projects/STM32WB_Copro_Wireless_Binaries/STM32WB5x</b>
 $ <b>cubepgmcli -c port=USB1 -fwdelete</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_FUS_fw.bin 0x080EC000 firstinstall=0</b>
-$ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_FUS_fw_for_fus_0_5_3.bin 0x080EC000 firstinstall=0</b>
 $ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CB000 firstinstall=1</b>
 </pre>
 
-Alternate way to erase the flash memory (change the Memory Read Protection from Level 1 to level 0):
-<pre>
-$ <b>cubepgmcli -c port=swd -ob rdp=0xbb</b>
-$ <b>cubepgmcli -c port=swd -rdu</b>
-</pre>
+It may be easier for you if you use the STM32CubeProgrammer GUI. 
 
 
 ## Versioning
