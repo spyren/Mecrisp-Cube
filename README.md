@@ -118,7 +118,7 @@ machine (Firefly BLE STM32WB55 Development Board) for development and testing pu
 
 ### Prerequisites
 
-  * BLE STM32WB55 Development Board [Firefly](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/))
+  * BLE STM32WB55 Development Board [Firefly](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/)
   * Terminal emulator application for PC, e.g.:
     * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
@@ -195,7 +195,7 @@ again the terminal output:
 hello[CR] <b>World ok.</b>
 </pre>
 The program `hello` ist not persistent, after power cycle or even reset the RAM dictionray is erased. 
-But it is easy to add a word to the Flash dictionray:
+But it is easy to add a word to the Flash dictionary:
 ```
 compiletoflash
 : hello ." World" ;
@@ -218,7 +218,7 @@ see hello
 08043562: 646C
 08043564: BD00  pop { pc }
 ```
-The dictionray entry looks like this (you can see the 'hello' and the string constant 'World'):
+The dictionary entry looks like this (you can see the 'hello' and the string constant 'World'):
 ```
 $08043558 10 dump
 08043550 :  00 00 05 68 65 6C 6C 6F   00 B5 BF F7 43 FB 05 57  | ...hello  ....C..W |
@@ -231,7 +231,7 @@ The compiled word `hello` needs only 14 bytes in the dictionary.
 #### Special Functions on Startup 
 
 USB-CDC is the default console.
-  * *SW3* do not include `0:/etc/rc.local`
+  * *SW1* do not include `0:/etc/rc.local`
 
 #### LEDs as Status Indicator
 
@@ -241,6 +241,8 @@ The RGB LED (otional) displays the status
   * *Blue* BLE connected
   * *flashing Red* "disk" (serial flash or SD) write operation
   * *flashing Yellow* "disk" (serial flash or SD) read operation
+
+The blue on board LED is sitched on on reset and switched off after the successfull initionalise process.
 
 
 ## Installing Development Environment 
