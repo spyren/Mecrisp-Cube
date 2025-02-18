@@ -135,9 +135,12 @@ machine (Firefly BLE STM32WB55 Development Board) for development and testing pu
 
 ### Flash the Mecrisp-Cube Firmware
 
-Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
-`MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. The Firefly does not have a SWD/JTAG connector but the SWD pins are available 
-on the Arduino connector. If you do not have a STLINK you can use the built-in USB DFU bootloader, for details see 
+Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or 
+better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
+`MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. 
+The Firefly does not have a SWD/JTAG connector but the SWD pins are available 
+on the Arduino connector (see [JTAG/SWD Pinning](BoardSupportPackage.md#jtagswd)). 
+If you do not have a STLINK you can use the built-in USB DFU bootloader, for details see 
 [Flash Mecrisp-Cube to the Target](#flash-mecrisp-cube-to-the-target).
 
  1. Connect the Firefly Board to the STLINK and the STLINK to the USB PC
