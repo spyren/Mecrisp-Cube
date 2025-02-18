@@ -128,16 +128,18 @@ machine (Firefly BLE STM32WB55 Development Board) for development and testing pu
     * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
   * STM32CubeProgrammer (optional)
-  * ST-Link programming/debug adapter (optional)
+  * STLINK in-circuit debugger and programmer for STM32 (optional) e.g.
+    [STLINK-V3MINIE](https://www.st.com/en/development-tools/stlink-v3minie.html) or
+    [STLINK-V3](https://www.st.com/en/development-tools/stlink-v3set.html)
 
 
 ### Flash the Mecrisp-Cube Firmware
 
 Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
 `MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. The Firefly does not have a SWD/JTAG connector but the SWD pins are available 
-on the Arduino connector. If you do not have a ST-LINK you can use the built-in USB DFU bootloader, for details see .
+on the Arduino connector. If you do not have a STLINK you can use the built-in USB DFU bootloader, for details see #flash-mecrisp-cube-to-the-target.
 
- 1. Connect the Firefly Board USB ST-LINK to the PC
+ 1. Connect the Firefly Board to the STLINK and the STLINK to the USB PC
  1. Copy binary (MecrispCubeFirefly.bin or better the MecrispCubeFireflyFS.bin) to the USB mass storage NODE_WB55RG 
 
 
@@ -324,11 +326,16 @@ Append `?ts=4` to the URL to change the tab-size.
 Alternate ways to flash Mecrisp-Cube to the target. For the easy way see 
 MecrispCubeWB#Prerequisites. 
 
-### USB Dongle
+### Application
 
-The Firefly board does not have a ST-Link interface, but the STM32WB has a built-in 
+The Firefly board does not have a SWD/JTAG connector, but the STM32WB has a built-in 
 boot-loader. This bootloader works via USB. As programming tool I use the 
 CLI from the [STM32CubeProg](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
+To start the bootloader
+ 1. push the BTN button
+ 2. push nRST button
+ 3. release nRST button
+ 4. release BTN button
 
 <pre>
 $ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
