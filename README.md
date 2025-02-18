@@ -90,7 +90,7 @@ Instant real-time programming with Forth.
   * 1 push button
   * 1 LED
   * 14 GPIO pins, D0 .. D13
-  * 5 ADC pins, A0 .. A4
+  * 5 ADC pins, A0 .. A4; internal VBAT and VREF (VDD), chip temperature
   * I2C
   * SPI
   * 3 PWM pins
@@ -110,19 +110,15 @@ For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.m
   * Quad Alphanumeric Display
 
 
-
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local 
-machine (WB55 Nucleo or Dongle) for development and testing purposes. 
+machine (Firefly SBC) for development and testing purposes. 
 
 
 ### Prerequisites
 
-  * One of these boards
-    * [STM32WB Nucleo Board](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
-      Arduino™ Uno V3 and ST morpho connectors
-    * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
+  * BLE STM32WB55 Development Board [Firefly](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/))
   * Terminal emulator application for PC, e.g.:
     * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
@@ -136,16 +132,16 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
 
 ### Flash the Mecrisp-Cube Firmware
 
-Flash the Mecrisp-Cube [binary](/Release/MecrispCube.bin) `MecrispCube.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFS.bin) 
-`MecrispCubeFS.bin` to the WB55 Nucleo. Using the built-in USB DFU bootloader.
+Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
+`MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. Using the built-in USB DFU bootloader.
 
- 1. Connect the Nucleo Board USB ST-LINK to the PC
- 1. Copy binary (MecrispCube.bin or better the MecrispCubeFS.bin) to the USB mass storage NODE_WB55RG 
+ 1. Connect the Firefly Board USB ST-LINK to the PC
+ 1. Copy binary (MecrispCubeFirefly.bin or better the MecrispCubeFireflyFS.bin) to the USB mass storage NODE_WB55RG 
 
 
 ### Use the Terminal (USB CDC)
 
-Connect the WB55 Nucleo USB to the PC. Start the terminal emulator application on the PC. 
+Connect the Firefly BLE STM32WB55 Development Board USB to the PC. Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
 I set the putty terminal configuration to 
 
@@ -158,7 +154,7 @@ I set the putty terminal configuration to
 
 The greeting screen should apear after startup:
 ```
-Mecrisp-Cube 1.6.1 deb for STM32WB Nucleo, 63/128 KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch
+Mecrisp-Cube 1.6.1 deb for STM32WB Firefly, 63/128 KiB RAM/FLASH dictionary (C) 2025 peter@spyr.ch
   * Mecrisp-Stellaris RA 2.5.4 by Matthias Koch. 
   * Firmware Package STM32Cube FW_WB V1.17.3, BLE Stack 5.3 (C) 2023 STMicroelectronics 
   * CMSIS-RTOS V2 FreeRTOS wrapper, FreeRTOS Kernel V10.3.1 (C) 2020 Amazon.com
