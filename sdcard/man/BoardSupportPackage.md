@@ -436,11 +436,11 @@ The control protocol for NeoPixels is based on only one communication wire.
 
 ### Single NeoPixel
 
-For the Nucleo I use D8 for the Neopixel. It takes about 30 us to set one Neopixel, 
+For the Nucleo I use D9 for the Neopixel. It takes about 30 us to set one Neopixel, 
 during this time the interrupts are disabled. 
 
 <pre>
-3 8 dmod           \ D8 output
+3 9 dmod           \ D9 output
 $ff0000 neopixel!   \ red LED 100 % brightness
 </pre>
 
