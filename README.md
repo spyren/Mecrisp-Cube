@@ -46,11 +46,13 @@ Instant real-time programming with Forth.
 
 ### USB Supply
 
-![](/sdcard/man/img/vddusb.png.jpg)
+![](/sdcard/man/img/vddusb.png)
 
 If you draw more than a few millimaps from the USB the VUSB voltage drops to 4.5 V 
 and the VDDUSB drops below 3 V. Quote Datasheet STM32WB55xx
-> VDDUSB = 3.0 to 3.6 V: external independent power supply for USB transceivers. 
+
+> VDDUSB = 3.0 to 3.6 V: external independent power supply for USB transceivers.
+
 To use a voltage divider for VBUS sensing detection is OK but not for supply the USB peripheral. 
 For more details see AN4879 chapter 2.7.
 
