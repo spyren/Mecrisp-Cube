@@ -44,6 +44,28 @@ The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
 
 Instant real-time programming with Forth. 
 
+### USB Supply
+
+![](/sdcard/man/img/vddusb.png.jpg)
+
+If you draw more than a few millimaps from the USB the VUSB voltage drops to 4.5 V 
+and the VDDUSB drops below 3 V. Quote Datasheet STM32WB55xx
+> VDDUSB = 3.0 to 3.6 V: external independent power supply for USB transceivers. 
+To use a voltage divider for VBUS sensing detection is OK but not for supply the USB peripheral. 
+For more details see AN4879 chapter 2.7.
+
+I propose to removed the resistors R1 and R2(voltage/resistor divider) and connect the VDDUSB 
+direct to the 3V3 supply. 
+
+
+### VBAT
+
+### Driving Current for LSE (32.768 kHz Quartz)
+
+With LSE Drive set to minimum, the LSE (32.768 kHz Quartz) do not start reliable. 
+If the LSE does not start, the CPU2 will not start either and BLE will not work.
+
+Set LSE drive at least to medium low. 
 
 ## Features
 
