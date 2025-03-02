@@ -44,7 +44,10 @@ The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
 
 Instant real-time programming with Forth. 
 
-### USB Supply
+
+### Minor Design Flaws
+
+#### USB Supply
 
 ![](/sdcard/man/img/vddusb.png)
 
@@ -56,18 +59,26 @@ and the VDDUSB drops below 3 V. Quote Datasheet STM32WB55xx
 To use a voltage divider for VBUS sensing detection is OK but not for supply the USB peripheral. 
 For more details see AN4879 chapter 2.7.
 
-I propose to removed the resistors R1 and R2(voltage/resistor divider) and connect the VDDUSB 
+I propose to remove the resistors R1 and R2 (voltage/resistor divider) and connect the VDDUSB 
 direct to the 3V3 supply. 
 
 
-### VBAT
+#### VBAT
 
-### Driving Current for LSE (32.768 kHz Quartz)
+VBAT pin is a supply pin for batteries or super caps and not well suited as an ADC input.
+It uses an internal 3:1 voltage divider. This divider consist of three internal 30 kOhm resitors.
+If you source this pin with the 100 k / 27 k the result can't be accurate. 
+
+I propose to connect VBAT with an ADC input.
+
+
+#### Driving Current for LSE (32.768 kHz Quartz)
 
 With LSE Drive set to minimum, the LSE (32.768 kHz Quartz) do not start reliable. 
 If the LSE does not start, the CPU2 will not start either and BLE will not work.
 
 Set LSE drive at least to medium low. 
+
 
 ## Features
 
