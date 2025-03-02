@@ -530,7 +530,7 @@ int BSP_getVbat(void) {
 	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	// internal voltage divider 2/1, external 27k/100k
-	return (3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) * 100 ) / 127 ;
+	return (3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) * 127 ) / 100 ;
 }
 
 

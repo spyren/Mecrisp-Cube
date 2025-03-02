@@ -1,7 +1,9 @@
 CR .( ppp.fs loading ... )
 
-5 0 dmod   \ set D0 to pwm
-5 1 dmod   \ set D1 to pwm
+5 constant pwm_mode
+
+pwm_mode 0 dmod   \ set D0 to pwm
+pwm_mode 1 dmod   \ set D1 to pwm
 0 0 pwmpin!
 0 1 pwmpin!
 
@@ -13,14 +15,6 @@ CR .( ppp.fs loading ... )
   10 osdelay drop
   0 apin@ 4 / speed ! \ get speed 0 .. 1023
   direction @ if
-    \ reverse
-    brake @ if
-      1023 0 pwmpin!
-    else
-      0 @ 0 pwmpin!
-    then
-    speed @ 1 pwmpin!
-  else
     \ forward
     brake @ if
       1023 1 pwmpin!
@@ -31,11 +25,34 @@ CR .( ppp.fs loading ... )
   then
 ;
 
-: vrail. 
-  vref@ s>f 1k f/              \  vref
-  2 apin@ s>f 1e 4096e f/ f* f* \ v measure
-  10k f/ 68k 10k f+ f*        
-  fm.
+: Vusb (  -- r ) \ USB voltage 
+  vref@ s>f 1k f/              \ Vref
+  4 apin@ s>f 1e 4096e f/ f* f* \ V measure
+  2e f*                          \ 1/2 voltage divider
 ;
 
+: Vrail (  -- r ) \ rail voltage 
+  vref@ s>f 1k f/              \ Vref
+  2 apin@ s>f 1e 4096e f/ f* f* \ V measure
+  10k f/ 68k 10k f+ f*           \ 68 k 10 k voltage divider
+;
+
+: Vlipo (  -- r ) \ LiPo voltage 
+  vref@ s>f 1k f/              \ Vref
+  1 apin@ s>f 1e 4096e f/ f* f* \ V measure
+  2e f*                          \ 1/2 voltage divider
+;
+
+: Irail ( -- r ) \ rail current
+  vref@ s>f 1k f/              \ Vref
+  3 apin@ s>f 1e 4096e f/ f* f* \ V measure -> A
+;
+
+: %pwm ( -- u ) \ 
+  0 apin@ 40 / dup \ 4096 resolution
+  100 > if
+    drop 100 \ not more than 100 %
+  then
+; 
+  
 
