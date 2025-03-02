@@ -40,7 +40,13 @@ similar to Arduino UNO but with the size of an Arduino Nano (or a Teensy).
 
 The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
 
+Firefly BLE STM32WB55 Development Board on 
+[tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/)
+
 ![](/sdcard/man/img/firefly-feather.jpg)
+
+There is an [Arduino Core](https://github.com/GrumpyOldPizza/ArduinoCore-stm32wb) for this board
+but I prefer Forth.
 
 Instant real-time programming with Forth. 
 
