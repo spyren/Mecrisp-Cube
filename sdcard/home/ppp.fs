@@ -11,30 +11,40 @@ pwm_mode 1 dmod   \ set D1 to pwm
 0 variable brake     \ 1 brake
 0 variable speed     \ 0 off, 1000 max
 
+: calc_speed ( -- u ) \  get speed n 0 .. 1000
+    0 apin@ 4 / dup
+    1000 > if  drop 1000 then dup speed !
+;
+
+: %pwm ( -- u ) \ 
+  speed @ 10 /
+; 
+
 : throttle ( -- ) 
-  10 osdelay drop
-  \ get speed 0 .. 1000
-  0 apin@ 4 / dup
-  1000 > if  drop 1000 then speed !
-  direction @ if
-    \ forward
-    brake @ if
-      1000            0 pwmpin!
-      1000 speed @ -  1 pwmpin!
+  begin
+    10 osdelay drop
+    calc_speed
+    direction @ if
+      \ forward
+      brake @ if
+        1000            0 pwmpin!
+        1000 swap -     1 pwmpin!
+      else
+        0               1 pwmpin!
+                        0 pwmpin!
+      then
     else
-      0               1 pwmpin!
-      speed @         0 pwmpin!
+      \ reverse
+      brake @ if
+        1000            1 pwmpin!
+        1000 swap -     0 pwmpin!
+      else
+        0               0 pwmpin!
+                        1 pwmpin!
+      then
     then
-  else
-    \reverse
-    brake @ if
-      1000            1 pwmpin!
-      1000 speed @ -  0 pwmpin!
-    else
-      0               0 pwmpin!
-      speed @         1 pwmpin!
-    then
-  then
+  key? until
+  key drop
 ;
 
 : Vusb (  -- r ) \ USB voltage 
@@ -49,7 +59,7 @@ pwm_mode 1 dmod   \ set D1 to pwm
   10k f/ 68k 10k f+ f*           \ 68 k 10 k voltage divider
 ;
 
-: Vlipo (  -- r ) \ LiPo voltage 
+: Vlipo (  -- r ) \ LiPo voltage 0 apin@ 4 / .
   vref@ s>f 1k f/              \ Vref
   1 apin@ s>f 1e 4096e f/ f* f* \ V measure
   2e f*                          \ 1/2 voltage divider
@@ -60,11 +70,5 @@ pwm_mode 1 dmod   \ set D1 to pwm
   3 apin@ s>f 1e 4096e f/ f* f* \ V measure -> A
 ;
 
-: %pwm ( -- u ) \ 
-  0 apin@ 40 / dup \ 4096 resolution
-  100 > if
-    drop 100 \ not more than 100 %
-  then
-; 
   
 

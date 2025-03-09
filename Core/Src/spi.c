@@ -155,7 +155,8 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
     PA6     ------> SPI1_MISO
     PA7     ------> SPI1_MOSI
     */
-//    HAL_GPIO_DeInit(GPIOA, D13_Pin|D12_Pin|D11_Pin);
+    // if the next command is commented out, CPU2 does not start, very strange
+    HAL_GPIO_DeInit(GPIOA, D13_Pin|D12_Pin|D11_Pin);
 
     /* SPI1 DMA DeInit */
     HAL_DMA_DeInit(spiHandle->hdmarx);
