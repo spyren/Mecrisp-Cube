@@ -598,11 +598,13 @@ static const PortPinMode_t DigitalPortPinMode_a[] = {
  *	    Sets the digital port pin mode (D0 .. D15).
  *
  *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
- *      5 out pwm, 6 input capture, 7 output compare, 8 I2C
+ *      5 out pwm, 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
+ *
+ *      For I2C, UART, and SPI only one pin has to be activated.
  *	@param[in]
  *      pin_number    0 to 15.
  *	@param[in]
- *      mode          0 to 8
+ *      mode          0 to 11
  *  @return
  *      none
  *
@@ -618,18 +620,24 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
 	case 0:
 	case 1:
 		// UART: D0, D1
-		HAL_UART_MspDeInit(&huart1);
+		if (mode != 9) {
+			HAL_UART_MspDeInit(&huart1);
+		}
 		break;
 	case 11:
 	case 12:
 	case 13:
 		// SPI: D11, D12, and D13
-		HAL_SPI_MspDeInit(&hspi1);
+		if (mode != 10) {
+			HAL_SPI_MspDeInit(&hspi1);
+		}
 		break;
 	case 14:
 	case 15:
 		// I2C: D14, D15
-		HAL_I2C_MspDeInit(&hi2c1);
+		if (mode != 8) {
+			HAL_I2C_MspDeInit(&hi2c1);
+		}
 		break;
 	}
 
@@ -639,6 +647,32 @@ void BSP_setDigitalPinMode(int pin_number, int mode) {
     GPIO_InitStruct.Alternate = DigitalPortPinMode_a[mode].alternate;
 //    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(PortPin_a[pin_number].port, &GPIO_InitStruct);
+
+	// some pins have special (shared/stacked) functions
+	switch (pin_number) {
+	case 0:
+	case 1:
+		// UART: D0, D1
+		if (mode == 9) {
+			HAL_UART_MspInit(&huart1);
+		}
+		break;
+	case 11:
+	case 12:
+	case 13:
+		// SPI: D11, D12, and D13
+		if (mode == 10) {
+			HAL_SPI_MspInit(&hspi1);
+		}
+		break;
+	case 14:
+	case 15:
+		// I2C: D14, D15
+		if (mode == 8) {
+			HAL_I2C_MspInit(&hi2c1);
+		}
+		break;
+	}
 
 	osMutexRelease(DigitalPort_MutexID);
 }

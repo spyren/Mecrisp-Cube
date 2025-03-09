@@ -155,7 +155,7 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
     PA6     ------> SPI1_MISO
     PA7     ------> SPI1_MOSI
     */
-    HAL_GPIO_DeInit(GPIOA, D13_Pin|D12_Pin|D11_Pin);
+//    HAL_GPIO_DeInit(GPIOA, D13_Pin|D12_Pin|D11_Pin);
 
     /* SPI1 DMA DeInit */
     HAL_DMA_DeInit(spiHandle->hdmarx);

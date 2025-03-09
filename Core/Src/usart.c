@@ -134,7 +134,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     PA9     ------> USART1_TX
     PA10     ------> USART1_RX
     */
-    HAL_GPIO_DeInit(GPIOA, D1_Pin|D0_Pin);
+//    HAL_GPIO_DeInit(GPIOA, D1_Pin|D0_Pin);
 
     /* USART1 interrupt Deinit */
     HAL_NVIC_DisableIRQ(USART1_IRQn);

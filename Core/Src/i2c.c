@@ -170,9 +170,8 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
     PB6     ------> I2C1_SCL
     PB7     ------> I2C1_SDA
     */
-    HAL_GPIO_DeInit(D14_GPIO_Port, D14_Pin);
-
-    HAL_GPIO_DeInit(D15_GPIO_Port, D15_Pin);
+//    HAL_GPIO_DeInit(D14_GPIO_Port, D14_Pin);
+//    HAL_GPIO_DeInit(D15_GPIO_Port, D15_Pin);
 
     /* I2C1 DMA DeInit */
     HAL_DMA_DeInit(i2cHandle->hdmarx);
