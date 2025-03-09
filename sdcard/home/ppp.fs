@@ -7,21 +7,33 @@ pwm_mode 1 dmod   \ set D1 to pwm
 0 0 pwmpin!
 0 1 pwmpin!
 
-0 variable direction \ 0 forward, 1 reverse
+0 variable direction \ 1 forward, 0 reverse
 0 variable brake     \ 1 brake
-0 variable speed
+0 variable speed     \ 0 off, 1000 max
 
-: throttle ( -- )
+: throttle ( -- ) 
   10 osdelay drop
-  0 apin@ 4 / speed ! \ get speed 0 .. 1023
+  \ get speed 0 .. 1000
+  0 apin@ 4 / dup
+  1000 > if  drop 1000 then speed !
   direction @ if
     \ forward
     brake @ if
-      1023 1 pwmpin!
+      1000            0 pwmpin!
+      1000 speed @ -  1 pwmpin!
     else
-      0 1 pwmpin!
+      0               1 pwmpin!
+      speed @         0 pwmpin!
     then
-    speed @ 0 pwmpin!
+  else
+    \reverse
+    brake @ if
+      1000            1 pwmpin!
+      1000 speed @ -  0 pwmpin!
+    else
+      0               0 pwmpin!
+      speed @         1 pwmpin!
+    then
   then
 ;
 
