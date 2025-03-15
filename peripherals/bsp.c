@@ -293,27 +293,27 @@ typedef struct {
 } PortPin_t;
 
 static const PortPin_t PortPin_a[21] = {
-		{ D0_GPIO_Port, D0_Pin } ,
-		{ D1_GPIO_Port, D1_Pin } ,
-		{ D2_GPIO_Port, D2_Pin } ,
-		{ D3_GPIO_Port, D3_Pin } ,
-		{ D4_GPIO_Port, D4_Pin } ,
-		{ D5_GPIO_Port, D5_Pin } ,
-		{ D6_GPIO_Port, D6_Pin } ,
-		{ D7_GPIO_Port, D7_Pin } ,
-		{ D8_GPIO_Port, D8_Pin } ,
-		{ D9_GPIO_Port, D9_Pin } ,
-		{ D10_GPIO_Port, D10_Pin } ,
-		{ D11_GPIO_Port, D11_Pin } ,
-		{ D12_GPIO_Port, D12_Pin } ,
-		{ D13_GPIO_Port, D13_Pin } ,
-		{ D14_GPIO_Port, D14_Pin } ,
-		{ D15_GPIO_Port, D15_Pin } ,
-		{ A0_GPIO_Port, A0_Pin } ,
-		{ A1_GPIO_Port, A1_Pin } ,
-		{ A2_GPIO_Port, A2_Pin } ,
-		{ A3_GPIO_Port, A3_Pin } ,
-		{ A4_GPIO_Port, A4_Pin }
+		{ D0_GPIO_Port, D0_Pin } ,		// 0
+		{ D1_GPIO_Port, D1_Pin } ,		// 1
+		{ D2_GPIO_Port, D2_Pin } ,		// 2
+		{ D3_GPIO_Port, D3_Pin } ,		// 3
+		{ D4_GPIO_Port, D4_Pin } ,		// 4
+		{ D5_GPIO_Port, D5_Pin } ,		// 5
+		{ D6_GPIO_Port, D6_Pin } ,		// 6
+		{ D7_GPIO_Port, D7_Pin } ,		// 7
+		{ D8_GPIO_Port, D8_Pin } ,		// 8
+		{ D9_GPIO_Port, D9_Pin } ,		// 9
+		{ D10_GPIO_Port, D10_Pin } ,	// 10
+		{ D11_GPIO_Port, D11_Pin } ,	// 11
+		{ D12_GPIO_Port, D12_Pin } ,	// 12
+		{ D13_GPIO_Port, D13_Pin } ,	// 13
+		{ D14_GPIO_Port, D14_Pin } ,	// 14
+		{ D15_GPIO_Port, D15_Pin } ,	// 15
+		{ A0_GPIO_Port, A0_Pin } ,		// 16
+		{ A1_GPIO_Port, A1_Pin } ,		// 17
+		{ A2_GPIO_Port, A2_Pin } ,		// 18
+		{ A3_GPIO_Port, A3_Pin } ,		// 19
+		{ A4_GPIO_Port, A4_Pin }		// 20
 };
 
 /**
@@ -367,10 +367,10 @@ int BSP_getDigitalPort(void) {
 
 /**
  *  @brief
- *	    Sets the digital output port pin (D0 .. D15).
+ *	    Sets the digital output port pin (D0 .. D15, A0 .. A4).
  *
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 20.
  *	@param[in]
  *      state         0/1
  *  @return
@@ -389,10 +389,10 @@ void BSP_setDigitalPin(int pin_number, int state) {
 
 /**
  *  @brief
- *	    Gets the digital input port pin (D0 .. D15).
+ *	    Gets the digital input port pin (D0 .. D15, A0 .. A4).
  *
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 20.
  *  @return
  *      state         0/1
  *
@@ -580,29 +580,29 @@ typedef struct {
 } PortPinMode_t;
 
 static const PortPinMode_t DigitalPortPinMode_a[] = {
-	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				// 0 in
-	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				// 1 pullup
-	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				// 2 pulldow
-	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				// 3 pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				// 4 opendrain
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	// 5 pwm pushpull
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 6 input capture in
-	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	// 7 output compare pushpull
-	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	// 8 I2C opendrain pullup
+	{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				//  0 in
+	{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				//  1 in pullup
+	{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				//  2 in pulldown
+	{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				//  3 out pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				//  4 out opendrain
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	//  5 pwm pushpull
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  6 input capture in
+	{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  7 output compare pushpull
+	{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	//  8 I2C opendrain pullup
 	{ GPIO_MODE_AF_PP,     GPIO_PULLUP,   GPIO_AF7_USART1 },//  9 UART
     { GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF5_SPI1 },  // 10 SPI
     { GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 }               // 11 analog
 };
 /**
  *  @brief
- *	    Sets the digital port pin mode (D0 .. D15).
+ *	    Sets the digital port pin mode (D0 .. D15, A0 .. A4).
  *
  *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
  *      5 out pwm, 6 input capture, 7 output compare, 8 I2C, 9 UART, 10 SPI, 11 analog
  *
  *      For I2C, UART, and SPI only one pin has to be activated.
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 20.
  *	@param[in]
  *      mode          0 to 11
  *  @return
@@ -719,7 +719,7 @@ void BSP_setPwmPin(int pin_number, int value) {
 
 /**
  *  @brief
- *	    Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
+ *	    Sets the PWM prescale for TIMER1
  *
  *	@param[in]
  *      value         32 kHz / prescale, default 32 -> PWM frequency 1 kHz
