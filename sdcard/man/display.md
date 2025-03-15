@@ -117,7 +117,7 @@ To change the display type you have to edit the
 
 # Links
 
-## SSD1306 Driver (OLED)
+## SSD1306/SSD1315 Driver (OLED)
 
 ### Driver SW
    * U8g2 https://github.com/olikraus/
@@ -126,7 +126,12 @@ To change the display type you have to edit the
    * https://github.com/bitbank2/ss_oled
    * SSD1306xLED https://git.x2software.net/pub/GameCounter/-/tree/master/Source/lib/ssd1306xled
 
-### Other OLEDs with SSD1306 
+### Other OLEDs with SSD1306/SSD1315
+   * Seeed Studio Grove - OLED Display 0.96" (SSD1315) I2C
+      * https://www.seeedstudio.com/Grove-OLED-Display-0-96-SSD1315-p-4294.html
+      * 128x64, 0.96"
+      * about $6
+        
    * OLED B click 96x39 mono https://www.mikroe.com/oled-b-click, SSD1306
       * I2C address 60 / 0x3c or SPI
       * Manual [[https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf][SSD1306]]
