@@ -609,5 +609,12 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 |             | 14               |                | 4 (PA9)       | D1 UART_RX     |
 
 
+# Pocket Power Pack
+
+https://www.vishay.com/docs/51036/p16pa16.pdf
+
+Schematic ![](img/pocket_power_pack.svg) 
+
+[kicad schematic}](kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
 
 \-- [PeterSchmid - 2020-04-11]
