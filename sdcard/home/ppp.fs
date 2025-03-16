@@ -61,7 +61,7 @@ pwm_mode 1 dmod   \ set D1 to pwm
 : %pwm. ( -- )
   0 6 oledpos!
   %pwm . ." % "
-  direction @ if ." > " else ." < " then
+  direction @ if ." < " else ." > " then
   brake @ if ." B " else ."   " then
 ;
 
@@ -111,4 +111,14 @@ pwm_mode 1 dmod   \ set D1 to pwm
     endcase
   again
 ;
+
+task throttle&
+throttle& construct
+' throttle throttle& start-task
+
+task ppp-menu&
+ppp-menu& construct
+' ppp-menu ppp-menu& start-task
+
+
 
