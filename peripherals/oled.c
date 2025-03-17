@@ -873,7 +873,7 @@ static void putGlyph8x16(int ch) {
 	#endif // OLED_SPI
 
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosY+i][CurrentPosX+1];
+		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
 	#ifndef OLED_SPI

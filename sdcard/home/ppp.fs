@@ -10,6 +10,7 @@ pwm_mode 1 dmod   \ set D1 to pwm
 0 variable direction \ 0 forward, 1 reverse
 0 variable brake     \ 1 brake
 0 variable speed     \ 0 off, 1000 max
+0 variable pwmselect \ 0 1 kHz, 1 2 kHz, 2 4 kHz, 3 8 kHz
 
 : calc_speed ( -- u ) \  get speed n 0 .. 1000
     0 apin@ 4 / dup
@@ -44,25 +45,61 @@ pwm_mode 1 dmod   \ set D1 to pwm
 ;
 
 : Vrail. ( -- )
+  2 oledfont
   0 0 oledpos! 1 set-precision
-  ." Vr " Vrail f. ." V"
+  ." Vr " Vrail f. 
 ;
 
 : Vlipo. ( -- )
-  0 2 oledpos! 2 set-precision
-  ." Vb " Vlipo f. ." V"
+  2 oledfont
+  64 0 oledpos! 2 set-precision
+  ." Vb " Vlipo f. 
 ;
 
 : Irail. ( -- )
-  0 4 oledpos! 3 set-precision
-  ." I  " Irail f. ." A"
+  3 oledfont
+  0 2 oledpos! 3 set-precision
+  ." I " Irail f. ." A"
 ;
 
 : %pwm. ( -- )
+  3 oledfont
+  0 4 oledpos!
+  
+  \ 0123456789
+  \ < 100 % B 
+  direction @ if 
+    ." < " %pwm . ." % "
+    brake @ if 
+      ." B" 
+    else 
+      ."    " 
+    then
+    ."   "
+  else 
+    ."   " %pwm . ." % " 
+    brake @ if 
+      ." B" 
+    else 
+      ."  " 
+    then
+    ." > " 
+  then
+  
+;
+
+: pwm-menu.
+  0 oledfont
   0 6 oledpos!
-  %pwm . ." % "
-  direction @ if ." < " else ." > " then
-  brake @ if ." B " else ."   " then
+          \ 0123456789012345
+         ." PWM Menu [kHz]"
+  0 7 oledpos!
+  pwmselect @ case
+    0 of ." [1] 2  4  8 " endof
+    1 of ."  1 [2] 4  8 " endof
+    2 of ."  1  2 [4] 8 " endof
+    3 of ."  1  2  4 [8]" endof
+  endcase
 ;
 
 : throttle ( -- ) 
@@ -93,9 +130,11 @@ pwm_mode 1 dmod   \ set D1 to pwm
 
 : ppp-display ( -- )  \ display throttle infos till button is pressed
   >oled
-  oledclr  3 oledfont
   begin
-     Vrail. Vlipo. Irail. %pwm.
+     Vrail. Vlipo. 
+     Irail. 
+     %pwm.
+     pwm-menu.
      200 osDelay drop
   button? until
   >term
@@ -108,9 +147,15 @@ pwm_mode 1 dmod   \ set D1 to pwm
       [char] a of 1 direction ! endof      \ reverse
       [char] b of brake @ 0= brake ! endof \ brake
       [char] c of 0 direction ! endof      \ forward
+      [char] d of 32 PWMprescale ! 0 pwmselect ! endof   \ 1 kHz
+      [char] e of 16 PWMprescale ! 1 pwmselect ! endof   \ 2 kHz
+      [char] f of  8 PWMprescale ! 2 pwmselect ! endof   \ 4 kHz
+      [char] g of  4 PWMprescale ! 3 pwmselect ! endof   \ 8 kHz
     endcase
   again
 ;
+
+oledclr  
 
 task throttle&
 throttle& construct
