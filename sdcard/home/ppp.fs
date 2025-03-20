@@ -6,11 +6,18 @@ pwm_mode 0 dmod   \ set D0 to pwm
 pwm_mode 1 dmod   \ set D1 to pwm
 0 0 pwmpin!
 0 1 pwmpin!
+4 pwmprescale     \ 8 kHz
 
+0 variable menu      \ 0 mode, 1 pwm1, 2 pwm2
+2 constant maxmenu
+0 variable dcc       \ 0 DC, 1 DCC
 0 variable direction \ 0 forward, 1 reverse
 0 variable brake     \ 1 brake
 0 variable speed     \ 0 off, 1000 max
-0 variable pwmselect \ 0 1 kHz, 1 2 kHz, 2 4 kHz, 3 8 kHz
+5 variable pwmselect \ 0 1 kHz, 1 2 kHz, 2 4 kHz, 3 8 kHz
+                     \ 0 0.25 kHz, 1 0.5 kHz, 2 1 kHz, 
+                     \ 3 2 kHz, 4 4 kHz, 5 8 kHz, 6 16 kHz
+0 variable display-off
 
 : calc_speed ( -- u ) \  get speed n 0 .. 1000
     0 apin@ 4 / dup
@@ -58,47 +65,74 @@ pwm_mode 1 dmod   \ set D1 to pwm
 
 : Irail. ( -- )
   3 oledfont
-  0 2 oledpos! 3 set-precision
+  0 4 oledpos! 3 set-precision
   ." I " Irail f. ." A"
 ;
 
 : %pwm. ( -- )
   3 oledfont
-  0 4 oledpos!
+  0 2 oledpos!
   
   \ 0123456789
-  \ < 100 % B 
+  \ < 100 %  > 
   direction @ if 
-    ." < " %pwm . ." % "
-    brake @ if 
-      ." B" 
-    else 
-      ."    " 
-    then
-    ."   "
+    ." < " %pwm . ." %    "
   else 
-    ."   " %pwm . ." % " 
-    brake @ if 
-      ." B" 
-    else 
-      ."  " 
-    then
-    ." > " 
+    ."   " %pwm . ." %  > " 
   then
-  
+;
+
+: mode.
+  0 oledfont
+  0 6 oledpos!
+   \ 012345678901234567890
+  ." Display, Mode        " 
+  0 7 oledpos!
+  ."  OFF  "
+  dcc @ if ." [DCC]        " else then ." [DC]C         "
+;
+
+: BRK. ( -- )
+  brake @ if ." [BRK]" else ."  BRK " then
 ;
 
 : pwm-menu.
   0 oledfont
   0 6 oledpos!
-          \ 0123456789012345
-         ." PWM Menu [kHz]"
+          \ 012345678901234567890
+         ." PWM Frequency [kHz] 1"
   0 7 oledpos!
   pwmselect @ case
-    0 of ." [1] 2  4  8 " endof
-    1 of ."  1 [2] 4  8 " endof
-    2 of ."  1  2 [4] 8 " endof
-    3 of ."  1  2  4 [8]" endof
+          \ 012345678901234567890
+          \ [BRK]
+    0 of BRK. ." [.25] .5    1  " endof
+    1 of BRK. ."  .25 [.5]   1  " endof
+    2 of BRK. ."  .25  .5   [1] " endof
+         BRK. ."  .25  .5    1  "
+  endcase
+;
+
+: pwm-menu1.
+  0 oledfont
+  0 6 oledpos!
+          \ 012345678901234567890
+         ." PWM Frequency [kHz] 2"
+  0 7 oledpos!
+  pwmselect @ case
+          \ 012345678901234567890
+    3 of ."  [2]   4    8    16 " endof
+    4 of ."   2   [4]   8    16 " endof
+    5 of ."   2    4   [8]   16 " endof
+    6 of ."   2    4    8   [16]" endof
+         ."   2    4    8    16 "
+  endcase
+;
+
+: menu. ( -- ) 
+  menu @ case
+    0 of mode. endof
+    1 of pwm-menu. endof
+    2 of pwm-menu1. endof
   endcase
 ;
 
@@ -132,25 +166,59 @@ pwm_mode 1 dmod   \ set D1 to pwm
   >oled
   begin
      Vrail. Vlipo. 
-     Irail. 
      %pwm.
-     pwm-menu.
+     Irail. 
+     menu.
      200 osDelay drop
   button? until
   >term
 ;
 
+: mode_button ( u -- )
+  case
+    [char] d of 1 display-off ! oledclr endof \ switch off display
+    [char] e of dcc @ 0= dcc ! endof \ toggle DCC
+  endcase
+;
+
+: pwm_button ( u -- )
+  case
+    [char] d of brake @ 0= brake ! endof \ toggle brake
+    [char] e of 0 pwmselect ! 128 pwmprescale endof \ 250 Hz
+    [char] f of 1 pwmselect !  64 pwmprescale endof \ 500 Hz
+    [char] g of 2 pwmselect !  32 pwmprescale endof \ 1 kHz
+  endcase
+;
+
+: pwm-button1 ( u -- )
+  case
+    [char] d of 3 pwmselect !  16 pwmprescale endof \ 2 kHz
+    [char] e of 4 pwmselect !   8 pwmprescale endof \ 4 kHz
+    [char] f of 5 pwmselect !   4 pwmprescale endof \ 8 kHz
+    [char] g of 6 pwmselect !   2 pwmprescale endof \ 16  kHz
+  endcase
+;
+
+: menu-button ( u -- )
+  display-off @ if
+    drop 0 display-off !
+  else
+    menu @ case
+      0 of mode_button endof 
+      1 of pwm_button  endof
+      2 of pwm-button1 endof
+    endcase
+  then
+;
+
 : ppp-menu ( -- )
   begin
-    ppp-display
+    display-off @ 0= if ppp-display then
     button case
       [char] a of 1 direction ! endof      \ reverse
-      [char] b of brake @ 0= brake ! endof \ brake
+      [char] b of menu @ 1+ dup maxmenu > if drop 0 then menu ! endof \ menu
       [char] c of 0 direction ! endof      \ forward
-      [char] d of 32 PWMprescale ! 0 pwmselect ! endof   \ 1 kHz
-      [char] e of 16 PWMprescale ! 1 pwmselect ! endof   \ 2 kHz
-      [char] f of  8 PWMprescale ! 2 pwmselect ! endof   \ 4 kHz
-      [char] g of  4 PWMprescale ! 3 pwmselect ! endof   \ 8 kHz
+      menu-button
     endcase
   again
 ;
