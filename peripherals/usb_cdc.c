@@ -93,7 +93,7 @@ static uint8_t tx_buffer[64];
 void CDC_init(void) {
 	// Create the queue(s)
 	// creation of TxQueue
-	CDC_TxQueueId = osMessageQueueNew(512, sizeof(uint8_t), &cdc_TxQueue_attributes);
+	CDC_TxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &cdc_TxQueue_attributes);
 	ASSERT_fatal(CDC_TxQueueId != NULL, ASSERT_QUEUE_CREATION, __get_PC());
 	// creation of RxQueue
 	CDC_RxQueueId = osMessageQueueNew(2048, sizeof(uint8_t), &cdc_RxQueue_attributes);

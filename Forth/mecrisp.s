@@ -535,10 +535,10 @@ Forth:
 	cmp		r0, #0
 	bne		3f
     // include 0:/etc/rc.local
-//    pushdatos
-//   	ldr		tos, =rc_local
-//    bl		fs_strlen
-//    bl		included
+    pushdatos
+   	ldr		tos, =rc_local
+    bl		fs_strlen
+    bl		included
 3:
 	@ Ready to fly !
 .include "boot.s"
