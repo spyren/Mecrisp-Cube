@@ -611,12 +611,15 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 
 # Pocket Power Pack
 
+Knob Potentiometer
 https://www.vishay.com/docs/51036/p16pa16.pdf
 
-Schematic ![](img/pocket_power_pack.svg) 
+Schematic ([kicad schematic](kicad/pocket_power_pack/pocket_power_pack.kicad_sch))
+![](img/pocket_power_pack.svg) 
 
-[kicad schematic}](kicad/pocket_power_pack/pocket_power_pack.kicad_sch))
-
+PCB
 ![](img/ppp-pcb.jpg) 
+
+Parts
 ![](img/ppp-parts.jpg) 
 
