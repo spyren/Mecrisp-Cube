@@ -611,15 +611,19 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 
 # Pocket Power Pack
 
-Knob Potentiometer
-https://www.vishay.com/docs/51036/p16pa16.pdf
-
-Schematic ([kicad schematic](kicad/pocket_power_pack/pocket_power_pack.kicad_sch))
+## Schematic 
+[kicad schematic](kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
 ![](img/pocket_power_pack.svg) 
 
-PCB
+## PCB
+Perfboard square grid of 0.1 inches, 3" x 2" (30 x 20 1/10"), 76.5 x 51.5 mm, cut out corners (3 x 3 1/10"),
 ![](img/ppp-pcb.jpg) 
 
-Parts
+## Parts
+[Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
 ![](img/ppp-parts.jpg) 
+
+### Knob Potentiometer
+https://www.vishay.com/docs/51036/p16pa16.pdf
+
 
