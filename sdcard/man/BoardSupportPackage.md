@@ -615,11 +615,9 @@ https://www.vishay.com/docs/51036/p16pa16.pdf
 
 Schematic ![](img/pocket_power_pack.svg) 
 
-[kicad schematic}](kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
+[kicad schematic}](kicad/pocket_power_pack/pocket_power_pack.kicad_sch))
 
-![ppp-pcb](https://github.com/user-attachments/assets/78b96dc6-1797-4b0d-8fd9-2280f3c42373)
-
-![ppp-parts](https://github.com/user-attachments/assets/0d6667d7-81ce-4530-9743-db08c0abf142)
-
+![](img/ppp-pcb.jpg) 
+![](img/ppp-parts.jpg) 
 
 \-- [PeterSchmid - 2020-04-11]
