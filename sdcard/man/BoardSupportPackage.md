@@ -620,4 +620,3 @@ Schematic ![](img/pocket_power_pack.svg)
 ![](img/ppp-pcb.jpg) 
 ![](img/ppp-parts.jpg) 
 
-\-- [PeterSchmid - 2020-04-11]
