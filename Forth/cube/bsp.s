@@ -106,6 +106,36 @@ get_switch1:
 	pop		{pc}
 
 
+.if BUTTON == 1
+.if BUTTON_MATRIX == 0
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switch2?"
+get_switch2:
+		@ (  -- n ) get switch2
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitch2
+	movs	tos, r0
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, "switch3?"
+get_switch3:
+		@ (  -- n ) get switch3
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	pushdatos
+	bl		BSP_getSwitch3
+	movs	tos, r0
+	pop		{pc}
+
+.endif
+.endif
+
+
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dport!"
 set_dport:

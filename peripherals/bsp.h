@@ -49,6 +49,12 @@ void BSP_init(void);
 void BSP_setLED1(int state);
 int BSP_getLED1(void);
 int BSP_getSwitch1(void);
+#if BUTTON == 1
+#if BUTTON_MATRIX == 0
+int BSP_getSwitch2(void);
+int BSP_getSwitch3(void);
+#endif
+#endif
 void BSP_setDigitalPort(int state);
 int BSP_getDigitalPort(void);
 void BSP_setDigitalPin(int pin_number, int state);

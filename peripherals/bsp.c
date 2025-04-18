@@ -58,6 +58,7 @@
 #include "bsp.h"
 #include "button.h"
 #include "stm32_lpm.h"
+#include "button.h"
 
 
 // Private function prototypes
@@ -271,7 +272,44 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
+#if BUTTON == 1
+#if BUTTON_MATRIX == 0
+	if (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port, BUTTON_A_Pin) == GPIO_PIN_RESET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+#else
 	if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+#endif
+#endif
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+
+#if BUTTON == 1
+#if BUTTON_MATRIX == 0
+/**
+ *  @brief
+ *      Gets the switch2 state
+ *
+ *      No debouncing
+ *  @return
+ *      FALSE for open switch, TRUE for closed (pressed) switch.
+ */
+int BSP_getSwitch2(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(BUTTON_B_GPIO_Port, BUTTON_B_Pin) == GPIO_PIN_RESET) {
 		return_value = -1;
 	} else {
 		return_value = FALSE;
@@ -281,6 +319,32 @@ int BSP_getSwitch1(void) {
 	return return_value;
 }
 
+/**
+ *  @brief
+ *      Gets the switch3 state
+ *
+ *      No debouncing
+ *  @return
+ *      FALSE for open switch, TRUE for closed (pressed) switch.
+ */
+int BSP_getSwitch3(void) {
+	int return_value;
+
+	// only one thread is allowed to use the digital port
+	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
+	if (HAL_GPIO_ReadPin(BUTTON_C_GPIO_Port, BUTTON_C_Pin) == GPIO_PIN_RESET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+
+	osMutexRelease(DigitalPort_MutexID);
+	return return_value;
+}
+
+#endif
+#endif
 
 
 
