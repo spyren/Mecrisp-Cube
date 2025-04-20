@@ -612,7 +612,7 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 # Pocket Power Pack
 
 Model railroading on the go. A battery operated power pack give you the opportunity to take your model railroad with you. 
-No mess with outlets and cables. The pocket power pack, some sectional track, one locomotive and a few cars and you are in business.
+No mess with outlets and cables. Build your pocket power pack, get some sectional track, one locomotive and a few cars and you are in business.
 
 ![](img/ppp.jpg) 
 
