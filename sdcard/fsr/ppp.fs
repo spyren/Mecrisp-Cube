@@ -33,11 +33,10 @@ CR .( ppp.fs loading ... )
 0 variable menu      \ 0 mode, 1 pwm1, 2 pwm2
 2 constant maxmenu
 0 variable dcc       \ 0 DC, 1 DCC
-0 variable direction \ 0 forward, 1 reverse
+0 variable reverse   \ 0 forward, 1 reverse
 0 variable brake     \ 1 brake
 0 variable speed     \ 0 off, 1000 max
-5 variable pwmselect \ 0 1 kHz, 1 2 kHz, 2 4 kHz, 3 8 kHz
-                     \ 0 0.25 kHz, 1 0.5 kHz, 2 1 kHz, 
+5 variable pwmselect \ 0 0.25 kHz, 1 0.5 kHz, 2 1 kHz, 
                      \ 3 2 kHz, 4 4 kHz, 5 8 kHz, 6 16 kHz
 0 variable display-off
 
@@ -71,6 +70,7 @@ CR .( ppp.fs loading ... )
 : Irail ( -- r ) \ rail current [A]
   vref@ s>f 1k f/              \ Vref
   3 apin@ s>f 1e 4096e f/ f* f* \ V measure -> A
+  1.25e f*                       \ correction factor
 ;
 
 : Vrail. ( -- )
@@ -97,7 +97,7 @@ CR .( ppp.fs loading ... )
   
   \ 0123456789
   \ < 100 %  > 
-  direction @ if 
+  reverse @ if 
     ." < " %pwm . ." %    "
   else 
     ."   " %pwm . ." %  > " 
@@ -168,16 +168,7 @@ CR .( ppp.fs loading ... )
   begin
     10 osdelay drop
     speed@
-    direction @ if
-      \ forward
-      brake @ if
-        1000            0 pwmpin!
-        1000 swap -     1 pwmpin!
-      else
-        0               1 pwmpin!
-                        0 pwmpin!
-      then
-    else
+    reverse @ if
       \ reverse
       brake @ if
         1000            1 pwmpin!
@@ -185,6 +176,15 @@ CR .( ppp.fs loading ... )
       else
         0               0 pwmpin!
                         1 pwmpin!
+      then
+    else
+      \ forward
+      brake @ if
+        1000            0 pwmpin!
+        1000 swap -     1 pwmpin!
+      else
+        0               1 pwmpin!
+                        0 pwmpin!
       then
     then
   again
@@ -243,9 +243,9 @@ CR .( ppp.fs loading ... )
   begin
     display-off @ 0= if ppp-display then
     button case
-      [char] a of 1 direction ! endof      \ reverse
+      [char] a of 1 reverse ! endof      \ reverse
       [char] b of menu @ 1+ dup maxmenu > if drop 0 then menu ! endof \ menu
-      [char] c of 0 direction ! endof      \ forward
+      [char] c of 0 reverse ! endof      \ forward
       menu-button
     endcase
   again
