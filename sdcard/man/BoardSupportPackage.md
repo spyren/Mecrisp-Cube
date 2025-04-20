@@ -611,6 +611,8 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 
 # Pocket Power Pack
 
+![](img/ppp.jpg) 
+
 ## Schematic 
 [kicad schematic](kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
 ![](img/pocket_power_pack.svg) 
