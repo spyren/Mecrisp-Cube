@@ -611,11 +611,14 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
 
 # Pocket Power Pack
 
+Model railroading on the go. A battery operated power pack give you the opportunity to take your model railroad with you. 
+No mess with outlets and cables. The pocket power pack, some sectional track, one locomotive and a few cars and you are in business.
+
 ![](img/ppp.jpg) 
 
 ## DC-Mode
- - Max. current 0.5 A (limted by the DCDC-converter )
- - Short ciruit proof
+ - Max. current 0.5 A (limited by the DCDC-converter )
+ - Short circuit proof
  - Adjustable rail voltage between 4 V and 20 V
  - Display shows
    - PWM duty cycle 0 .. 100 %
@@ -623,17 +626,19 @@ Very similar to the Teensy 3.0 [pinout](https://www.pjrc.com/teensy/pinout.html)
    - Rail voltage
    - Current
    - Menu
- - PWM frequencies: 250 Hz, 500 Hz. 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
- - Brake mode (slow/fast [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
- - With 1000 mA LiPo battery, operating time:
+ - PWM frequencies: 250 Hz, 500 Hz, 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
+ - Brake mode (fast/slow [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
+ - Operating time with 1000 mA LiPo battery
    - Small HOe or N-scale locomotive 50 mA: 5 h 
    - Small HO locomotive 100 mA: 2.5 h
    - Medium HO locomotive 250 mA: 1 h
- - Charging time about 2 h (with micro USB charge, 500 mA)
+ - Charging time about 2 h (micro USB charger, 500 mA)
 
 ## DCC-Mode
 Not implemented yet.
  - 4 locomotive addresses
+ - Whistle, bell, light
+ - Mute, off
 
 ## Schematic 
 [kicad schematic](kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
