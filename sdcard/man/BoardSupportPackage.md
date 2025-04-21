@@ -619,7 +619,7 @@ No mess with outlets and cables. Build your pocket power pack, get some sectiona
 ## DC-Mode
  - Max. current 0.5 A (limited by the DCDC-converter Purecrea MT3608)
  - Short circuit proof
- - Adjustable rail voltage between 4 V and 20 V
+ - Adjustable rail voltage between 5 V and 20 V
  - Display shows
    - PWM duty cycle 0 .. 100 %
    - Battery voltage
@@ -628,11 +628,12 @@ No mess with outlets and cables. Build your pocket power pack, get some sectiona
    - Menu
  - PWM frequencies: 250 Hz, 500 Hz, 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
  - Brake mode (fast/slow [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
- - Operating time with 1000 mA LiPo battery
-   - Small HOe or N-scale locomotive 50 mA: 5 h 
-   - Small HO locomotive 100 mA: 2.5 h
-   - Medium HO locomotive 250 mA: 1 h
- - Charging time about 2 h (micro USB charger, 500 mA)
+ - With 1000 mA LiPo battery
+   - Operating time with 1000 mA LiPo battery
+     - Small HOe or N-scale locomotive 50 mA: 5 h 
+     - Small HO locomotive 100 mA: 2.5 h
+     - Medium HO locomotive 250 mA: 1 h
+   - Charging time about 2 h (micro USB charger, 500 mA)
 
 ## DCC-Mode
 Not implemented yet.
