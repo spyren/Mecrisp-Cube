@@ -7,7 +7,7 @@ No mess with outlets and cables. Build your pocket power pack, get some sectiona
 
 Also featured in HACKADAY [4TH Calculator](https://hackaday.io/project/196655-4th-calculator).
 
-![](img/ppp.jpg) 
+![](sdcard/man/img/ppp.jpg) 
 
 ## Features
 
