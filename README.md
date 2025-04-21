@@ -129,11 +129,15 @@ May the Forth Be With You!
 
 ## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
 
+The pinout is very similar to Arduino UNO but with the size of an Arduino Nano (or a Teensy). 
+The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
+
+Firefly BLE STM32WB55 Development Board on 
+[tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/)
+
+![](/sdcard/man/img/firefly-feather.jpg)
 
 The same MCU is used in the Flipper Zero.
-
-![](/sdcard/man/img/stm32wb-nucleo.jpg)
-
 
 ## Getting Started
 
@@ -143,14 +147,18 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 
 ### Prerequisites
  
-  * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
-  * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
+  * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/)
+  * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 3" x 2", $3
   * OLED display 0.91" 128x64 pixels, $5
   * 7 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
   * LiPo battery e.g. 1000 mAh
+  * USB Charger
+  * DCDC Converter
+  * Current Sensor
+  * Motor Driver
   * Terminal emulator application for PC, e.g.:
     * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
@@ -181,10 +189,19 @@ Wire the buttons.
 #### Mount the Firefly SBC
 Solder the Firefly to the perfboard bottom layer. 
 
-#### Mount USB Breakout
-Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer.
+#### Mount USB Charger
+Solder the Adafruit Micro-Lipo Charger to the perfboard.
+If the battery has a molex connector, no wiring/solderin is required.
 
-#### Wire the buttons to the dongle
+#### Mount the DCDC Converter
+
+#### Mount the Current Sensor
+Remove the screw terminal.
+
+#### Mount the Motor Driver
+Remove the screw terminals. Capacitor
+
+#### Wire the buttons to the SBC
 Wire the button rows and columns to the dongle.
 
 |*Description*|*Dongle*|*Function* | *Calculator* |
@@ -227,8 +244,6 @@ Glue the OLED Display to the underside .
 | PB8         | CN2.1  | D15 SCL   | SCL          |
 | PB9         | CN2.2  | D14 SDA   | SDA          |
 
-#### Wire the Battery 
-If the battery has a molex connector, no wiring/solderin is required.
 
 #### Overlay
 
