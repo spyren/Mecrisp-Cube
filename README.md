@@ -74,13 +74,6 @@ Not implemented yet.
   * [Assertion and Logging](/sdcard/man/assert.md)
 
 
-## Schematic 
-[kicad schematic](sdcard/man/kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
-![](sdcard/man/img/pocket_power_pack.svg) 
-
-## PCB
-Perfboard square grid of 0.1 inches, 3" x 2" (30 x 20 1/10"), 76.5 x 51.5 mm, cut out corners (3 x 3 1/10"),
-![](sdcard/man/img/ppp-pcb.jpg) 
 
 ## Parts
 [Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
@@ -152,17 +145,12 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
  
   * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) part of P-NUCLEO-WB55, DigiKey 497-18384-ND
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 2" x 3.5", $3
-  * OLED display 0.91" 128x32 pixels, $5
-  * 35 pcs push buttons, fit in 0.4" grid
+  * OLED display 0.91" 128x64 pixels, $5
+  * 7 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
-  * USB Connector e.g.
-    * Adafruit USB Micro-B Breakout Board, DigiKey 1528-1383-ND, from $1 up
-    * With Micro-Lipo Charger
-      * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/MicroUSB Jack, $7
-      * Adafruit Micro-Lipo Charger for LiPo/LiIon Batt w/USB Type C Jack, $7
-  * LiPo battery (optional) e.g. Renata ICP422339PR
+  * LiPo battery e.g. 1000 mAh
   * Terminal emulator application for PC, e.g.:
     * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
@@ -177,24 +165,21 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
 
 ### Build the Hardware
 
-![schematic](/sdcard/man/img/schematic.png)
-e1a316ffa296724c536faab225dee86d3163f080
-#### Cut the perfboard
-Cut the perfboard to 2" x 3.5" (50 x 89 mm) dimension or 20 x 35 pads.
+#### Schematic 
+[kicad schematic](sdcard/man/kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
+![](sdcard/man/img/pocket_power_pack.svg) 
 
-#### Solder push buttons
+#### Cut the perfboard for the Base Board
+Cut the perfboard to 3" x 2" (76.5 x 51.5 mm) dimension or 30 x 20 pads. Cut out corners (3 x 3 1/10"),
+![](sdcard/man/img/ppp-pcb.jpg) 
+
+#### Solder and wire push buttons
 <img src="/sdcard/man/img/buttons.jpg" width="200">
-Solder the 35 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
+Solder the 7 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
+Wire the buttons.
 
-#### Wire the buttons 
-<img src="/sdcard/man/img/button-row-column.jpg" width="200">
-Wire the buttons to columns and rows on the perfboard bottom layer. 
-Build a [keyboard matrix](https://en.wikipedia.org/wiki/Keyboard_matrix_circuit) without diodes. Pullups are integrated in the MCU.
-
-#### Mount the dongle
-Remove the USB connector from the dongle. 
-Glue (hot glue, mounting tape) the dongle to the perfboard bottom layer, upper left corner. 
-If you do not want to use the BLE, cut off the BLE antenna.
+#### Mount the Firefly SBC
+Solder the Firefly to the perfboard bottom layer. 
 
 #### Mount USB Breakout
 Glue (hot glue, mounting tape) the USB Breakout or the Adafruit Micro-Lipo Charger to the perfboard bottom layer.
@@ -229,14 +214,10 @@ Only needed if you want to debug the board.
 | 3V3         | CN1.6  | 3V3       |  1           |
 
 
-#### Place the Diodes (optional)
-<img src="/sdcard/man/img/diode-bat54c.jpg" width="500">
-
-I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
-You can also use two 1N4148 diodes.
+#### Place the Resistors
 
 #### Mount the OLED Display
-Solder or glue the OLED Display to the perfboard top layer.
+Glue the OLED Display to the underside .
 
 #### Wire the OLED
 |*Description*|*Dongle*|*Function* | *OLED*       |
@@ -245,9 +226,6 @@ Solder or glue the OLED Display to the perfboard top layer.
 | 3V3         | CN1.6  | 3V3       | VCC          |
 | PB8         | CN2.1  | D15 SCL   | SCL          |
 | PB9         | CN2.2  | D14 SDA   | SDA          |
-
-#### Mount the Battery 
-Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
 
 #### Wire the Battery 
 If the battery has a molex connector, no wiring/solderin is required.
