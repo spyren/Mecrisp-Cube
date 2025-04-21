@@ -629,7 +629,7 @@ No mess with outlets and cables. Build your pocket power pack, get some sectiona
  - PWM frequencies: 250 Hz, 500 Hz, 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
  - Brake mode (fast/slow [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
  - With 1000 mA LiPo battery
-   - Operating time with 1000 mA LiPo battery
+   - Operating time
      - Small HOe or N-scale locomotive 50 mA: 5 h 
      - Small HO locomotive 100 mA: 2.5 h
      - Medium HO locomotive 250 mA: 1 h
