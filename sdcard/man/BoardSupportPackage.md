@@ -617,7 +617,7 @@ No mess with outlets and cables. Build your pocket power pack, get some sectiona
 ![](img/ppp.jpg) 
 
 ## DC-Mode
- - Max. current 0.5 A (limited by the DCDC-converter )
+ - Max. current 0.5 A (limited by the DCDC-converter Purecrea MT3608)
  - Short circuit proof
  - Adjustable rail voltage between 4 V and 20 V
  - Display shows
