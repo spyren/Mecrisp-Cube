@@ -1,50 +1,41 @@
 ![calculator](/sdcard/man/img/calculator-header.jpg)
 
-# 4TH Calculator (Mecrisp-Cube calc branch)
-I am using HP calculators for more than 45 years and wrote my very first program on a HP-41. 
-There are many excellent HP calculator emulators for PCs and smart phones and HP still sells pocket 
-[calculators]([https://www.hp.com/us-en/calculators.html](https://hpofficesupply.com/product-category/calculators/)).
-Why should I build one by myself? The HP-15 Collector’s Edition could be the right one and it even can emulate the HP-16, 
-but it is landscape and not cheap. 
+# Pocket Power Pack (Mecrisp-Cube ppp branch)
 
-A small pocket calculator for programmers and engineers, a mix between HP-42 and HP-16 would be nice to have.
-This projetc fill the bill, at least for me.
-
-I had all the parts in my drawer, leftovers from other projects. But other parts can easily be used.
-The display is a bit small for my eyes, I will build another calculator with a bigger display and a 128x64 resolution, 
-but this calculator will exceed the business card dimension.
-
-It is a good opportunity to show how good Forth works on modern hardware.
+Model railroading on the go. A battery operated power pack give you the opportunity to take your model railroad with you. 
+No mess with outlets and cables. Build your pocket power pack, get some sectional track, one locomotive and a few cars and you are in business.
 
 Also featured in HACKADAY [4TH Calculator](https://hackaday.io/project/196655-4th-calculator).
 
+![](img/ppp.jpg) 
+
 ## Features
 
-### Calculator
-  * RPN
-  * Keyboard layout similar to HP 42
-  * Stack 64 elements
-  * 10 registers
-  * 3 top elements (x, y, and z) are displayed
-  * Floating-point
-    * Single precision floating-point IEEE.754
-    * Elementary arithmetic
-    * trigometric and exponential functions
-    * Display modes: fixed, scientific, engineering (metric unit prefix)
-  * Integer
-    * Hex, decimal, octal, and binary number base
-    * Signed (2's complement) and unsigned numbers
-    * Elementary arithmetic
-    * logical and shift operations
-  * Forth programmable
+### DC-Mode
+ - Max. current 0.5 A (limited by the DCDC-converter Purecrea MT3608)
+ - Short circuit proof
+ - Adjustable rail voltage between 5 V and 20 V
+ - Display shows
+   - PWM duty cycle 0 .. 100 %
+   - Direction
+   - Current consumption
+   - Rail voltage
+   - Battery voltage
+   - Menu
+ - PWM frequencies: 250 Hz, 500 Hz, 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
+ - Brake mode (fast/slow [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
+ - With 1000 mA LiPo battery
+   - Operating time
+     - Small HOe or N-scale locomotive (50 mA): 5 h 
+     - Small HO locomotive (100 mA): 2.5 h
+     - Medium HO locomotive (250 mA): 1 h
+   - Charging time about 2 h (micro USB charger, 500 mA)
 
-<table>
-  <tr>
-    <td><img src="/sdcard/man/img/calculator-top.jpg" width="500">
- </td>
-    <td><img src="/sdcard/man/img/calculator-bottom.jpg" width="450"></td>
-  </tr>
-</table> 
+### DCC-Mode
+Not implemented yet.
+ - 4 locomotive addresses
+ - Whistle, bell, light
+ - Mute, off
 
 ### Standard Mecrisp-Cube Forth Features
   * 63 KiB RAM dictionary 
@@ -83,35 +74,27 @@ Also featured in HACKADAY [4TH Calculator](https://hackaday.io/project/196655-4t
   * [Assertion and Logging](/sdcard/man/assert.md)
 
 
-## How to Use the Calculator
+## Schematic 
+[kicad schematic](kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
+![](img/pocket_power_pack.svg) 
 
-If the MECRISP CUBE4TH logo is shown, start the calculator with <kbd>**CALC**</kbd>.
+## PCB
+Perfboard square grid of 0.1 inches, 3" x 2" (30 x 20 1/10"), 76.5 x 51.5 mm, cut out corners (3 x 3 1/10"),
+![](img/ppp-pcb.jpg) 
 
-There are a few differences in operation compared to HP calculators. 
-This applies in particular to entering numbers.
-Floating-point numbers must have an exponent e.g. `100e`, `3.14e`, `2.72e0`, `-10e-12`, 
-or end in a metric unit prefix like `10k`, `270n`, `3.3u`. 
+## Parts
+[Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
+![](img/ppp-parts.jpg) 
 
-<kbd>**ENTER**</kbd> reads the number and push it onto the stack. An <kbd>**ENTER**</kbd> without a number do not
-duplicate the x register (top of stack). If you want to duplicate, you have to use <kbd>**DUP**</kbd>.
-A stack element is always 32 bit, the content can be float or integer. 
-You have to convert
-float to integer <kbd>**F&#8594;S**</kbd> if you want to use a float number in the integer mode 
-or vice versa <kbd>**S&#8594;F**</kbd>. <kbd>**ENTER**</kbd> works in the same way as on the HP-48.
+![](img/ppp-in-case.jpg) 
 
-> [!WARNING]
-> If you enter a number with a <kbd>**.**</kbd> but without an exponent e.g. `12.34` Forth interprets 
-> this as a double cell integer and put `0` to the x register and `1234` to the y register.
+### Knob Potentiometer
+https://www.vishay.com/docs/51036/p16pa16.pdf
 
-<kbd>**R&#8595;**</kbd> is actually the Forth word `rot`, z&#8594;y,  y&#8594;x, x&#8594;z.
 
-<kbd>**STO**</kbd> and <kbd>**RCL**</kbd> takes x as register index 0..9 (postfix notation). 
 
-> [!CAUTION]
-> If there is an error, the entire stack will be erased. No error message is showed on display,
-> but you can see the error message in the terminal.
 
-[RPN crash course](https://www.hpmuseum.org/rpn.htm#learn).
+## How to Use the Pocket Power Pack
 
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
@@ -153,21 +136,6 @@ May the Forth Be With You!
 
 ## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
 
-For this project you only need the dongle.
-
-If you buy a [P-NUCLEO-WB55](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html) pack
-you get a Nucleo68 Board and a USB Dongle. Both are supported by Mecrisp-Cube.
-
-The Nucleo board has a ST-LINK on board. There are also an Arduino UNO R3 pin header 
-and LEDs and switches (buttons).
-
-STM32WB Series has two CPUs. An ARM Cortex M4 for the application (CPU1) and a 
-Cortex M0+ (CPU2) for the BLE protocol stack. This Forth system runs on the CPU1. 
-Developed with the same technology as the ultra-low power STM32L4 microcontrollers, 
-the STM32WB MCU series provides the same digital and analog peripherals suitable 
-for applications requiring an extended battery life and complex functionalities. 
-If you do not need wireless connectivity, thanks to CubeMX you can easily adapt 
-Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
 
 The same MCU is used in the Flipper Zero.
 
@@ -267,32 +235,6 @@ Only needed if you want to debug the board.
 I use a BAT54C double schottky diode in SOT23 package. Solder the diode to the perfboard bottom layer. 
 You can also use two 1N4148 diodes.
 
-#### Wire the USB connector
-<img src="/sdcard/man/img/calculator-bottom-cut.jpg" width="500">
-
-USB breakout without charger:
-
-|*Description*|*Dongle*|*Function* | *USB Breakout* |
-|-------------|--------|-----------|----------------|
-| GND         | GND    | GND       | GND            |
-| 5 V         | 5 V    | 5 V       | 5 V            |
-| D+          | D+     |           | D+             |
-| D-          | D-     |           | D-             |
-
-or with charger
-
-|*Description*|*Dongle*|*Function* | *USB Charger* |
-|-------------|--------|-----------|---------------|
-| GND         | GND    | GND       | GND           |
-| 5 V         | 5 V    | 5 V       | Diode Cathode |
-| D+          | D+     |           | D+            |
-| D-          | D-     |           | D-            |
-
-|*Description*|*USB Charger*|*Function* | *Diode* |
-|-------------|-------------|-----------|---------|
-| 5 V         | 5 V         |           | Anode 1 |
-| BAT         | BAT         |           | Anode 2 |
-
 #### Mount the OLED Display
 Solder or glue the OLED Display to the perfboard top layer.
 
@@ -304,13 +246,13 @@ Solder or glue the OLED Display to the perfboard top layer.
 | PB8         | CN2.1  | D15 SCL   | SCL          |
 | PB9         | CN2.2  | D14 SDA   | SDA          |
 
-#### Mount the Battery (optional)
+#### Mount the Battery 
 Glue (hot glue, mounting tape) the LiPo battery to the perfboard bottom layer. 
 
-#### Wire the Battery (optional)
+#### Wire the Battery 
 If the battery has a molex connector, no wiring/solderin is required.
 
-#### Keyboard Overlay
+#### Overlay
 
 <table>
   <tr>
@@ -327,7 +269,7 @@ If the battery has a molex connector, no wiring/solderin is required.
 5. Cut holes for the push buttons, I use a leather puncher (4 mm holes)
 
 
-#### Flash the 4TH Calculator Firmware
+#### Flash the PPP Firmware
 
 Flash the 4TH Calculator [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCubeCalcFS.bin` to the WB55 Nucleo dongle. Using the built-in USB DFU bootloader.
 
