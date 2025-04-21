@@ -113,37 +113,39 @@
         )
       )
     )
-    (symbol "Connector:TestPoint" (pin_numbers hide) (pin_names (offset 0.762) hide) (in_bom yes) (on_board yes)
-      (property "Reference" "TP" (at 0 6.858 0)
+    (symbol "Connector_Generic:Conn_01x01" (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
+      (property "Reference" "J" (at 0 2.54 0)
         (effects (font (size 1.27 1.27)))
       )
-      (property "Value" "TestPoint" (at 0 5.08 0)
+      (property "Value" "Conn_01x01" (at 0 -2.54 0)
         (effects (font (size 1.27 1.27)))
       )
-      (property "Footprint" "" (at 5.08 0 0)
+      (property "Footprint" "" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "Datasheet" "~" (at 5.08 0 0)
+      (property "Datasheet" "~" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_keywords" "test point tp" (at 0 0 0)
+      (property "ki_keywords" "connector" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_description" "test point" (at 0 0 0)
+      (property "ki_description" "Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_fp_filters" "Pin* Test*" (at 0 0 0)
+      (property "ki_fp_filters" "Connector*:*_1x??_*" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (symbol "TestPoint_0_1"
-        (circle (center 0 3.302) (radius 0.762)
-          (stroke (width 0) (type default))
+      (symbol "Conn_01x01_1_1"
+        (rectangle (start -1.27 0.127) (end 0 -0.127)
+          (stroke (width 0.1524) (type default))
           (fill (type none))
         )
-      )
-      (symbol "TestPoint_1_1"
-        (pin passive line (at 0 0 90) (length 2.54)
-          (name "1" (effects (font (size 1.27 1.27))))
+        (rectangle (start -1.27 1.27) (end 1.27 -1.27)
+          (stroke (width 0.254) (type default))
+          (fill (type background))
+        )
+        (pin passive line (at -5.08 0 0) (length 3.81)
+          (name "Pin_1" (effects (font (size 1.27 1.27))))
           (number "1" (effects (font (size 1.27 1.27))))
         )
       )
@@ -755,6 +757,10 @@
     (stroke (width 0) (type default))
     (uuid 3e6ed460-eeb0-4a90-a045-e7c49f7e9a65)
   )
+  (wire (pts (xy 48.26 147.32) (xy 48.26 148.59))
+    (stroke (width 0) (type default))
+    (uuid 400c52b4-dbe0-418c-86f1-96df73659727)
+  )
   (wire (pts (xy 199.39 151.13) (xy 214.63 151.13))
     (stroke (width 0) (type default))
     (uuid 42ca4579-a61a-4283-8bf5-c799129a70df)
@@ -931,7 +937,7 @@
     (stroke (width 0) (type default))
     (uuid af23f280-ec7a-4aaa-acfb-2852d362d087)
   )
-  (wire (pts (xy 247.65 132.08) (xy 270.51 132.08))
+  (wire (pts (xy 247.65 132.08) (xy 264.16 132.08))
     (stroke (width 0) (type default))
     (uuid b1a669e3-3093-48ef-9005-1754d23b449c)
   )
@@ -1059,7 +1065,7 @@
     (stroke (width 0) (type default))
     (uuid f4039b27-8559-4285-b330-c05ce7cb0445)
   )
-  (wire (pts (xy 247.65 138.43) (xy 270.51 138.43))
+  (wire (pts (xy 247.65 138.43) (xy 264.16 138.43))
     (stroke (width 0) (type default))
     (uuid f5e1a4fd-e80b-4869-a350-3fb9a539d3ad)
   )
@@ -1078,6 +1084,10 @@
   (wire (pts (xy 168.91 111.76) (xy 176.53 111.76))
     (stroke (width 0) (type default))
     (uuid fd3d0232-2271-47e4-8ae7-33ad4d4c8994)
+  )
+  (wire (pts (xy 36.83 148.59) (xy 48.26 148.59))
+    (stroke (width 0) (type default))
+    (uuid fdb00739-16f3-470b-8bc4-cebd5fc2c7f9)
   )
   (wire (pts (xy 187.96 82.55) (xy 187.96 87.63))
     (stroke (width 0) (type default))
@@ -49161,7 +49171,7 @@
     )
     (pin "1" (uuid 5bcb1965-a564-4900-ba5e-e4aa68b181b6))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR06") (unit 1)
         )
@@ -49186,7 +49196,7 @@
     )
     (pin "1" (uuid 7af6ccf1-4e09-4e44-abac-aa725401f12c))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR017") (unit 1)
         )
@@ -49211,7 +49221,7 @@
     )
     (pin "1" (uuid f8396738-ae4f-498f-9ba8-cbc18b8ca63e))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR03") (unit 1)
         )
@@ -49236,7 +49246,7 @@
     )
     (pin "1" (uuid 6294c072-a6fd-4906-8314-f17337076ab0))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR015") (unit 1)
         )
@@ -49250,7 +49260,7 @@
     (property "Reference" "R2" (at 171.45 115.57 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "100k" (at 171.45 118.11 0)
+    (property "Value" "22k" (at 171.45 118.11 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 167.132 116.84 90)
@@ -49262,7 +49272,7 @@
     (pin "2" (uuid 82b8a4f1-db31-4315-8495-bc727f4e52c9))
     (pin "1" (uuid 3dcc4ad5-ae90-466f-8c23-a761989d2b76))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "R2") (unit 1)
         )
@@ -49287,7 +49297,7 @@
     )
     (pin "1" (uuid 82a0d30b-1ed7-4365-bcfb-2d87d041f7ef))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -49312,7 +49322,7 @@
     )
     (pin "1" (uuid cbfdcd23-eb2d-4c51-ba7e-6a785c7b536d))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -49346,7 +49356,7 @@
     (pin "7" (uuid 8ac15f4a-35bd-418a-b0d7-bc66e3deeb14))
     (pin "1" (uuid 619a1f84-518a-48cb-bcca-1ba5c3c02337))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "J1") (unit 1)
         )
@@ -49360,7 +49370,7 @@
     (property "Reference" "SW5" (at 144.78 166.37 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "F2" (at 144.78 168.91 90)
+    (property "Value" "C" (at 144.78 168.91 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 146.05 167.64 0)
@@ -49372,7 +49382,7 @@
     (pin "1" (uuid 3640dd18-c0e4-434d-afc4-187135a0da06))
     (pin "2" (uuid 358666ac-523d-4bf5-a0ad-1315ad8b3ae0))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW5") (unit 1)
         )
@@ -49386,7 +49396,7 @@
     (property "Reference" "SW4" (at 130.81 166.37 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "F1" (at 130.81 168.91 90)
+    (property "Value" "B" (at 130.81 168.91 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 132.08 167.64 0)
@@ -49398,7 +49408,7 @@
     (pin "1" (uuid 83fa58f7-e3e5-42be-b1c0-928e8ff63cbd))
     (pin "2" (uuid e69c23da-1eb7-476f-b219-ffe404b79473))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW4") (unit 1)
         )
@@ -49412,7 +49422,7 @@
     (property "Reference" "SW1" (at 137.16 140.97 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "BRAKE" (at 137.16 143.51 90)
+    (property "Value" "MODE" (at 137.16 143.51 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 138.43 142.24 0)
@@ -49424,7 +49434,7 @@
     (pin "1" (uuid 28958dbb-c4a9-41b1-ae64-59042930ce62))
     (pin "2" (uuid 1169de1c-4328-491c-a64e-9daa7c3f5d06))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW1") (unit 1)
         )
@@ -49449,7 +49459,7 @@
     )
     (pin "1" (uuid e7b6991c-1a32-4384-981e-f50a3d9546d2))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -49474,7 +49484,7 @@
     )
     (pin "1" (uuid d59c337c-ab54-4266-b1ba-7ef9595eb412))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR014") (unit 1)
         )
@@ -49499,7 +49509,7 @@
     )
     (pin "1" (uuid c750ab29-7112-4343-bdb3-77189f1a313f))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR07") (unit 1)
         )
@@ -49513,7 +49523,7 @@
     (property "Reference" "SW3" (at 116.84 166.37 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "MODE" (at 116.84 168.91 90)
+    (property "Value" "A" (at 116.84 168.91 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 118.11 167.64 0)
@@ -49525,7 +49535,7 @@
     (pin "1" (uuid 50600030-6e41-4e3c-bdba-5ca0dc4e0e71))
     (pin "2" (uuid 1b4d2074-98b9-41c5-b35a-e83d676e382a))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW3") (unit 1)
         )
@@ -49539,7 +49549,7 @@
     (property "Reference" "SW6" (at 158.75 166.37 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "F3" (at 158.75 168.91 90)
+    (property "Value" "D" (at 158.75 168.91 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 160.02 167.64 0)
@@ -49551,7 +49561,7 @@
     (pin "1" (uuid 1f0524d4-e9a6-40e0-a880-5c83aa2180af))
     (pin "2" (uuid 2530e099-3be7-486e-94c4-ed67e9ea2882))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW6") (unit 1)
         )
@@ -49576,7 +49586,7 @@
     )
     (pin "1" (uuid 3f10b023-ce94-46c2-b7ba-edae80e6a395))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR02") (unit 1)
         )
@@ -49590,7 +49600,7 @@
     (property "Reference" "R1" (at 171.45 105.41 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "100k" (at 171.45 107.95 0)
+    (property "Value" "22k" (at 171.45 107.95 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 167.132 106.68 90)
@@ -49602,7 +49612,7 @@
     (pin "2" (uuid 0cd834da-24a6-4588-a491-b6ccc24451f6))
     (pin "1" (uuid c7bb3d06-afed-4b48-9026-e7796d41ffaf))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "R1") (unit 1)
         )
@@ -49629,7 +49639,7 @@
     (pin "2" (uuid 0a1816fd-1319-4afd-b1c5-d57c4f267150))
     (pin "3" (uuid f2f30e97-481b-4209-9c14-8cdba394c1eb))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "RV1") (unit 1)
         )
@@ -49655,7 +49665,7 @@
     (pin "1" (uuid 2891c9e9-1b04-440c-a724-99fcb8e8900e))
     (pin "2" (uuid 0e33579d-0a4d-404a-a517-80ae10729832))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW2") (unit 1)
         )
@@ -49680,7 +49690,7 @@
     )
     (pin "1" (uuid 9c90513d-177c-4d95-b299-d08c6d057650))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR05") (unit 1)
         )
@@ -49706,7 +49716,7 @@
     (pin "1" (uuid b5f5e9d6-87d4-4ba2-a262-6e68acf7dc39))
     (pin "2" (uuid 46d88b36-c061-4bd0-9957-f9b996d2b3f8))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW0") (unit 1)
         )
@@ -49731,7 +49741,7 @@
     )
     (pin "1" (uuid 1405ed0b-4d1a-4949-b504-ceae7173ff83))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -49756,7 +49766,7 @@
     )
     (pin "1" (uuid aadd99b2-aff9-48a2-a245-e58a5dbdfbac))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR08") (unit 1)
         )
@@ -49781,7 +49791,7 @@
     )
     (pin "1" (uuid 306737d7-8d4e-4cea-bba9-32cd5ff5445a))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR013") (unit 1)
         )
@@ -49806,7 +49816,7 @@
     )
     (pin "1" (uuid 771aa244-9c70-4e2d-9f69-81b6638bca99))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR012") (unit 1)
         )
@@ -49832,7 +49842,7 @@
     (pin "2" (uuid 6fb4106d-31ed-4b1a-b10d-4676939854d6))
     (pin "1" (uuid 85da5146-ead5-4325-b775-3cf1dd3e2f6a))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "R4") (unit 1)
         )
@@ -49840,26 +49850,26 @@
     )
   )
 
-  (symbol (lib_id "Connector:TestPoint") (at 270.51 138.43 270) (unit 1)
+  (symbol (lib_id "power:+BATT") (at 36.83 148.59 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid a1b6dd79-0b6c-4cbc-96a6-2f8d98ef24a2)
-    (property "Reference" "RAIL2" (at 275.59 137.16 90)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "TestPoint" (at 275.59 139.7 90)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "" (at 270.51 143.51 0)
+    (uuid a72fa627-507c-4c20-8e54-2656da1f1f22)
+    (property "Reference" "#PWR018" (at 40.64 148.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Datasheet" "~" (at 270.51 143.51 0)
+    (property "Value" "+BATT" (at 33.02 148.59 90)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "" (at 36.83 148.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 64b4eb8f-43e9-47d8-adad-882bbdbf0303))
+    (property "Datasheet" "" (at 36.83 148.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 686ee6b3-0eb8-4a54-8f24-a16eb1f12b6d))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
-          (reference "RAIL2") (unit 1)
+          (reference "#PWR018") (unit 1)
         )
       )
     )
@@ -49882,7 +49892,7 @@
     )
     (pin "1" (uuid 40143ed4-0150-4738-88db-79e593a0b246))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR04") (unit 1)
         )
@@ -49907,7 +49917,7 @@
     )
     (pin "1" (uuid d143b723-5a01-4033-855d-31829b4dfd9f))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -49935,7 +49945,7 @@
     (pin "4" (uuid 77672df1-4a01-4a29-a2c0-26d787ed0eeb))
     (pin "2" (uuid b260b7a5-80d2-4cb8-bdad-abe271f117e1))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "SW7") (unit 1)
         )
@@ -49960,7 +49970,7 @@
     )
     (pin "1" (uuid 94d9fedf-c964-4f85-a47f-5212b8d5d41c))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR011") (unit 1)
         )
@@ -49985,9 +49995,34 @@
     )
     (pin "1" (uuid 9c8b7784-2b46-4003-970a-6a122acad83a))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector_Generic:Conn_01x01") (at 269.24 138.43 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid cf5251d4-9eb7-4568-92a0-c51d1819abcd)
+    (property "Reference" "RAIL2" (at 271.78 137.16 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "2mm socket" (at 271.78 139.7 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "" (at 269.24 138.43 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 269.24 138.43 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 9e21d123-526c-4821-b72e-e810b14ea38e))
+    (instances
+      (project "pocket_power_pack"
+        (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
+          (reference "RAIL2") (unit 1)
         )
       )
     )
@@ -50010,7 +50045,7 @@
     )
     (pin "1" (uuid 0a8c01a2-ed73-4e94-8b28-5b85c5b34c72))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR01") (unit 1)
         )
@@ -50035,7 +50070,7 @@
     )
     (pin "1" (uuid e59f94f3-1549-4e7a-b8d3-77c7f7962b6e))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -50060,9 +50095,34 @@
     )
     (pin "1" (uuid 7d785ff2-39cf-4aca-890c-318e4f14d178))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR010") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Connector_Generic:Conn_01x01") (at 269.24 132.08 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (uuid e28e98a7-84a9-457e-8b62-9dc5525451a7)
+    (property "Reference" "RAIL1" (at 271.78 130.81 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "2mm socket" (at 271.78 133.35 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "" (at 269.24 132.08 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 269.24 132.08 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid 7358d0d3-b3de-40d8-8458-234b138744cb))
+    (instances
+      (project "pocket_power_pack"
+        (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
+          (reference "RAIL1") (unit 1)
         )
       )
     )
@@ -50086,7 +50146,7 @@
     (pin "1" (uuid fe0dca22-7022-41b7-b5a3-5f426a364614))
     (pin "2" (uuid 670b49fa-ebba-4ed7-8a4c-59ead71ed5af))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "BT1") (unit 1)
         )
@@ -50111,7 +50171,7 @@
     )
     (pin "1" (uuid 6ea3215a-3caf-4fab-b2a7-138a1935333f))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR016") (unit 1)
         )
@@ -50137,34 +50197,9 @@
     (pin "2" (uuid b5be2263-c46a-42e0-b99b-5ad72ba825a2))
     (pin "1" (uuid 28821949-845d-4156-a750-3ae5faec8e02))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "R3") (unit 1)
-        )
-      )
-    )
-  )
-
-  (symbol (lib_id "Connector:TestPoint") (at 270.51 132.08 270) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
-    (uuid f90f5431-2892-43ad-b9d2-0ed35af418c6)
-    (property "Reference" "RAIL1" (at 275.59 130.81 90)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Value" "TestPoint" (at 275.59 133.35 90)
-      (effects (font (size 1.27 1.27)) (justify left))
-    )
-    (property "Footprint" "" (at 270.51 137.16 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "~" (at 270.51 137.16 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid c5be4138-8b65-4a13-b135-95d0708b6df5))
-    (instances
-      (project "4TH_calculator"
-        (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
-          (reference "RAIL1") (unit 1)
         )
       )
     )
@@ -50187,7 +50222,7 @@
     )
     (pin "1" (uuid efab5dd0-bd01-4fa3-9565-870877cfb706))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR?") (unit 1)
         )
@@ -50212,7 +50247,7 @@
     )
     (pin "1" (uuid 643c7f39-7457-47c3-a316-190cda6e5d0d))
     (instances
-      (project "4TH_calculator"
+      (project "pocket_power_pack"
         (path "/9538e4ed-27e6-4c37-b989-9859dc0d49e8"
           (reference "#PWR09") (unit 1)
         )
