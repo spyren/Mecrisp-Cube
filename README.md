@@ -33,9 +33,12 @@ Also featured in HACKADAY [4TH Calculator](https://hackaday.io/project/196655-4t
 
 ### DCC-Mode
 Not implemented yet.
- - 4 locomotive addresses
- - Whistle, bell, light
- - Mute, off
+ - 4 locomotive addresses (0 .. 9999)
+ - Speed 0 .. 127
+ - Direction
+ - Light (F0), bell (F1), airhorn (F2), mute (F8)
+ - 8 programmable functions (F0 .. F28)
+   
 
 ### Standard Mecrisp-Cube Forth Features
   * 63 KiB RAM dictionary 
