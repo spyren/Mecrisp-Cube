@@ -39,6 +39,45 @@ Not implemented yet.
  - Light (F0), bell (F1), airhorn (F2), mute (F8)
  - 8 programmable functions (F0 .. F28)
    
+### Bluetooth Remote Control
+
+## How to Use the Pocket Power Pack
+
+
+### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
+
+  * 7 push button
+  * 3 LEDs
+  * I2C
+    * OLED display 128x64 pixel 
+
+For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
+
+
+## About Forth
+Forth is an interactive and extensible language, with built-in lexical analysis 
+(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
+4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
+
+Forth is perfect for embedded systems where some sort of user interactivity 
+like CLI and extensibility (at runtime) are needed. 
+
+C & Forth in the 21st Century. C and Forth are both about 50 years old. 
+The combination of the strength of this two worlds results in a powerful 
+system that outperforms other much newer systems like Python. 
+Good design withstands the test of time.
+
+The goal of Mecrisp-Cube is to be a complete Forth programming environment 
+for STM32 MCUs. There are three flavors (branches) available:
+
+  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
+    [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
+    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
+    In work [Flipper Zero](../Flipper) (`Flipper`):
+  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
+  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
+
+May the Forth Be With You!
 
 ### Standard Mecrisp-Cube Forth Features
   * 63 KiB RAM dictionary 
@@ -75,59 +114,6 @@ Not implemented yet.
   * Real Time Clock [RTC](/sdcard/man/RealTimeClock.md)
   * [Watchdog](/sdcard/man/watchdog.md)
   * [Assertion and Logging](/sdcard/man/assert.md)
-
-
-
-## Parts
-[Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
-![](sdcard/man/img/ppp-parts.jpg) 
-
-![](sdcard/man/img/ppp-in-case.jpg) 
-
-### Knob Potentiometer
-https://www.vishay.com/docs/51036/p16pa16.pdf
-
-
-
-
-## How to Use the Pocket Power Pack
-
-
-### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
-
-  * 1 push button
-  * 3 LEDs
-  * Keyboard wth 35 buttons
-  * I2C
-    * OLED display 128x32 pixel 
-
-For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
-
-
-## About Forth
-Forth is an interactive and extensible language, with built-in lexical analysis 
-(tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
-4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
-
-Forth is perfect for embedded systems where some sort of user interactivity 
-like CLI and extensibility (at runtime) are needed. 
-
-C & Forth in the 21st Century. C and Forth are both about 50 years old. 
-The combination of the strength of this two worlds results in a powerful 
-system that outperforms other much newer systems like Python. 
-Good design withstands the test of time.
-
-The goal of Mecrisp-Cube is to be a complete Forth programming environment 
-for STM32 MCUs. There are three flavors (branches) available:
-
-  * [STM32WB55](../master) (`master` branch) for the _STM32WB55 Nucleo Board_ and _dongle_ and variants for the
-    [Firefly Dev Board](../firefly) (`firefly`), [Katydid Dev Board](../katydid) (`katydid`),
-    [WB5M Discovery](../WB5M) (`WB55M`) and the [STM32WB Feather](../WBfeather) (`WBfeather`).
-    In work [Flipper Zero](../Flipper) (`Flipper`):
-  * [STM32F405](../F405) (`F405`) for Adafruit's Feather STM32F405.
-  * [STM32H74x](../H743) (`H743`) for STM NUCLEO-H743ZI and Arduino Portenta H7 Development Board.
-
-May the Forth Be With You!
 
 
 ## Intro for the Nucleo STM32WB55 Nucleo Board and Dongle
@@ -172,6 +158,11 @@ machine (Calculator, WB55 Dongle) for development and testing purposes.
   * Hot glue or double sided mounting tape e.g. Tesa 55750
   * Laminating machine (optional) 
   * STM32CubeProgrammer
+  * [Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
+![](sdcard/man/img/ppp-parts.jpg) 
+  * Knob Potentiometer https://www.vishay.com/docs/51036/p16pa16.pdf
+
+![](sdcard/man/img/ppp-in-case.jpg) 
 
 
 ### Build the Hardware
