@@ -277,7 +277,7 @@ Glue the OLED Display to the underside .
 
 #### Flash the PPP Firmware
 
-Flash the 4TH Pocket Power Pack [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCubeCalcFS.bin` to the WB55 Nucleo dongle. Using the built-in USB DFU bootloader.
+Flash the Pocket Power Pack [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCubeCalcFS.bin` to the WB55 Nucleo dongle. Using the built-in USB DFU bootloader.
 
 The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in 
 boot-loader. This bootloader works via USB. As programming tool I use the 
@@ -528,13 +528,13 @@ and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
 
-*4TH Pocket Power Pack* is distributed in the hope that it will be useful,
+*Pocket Power Pack* is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along
-with *4TH Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
+with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
 
 
 ## Acknowledgments
