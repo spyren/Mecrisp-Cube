@@ -46,15 +46,6 @@ Not implemented yet.
 
 ## How to Use the Pocket Power Pack
 
-### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
-
-  * 7 push button
-  * 3 LEDs
-  * I2C
-    * OLED display 128x64 pixel 
-
-For more BSP details see [BoardSupportPackage](/sdcard/man/BoardSupportPackage.md).
-
 
 ## About Forth
 Forth is an interactive and extensible language, with built-in lexical analysis 
