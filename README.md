@@ -148,14 +148,14 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
 
 ### Prerequisites
  
-  * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/),  
+  * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/), $30
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 3" x 2", $3
-  * OLED display 128x64 pixels, $5
+  * OLED display 128x64 pixels, SSD1306, $5
   * 7 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
-  * LiPo battery e.g. 1000 mAh, [Lithium Ion Polymer Battery - 3.7v 1200mAh](https://www.adafruit.com/product/258), $10
+  * LiPo battery e.g. [Lithium Ion Polymer Battery - 3.7v 1200mAh](https://www.adafruit.com/product/258), $10
   * USB Charger, [Adafruit Micro Lipo - USB LiIon/LiPoly charger](https://www.adafruit.com/product/1304), $6
   * DCDC Converter, Purecrea MT3608, $5
   * Current Sensor, [INA169 Analog DC Current Sensor Breakout](https://www.adafruit.com/product/1164), $10
@@ -166,6 +166,7 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
   * Case e.g. [Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
 ![](sdcard/man/img/ppp-parts.jpg) 
   * Potentiometer e.g. [Knob Potentiometer](https://www.vishay.com/docs/51036/p16pa16.pdf)
+  * Micro switch
 
 For developers:
   * Terminal emulator application for PC, e.g.:
@@ -175,6 +176,9 @@ For developers:
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
     * for details see [Terminal-IO](/sdcard/man/TerminalIO.md)
+  * 10 pin JTAG/SDW cable
+  * STLINK-V3 compact in-circuit debugger and programmer for STM32
+  * Integrated Development Environment for STM32 [STM32CubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html)  
 
 ### Build the Hardware
 
