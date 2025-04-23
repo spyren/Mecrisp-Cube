@@ -45,9 +45,11 @@ Not implemented yet.
 
 
 ## How to Use the Pocket Power Pack
+It could not be simpler. Connect the power to the rails and turn the knob. 
+Change direction with the arrow buttons. 
+Choose the menu line with the M button, select the option with the button A, B, C, and D.
 
-
-## About Forth
+## About Forth (For Developers)
 Forth is an interactive and extensible language, with built-in lexical analysis 
 (tokenizer, parser) and interpreter/compiler, needs less than 20 KiB Flash and 
 4 KiB RAM, unbelievable for a self-contained (self-hosted) system. 
@@ -73,7 +75,7 @@ for STM32 MCUs. There are three flavors (branches) available:
 May the Forth Be With You!
 
 
-## Intro for the Firefly STM32WB55 Board
+## Intro for the Firefly STM32WB55 Board (For Developers)
 
 Unfortunately the STM32WB Feather Development Board is no longer available. 
 But there is a very good substitute the Firefly designed by Tlera Corp. The pinout is very 
