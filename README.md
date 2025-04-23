@@ -40,9 +40,11 @@ Not implemented yet.
  - 8 programmable functions (F0 .. F28)
    
 ### Bluetooth Remote Control
+  - DCC-EX commands over BLE
+  - DCC++Throttle
+
 
 ## How to Use the Pocket Power Pack
-
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
