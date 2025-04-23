@@ -3,7 +3,7 @@
 # Pocket Power Pack (Mecrisp-Cube ppp branch)
 
 Model railroading on the go. A battery operated power pack give you the opportunity to take your model railroad with you. 
-No mess with outlets and cables. Build your pocket power pack, get some sectional track, a locomotive (DCC or DC) and a few cars and you are in business.
+No mess with outlets and cables. Build your Pocket Power Pack, get some sectional track, a locomotive (DCC or DC) and a few cars and you are in business.
 
 Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655-4th-calculator).
 
