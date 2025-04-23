@@ -164,9 +164,10 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
   * Laminating machine (optional) 
   * [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
   * Case e.g. [Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
-![](sdcard/man/img/ppp-parts.jpg) 
   * Potentiometer e.g. [Knob Potentiometer](https://www.vishay.com/docs/51036/p16pa16.pdf)
   * Micro switch
+
+![](sdcard/man/img/ppp-parts.jpg) 
 
 For developers:
   * Terminal emulator application for PC, e.g.:
