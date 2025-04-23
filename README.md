@@ -3,7 +3,7 @@
 # Pocket Power Pack (Mecrisp-Cube ppp branch)
 
 Model railroading on the go. A battery operated power pack give you the opportunity to take your model railroad with you. 
-No mess with outlets and cables. Build your pocket power pack, get some sectional track, one locomotive and a few cars and you are in business.
+No mess with outlets and cables. Build your pocket power pack, get some sectional track, a locomotive (DCC or DC) and a few cars and you are in business.
 
 Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655-4th-calculator).
 
@@ -148,18 +148,26 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
 
 ### Prerequisites
  
-  * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/)
+  * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/),  
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 3" x 2", $3
-  * OLED display 0.91" 128x64 pixels, $5
+  * OLED display 128x64 pixels, $5
   * 7 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
-  * LiPo battery e.g. 1000 mAh
-  * USB Charger
-  * DCDC Converter
-  * Current Sensor
-  * Motor Driver
+  * LiPo battery e.g. 1000 mAh, [Lithium Ion Polymer Battery - 3.7v 1200mAh](https://www.adafruit.com/product/258), $10
+  * USB Charger, [Adafruit Micro Lipo - USB LiIon/LiPoly charger](https://www.adafruit.com/product/1304), $6
+  * DCDC Converter, Purecrea MT3608, $5
+  * Current Sensor, [INA169 Analog DC Current Sensor Breakout](https://www.adafruit.com/product/1164), $10
+  * Motor Driver, [DRV8871 DC Motor Driver Breakout ](https://www.adafruit.com/product/3190), $8
+  * Hot glue or double sided mounting tape e.g. Tesa 55750
+  * Laminating machine (optional) 
+  * [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
+  * Case e.g. [Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
+![](sdcard/man/img/ppp-parts.jpg) 
+  * Potentiometer e.g. [Knob Potentiometer](https://www.vishay.com/docs/51036/p16pa16.pdf)
+
+For developers:
   * Terminal emulator application for PC, e.g.:
     * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
     * [PuTTY](http://www.putty.org/) - Windows and Linux
@@ -167,17 +175,11 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
     * for details see [Terminal-IO](/sdcard/man/TerminalIO.md)
-  * Hot glue or double sided mounting tape e.g. Tesa 55750
-  * Laminating machine (optional) 
-  * STM32CubeProgrammer
-  * [Modulgehäuse Sintron #207328](https://sintron-shop.de/produkte/bauelemente-gehaeuse-zubehoer/gehaeuse/21/modulgehaeuse-abs-83x58x33-mm-ip65) ABS 83x58x33 mm IP65, mit transparentem Deckel #207885.
-![](sdcard/man/img/ppp-parts.jpg) 
-  * Knob Potentiometer https://www.vishay.com/docs/51036/p16pa16.pdf
+
+### Build the Hardware
 
 ![](sdcard/man/img/ppp-in-case.jpg) 
 
-
-### Build the Hardware
 
 #### Schematic 
 [kicad schematic](sdcard/man/kicad/pocket_power_pack/pocket_power_pack.kicad_sch)
@@ -189,7 +191,7 @@ Cut the perfboard to 3" x 2" (76.5 x 51.5 mm) dimension or 30 x 20 pads. Cut out
 
 #### Solder and wire push buttons
 <img src="/sdcard/man/img/buttons.jpg" width="200">
-Solder the 7 push buttons to the perfboard top layer. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
+Solder the 7 push buttons to the perfboard. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
 Wire the buttons.
 
 #### Mount the Firefly SBC
