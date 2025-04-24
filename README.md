@@ -565,14 +565,13 @@ with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
 
 ### Elsewhere
 
-* [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
-* [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
-* [Learn X in Y minutes](https://learnxinyminutes.com/docs/forth/) Where X=Forth
-* https://forth-ev.de/ Forth-Gesellschaft e.V.
-* https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
-
-* https://forth-standard.org/standard/words, Forth 2012 Standard Words
-* https://gforth.org/manual/, GForth Manual
+ * [Leo Brodie, Starting Forth](https://www.forth.com/starting-forth/) 
+ * [Leo Brodie, Thinking Forth](https://thinking-forth.sourceforge.net/)
+ * [Learn X in Y minutes](https://learnxinyminutes.com/docs/forth/) Where X=Forth
+ * https://forth-ev.de/ Forth-Gesellschaft e.V.
+ * https://forth-ev.de/wiki/res/lib/exe/fetch.php/vd-archiv:4d2015-arm.pdf ARM-Sonderheft
+ * https://forth-standard.org/standard/words, Forth 2012 Standard Words
+ * https://gforth.org/manual/, GForth Manual
 
 ### DCC 
   * http://jmri.org
