@@ -575,6 +575,11 @@ with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
 * https://gforth.org/manual/, GForth Manual
 
 ### DCC 
+  * http://jmri.org
+  * https://dccwiki.com
+  * https://www.morop.org/index.php/de/nem-normen.html
+  * https://github.com/ZIMO-Elektronik/DCC
+  * https://normen.railcommunity.de/RCN-211.pdf 
 
 ### DCDC Converter
   * TLV61048 14-V Output Voltage Non-synchronous Boost Converter in SOT-23 package
@@ -582,3 +587,4 @@ with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
   * https://www.ti.com/lit/ds/symlink/lm2577.pdf
   * TPS6128xD/E Low-IQ
   * TPS61087 650-kHz,1.2-MHz, 18.5-V Step-Up DC-DC Converter With 3.2-A Switch
+  * XL6009/LM2577
