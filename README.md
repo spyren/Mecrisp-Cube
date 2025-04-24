@@ -158,7 +158,7 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
-  * LiPo battery e.g. [Lithium Ion Polymer Battery - 3.7v 1200mAh](https://www.adafruit.com/product/258), $10
+  * LiPo battery e.g. [Lithium Ion Polymer Battery - 3.7v 1200mAh](https://www.adafruit.com/product/258), [Reely 1000 mAh](https://www.conrad.ch/de/p/reely-modellbau-akkupack-lipo-3-7-v-1000-mah-zellen-zahl-1-30-c-bec-2582341.html), $10
   * USB Charger, [Adafruit Micro Lipo - USB LiIon/LiPoly charger](https://www.adafruit.com/product/1304), $6
   * DCDC Converter, Purecrea MT3608, $5
   * Current Sensor, [INA169 Analog DC Current Sensor Breakout](https://www.adafruit.com/product/1164), $10
