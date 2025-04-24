@@ -153,7 +153,7 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
  
   * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/), $30
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 3" x 2", $3
-  * OLED display 128x64 pixels, SSD1306, $5
+  * OLED display 128x64 pixels, SSD1306, [Octopus PIS-1277](https://www.digikey.ch/de/products/detail/pi-supply/PIS-1277/10315759), [Grove - OLED Display 0.96"](https://www.seeedstudio.com/Grove-OLED-Display-0-96-SSD1315-p-4294.html), $5
   * 7 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
