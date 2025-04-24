@@ -576,3 +576,8 @@ with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
 
 ### DCC 
 
+### DCDC Converter
+  * TLV61048 14-V Output Voltage Non-synchronous Boost Converter in SOT-23 package
+  * TPS61372 16-V, 3.8-A Synchronous Boost With Load Disconnec
+  * TPS6128xD/E Low-IQ
+  * TPS61087 650-kHz,1.2-MHz, 18.5-V Step-Up DC-DC Converter With 3.2-A Switch
