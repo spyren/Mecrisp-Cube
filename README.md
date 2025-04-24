@@ -40,6 +40,7 @@ Not implemented yet.
  - 8 programmable functions (F0 .. F28)
    
 ### Bluetooth Remote Control
+  - Use your smart phone as a additional remote throttle
   - DCC-EX commands over BLE
   - DCC++Throttle
 
