@@ -5,7 +5,8 @@
 Model railroading on the go. A battery operated power pack give you the opportunity to take your model railroad with you. 
 No mess with outlets and cables. Build your Pocket Power Pack, get some sectional track, a locomotive (DCC or DC) and a few cars and you are in business.
 
-From the DCC point of view the Pocket Power Pack combine _Throttle_, _Command Station_, and _Booster_ in the same unit.
+From the DCC point of view the Pocket Power Pack combines _Throttle_, _Command Station_, and _Booster_ in the same hand held unit. 
+No power supply is required as long as the battery lasts. You can recharge the battery with a standard smart phone charger.
 
 Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655-4th-calculator).
 
