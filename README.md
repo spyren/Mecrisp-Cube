@@ -578,7 +578,8 @@ with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
   * https://dccwiki.com
   * https://www.morop.org/index.php/de/nem-normen.html
   * https://github.com/ZIMO-Elektronik/DCC
-  * https://normen.railcommunity.de/RCN-211.pdf 
+  * https://normen.railcommunity.de/RCN-211.pdf
+  * https://www.opendcc.de/info/dcc/dcc.html
 
 ### DCDC Converter
   * TLV61048 14-V Output Voltage Non-synchronous Boost Converter in SOT-23 package
