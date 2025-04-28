@@ -43,10 +43,82 @@
 
 #include "dcc.h"
 
-DCC_LocoSlot_t DCC_LocoSlot[DCC_MAX_LOCO_SLOTS];
+// Private function prototypes
+// ***************************
+static void DCC_Thread(void *argument);
+
+// Global Variables
+// ****************
+
+// Hardware resources
+// ******************
+
+// RTOS resources
+// **************
+
+// Definitions for DCC thread
+static osThreadId_t DCC_ThreadId;
+static const osThreadAttr_t DCC_ThreadAttr = {
+		.name = "DCC",
+		.priority = (osPriority_t) osPriorityNormal,
+		.stack_size = 128 * 6
+};
+
+static osSemaphoreId_t DCC_SemaphoreID;
+
+// Private Variables
+// *****************
+static DCC_LocoSlot_t DCC_LocoSlot[DCC_MAX_LOCO_SLOTS];
 
 static uint8_t  packet[DCC_MAX_PACKET_LENGTH];
 static uint32_t	byte_count;
 static uint32_t bit_count;
 static uint32_t packet_length;
+
+
+// Public Functions
+// ****************
+
+/**
+ *  @brief
+ *      Initializes the UART.
+ *  @return
+ *      None
+ */
+void DCC_init(void) {
+	// creation of DCC_Thread
+	DCC_ThreadId = osThreadNew(DCC_Thread, NULL, &DCC_ThreadAttr);
+	ASSERT_fatal(DCC_ThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
+
+	DCC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	ASSERT_fatal(DCC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
+}
+
+
+// Private Functions
+// *****************
+
+/**
+  * @brief
+  * 	Function implementing the DCC thread.
+  * @param
+  * 	argument: Not used
+  * @retval
+  * 	None
+  */
+static void DCC_Thread(void *argument) {
+	osStatus_t os_status;
+
+	// Infinite loop
+	for(;;) {
+		// blocked till packet is sent
+		os_status = osSemaphoreAcquire(DCC_SemaphoreID, 1000);
+		if (os_status != osOK) {
+			;
+		}
+		// create data for packet
+
+	}
+}
 

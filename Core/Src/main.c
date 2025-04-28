@@ -218,6 +218,7 @@ int main(void)
     Error_Handler();
   }
   MX_TIM2_Init();
+  MX_TIM16_Init();
   MX_I2C1_Init();
 //  MX_WWDG_Init();
   MX_AES1_Init();
