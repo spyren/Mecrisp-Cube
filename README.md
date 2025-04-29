@@ -200,19 +200,21 @@ For developers:
 Cut the perfboard to 3" x 2" (76.5 x 51.5 mm) dimension or 30 x 20 pads. Cut out corners (3 x 3 1/10"),
 ![](sdcard/man/img/ppp-pcb.jpg) 
 
-#### Solder and wire push buttons
-<img src="/sdcard/man/img/buttons.jpg" width="200">
+#### Cut the perfboard for the Key Board, Solder and Wire Push Buttons
 Solder the 7 push buttons to the perfboard. Each button is in the middle of 4 x 3 pads, the grid is 0.4".
 Wire the buttons.
 
 #### Mount the Firefly SBC
-Solder the Firefly to the perfboard bottom layer. 
+Solder the Firefly to the perfboard. 
 
 #### Mount USB Charger
-Solder the Adafruit Micro-Lipo Charger to the perfboard.
-If the battery has a molex connector, no wiring/solderin is required.
+Solder the Adafruit Micro-Lipo Charger to the perfboard. 
+I shortened the board on the USB end and on the battery connector end.
+If the battery has a JST connector, no wiring/solderin is required.
 
 #### Mount the DCDC Converter
+The DCDC coinverter stays on the long edge on base board. 
+You can use wires to connect and fix the PCB to the base board.
 
 #### Mount the Current Sensor
 Remove the screw terminal.
