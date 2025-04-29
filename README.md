@@ -585,6 +585,7 @@ with *Pocket Power Pack*. If not, see http://www.gnu.org/licenses/.
   * https://www.opendcc.de/info/dcc/dcc.html
   * https://www.nmra.org/sites/default/files/standards/sandrp/DCC/bulliten_feb_1994_dcc.pdf
   * https://github.com/ZIMO-Elektronik/DCC
+  * [DCC-EX](https://dcc-ex.com/index.html#), [commands summary](https://dcc-ex.com/reference/software/command-summary-consolidated.html#gsc.tab=0)
 
 ### DCDC Converter
   * TLV61048 14-V Output Voltage Non-synchronous Boost Converter in SOT-23 package
