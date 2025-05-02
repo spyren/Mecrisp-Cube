@@ -68,7 +68,7 @@ static osSemaphoreId_t DCC_SemaphoreID;
 
 // Private Variables
 // *****************
-static DCC_LocoSlot_t DCC_LocoSlot[DCC_MAX_LOCO_SLOTS];
+static DCC_LocoSlot_t loco_slots[DCC_MAX_LOCO_SLOTS];
 
 static uint8_t  packet[DCC_MAX_PACKET_LENGTH];
 static uint32_t	byte_count;
