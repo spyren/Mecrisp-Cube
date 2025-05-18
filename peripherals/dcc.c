@@ -52,6 +52,8 @@ static void DCC_Thread(void *argument);
 
 // Hardware resources
 // ******************
+extern TIM_HandleTypeDef htim16;
+
 
 // RTOS resources
 // **************
@@ -86,13 +88,14 @@ static uint32_t packet_length;
  *      None
  */
 void DCC_init(void) {
+	DCC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
+	ASSERT_fatal(DCC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	// creation of DCC_Thread
 	DCC_ThreadId = osThreadNew(DCC_Thread, NULL, &DCC_ThreadAttr);
 	ASSERT_fatal(DCC_ThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
 
-	DCC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	ASSERT_fatal(DCC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
-
+	HAL_TIM_Base_Start_IT(&htim16);
 }
 
 
@@ -122,3 +125,28 @@ static void DCC_Thread(void *argument) {
 	}
 }
 
+
+// Callbacks
+// *********
+
+/**
+  * @brief
+  * 	Period elapsed ISR for TIM16
+  *
+  * 	Ignore the shared TIM1 UP.
+  * @retval
+  * 	None
+  */
+void DCC_TIM16_PeriodElapsedIRQHandler() {
+    __HAL_TIM_CLEAR_IT(&htim16, TIM_IT_UPDATE);
+
+	HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 0);
+	HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 0);
+	if (bit_count) {
+		HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 1);
+		bit_count = 0;
+	} else {
+		HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 1);
+		bit_count = 1;
+	}
+}

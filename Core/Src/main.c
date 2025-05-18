@@ -123,6 +123,7 @@
 #if POWER == 1
 #include "power.h"
 #endif
+#include "dcc.h"
 
 /* USER CODE END Includes */
 
@@ -410,18 +411,18 @@ void vApplicationMallocFailedHook(void) {
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  /* USER CODE BEGIN Callback 0 */
-	  if (htim->Instance == TIM2) {
-	    BSP_TIM2_PeriodElapsedCallback();
-	  }
+	/* USER CODE BEGIN Callback 0 */
+	if (htim->Instance == TIM2) {
+		BSP_TIM2_PeriodElapsedCallback();
+	}
 
-  /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM17) {
-    HAL_IncTick();
-  }
-  /* USER CODE BEGIN Callback 1 */
+	/* USER CODE END Callback 0 */
+	if (htim->Instance == TIM17) {
+		HAL_IncTick();
+	}
+	/* USER CODE BEGIN Callback 1 */
 
-  /* USER CODE END Callback 1 */
+	/* USER CODE END Callback 1 */
 }
 
 /**

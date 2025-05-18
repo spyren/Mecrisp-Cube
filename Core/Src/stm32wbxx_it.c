@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "myassert.h"
 #include "app_conf.h"
+#include "dcc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,9 +70,10 @@ extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim16;
+extern TIM_HandleTypeDef htim17;
 extern UART_HandleTypeDef huart1;
 extern WWDG_HandleTypeDef hwwdg;
-extern TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN EV */
 
@@ -377,6 +379,27 @@ void ADC1_IRQHandler(void)
   /* USER CODE BEGIN ADC1_IRQn 1 */
 
   /* USER CODE END ADC1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM1 update interrupt and TIM16 global interrupt.
+  */
+void TIM1_UP_TIM16_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
+	DCC_TIM16_PeriodElapsedIRQHandler();
+  /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
+//  if (htim1.Instance != NULL)
+//  {
+//    HAL_TIM_IRQHandler(&htim1);
+//  }
+//  if (htim16.Instance != NULL)
+//  {
+//    HAL_TIM_IRQHandler(&htim16);
+//  }
+  /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM16_IRQn 1 */
 }
 
 /**

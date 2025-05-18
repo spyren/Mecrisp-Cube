@@ -34,10 +34,10 @@ CR .( ppp.fs loading ... )
 2 constant maxmenu
 0 variable dcc       \ 0 DC, 1 DCC
 0 variable reverse   \ 0 forward, 1 reverse
-0 variable brake     \ 1 brake
+1 variable brake     \ 1 brake
 0 variable speed     \ 0 off, 1000 max
-5 variable pwmselect \ 0 0.25 kHz, 1 0.5 kHz, 2 1 kHz, 
-                     \ 3 2 kHz, 4 4 kHz, 5 8 kHz, 6 16 kHz
+5 variable pwmselect \ 0 0.5 kHz, 1 1 kHz, 2 2 kHz, 
+                     \ 3 4 kHz,   4 8 kHz, 5 16 kHz, 6 32 kHz
 0 variable display-off
 
 : speed@ ( -- u ) \  get speed u 0 .. 1000
@@ -127,10 +127,10 @@ CR .( ppp.fs loading ... )
   pwmselect @ case
           \ 012345678901234567890
           \ [BRK]
-    0 of BRK. ." [.25] .5    1  " endof
-    1 of BRK. ."  .25 [.5]   1  " endof
-    2 of BRK. ."  .25  .5   [1] " endof
-         BRK. ."  .25  .5    1  "
+    0 of BRK. ." [.5]   1    2  " endof
+    1 of BRK. ."  .5   [1]   2  " endof
+    2 of BRK. ."  .5    1    2  " endof
+         BRK. ."  .5         2  "
   endcase
 ;
 
@@ -142,11 +142,11 @@ CR .( ppp.fs loading ... )
   0 7 oledpos!
   pwmselect @ case
           \ 012345678901234567890
-    3 of ."  [2]   4    8    16 " endof
-    4 of ."   2   [4]   8    16 " endof
-    5 of ."   2    4   [8]   16 " endof
-    6 of ."   2    4    8   [16]" endof
-         ."   2    4    8    16 "
+    3 of ."  [4]   8    16   32 " endof
+    4 of ."   4   [8]   16   32 " endof
+    5 of ."   4    8   [16]  32 " endof
+    6 of ."   4    8    16  [32]" endof
+         ."   4    8    16   32 "
   endcase
 ;
 
@@ -211,19 +211,19 @@ CR .( ppp.fs loading ... )
 
 : pwm-button ( u -- ) \ Brake and PWM1 buttons
   case
-    [char] d of brake @ 0= brake ! endof            \ toggle brake
-    [char] e of 0 pwmselect ! 128 pwmprescale endof \ 250 Hz
-    [char] f of 1 pwmselect !  64 pwmprescale endof \ 500 Hz
-    [char] g of 2 pwmselect !  32 pwmprescale endof \ 1 kHz
+    [char] d of brake @ 0= brake ! endof           \ toggle brake
+    [char] e of 0 pwmselect ! 64 pwmprescale endof \ 500 Hz
+    [char] f of 1 pwmselect ! 32 pwmprescale endof \ 1 kHz
+    [char] g of 2 pwmselect ! 16 pwmprescale endof \ 2 kHz
   endcase
 ;
 
 : pwm-button1 ( u -- ) \ PWM2 buttons
   case
-    [char] d of 3 pwmselect !  16 pwmprescale endof \ 2 kHz
-    [char] e of 4 pwmselect !   8 pwmprescale endof \ 4 kHz
-    [char] f of 5 pwmselect !   4 pwmprescale endof \ 8 kHz
-    [char] g of 6 pwmselect !   2 pwmprescale endof \ 16  kHz
+    [char] d of 3 pwmselect !  8 pwmprescale endof \ 4 kHz
+    [char] e of 4 pwmselect !  4 pwmprescale endof \ 8 kHz
+    [char] f of 5 pwmselect !  2 pwmprescale endof \ 16 kHz
+    [char] g of 6 pwmselect !  1 pwmprescale endof \ 32  kHz
   endcase
 ;
 

@@ -19,4 +19,7 @@ typedef struct DCC_LocoSlot_t {
 	uint32_t	function;
 } DCC_LocoSlot_t;
 
+void DCC_init(void);
+void DCC_TIM16_PeriodElapsedIRQHandler();
+
 #endif /* DCC_H_ */
