@@ -795,7 +795,7 @@ void BSP_setPwmPrescale(uint16_t value) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
-	__HAL_TIM_SET_PRESCALER(&htim1, ++value);
+	__HAL_TIM_SET_PRESCALER(&htim1, --value);
 
 	osMutexRelease(DigitalPort_MutexID);
 }

@@ -73,25 +73,25 @@ CR .( ppp.fs loading ... )
   1.25e f*                       \ correction factor
 ;
 
-: Vrail. ( -- )
+: .Vrail ( -- )
   2 oledfont
   0 0 oledpos! 1 set-precision
   ." Vr " Vrail f. 
 ;
 
-: Vlipo. ( -- )
+: .Vlipo ( -- )
   2 oledfont
   64 0 oledpos! 2 set-precision
   ." Vb " Vlipo f. 
 ;
 
-: Irail. ( -- )
+: .Irail ( -- )
   3 oledfont
   0 4 oledpos! 3 set-precision
   ." I " Irail f. ." A"
 ;
 
-: %pwm. ( -- )
+: .%pwm ( -- )
   3 oledfont
   0 2 oledpos!
   
@@ -104,7 +104,7 @@ CR .( ppp.fs loading ... )
   then
 ;
 
-: mode.
+: .mode
   0 oledfont
   0 6 oledpos!
    \ 012345678901234567890
@@ -114,11 +114,11 @@ CR .( ppp.fs loading ... )
   dcc @ if ." [DCC]        " else ." [DC]C         " then 
 ;
 
-: BRK. ( -- )
+: .BRK ( -- )
   brake @ if ." [BRK]" else ."  BRK " then
 ;
 
-: pwm-menu.
+: .pwm-menu
   0 oledfont
   0 6 oledpos!
           \ 012345678901234567890
@@ -127,14 +127,14 @@ CR .( ppp.fs loading ... )
   pwmselect @ case
           \ 012345678901234567890
           \ [BRK]
-    0 of BRK. ." [.5]   1    2  " endof
-    1 of BRK. ."  .5   [1]   2  " endof
-    2 of BRK. ."  .5    1    2  " endof
-         BRK. ."  .5         2  "
+    0 of .BRK ." [.5]   1    2  " endof
+    1 of .BRK ."  .5   [1]   2  " endof
+    2 of .BRK ."  .5    1   [2]  " endof
+         .BRK ."  .5    1    2  "
   endcase
 ;
 
-: pwm-menu1.
+: .pwm-menu1
   0 oledfont
   0 6 oledpos!
           \ 012345678901234567890
@@ -150,18 +150,18 @@ CR .( ppp.fs loading ... )
   endcase
 ;
 
-: menu. ( -- ) 
+: .menu ( -- ) 
   menu @ case
-    0 of mode. endof
-    1 of pwm-menu. endof
-    2 of pwm-menu1. endof
+    0 of .mode endof
+    1 of .pwm-menu endof
+    2 of .pwm-menu1 endof
   endcase
 ;
 
 : throttle ( -- ) \ control the PWM pins, update every 10 ms
   0 0 pwmpin!
   0 1 pwmpin!
-  4 pwmprescale     \ 8 kHz
+  3 pwmprescale     \ 8 kHz
   PWM_MODE 0 dmod   \ set D0 to pwm
   PWM_MODE 1 dmod   \ set D1 to pwm
 
@@ -193,10 +193,10 @@ CR .( ppp.fs loading ... )
 : ppp-display ( -- )  \ display throttle infos every 200 ms till button is pressed
   >oled
   begin
-     Vrail. Vlipo. 
-     %pwm.
-     Irail. 
-     menu.
+     .Vrail .Vlipo 
+     .%pwm
+     .Irail 
+     .menu
      200 osDelay drop
   button? until
   >term
