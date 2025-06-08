@@ -847,4 +847,185 @@ set_halt:
 
 .endif // POWER
 
+// DCC words only if needed
+.if DCC == 1
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCstart"
+dccstart:
+	@ ( -- )  start DCC
+// void DCC_start(void);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		DCC_start
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCstop"
+dccstop:
+	@ ( -- ) stop DCC
+// void DCC_stop(void)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		DCC_stop
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCstate!"
+store_dccstate:
+	@ ( f u -- ) store state f to DCC slot u
+// void DCC_setState(int slot, int state);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u -> slot
+	drop
+	movs	r1, tos		// f -> state
+	drop
+	bl		DCC_setState
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCstate@"
+fetch_dccstate:
+	@ ( u -- f ) fetch state f from DCC slot u
+// int DCC_getState(int slot);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u -> slot
+	bl		DCC_getState
+	movs	tos, r0		// return -> f
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCaddress!"
+store_dccaddress:
+	@ ( u1 u2 -- ) store address u1 to DCC slot u2
+// void DCC_setAddress(int slot, int address);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2 -> slot
+	drop
+	movs	r1, tos		// u1 -> address
+	drop
+	bl		DCC_setAddress
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCaddress@"
+fetch_dccaddress:
+	@ ( u1 -- u2 ) fetch address u2 from DCC slot u1
+// int DCC_getAddress(int slot);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u1 -> slot
+	bl		DCC_getAddress
+	movs	tos, r0		// return -> u2
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCspeed!"
+store_dccspeed:
+	@ ( u1 u2 -- ) store speed u1 to DCC slot u2
+// void DCC_setSpeed(int slot, int speed);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2 -> slot
+	drop
+	movs	r1, tos		// u1 -> speed
+	drop
+	bl		DCC_setSpeed
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCspeed@"
+fetch_dccspeed:
+	@ ( u1 -- u2 ) fetch speed u2 from DCC slot u1
+// int DCC_getSpeed(int slot);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u1 -> slot
+	bl		DCC_getSpeed
+	movs	tos, r0		// return -> u2
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCdirection!"
+store_dccdirection:
+	@ ( u1 u2 -- ) store direction u1 to DCC slot u2
+// void DCC_setDirection(int slot, int direction);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2 -> slot
+	drop
+	movs	r1, tos		// u1 -> direction
+	drop
+	bl		DCC_setDirection
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCdirection@"
+fetch_dccdirection:
+	@ ( u1 -- u2 ) fetch direction u2 from DCC slot u1
+// int DCC_getDirection(int slot);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u1 -> slot
+	bl		DCC_getDirection
+	movs	tos, r0		// return -> u2
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCfunction!"
+store_dccfunction:
+	@ ( u1 u2 -- ) store function u1 to DCC slot u2
+// void DCC_setFunction(int slot, int function);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2 -> slot
+	drop
+	movs	r1, tos		// u1 -> function
+	drop
+	bl		DCC_setFunction
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "-DCCfunction!"
+reset_dccfunction:
+	@ ( u1 u2 -- ) store (reset) function u1 to DCC slot u2
+// void DCC_resetFunction(int slot, int function);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u2 -> slot
+	drop
+	movs	r1, tos		// u1 -> function
+	drop
+	bl		DCC_resetFunction
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCfunction@"
+fetch_dccfunction:
+	@ ( u1 -- u2 ) fetch function u2 from DCC slot u1
+// int DCC_getFunction(int slot);
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// u1 -> slot
+	bl		DCC_getFunction
+	movs	tos, r0		// return -> u2
+	pop		{pc}
+
+
+.endif // DCC
 

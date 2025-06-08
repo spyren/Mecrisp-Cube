@@ -161,7 +161,7 @@ CR .( ppp.fs loading ... )
 : throttle ( -- ) \ control the PWM pins, update every 10 ms
   0 0 pwmpin!
   0 1 pwmpin!
-  3 pwmprescale     \ 8 kHz
+  2 pwmprescale     \ 16 kHz
   PWM_MODE 0 dmod   \ set D0 to pwm
   PWM_MODE 1 dmod   \ set D1 to pwm
 

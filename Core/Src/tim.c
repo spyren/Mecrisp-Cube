@@ -198,7 +198,7 @@ void MX_TIM16_Init(void)
   htim16.Instance = TIM16;
   htim16.Init.Prescaler = 31;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim16.Init.Period = 58;
+  htim16.Init.Period = 57; // 58 us
 //  htim16.Init.Period = 10000;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim16.Init.RepetitionCounter = 0;
@@ -278,7 +278,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 void HAL_TIM_OC_MspInit(TIM_HandleTypeDef* tim_ocHandle)
 {
 
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(tim_ocHandle->Instance==TIM2)
   {
   /* USER CODE BEGIN TIM2_MspInit 0 */

@@ -40,6 +40,7 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
+#include "stm32_lpm.h"
 
 #include "dcc.h"
 
@@ -68,6 +69,14 @@ static const osThreadAttr_t DCC_ThreadAttr = {
 
 static osSemaphoreId_t DCC_SemaphoreID;
 
+static osMutexId_t DCC_MutexID;
+static const osMutexAttr_t DCC_MutexAttr = {
+		NULL,				// no name required
+		osMutexPrioInherit,	// attr_bits
+		NULL,				// memory for control block
+		0U					// size for control block
+};
+
 // Private Variables
 // *****************
 static DCC_LocoSlot_t loco_slots[DCC_MAX_LOCO_SLOTS];
@@ -75,7 +84,7 @@ static DCC_LocoSlot_t loco_slots[DCC_MAX_LOCO_SLOTS];
 static uint8_t  packet[DCC_MAX_PACKET_LENGTH];
 static uint32_t	byte_count;
 static uint32_t bit_count;
-static uint32_t packet_length;
+static uint32_t packet_length = 0;
 
 
 // Public Functions
@@ -83,7 +92,8 @@ static uint32_t packet_length;
 
 /**
  *  @brief
- *      Initializes the UART.
+ *      Initializes the DCC
+ *
  *  @return
  *      None
  */
@@ -91,11 +101,209 @@ void DCC_init(void) {
 	DCC_SemaphoreID = osSemaphoreNew(1, 0, NULL);
 	ASSERT_fatal(DCC_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
+	DCC_MutexID = osMutexNew(&DCC_MutexAttr);
+	ASSERT_fatal(DCC_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+
 	// creation of DCC_Thread
 	DCC_ThreadId = osThreadNew(DCC_Thread, NULL, &DCC_ThreadAttr);
 	ASSERT_fatal(DCC_ThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
+}
 
+
+/**
+ *  @brief
+ *      Start the DCC
+ *
+ *  @return
+ *      None
+ */
+void DCC_start(void) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_DCC, UTIL_LPM_DISABLE);
 	HAL_TIM_Base_Start_IT(&htim16);
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Stop the DCC
+ *
+ *  @return
+ *      None
+ */
+void DCC_stop(void) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	HAL_TIM_Base_Stop_IT(&htim16);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_DCC, UTIL_LPM_ENABLE);
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Set the state of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+void DCC_setState(int slot, int state) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	loco_slots[slot].state = state;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Get the state of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+int DCC_getState(int slot) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	return loco_slots[slot].state;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Set the address of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+void DCC_setAddress(int slot, int address) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	loco_slots[slot].address = address;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Get the address of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+int DCC_getAddress(int slot) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	return loco_slots[slot].address;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Set the speed of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+void DCC_setSpeed(int slot, int speed) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	loco_slots[slot].speed = speed;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Get the speed of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+int DCC_getSpeed(int slot) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	return loco_slots[slot].speed;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Set the direction of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+void DCC_setDirection(int slot, int direction) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	loco_slots[slot].direction = direction;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Get the direction of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+int DCC_getDirection(int slot) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	return loco_slots[slot].direction;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Set the function of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+void DCC_setFunction(int slot, int function) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	loco_slots[slot].function |= function;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Reset the function of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+void DCC_resetFunction(int slot, int function) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	loco_slots[slot].function &= !function;
+	osMutexRelease(DCC_MutexID);
+}
+
+
+/**
+ *  @brief
+ *      Get the functions of a DCC slot
+ *
+ *  @return
+ *      None
+ */
+int DCC_getFunction(int slot) {
+	// only one thread is allowed to use DCC
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	return loco_slots[slot].function;
+	osMutexRelease(DCC_MutexID);
 }
 
 
@@ -121,6 +329,9 @@ static void DCC_Thread(void *argument) {
 			;
 		}
 		// create data for packet
+		// only one thread is allowed to use DCC
+		osMutexAcquire(DCC_MutexID, osWaitForever);
+		osMutexRelease(DCC_MutexID);
 
 	}
 }

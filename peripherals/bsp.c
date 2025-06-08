@@ -127,61 +127,50 @@ static int sys_led_status = 0;
  *      None
  */
 void BSP_init(void) {
+	HAL_StatusTypeDef state;
+
 	DigitalPort_MutexID = osMutexNew(&DigitalPort_MutexAttr);
-	if (DigitalPort_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(DigitalPort_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+
 	Adc_MutexID = osMutexNew(&Adc_MutexAttr);
-	if (Adc_MutexID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(Adc_MutexID != NULL, ASSERT_MUTEX_CREATION, __get_PC());
+
 	Adc_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (Adc_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(Adc_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	ICOC_period_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_period_SemaphoreID == NULL) {
-		Error_Handler();
-	}
-	ICOC_CH1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH1_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(ICOC_period_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
+	ICOC_CH1_SemaphoreID = osSemaphoreNew(1, 0, NULL);	ASSERT_fatal(Adc_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+	ASSERT_fatal(ICOC_CH1_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	ICOC_CH2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH2_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(ICOC_CH2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	ICOC_CH3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH3_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(ICOC_CH3_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	ICOC_CH4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (ICOC_CH4_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(ICOC_CH4_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	EXTI_1_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_1_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(EXTI_1_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	EXTI_2_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_2_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(EXTI_2_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	EXTI_3_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_3_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(EXTI_3_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
+
 	EXTI_4_SemaphoreID = osSemaphoreNew(1, 0, NULL);
-	if (EXTI_4_SemaphoreID == NULL) {
-		Error_Handler();
-	}
+	ASSERT_fatal(EXTI_4_SemaphoreID != NULL, ASSERT_SEMAPHORE_CREATION, __get_PC());
 
 	// ADC calibration
-	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
-	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
+	state = HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+	ASSERT_fatal(state == HAL_OK, ASSERT_HAL, __get_PC());
+//	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
+//	state = HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
+//	ASSERT_fatal(state == HAL_OK, ASSERT_HAL, __get_PC());
 
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_1;
@@ -190,9 +179,8 @@ void BSP_init(void) {
 	sConfig.SingleDiff = ADC_SINGLE_ENDED;
 	sConfig.OffsetNumber = ADC_OFFSET_NONE;
 	sConfig.Offset = 0;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
+	state = HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+	ASSERT_fatal(state == HAL_OK, ASSERT_HAL, __get_PC());
 
 	// start PWM
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
@@ -271,6 +259,7 @@ int BSP_getSwitch1(void) {
 
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
+
 
 #if BUTTON == 1
 #if BUTTON_MATRIX == 0
@@ -396,6 +385,7 @@ void BSP_setDigitalPort(int state) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
+
 	for (i=0; i<16; i++) {
 		HAL_GPIO_WritePin(PortPin_a[i].port, PortPin_a[i].pin, state & 0x01);
 		state = state >> 1;
@@ -501,13 +491,10 @@ int BSP_getAnalogPin(int pin_number) {
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
 	sConfig.Channel = AnalogPortPin_a[pin_number];
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(HAL_ADC_ConfigChannel(&hadc1, &sConfig) == HAL_OK, ASSERT_HAL, __get_PC());
 	status = HAL_ADC_Start_IT(&hadc1);
-	if (status != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(status == HAL_OK, ASSERT_HAL, __get_PC());
+
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
@@ -536,13 +523,9 @@ int BSP_getVref(void) {
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
 	sConfig.Channel = ADC_CHANNEL_VREFINT;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(HAL_ADC_ConfigChannel(&hadc1, &sConfig) == HAL_OK, ASSERT_HAL, __get_PC());
 	status = HAL_ADC_Start_IT(&hadc1);
-	if (status != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(status == HAL_OK, ASSERT_HAL, __get_PC());
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
@@ -577,13 +560,9 @@ int BSP_getVbat(void) {
 	osDelay(5);
 
 	sConfig.Channel = ADC_CHANNEL_VBAT;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(HAL_ADC_ConfigChannel(&hadc1, &sConfig) == HAL_OK, ASSERT_HAL, __get_PC());
 	status = HAL_ADC_Start_IT(&hadc1);
-	if (status != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(status == HAL_OK, ASSERT_HAL, __get_PC());
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
@@ -617,13 +596,9 @@ int BSP_getCpuTemperature(void) {
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
 	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-	if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(HAL_ADC_ConfigChannel(&hadc1, &sConfig) == HAL_OK, ASSERT_HAL, __get_PC());
 	status = HAL_ADC_Start_IT(&hadc1);
-	if (status != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(status == HAL_OK, ASSERT_HAL, __get_PC());
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
@@ -937,9 +912,7 @@ void BSP_setModeOC(int pin_number, uint32_t mode) {
 		Error_Handler();
 		return;
 	}
-	if (HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, ch) != HAL_OK) {
-		Error_Handler();
-	}
+	ASSERT_fatal(HAL_TIM_OC_ConfigChannel(&htim2, &sConfigOC, ch) == HAL_OK, ASSERT_HAL, __get_PC());
 }
 
 

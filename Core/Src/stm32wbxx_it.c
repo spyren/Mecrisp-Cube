@@ -388,10 +388,10 @@ void TIM1_UP_TIM16_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM16_IRQn 0 */
   /* USER CODE END TIM1_UP_TIM16_IRQn 0 */
-  if (htim1.Instance != NULL)
-  {
-    HAL_TIM_IRQHandler(&htim1);
-  }
+//  if (htim1.Instance != NULL)
+//  {
+//    HAL_TIM_IRQHandler(&htim1);
+//  }
   if (htim16.Instance != NULL)
   {
 	DCC_TIM16_PeriodElapsedIRQHandler();

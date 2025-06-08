@@ -82,6 +82,7 @@
 .equ	BUTTON_MATRIX,		0
 .equ	POWER,				1
 .equ	SD_DRIVE,			0
+.equ	DCC,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions

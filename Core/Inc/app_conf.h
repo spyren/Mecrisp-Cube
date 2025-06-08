@@ -511,6 +511,7 @@
  *  When set to 1, the low power mode is enable
  *  When set to 0, the device stays in RUN mode
  */
+
 #ifdef DEBUG
 // debug configuration
 #define CFG_LPM_SUPPORTED    1
@@ -831,6 +832,7 @@ typedef enum
   CFG_LPM_RTSPI,
   CFG_LPM_UART_TX,
   CFG_LPM_UART_RX,
+  CFG_LPM_DCC,
   /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
