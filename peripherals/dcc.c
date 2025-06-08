@@ -165,10 +165,7 @@ void DCC_setState(int slot, int state) {
  *      None
  */
 int DCC_getState(int slot) {
-	// only one thread is allowed to use DCC
-	osMutexAcquire(DCC_MutexID, osWaitForever);
 	return loco_slots[slot].state;
-	osMutexRelease(DCC_MutexID);
 }
 
 
@@ -195,10 +192,7 @@ void DCC_setAddress(int slot, int address) {
  *      None
  */
 int DCC_getAddress(int slot) {
-	// only one thread is allowed to use DCC
-	osMutexAcquire(DCC_MutexID, osWaitForever);
 	return loco_slots[slot].address;
-	osMutexRelease(DCC_MutexID);
 }
 
 
@@ -225,10 +219,7 @@ void DCC_setSpeed(int slot, int speed) {
  *      None
  */
 int DCC_getSpeed(int slot) {
-	// only one thread is allowed to use DCC
-	osMutexAcquire(DCC_MutexID, osWaitForever);
 	return loco_slots[slot].speed;
-	osMutexRelease(DCC_MutexID);
 }
 
 
@@ -255,10 +246,7 @@ void DCC_setDirection(int slot, int direction) {
  *      None
  */
 int DCC_getDirection(int slot) {
-	// only one thread is allowed to use DCC
-	osMutexAcquire(DCC_MutexID, osWaitForever);
 	return loco_slots[slot].direction;
-	osMutexRelease(DCC_MutexID);
 }
 
 
@@ -300,10 +288,7 @@ void DCC_resetFunction(int slot, int function) {
  *      None
  */
 int DCC_getFunction(int slot) {
-	// only one thread is allowed to use DCC
-	osMutexAcquire(DCC_MutexID, osWaitForever);
 	return loco_slots[slot].function;
-	osMutexRelease(DCC_MutexID);
 }
 
 
