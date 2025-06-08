@@ -87,15 +87,16 @@ DCCstate!    ( f u -- )       store state f to DCC slot u
                               There are 4 slots (0 ..3), true to enable slot
 DCCstate@    ( u -- f )       fetch state f from DCC slot u 
 DCCaddress!  ( u1 u2 -- )     store address u1 to DCC slot u2
-                              1 to , 
+                              0 broadcast, 1 to 99 short adresses, 100 to 10239 long addresses
 DCCaddress@  ( u1 -- u2 )     fetch address u2 from DCC slot u1
 DCCspeed!    ( u1 u2 -- )     store speed u1 to DCC slot u2
+                              0 stop, 126 max. speed
 DCCspeed@    ( u1 -- u2 )     fetch speed u2 from DCC slot u1
 DCCdirection! ( u1 u2 -- )    store direction u1 to DCC slot u2
                               false is forward
 DCCdirection@ ( u1 -- u2 )    fetch direction u2 from DCC slot u1
 DCCfunction!  ( u1 u2 -- )    store function u1 to DCC slot u2
-                              each bit that is set activates a function
+                              each bit that is set activates a function, F0 .. F31
 -DCCfunction! ( u1 u2 -- )    store (reset) function u1 to DCC slot u2
                               each bit that is set deactivates a function
 DCCfunction@  ( u1 -- u2 )    fetch function u2 from DCC slot u1
