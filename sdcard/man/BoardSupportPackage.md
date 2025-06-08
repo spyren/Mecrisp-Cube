@@ -80,7 +80,7 @@ SPIputget    ( c- u1 u2 -- )  put a message with length u1 from buffer at c- to 
                               and get a message with length u2 from device to buffer at c-
 SPImutex     ( -- a- )        get the SPI mutex address
 
-DCCstart	   ( -- )           start DCC
+DCCstart     ( -- )           start DCC
 DCCstop      ( -- )           stop DCC
 DCCstate!    ( f u -- )       store state f to DCC slot u
 DCCstate@    ( u -- f )       fetch state f from DCC slot u
