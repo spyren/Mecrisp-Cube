@@ -79,8 +79,21 @@ SPIput       ( c- u -- )      put a message with length u from buffer at c- to t
 SPIputget    ( c- u1 u2 -- )  put a message with length u1 from buffer at c- to the SPI slave device 
                               and get a message with length u2 from device to buffer at c-
 SPImutex     ( -- a- )        get the SPI mutex address
-```
 
+DCCstart	   ( -- )           start DCC
+DCCstop      ( -- )           stop DCC
+DCCstate!    ( f u -- )       store state f to DCC slot u
+DCCstate@    ( u -- f )       fetch state f from DCC slot u
+DCCaddress!  ( u1 u2 -- )     store address u1 to DCC slot u2
+DCCaddress@  ( u1 -- u2 )     fetch address u2 from DCC slot u1
+DCCspeed!    ( u1 u2 -- )     store speed u1 to DCC slot u2
+DCCspeed@    ( u1 -- u2 )     fetch speed u2 from DCC slot u1
+DCCdirection! ( u1 u2 -- )    store direction u1 to DCC slot u2
+DCCdirection@ ( u1 -- u2 )    fetch direction u2 from DCC slot u1
+DCCfunction!  ( u1 u2 -- )    store function u1 to DCC slot u2
+-DCCfunction! ( u1 u2 -- )    store (reset) function u1 to DCC slot u2
+DCCfunction@  ( u1 -- u2 )    fetch function u2 from DCC slot u1
+```
 
 Using the Digital Port Pins (Input and Output)
 ==============================================
