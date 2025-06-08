@@ -81,17 +81,23 @@ SPIputget    ( c- u1 u2 -- )  put a message with length u1 from buffer at c- to 
 SPImutex     ( -- a- )        get the SPI mutex address
 
 DCCstart     ( -- )           start DCC
+                              all enabled slots are written every 30 ms
 DCCstop      ( -- )           stop DCC
 DCCstate!    ( f u -- )       store state f to DCC slot u
-DCCstate@    ( u -- f )       fetch state f from DCC slot u
+                              There are 4 slots (0 ..3), true to enable slot
+DCCstate@    ( u -- f )       fetch state f from DCC slot u 
 DCCaddress!  ( u1 u2 -- )     store address u1 to DCC slot u2
+                              1 to , 
 DCCaddress@  ( u1 -- u2 )     fetch address u2 from DCC slot u1
 DCCspeed!    ( u1 u2 -- )     store speed u1 to DCC slot u2
 DCCspeed@    ( u1 -- u2 )     fetch speed u2 from DCC slot u1
 DCCdirection! ( u1 u2 -- )    store direction u1 to DCC slot u2
+                              false is forward
 DCCdirection@ ( u1 -- u2 )    fetch direction u2 from DCC slot u1
 DCCfunction!  ( u1 u2 -- )    store function u1 to DCC slot u2
+                              each bit that is set activates a function
 -DCCfunction! ( u1 u2 -- )    store (reset) function u1 to DCC slot u2
+                              each bit that is set deactivates a function
 DCCfunction@  ( u1 -- u2 )    fetch function u2 from DCC slot u1
 ```
 
