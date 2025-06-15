@@ -44,6 +44,9 @@
 
 #include "dcc.h"
 
+#define TIME_0BIT_HALF_PERIOD	(116-1)		// 0 bit is 116 us
+#define TIME_1BIT_HALF_PERIOD	(58-1)
+
 // Private function prototypes
 // ***************************
 static void DCC_Thread(void *argument);
@@ -82,9 +85,10 @@ static const osMutexAttr_t DCC_MutexAttr = {
 static DCC_LocoSlot_t loco_slots[DCC_MAX_LOCO_SLOTS];
 
 static uint8_t  packet[DCC_MAX_PACKET_LENGTH];
-static uint32_t	byte_count;
+static uint32_t	half_bit = FALSE;
 static uint32_t bit_count;
-static uint32_t packet_length = 0;
+static uint32_t byte_count = 0;
+static uint32_t packet_len = 0;
 
 
 // Public Functions
@@ -153,6 +157,9 @@ void DCC_setState(int slot, int state) {
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
 	loco_slots[slot].state = state;
+	if ((packet_len == 0) & loco_slots[slot].state) {
+		osSemaphoreRelease(DCC_SemaphoreID);
+	}
 	osMutexRelease(DCC_MutexID);
 }
 
@@ -200,6 +207,7 @@ int DCC_getAddress(int slot) {
  *  @brief
  *      Set the speed of a DCC slot
  *
+ *		0 stop, 126 max. speed
  *  @return
  *      None
  */
@@ -227,6 +235,7 @@ int DCC_getSpeed(int slot) {
  *  @brief
  *      Set the direction of a DCC slot
  *
+ *		0 forward
  *  @return
  *      None
  */
@@ -254,6 +263,7 @@ int DCC_getDirection(int slot) {
  *  @brief
  *      Set the function of a DCC slot
  *
+ *		F0 to F23
  *  @return
  *      None
  */
@@ -304,20 +314,35 @@ int DCC_getFunction(int slot) {
   * 	None
   */
 static void DCC_Thread(void *argument) {
-	osStatus_t os_status;
+	int len;
+	int i;
 
 	// Infinite loop
 	for(;;) {
 		// blocked till packet is sent
-		os_status = osSemaphoreAcquire(DCC_SemaphoreID, 1000);
-		if (os_status != osOK) {
-			;
-		}
+		osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
 		// create data for packet
 		// only one thread is allowed to use DCC
 		osMutexAcquire(DCC_MutexID, osWaitForever);
+		packet[0] = loco_slots[0].address;
+		packet[1] = 0x3f; // 128 step speed
+		packet[2] = (loco_slots[0].speed & 0x7f);
+		if (loco_slots[0].direction) {
+			packet[2] |= 0x80;
+		}
+		len = 4;
+		packet[len-1] = 0;
+		for (i=0; i<len-1; i++) {
+			packet[len-1] ^= packet[i];
+		}
 		osMutexRelease(DCC_MutexID);
-
+		// min. time to the next packet
+		osDelay(6);
+	    HAL_NVIC_DisableIRQ(TIM1_TRG_COM_TIM17_IRQn);
+		packet_len = len;
+		byte_count = 0;
+		bit_count  = 9;
+	    HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM17_IRQn);
 	}
 }
 
@@ -329,6 +354,10 @@ static void DCC_Thread(void *argument) {
   * @brief
   * 	Period elapsed ISR for TIM16
   *
+  *	 	The waveform for the packet is created here.
+  *	 	The bit pattern is in the packet array.
+  *	 	byte_count, packet_len, bit_count are global variables.
+  *	 	Startbit is 0, highest bit first.
   * 	Ignore the shared TIM1 UP.
   * @retval
   * 	None
@@ -336,13 +365,44 @@ static void DCC_Thread(void *argument) {
 void DCC_TIM16_PeriodElapsedIRQHandler() {
     __HAL_TIM_CLEAR_IT(&htim16, TIM_IT_UPDATE);
 
-	HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 0);
-	HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 0);
-	if (bit_count) {
-		HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 1);
-		bit_count = 0;
+    if (half_bit) {
+    	half_bit = FALSE;
+    	HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 0);
+    	HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 1);
+    	return;
+    } else {
+    	half_bit = TRUE;
+    	HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 0);
+    	HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 1);
+    }
+
+    if (byte_count < packet_len) {
+		// packet not finished
+		if (bit_count-- == 9) {
+			// start bit always 0
+			__HAL_TIM_SET_AUTORELOAD(&htim16, TIME_0BIT_HALF_PERIOD);
+		} else {
+			// get bit
+			if ((packet[byte_count] >> bit_count) & 0x01) {
+				// 1
+				__HAL_TIM_SET_AUTORELOAD(&htim16, TIME_1BIT_HALF_PERIOD);
+			} else {
+				// 0
+				__HAL_TIM_SET_AUTORELOAD(&htim16, TIME_0BIT_HALF_PERIOD);
+			}
+		}
+		if (bit_count == 0) {
+			// byte finished
+			bit_count = 9;
+			byte_count++;
+			if (byte_count >= packet_len) {
+				// last byte -> ready for next packet
+				osSemaphoreRelease(DCC_SemaphoreID);
+			}
+		}
 	} else {
-		HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 1);
-		bit_count = 1;
+		// packet finished -> write only 1s (preamble)
+		__HAL_TIM_SET_AUTORELOAD(&htim16, TIME_1BIT_HALF_PERIOD);
 	}
+
 }
