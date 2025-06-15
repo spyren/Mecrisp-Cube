@@ -214,7 +214,7 @@ int DCC_getAddress(int slot) {
 void DCC_setSpeed(int slot, int speed) {
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
-	loco_slots[slot].speed = speed;
+	loco_slots[slot].speed = speed & 0x7F;
 	osMutexRelease(DCC_MutexID);
 }
 
@@ -234,7 +234,7 @@ int DCC_getSpeed(int slot) {
 /**
  *  @brief
  *      Set the direction of a DCC slot
- *
+ *speed
  *		0 forward
  *  @return
  *      None
@@ -242,7 +242,11 @@ int DCC_getSpeed(int slot) {
 void DCC_setDirection(int slot, int direction) {
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
-	loco_slots[slot].direction = direction;
+	if (direction) {
+		loco_slots[slot].direction = 0x80;
+	} else {
+		loco_slots[slot].direction = 0x00;
+	}
 	osMutexRelease(DCC_MutexID);
 }
 
@@ -271,6 +275,7 @@ void DCC_setFunction(int slot, int function) {
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
 	loco_slots[slot].function |= function;
+	loco_slots[slot].function_repetition = DCC_FUNCTION_REPETITION;
 	osMutexRelease(DCC_MutexID);
 }
 
@@ -286,6 +291,7 @@ void DCC_resetFunction(int slot, int function) {
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
 	loco_slots[slot].function &= !function;
+	loco_slots[slot].function_repetition = DCC_FUNCTION_REPETITION;
 	osMutexRelease(DCC_MutexID);
 }
 
@@ -315,34 +321,50 @@ int DCC_getFunction(int slot) {
   */
 static void DCC_Thread(void *argument) {
 	int len;
-	int i;
+	int i, j;
 
 	// Infinite loop
 	for(;;) {
-		// blocked till packet is sent
-		osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
 		// create data for packet
-		// only one thread is allowed to use DCC
-		osMutexAcquire(DCC_MutexID, osWaitForever);
-		packet[0] = loco_slots[0].address;
-		packet[1] = 0x3f; // 128 step speed
-		packet[2] = (loco_slots[0].speed & 0x7f);
-		if (loco_slots[0].direction) {
-			packet[2] |= 0x80;
+		for (i=0; i<DCC_MAX_LOCO_SLOTS; i++) {
+			// blocked till packet is sent
+			osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
+
+			// only one thread is allowed to use DCC
+			osMutexAcquire(DCC_MutexID, osWaitForever);
+			if (loco_slots[i].state) {
+				len = 0;
+				if (loco_slots[i].address <= 127) {
+					packet[len++] = loco_slots[i].address;
+				} else {
+					packet[len++] = DCC_COMMAND_ADDRESS | (loco_slots[i].address >> 8);
+					packet[len++] = loco_slots[i].address & 0xFF;
+				}
+				packet[len++] = DCC_COMMAND_SPEED_128;
+				packet[len++] = loco_slots[i].speed | loco_slots[i].direction;
+				if (loco_slots[i].function_repetition) {
+					// F0 .. F4
+					packet[len++] = DCC_COMMAND_F0_F4 | (loco_slots[i].function & 0x1F);
+					loco_slots[i].function_repetition--;
+				}
+				// calculate checksum
+				packet[len] = 0;
+				for (j=0; j<len; j++) {
+					packet[len] ^= packet[j];
+				}
+
+			}
+			osMutexRelease(DCC_MutexID);
+
+			// min. time to the next packet
+			osDelay(5);
+		    HAL_NVIC_DisableIRQ(TIM1_TRG_COM_TIM17_IRQn);
+			packet_len = len+1;
+			byte_count = 0;
+			bit_count  = 9;
+		    HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM17_IRQn);
 		}
-		len = 4;
-		packet[len-1] = 0;
-		for (i=0; i<len-1; i++) {
-			packet[len-1] ^= packet[i];
-		}
-		osMutexRelease(DCC_MutexID);
-		// min. time to the next packet
-		osDelay(6);
-	    HAL_NVIC_DisableIRQ(TIM1_TRG_COM_TIM17_IRQn);
-		packet_len = len;
-		byte_count = 0;
-		bit_count  = 9;
-	    HAL_NVIC_EnableIRQ(TIM1_TRG_COM_TIM17_IRQn);
+
 	}
 }
 
