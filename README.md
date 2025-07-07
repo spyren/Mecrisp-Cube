@@ -223,22 +223,7 @@ Remove the screw terminal.
 Remove the screw terminals. Capacitor
 
 #### Wire the buttons to the SBC
-Wire the button rows and columns to the dongle.
-
-|*Description*|*Dongle*|*Function* | *Pocket Power Pack* |
-|-------------|--------|-----------|--------------|
-| PB3         | CN1.5  | SWO       | ROW0         |
-| PB2         | CN1.7  |           | ROW1         |
-| PA6         | CN1.9  | D12       | ROW2         |
-| PA7         | CN1.10 | D11       | ROW3         |
-| PB6         | CN2.6  | UARTRX    | ROW4         |
-| PA9         | CN2.7  | D9        | ROW5         |
-| PA8         | CN2.8  | D6        | ROW6         |
-| PA0         | CN2.3  | A3        | COL0         |
-| PA1         | CN2.10 | A2        | COL1         |
-| PA2         | CN2.4  | D1        | COL2         |
-| PA3         | CN2.5  | D0        | COL3         |
-| PA5         | CN1.8  | D13       | COL4         |
+Wire the button to the SBC.
 
 #### Wire the JTAG SWD (optional)
 Only needed if you want to debug the board.
