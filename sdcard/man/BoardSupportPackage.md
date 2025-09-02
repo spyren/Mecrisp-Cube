@@ -181,7 +181,7 @@ scale is from 0 (0 % duty cycle) to 1000 (100 % duty cycle), this
 results in a PWM frequency of 1 kHz. If you need higher PWM frequencies,
 decrease the divider and/or the scale.
 
-PWM port pins: D0 (!TIM1CH3), D1 (!TIM1CH2), A4 (!TIM1CH1) 
+PWM port pins: D0 (TIM1CH3), D1 (TIM1CH2), A4 (TIM1CH1) 
 
 Simple test program to set brightness of a LED on pin D3 with a
 potentiometer on A0. Default PWM frequency is 1 kHz (prescaler set to
@@ -279,7 +279,7 @@ All channels (input capture / output compare) use the same time base.
 
 ## Output Compare
 
-Output compare TIM2: D13=13 (!TIM2CH1), A2=18 (!TIM2CH3), A3=19 (!TIM1CH4) 
+Output compare TIM2: D13=13 (TIM2CH1), A2=18 (TIM2CH3), A3=19 (TIM1CH4) 
 ```forth
 7 13 dmod \ output compare for D13
 7 18 dmod \ output compare for A2/D18
@@ -316,7 +316,7 @@ Or change the prescale to make it faster or slower:
 This sample program measures the time between the edges on port A1. 
 If no event occurs within 2 seconds, "timeout" is issued. 
 
-Input capture port pin: A1 (!TIM2CH2)
+Input capture port pin: A1 (TIM2CH2)
 
 Hit any key to abort program.
 ```forth
