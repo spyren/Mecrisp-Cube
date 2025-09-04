@@ -313,7 +313,9 @@ int DCC_getFunction(int slot) {
 
 /**
   * @brief
-  * 	Function implementing the DCC thread.
+  * 	Function implementing the DCC thread
+  *
+  * 	Data for the packets are prepared here.
   * @param
   * 	argument: Not used
   * @retval
@@ -352,7 +354,6 @@ static void DCC_Thread(void *argument) {
 				for (j=0; j<len; j++) {
 					packet[len] ^= packet[j];
 				}
-
 			}
 			osMutexRelease(DCC_MutexID);
 

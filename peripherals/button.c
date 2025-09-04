@@ -763,6 +763,7 @@ static void put_key_string(uint8_t c) {
 static void BUTTON_Thread(void *argument);
 
 typedef enum {
+	BUTTON_H,		// 0
 	BUTTON_G,		// 1
 	BUTTON_F,		// 2
 	BUTTON_E,		// 3
@@ -770,7 +771,7 @@ typedef enum {
 	BUTTON_C,		// 5
 	BUTTON_B,		// 6
 	BUTTON_A,		// 7
-	BUTTON_COUNT
+	BUTTON_COUNT	// 8
 } button_t;
 
 // Global Variables
@@ -782,6 +783,7 @@ typedef struct {
 } PortPin_t;
 
 static const PortPin_t PortPin_a[BUTTON_COUNT] = {
+		{ BUTTON_H_GPIO_Port,    	BUTTON_H_Pin } ,
 		{ BUTTON_G_GPIO_Port,    	BUTTON_G_Pin } ,
 		{ BUTTON_F_GPIO_Port,    	BUTTON_F_Pin } ,
 		{ BUTTON_E_GPIO_Port,    	BUTTON_E_Pin } ,
@@ -792,6 +794,7 @@ static const PortPin_t PortPin_a[BUTTON_COUNT] = {
 };
 
 static const char char_a[BUTTON_COUNT] = {
+		'h',
 		'g',
 		'f',
 		'e',

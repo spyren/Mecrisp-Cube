@@ -92,6 +92,8 @@ extern osSemaphoreId_t BUTTON_SemaphoreID;
 
 
 #else
+#define BUTTON_H_Pin			D9_Pin
+#define BUTTON_H_GPIO_Port		D9_GPIO_Port
 #define BUTTON_G_Pin			D8_Pin
 #define BUTTON_G_GPIO_Port		D8_GPIO_Port
 #define BUTTON_F_Pin			D7_Pin

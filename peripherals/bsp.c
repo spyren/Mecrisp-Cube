@@ -13,7 +13,7 @@
  *        - EXTI: D3, D5, D6, D7
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory), D10 CS for SD
  *        - NeoPixel D9
- *        - Buttons D2, D3, D4, D5, D6, D7, D8
+ *        - Buttons D2 A, D3 B, D4 C, D5 D, D6 E, D7 F, D8 G, D9 H
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
