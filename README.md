@@ -44,8 +44,8 @@ Not implemented yet.
    
 ### Bluetooth Remote Control
   - Use your smart phone as a additional remote throttle
-  - DCC-EX commands over BLE
-  - DCC++Throttle
+  - [DCC-EX commands](https://dcc-ex.com/reference/software/command-summary-consolidated.html) over BLE
+  - [JMRI Engine Driver Throttle](https://enginedriver.mstevetodd.com/)
 
 
 ## How to Use the Pocket Power Pack
