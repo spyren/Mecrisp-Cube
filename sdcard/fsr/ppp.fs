@@ -244,7 +244,8 @@ CR .( ppp.fs loading ... )
     display-off @ 0= if ppp-display then
     button case
       [char] a of 1 reverse ! endof      \ reverse
-      [char] b of menu @ 1+ dup maxmenu > if drop 0 then menu ! endof \ menu
+      [char] b of menu @ 1+ dup maxmenu > if drop 0 then menu ! endof \ menu down
+      [char] h of menu @ 1- dup 0 < if drop maxmenu then menu ! endof \ menu up
       [char] c of 0 reverse ! endof      \ forward
       menu-button
     endcase
