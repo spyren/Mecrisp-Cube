@@ -552,7 +552,7 @@ Exactly ANS, some logical extensions.
 query           ( -- )                     Fetches user input to input buffer
 tib             ( -- c- )                  Input buffer
 current-source  ( -- a- )                  Double-Variable which contains source
-tsource         ( c- n -- )                Change source
+setsource       ( c- n -- )                Change source
 source          ( -- c- u )                Current source
 >in             ( -- a- )                  Variable with current offset into source
 token           ( -- c- u )                Cuts one token out of input buffer
@@ -690,4 +690,5 @@ irq-collection  ( -- a- )       Collection of all unhandled interrupts
 
 The original of this document can be found at https://mecrisp-stellaris-folkdoc.sourceforge.io
 Copyright 2016-2020, Terry Porter, released under the GPL V3.
+
 

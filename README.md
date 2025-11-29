@@ -74,8 +74,10 @@ Mecrisp-Cube WB for STM32L4, and probably for STM32L5, and STM32U5.
       key and emit block the calling thread. 
   * USB
     * [USB-CDC](/sdcard/man/TerminalIO.md#usb-cdc-serial-communication-api) for
-      serial communication via USB
-    * Redirect console I/O like cdc-emit, cdc-key
+      serial communication via USB. Redirect console I/O like cdc-emit, cdc-key
+    * USB-MSC Device: The USB mass storage device class (also known as USB MSC or UMS).
+      You can use your Forth system as a flash drive (also thumb drive [US],
+      memory stick [UK], and pen drive/pendrive elsewhere)
   * BLE 5.0 GAP Peripheral Role (STM32WB)
     * DIS Device Information Service
     * HRS Heart Rate Service (heart rate depends on A0 for Nucleo and A2 for Dongle)
@@ -505,5 +507,6 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 
 * https://forth-standard.org/standard/words, Forth 2012 Standard Words
 * https://gforth.org/manual/, GForth Manual
+* https://theforth.net/, Package manager and repository for Forth
 
 

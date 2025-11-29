@@ -462,8 +462,8 @@ RTOS Support Functions
 ```
 osNewDataStack       ( --   )       Creates an new data stack for a Forth thread.
 xPortGetFreeHeapSize ( -- u )       returns the total amount of heap space that remains
-pvPortMalloc         ( u -- addr )  allocate dynamic memory (thread save)
-vPortFree            ( addr -- )    free dynamic memory (thread save)
+pvPortMalloc         ( u -- addr )  allocate dynamic memory (thread safe)
+vPortFree            ( addr -- )    free dynamic memory (thread safe)
 
 /osThreadAttr        ( -- u ) Gets the osThreadAttr_t structure size
 thName+              ( -- u ) Gets the osThreadAttr_t structure name attribut offset
