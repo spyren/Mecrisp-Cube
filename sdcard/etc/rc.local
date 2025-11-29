@@ -1,5 +1,13 @@
 \ this file will be included on startup
 cr .( include 0:/etc/rc.local ) cr
 
-\ watchdog? [IF] .( Watchdog has bitten, # bites: ) watchdog# . cr [THEN]
-\ assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert [THEN]
+watchdog? [IF] .( Watchdog has bitten, # bites: ) watchdog# . cr [THEN]
+assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert [THEN]
+
+2000 osDelay drop
+oledclr  
+throttle& construct
+' throttle throttle& start-task
+ppp-menu& construct
+' ppp-menu ppp-menu& start-task
+

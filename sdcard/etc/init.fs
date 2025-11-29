@@ -37,11 +37,16 @@ include /fsr/ansification.fs
 include /fsr/dump.fs
 include /fsr/disassembler-m3.fs
 \ include /fsr/float.fs
-include /fsr/words4.fs
+include /fsr/words.fs
 include /fsr/rtos.fs
-include /fsr/blocks.fs
-include /fsr/fat.fs
+\ include /fsr/blocks.fs
+\ include /fsr/fat.fs
 include /fsr/redirection.fs
+include /fsr/memory.fs
+\ include /fsr/struct.fs
+include /fsr/control.fs
+\ include /fsr/ppp.fs
+\ include /fsr/calculator
 
 CR 
 compiletoram? [IF] .( RAM Dictionary: ) [ELSE] .( FLASH Dictionary: ) [THEN]
