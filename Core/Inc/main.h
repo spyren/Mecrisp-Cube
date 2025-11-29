@@ -137,30 +137,6 @@ void Error_Handler(void);
 #define LD1_DONGLE_Pin GPIO_PIN_4
 #define LD1_DONGLE_GPIO_Port GPIOA
 
-#define COL0_Pin 		A3_Pin
-#define COL0_GPIO_Port 	A3_GPIO_Port
-#define COL1_Pin 		A2_Pin
-#define COL1_GPIO_Port 	A2_GPIO_Port
-#define COL2_Pin 		D1_Pin
-#define COL2_GPIO_Port	D1_GPIO_Port
-#define COL3_Pin 		D0_Pin
-#define COL3_GPIO_Port	D0_GPIO_Port
-#define COL4_Pin 		D13_Pin
-#define COL4_GPIO_Port	D13_GPIO_Port
-#define ROW0_Pin 		JTDO_Pin
-#define ROW0_GPIO_Port	JTDO_GPIO_Port
-#define ROW1_Pin 		DONGLE_SPI_CS_Pin
-#define ROW1_GPIO_Port	DONGLE_SPI_CS_GPIO_Port
-#define ROW2_Pin 		D12_Pin
-#define ROW2_GPIO_Port	D12_GPIO_Port
-#define ROW3_Pin		D11_Pin
-#define ROW3_GPIO_Port	D11_GPIO_Port
-#define ROW4_Pin		STLINK_RX_Pin
-#define ROW4_GPIO_Port	STLINK_RX_GPIO_Port
-#define ROW5_Pin		D9_Pin
-#define ROW5_GPIO_Port	D9_GPIO_Port
-#define ROW6_Pin		D6_Pin
-#define ROW6_GPIO_Port	D6_GPIO_Port
 
 
 /* USER CODE END Private defines */
