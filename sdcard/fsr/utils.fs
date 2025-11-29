@@ -13,12 +13,16 @@ CR .( utils.fs loading ... )
   drop
 ;
 
-: tolower ( C -- c ) 
-  32 or 
+: tolower ( C -- c ) \ only 7 bit ASCII
+  dup dup [char] A >=  swap [char] Z <= and if
+    32 or 
+  then
 ;
 
-: toupper ( c -- C ) 
-  32 not and 
+: toupper ( c -- C ) \ only 7 bit ASCII
+  dup dup [char] a >=  swap [char] z <= and if
+    32 not and 
+  then
 ;
 
 : lower ( addr len -- ) 
@@ -42,3 +46,8 @@ CR .( utils.fs loading ... )
     2drop cr query   \ Fetch new line.
   repeat
 ;
+
+: ms ( u -- ) \ Wait at least u milliseconds
+  osDelay drop
+;
+
