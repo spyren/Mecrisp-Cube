@@ -1669,12 +1669,12 @@ int FS_getc(FIL* fp) {
 	int buffer = ' ';
 	unsigned int count;
 
-	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
-		return -1;
+	if (f_read(fp, &buffer, 1, &count) != FR_OK) {
+		return 0x04; // EOF
 	}
 
 	if (count != 1) {
-		return -2;
+		return 0x04; // EOF
 	}
 	return buffer;
 }
