@@ -98,13 +98,14 @@ void POWER_startup(void) {
 
 		    // wakeup in debug mode
 		    // should also work on STOP2/Shutdown mode
-		    GPIO_InitTypeDef GPIO_InitStruct = {0};
 		    __disable_irq();
 //		    __HAL_RCC_GPIOC_CLK_ENABLE();
 		    __HAL_RCC_GPIOA_CLK_ENABLE();
 
 #if BUTTON == 1
 #if BUTTON_MATRIX == 1
+		    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
 		    // calculator keyboard matrix
 		    int i;
 
