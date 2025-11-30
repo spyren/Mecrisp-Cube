@@ -1351,7 +1351,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 	return stack;
 }
 
-
+#if SD_DRIVE == 1
 /**
  *  @brief
  *      Changes the current drive.
@@ -1408,7 +1408,7 @@ uint64_t FS_chdrv(uint64_t forth_stack) {
 
 	return stack;
 }
-
+#endif
 
 /**
  *  @brief
@@ -1669,12 +1669,12 @@ int FS_getc(FIL* fp) {
 	int buffer = ' ';
 	unsigned int count;
 
-	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
-		return -1;
+	if (f_read(fp, &buffer, 1, &count) != FR_OK) {
+		return 0x04; // EOF
 	}
 
 	if (count != 1) {
-		return -2;
+		return 0x04; // EOF
 	}
 	return buffer;
 }
