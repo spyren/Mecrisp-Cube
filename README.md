@@ -448,6 +448,9 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ### v1.6.0 Calculator Release
 * tinyUSB
 * 4th Caclculator
+### v1.6.1 LPM Release
+* Low Power Mode
+* Egg Timer
 
 
 ## Authors
@@ -508,5 +511,6 @@ with *Mecrsip-Cube*. If not, see http://www.gnu.org/licenses/.
 * https://forth-standard.org/standard/words, Forth 2012 Standard Words
 * https://gforth.org/manual/, GForth Manual
 * https://theforth.net/, Package manager and repository for Forth
+
 
 
