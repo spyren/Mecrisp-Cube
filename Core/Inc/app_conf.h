@@ -857,7 +857,7 @@ typedef enum
 #define BUTTON					0
 #define BUTTON_MATRIX			0
 #define POWER					1
-#define SD_DRIVE                0
+#define SD_DRIVE                1
 
 // Thread flag, is set after BLE has been started
 #define BLE_IS_READY			0x01
