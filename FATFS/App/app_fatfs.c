@@ -52,7 +52,9 @@ typedef enum {
 /* Private variables ---------------------------------------------------------*/
 FATFS USERFatFs;    /* File system object for USER logical drive */
 FIL USERFile;       /* File  object for USER */
+#if SD_DRIVE == 1
 char USERPathSD[4];   /* USER logical drive path */
+#endif
 char USERPathFD[4];   /* USER logical drive path */
 /* USER CODE BEGIN PV */
 FS_FileOperationsTypeDef Appli_state = APPLICATION_IDLE;
@@ -75,21 +77,24 @@ extern RTC_HandleTypeDef hrtc;
   * @retval Initialization result
   */
 int32_t MX_FATFS_Init(void) {
-	/*## FatFS: Link the disk I/O driver(s)  ###########################*/
+  /*## FatFS: Link the disk I/O driver(s)  ###########################*/
 
 	// init flash drive (0:)
 	if (FATFS_LinkDriver(&USER_FD_Driver, USERPathFD) != 0) {
 		return APP_ERROR;
 	}
 
+#if SD_DRIVE == 1
 	// init SD drive (1:)
 	if (FATFS_LinkDriver(&USER_SD_Driver, USERPathSD) != 0) {
 		return APP_ERROR;
-	} else {
-		Appli_state = APPLICATION_INIT;
-		return APP_OK;
 	}
-	/* USER CODE END FATFS_Init */
+#endif
+
+	Appli_state = APPLICATION_INIT;
+	return APP_OK;
+
+  /* USER CODE END FATFS_Init */
 }
 
 /**
@@ -98,11 +103,11 @@ int32_t MX_FATFS_Init(void) {
   * @retval Process result
   */
 int32_t MX_FATFS_Process(void) {
-	/* USER CODE BEGIN FATFS_Process */
+  /* USER CODE BEGIN FATFS_Process */
 	int32_t process_res = APP_OK;
 
 	return process_res;
-	/* USER CODE END FATFS_Process */
+  /* USER CODE END FATFS_Process */
 }
 
 /**
@@ -137,5 +142,3 @@ DWORD get_fattime(void)
 /* USER CODE BEGIN Application */
      
 /* USER CODE END Application */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

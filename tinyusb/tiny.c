@@ -64,6 +64,7 @@
 
 #include "app_common.h"
 #include "cmsis_os.h"
+#include "stm32_lpm.h"
 
 #include "usb_cdc.h"
 
@@ -75,6 +76,7 @@ static void usb_device_thread(void *argument);
 // ****************
 const char TINY_Version[] =
 	    "  * TinyUSB CDC, MSC v0.16.0 (C) 2023, hathach (tinyusb.org)\n";
+int volatile TINY_tud_cdc_connected = TRUE;
 
 // RTOS resources
 // **************
@@ -138,6 +140,7 @@ void tud_umount_cb(void) {
 // Within 7ms, device must draw an average of current less than 2.5 mA from bus
 void tud_suspend_cb(bool remote_wakeup_en) {
   (void) remote_wakeup_en;
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_USB, UTIL_LPM_ENABLE);
 }
 
 // Invoked when usb bus is resumed
@@ -157,9 +160,11 @@ void tud_cdc_line_state_cb(uint8_t itf, bool dtr, bool rts) {
 	if (dtr) {
 		// Terminal connected
 		osThreadFlagsSet(CDC_ThreadID, CDC_CONNECTED);
+		TINY_tud_cdc_connected = TRUE;
 	} else {
 		// Terminal disconnected
 		osThreadFlagsSet(CDC_ThreadID, CDC_DISCONNECTED);
+		TINY_tud_cdc_connected = FALSE;
 	}
 }
 

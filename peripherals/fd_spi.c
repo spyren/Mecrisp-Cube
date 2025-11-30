@@ -47,6 +47,7 @@
 #include "myassert.h"
 #include "n25q128a.h"
 #include "quadspi.h"
+#include "stm32_lpm.h"
 
 
 // Private function prototypes
@@ -149,6 +150,7 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
 	QSPI_CommandTypeDef s_command;
 	uint32_t end_addr, current_size, current_addr;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the QSPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
@@ -223,6 +225,7 @@ int FDSPI_writeData(uint8_t* pData, uint32_t WriteAddr, uint32_t Size) {
 	} while (current_addr < end_addr);
 
 	osMutexRelease(FDSPI_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_ENABLE);
 	return HAL_OK;
 }
 
@@ -246,6 +249,7 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 	osStatus_t os_status;
 	QSPI_CommandTypeDef s_command;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the QSPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
@@ -312,6 +316,7 @@ int FDSPI_readData(uint8_t* pData, uint32_t ReadAddr, uint32_t Size) {
 #endif
 
 	osMutexRelease(FDSPI_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_ENABLE);
 	return HAL_OK;
 }
 
@@ -328,6 +333,7 @@ int FDSPI_eraseChip(void) {
 	osStatus_t os_status;
 	QSPI_CommandTypeDef s_command;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the QSPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
@@ -364,6 +370,7 @@ int FDSPI_eraseChip(void) {
 	wait_mem_ready(80000);
 
 	osMutexRelease(FDSPI_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_ENABLE);
 	return HAL_OK;
 }
 
@@ -384,6 +391,7 @@ int FDSPI_eraseBlock(uint32_t flash_addr) {
 	osStatus_t os_status;
 	QSPI_CommandTypeDef s_command;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the QSPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
@@ -424,6 +432,7 @@ int FDSPI_eraseBlock(uint32_t flash_addr) {
 	wait_mem_ready(650);
 
 	osMutexRelease(FDSPI_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_ENABLE);
 	return HAL_OK;
 }
 
@@ -443,6 +452,7 @@ int FDSPI_eraseSector(uint32_t flash_addr) {
 	osStatus_t os_status;
 	QSPI_CommandTypeDef s_command;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the QSPI
 	osMutexAcquire(FDSPI_MutexID, osWaitForever);
 
@@ -483,6 +493,7 @@ int FDSPI_eraseSector(uint32_t flash_addr) {
 	wait_mem_ready(650);
 
 	osMutexRelease(FDSPI_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_FDSPI, UTIL_LPM_ENABLE);
 	return HAL_OK;
 }
 

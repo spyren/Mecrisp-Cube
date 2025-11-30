@@ -7,7 +7,7 @@
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2023-03-02
+ *      2024-12-15
  *  @remark
  *      Language: C, STM32CubeIDE GCC
  *  @copyright
@@ -35,6 +35,7 @@
 #define POWER_SWITCH1 0x01
 #define POWER_SWITCH2 0x02
 #define POWER_SHUTDOWN 0x1000
+
 
 void POWER_startup(void);
 void POWER_init(void);

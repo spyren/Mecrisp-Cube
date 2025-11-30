@@ -64,6 +64,7 @@ extern DMA_HandleTypeDef hdma_i2c3_rx;
 extern DMA_HandleTypeDef hdma_i2c3_tx;
 extern I2C_HandleTypeDef hi2c1;
 extern I2C_HandleTypeDef hi2c3;
+extern IPCC_HandleTypeDef hipcc;
 extern DMA_HandleTypeDef hdma_quadspi;
 extern QSPI_HandleTypeDef hqspi;
 extern RTC_HandleTypeDef hrtc;
@@ -216,6 +217,20 @@ void WWDG_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles RTC wake-up interrupt through EXTI line 19.
+  */
+void RTC_WKUP_IRQHandler(void)
+{
+  /* USER CODE BEGIN RTC_WKUP_IRQn 0 */
+  HW_TS_RTC_Wakeup_Handler();
+  /* USER CODE END RTC_WKUP_IRQn 0 */
+  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
+  /* USER CODE BEGIN RTC_WKUP_IRQn 1 */
+
+  /* USER CODE END RTC_WKUP_IRQn 1 */
+}
+
+/**
   * @brief This function handles Flash global interrupt.
   */
 void FLASH_IRQHandler(void)
@@ -229,18 +244,13 @@ void FLASH_IRQHandler(void)
   /* USER CODE END FLASH_IRQn 1 */
 }
 
+#if BUTTON == 1
 /**
   * @brief This function handles EXTI line0 interrupt.
   */
 void EXTI0_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI0_IRQn 0 */
-
-  /* USER CODE END EXTI0_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
-  /* USER CODE BEGIN EXTI0_IRQn 1 */
-
-  /* USER CODE END EXTI0_IRQn 1 */
 }
 
 /**
@@ -248,13 +258,7 @@ void EXTI0_IRQHandler(void)
   */
 void EXTI1_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI1_IRQn 0 */
-
-  /* USER CODE END EXTI1_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(MEMS_DRDY_Pin);
-  /* USER CODE BEGIN EXTI1_IRQn 1 */
-
-  /* USER CODE END EXTI1_IRQn 1 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 
 /**
@@ -262,13 +266,7 @@ void EXTI1_IRQHandler(void)
   */
 void EXTI2_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI2_IRQn 0 */
-
-  /* USER CODE END EXTI2_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(MEMS_INT1_Pin);
-  /* USER CODE BEGIN EXTI2_IRQn 1 */
-
-  /* USER CODE END EXTI2_IRQn 1 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
 }
 
 /**
@@ -276,14 +274,9 @@ void EXTI2_IRQHandler(void)
   */
 void EXTI3_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI3_IRQn 0 */
-
-  /* USER CODE END EXTI3_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_3);
-  /* USER CODE BEGIN EXTI3_IRQn 1 */
-
-  /* USER CODE END EXTI3_IRQn 1 */
 }
+#endif
 
 /**
   * @brief This function handles EXTI line4 interrupt.
@@ -297,6 +290,40 @@ void EXTI4_IRQHandler(void)
   /* USER CODE BEGIN EXTI4_IRQn 1 */
 
   /* USER CODE END EXTI4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[9:5] interrupts.
+  */
+void EXTI9_5_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
+
+  /* USER CODE END EXTI9_5_IRQn 0 */
+#if BUTTON == 1
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
+#else
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+#endif
+  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
+
+  /* USER CODE END EXTI9_5_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+  // for the buttons
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
+//  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12); // shared with D2
+  /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
 /**
@@ -409,20 +436,6 @@ void ADC1_IRQHandler(void)
   /* USER CODE BEGIN ADC1_IRQn 1 */
 
   /* USER CODE END ADC1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles EXTI line[9:5] interrupts.
-  */
-void EXTI9_5_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_5);
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 /**
@@ -553,22 +566,6 @@ void USART1_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles EXTI line[15:10] interrupts.
-  */
-void EXTI15_10_IRQHandler(void)
-{
-  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-
-  /* USER CODE END EXTI15_10_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
-  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
-  // for the buttons
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
-//  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12); // shared with D2
-  /* USER CODE END EXTI15_10_IRQn 1 */
-}
-
-/**
   * @brief This function handles RTC A and B alarm interrupt through EXTI line 17.
   */
 void RTC_Alarm_IRQHandler(void)
@@ -666,11 +663,6 @@ void DMA2_Channel2_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
-void RTC_WKUP_IRQHandler(void)
-{
-  HW_TS_RTC_Wakeup_Handler();
-}
 
 /*
 void prvGetRegistersFromStack( uint32_t *pulFaultStackAddress )

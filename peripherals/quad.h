@@ -1,16 +1,15 @@
 /**
  *  @brief
- *      UART terminal console
+ *  	Quad Alphanumeric LED driver based on the controller HT16K33.
  *
- *      Line buffered serial communication.
- *      CR is end of line for Rx.
- *      LF is end of line for Tx.
+ *  	14 + 1 segments, monochrome.
+ *  	I2C Interface, address 0x70.
  *  @file
- *      uart.h
+ *      quad.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2020-02-19
+ *      2024-12-13
  *  @remark
  *      Language: C, STM32CubeIDE GCC
  *  @copyright
@@ -30,24 +29,23 @@
  *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
  */
 
+#ifndef INC_QUAD_H_
+#define INC_QUAD_H_
 
-#ifndef INC_UART_H_
-#define INC_UART_H_
+#define QUAD_I2C_ADR		0x70
 
-extern osMutexId_t UART_MutexID;
+#define QUAD_X_RESOLUTION	4
 
-void UART_init(void);
-int UART_getc(void);
-int UART_gets(char *str, int length);
-int UART_RxReady(void);
-int UART_putc(int c);
-int UART_puts(const char *s);
-int UART_TxReady(void);
-int UART_putkey(const char c);
-void UART_setBaudrate(const int baudrate);
-void UART_setWordLength(const int wordlength);
-void UART_setParityBit(const int paritybit);
-void UART_setStopBits(const int stopbits);
-void UART_setRxLPM(int lpm);
-
-#endif /* INC_UART_H_ */
+void QUAD_init(void);
+void QUAD_clear(void);
+void QUAD_setPos(uint8_t x);
+uint8_t QUAD_getPos();
+int QUAD_putc(int c);
+int QUAD_puts(const char *s);
+void QUAD_shutdown(uint8_t status);
+void QUAD_blink(uint8_t status);
+void QUAD_dimm(uint8_t status);
+void QUAD_setSegment(uint8_t column, uint8_t segment);
+int QUAD_getSegment(uint8_t col, uint8_t row);
+void QUAD_setDP(uint8_t dp);
+#endif /* INC_QUAD_H_ */

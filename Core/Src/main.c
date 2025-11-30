@@ -26,20 +26,17 @@
  *
  *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
  *       1 KiB Stack         (for startup and ISRs, MSP)
- *       1 KiB Heap          (maybe not needed)
- *       1 KiB UART Tx Buffer
- *       5 KiB UART Rx Buffer
- *       4 KiB CDC Rx/Tx Buffer
- *       2 KiB CDC RxQueue
+ *       2 KiB Heap          (maybe not needed)
  *       4 KiB Flash erase Buffer
+ *       4 KiB Block Buffer
  *      10 KiB global variables
- *      90 KiB RTOS Heap (about 9 KiB free)
+ *      90 KiB RTOS Heap (about 17 KiB free)
  *         Thread Stack size
  *              4 KiB Forth (main)
  *              1 KiB UART_Tx
- *              1 KiB UART_Rx
- *              1 KiB CDC_Tx
+ *              5 KiB UART_Rx
  *              2 KiB CDC_Rx
+ *            0.5 KiB CDC_Tx
  *              1 KiB CRS
  *              1 KiB HRS
  *              1 KiB HCI_USER_EVT
@@ -121,7 +118,9 @@
 #include "fs.h"
 #include "clock.h"
 #include "myassert.h"
-#include "power.h"
+#if POWER == 1
+ #include "power.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -196,7 +195,7 @@ int main(void)
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
-  MX_IPCC_Init();
+//  MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
 
@@ -224,6 +223,7 @@ int main(void)
   MX_CRC_Init();
   MX_RNG_Init();
   MX_PKA_Init();
+  MX_CRC_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
@@ -239,12 +239,7 @@ int main(void)
 	  // lock failed
 	  i--;
   }
-  if (i == 0) {
-	  ASSERT_fatal(0, ASSERT_HSEM_CLK48, 0);
-  }
-  for (i=0; i<100; i++) {
-	  ; // wait a short period
-  }
+
   /* USER CODE END 2 */
 
   /* Init scheduler */

@@ -65,7 +65,9 @@
 .equ	UART_TERMINAL, 		1
 .equ	CDC_TERMINAL, 		2
 .equ	CRS_TERMINAL,		3
+.equ	CDC_NULL_TERMINAL,	4	// cdc-key and null-emit
 
+//.equ	DEFAULT_TERMINAL, CDC_NULL_TERMINAL
 .equ	DEFAULT_TERMINAL, CDC_TERMINAL
 //.equ	DEFAULT_TERMINAL, UART_TERMINAL
 
@@ -76,6 +78,11 @@
 .equ	PLEX,				1
 .equ	EPD,				0
 .equ	FPU,				1
+.equ	QUAD,				1
+.equ	BUTTON,				0
+.equ	BUTTON_MATRIX,		0
+.equ	POWER,				1
+.equ	SD_DRIVE,			0
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -504,6 +511,17 @@ Forth:
 	str		r0, [r2, #user_hook_qemit]
 	ldr		r0,	=crs_qkey
 	str		r0, [r2, #user_hook_qkey]
+.else
+.if	DEFAULT_TERMINAL == CDC_NULL_TERMINAL
+	ldr		r0,	=null_emit
+	str		r0, [r2, #user_hook_emit]
+	ldr		r0,	=cdc_key
+	str		r0, [r2, #user_hook_key]
+	ldr		r0,	=null_qemit
+	str		r0, [r2, #user_hook_qemit]
+	ldr		r0,	=cdc_qkey
+	str		r0, [r2, #user_hook_qkey]
+.endif
 .endif
 .endif
 .endif
@@ -515,48 +533,10 @@ Forth:
 	ldr		r0, =2
 	str		r0, [r1]
 
-	bl		BSP_getSwitch1
+	bl		print_greet
+	bl		BSP_getSwitch1		// button1 pressed on reset -> no include
 	cmp		r0, #0
-	beq		1f
-	bl		crs_terminal		// button1 pressed on reset -> crs terminal
-1:	bl		BSP_getSwitch2
-	cmp		r0, #0
-	beq		2f
-	bl		uart_terminal		// button2 pressed on reset -> uart terminal
-2:
-	pushdatos
-	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
-	bl		fs_strlen
-	bl		stype
-	pushdatos
-	ldr		tos, =MecrispVersion
-	bl		fs_strlen
-	bl		stype
-	welcome " by Matthias Koch. "
-	pushdatos
-	ldr		tos, =BSP_Version	// print Cube and BLE version
-	bl		fs_strlen
-	bl		stype
-	pushdatos
-	ldr		tos, =RTOS_Version	// print RTOS version
-	bl		fs_strlen
-	bl		stype
-	pushdatos
-	ldr		tos, =FS_Version	// print file system version
-	bl		fs_strlen
-	bl		stype
-	pushdatos
-	ldr		tos, =VI_Version	// print vi system version
-	bl		fs_strlen
-	bl		stype
-	pushdatos
-	ldr		tos, =TINY_Version	// print TinyUSB system version
-	bl		fs_strlen
-	bl		stype
-
-//	bl		BSP_getSwitch3		// button1 pressed on reset -> no include
-//	cmp		r0, #0
-//	bne		3f
+	bne		3f
     // include 0:/etc/rc.local
     pushdatos
    	ldr		tos, =rc_local

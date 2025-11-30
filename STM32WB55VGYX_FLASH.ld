@@ -54,18 +54,11 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 RAM_SHARED_B (xrw)         : ORIGIN = 0x20038000, LENGTH = 15K
 }
 
-/*
-FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
-FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
-FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
-FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
-*/
-
 /* Define output sections */
 SECTIONS
 {
   /* The startup code goes first into FLASH */
-  .isr_vector :
+  .isr_vector (READONLY) :
   {
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
@@ -73,7 +66,7 @@ SECTIONS
   } >FLASH
 
   /* The program code and other data goes into FLASH */
-  .text :
+  .text (READONLY) :
   {
     . = ALIGN(4);
     *(.text)           /* .text sections (code) */
@@ -90,7 +83,7 @@ SECTIONS
   } >FLASH
 
   /* Constant data goes into FLASH */
-  .rodata :
+  .rodata (READONLY) :
   {
     . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
@@ -98,27 +91,27 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
-  .ARM : {
+  .ARM.extab  (READONLY) : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
+  .ARM (READONLY) : {
     __exidx_start = .;
     *(.ARM.exidx*)
     __exidx_end = .;
   } >FLASH
 
-  .preinit_array     :
+  .preinit_array    (READONLY) :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
   } >FLASH
-  .init_array :
+  .init_array (READONLY) :
   {
     PROVIDE_HIDDEN (__init_array_start = .);
     KEEP (*(SORT(.init_array.*)))
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
   } >FLASH
-  .fini_array :
+  .fini_array (READONLY):
   {
     PROVIDE_HIDDEN (__fini_array_start = .);
     KEEP (*(SORT(.fini_array.*)))

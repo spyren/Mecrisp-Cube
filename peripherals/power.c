@@ -1,13 +1,14 @@
 /**
  *  @brief
- *      Power management e.g. low power, shutdown and the like.
+ *      Power management e.g. low power, shutdown, charging and the like.
  *
+ *		Needs BUTTON_A or calculator keyboard matrix.
  *  @file
  *      power.c
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
- *      2023-03-02
+ *      2024-12-15
  *  @remark
  *      Language: C, STM32CubeIDE GCC
  *  @copyright
@@ -37,8 +38,16 @@
 #include "app_common.h"
 #include "main.h"
 #include "clock.h"
-#include "oled.h"
 #include "power.h"
+#include "button.h"
+#if OLED == 1
+#include "oled.h"
+#endif
+#if QUAD == 1
+#include "quad.h"
+#endif
+
+#if POWER == 1
 
 // Private function prototypes
 // ***************************
@@ -57,6 +66,10 @@ extern RTC_HandleTypeDef hrtc;
 // Private Variables
 // *****************
 
+// Global Variables
+// ****************
+uint8_t GAUGE_UpdateBatState = TRUE;
+
 
 // Public Functions
 // ****************
@@ -65,7 +78,7 @@ extern RTC_HandleTypeDef hrtc;
  *  @brief
  *      Check for startup or halt/shutdown.
  *
- *      Called direct after reset.
+ *      Called direct after reset. Using WKUP1 (PA0) or WKUP2 (PC?)
  *  @return
  *      None
  */
@@ -79,30 +92,102 @@ void POWER_startup(void) {
 		    HAL_PWR_EnableBkUpAccess();
 			RTC_Backup.power_param &= ~POWER_SHUTDOWN;
 
-		    // CPU2 is not started
 		    // Set the lowest low-power mode for CPU2: shutdown mode */
 		    LL_C2_PWR_SetPowerMode(LL_PWR_MODE_SHUTDOWN);
+//			LL_C2_PWR_SetPowerMode(LL_PWR_MODE_STANDBY);
 
-		    // shutdown, exit into POR, wake up on falling edge (PWR_WAKEUP_PINx_LOW)
-		    HAL_PWREx_EnablePullUpPullDownConfig();
-			if (RTC_Backup.power_param & POWER_SWITCH1) {
-				// enable wake up switch1 (PC12, WKUP3)
-			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_12); // wake up pin is PC12
-			    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF3);
-			    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN3_LOW, PWR_CORE_CPU1);
+		    // wakeup in debug mode
+		    // should also work on STOP2/Shutdown mode
+		    __disable_irq();
+//		    __HAL_RCC_GPIOC_CLK_ENABLE();
+		    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+#if BUTTON == 1
+#if BUTTON_MATRIX == 1
+		    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+		    // calculator keyboard matrix
+		    int i;
+
+		    // using COL0 and ROW6 (on/off button)
+		    GPIO_InitStruct.Pin = COL0_Pin;
+		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+		    GPIO_InitStruct.Pull = GPIO_PULLUP;
+		    HAL_GPIO_Init(COL0_GPIO_Port, &GPIO_InitStruct);
+		    GPIO_InitStruct.Pin = ROW6_Pin;
+		    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+		    GPIO_InitStruct.Pull = GPIO_NOPULL;
+		    HAL_GPIO_Init(ROW6_GPIO_Port, &GPIO_InitStruct);
+
+		    // activate only last row
+			HAL_GPIO_WritePin(ROW6_GPIO_Port, ROW6_Pin, GPIO_PIN_RESET);
+
+			for (i=0; i<100000; i++) {
+				; // wait for ports
 			}
-			if (RTC_Backup.power_param & POWER_SWITCH2) {
-				// enable wake up switch2 (PC13, WKUP2)
-			    HAL_PWREx_EnableGPIOPullUp(PWR_GPIO_C, PWR_GPIO_BIT_13); // wake up pin is PC13
-			    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF2);
-			    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN2_LOW, PWR_CORE_CPU1);
+
+			while (HAL_GPIO_ReadPin(COL0_GPIO_Port, COL0_Pin) == GPIO_PIN_RESET) {
+		    	; // wait till button release
 			}
-#ifdef NDEBUG
-			DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
+
+		    __HAL_GPIO_EXTI_CLEAR_IT(COL0_Pin);
+		    __HAL_GPIO_EXTI_CLEAR_FLAG(COL0_Pin);
+		    __NVIC_ClearPendingIRQ(EXTI0_IRQn);
+
+		    HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+		    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+		    LL_EXTI_DisableIT_0_31( (~0) );
+		    LL_EXTI_DisableIT_32_63( (~0) );
+		    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_0);
+		    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
+
+		    // shutdown, exit into POR, wake up on falling edge (PA0, BUTTON_A_Pin, PWR_WAKEUP_PIN1_LOW)
+		    // POWER button is the power switch
+		    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF1);
+		    HAL_PWREx_DisableInternalWakeUpLine();
+		    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW, PWR_CORE_CPU1);
+#ifndef DEBUG
+		    DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
 #endif
-    		HAL_PWREx_EnterSHUTDOWNMode();
+		    //HAL_PWREx_EnterSHUTDOWNMode();
+		    HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
 
-    		// should never reach this code, only for debugging
+#else
+		    // using BUTTON_A
+		    GPIO_InitStruct.Pin = BUTTON_A_Pin;
+		    GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+		    GPIO_InitStruct.Pull = GPIO_PULLUP;
+		    HAL_GPIO_Init(BUTTON_A_GPIO_Port, &GPIO_InitStruct);
+
+		    while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port, BUTTON_A_Pin) == GPIO_PIN_RESET) {
+		    	; // wait till button release
+		    }
+
+		    __HAL_GPIO_EXTI_CLEAR_IT(BUTTON_A_Pin);
+		    HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+		    HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+		    __NVIC_ClearPendingIRQ(EXTI0_IRQn);
+
+		    LL_EXTI_DisableIT_0_31( (~0) );
+		    LL_EXTI_DisableIT_32_63( (~0) );
+		    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_0);
+		    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
+
+		    // shutdown, exit into POR, wake up on falling edge (PA0, BUTTON_A_Pin, PWR_WAKEUP_PIN1_LOW)
+		    // POWER button is the power switch
+		    HAL_PWREx_ClearWakeupFlag(PWR_FLAG_WUF1);
+		    HAL_PWREx_DisableInternalWakeUpLine();
+		    HAL_PWREx_EnableWakeUpPin(PWR_WAKEUP_PIN1_LOW, PWR_CORE_CPU1);
+#ifndef DEBUG
+		    DBGMCU->CR = 0; // Disable debug, trace and IWDG in low-power modes
+#endif
+		    //HAL_PWREx_EnterSHUTDOWNMode();
+		    HAL_PWREx_EnterSTOP2Mode(PWR_STOPENTRY_WFI);
+#endif
+#endif
+
+    		// should never reach this code (except exit from stop), only for debugging
     		HAL_NVIC_SystemReset();
 		}
 	}
@@ -119,9 +204,8 @@ void POWER_init(void) {
 	if (RTC_Backup.power != RTC_MAGIC_COOKIE) {
 		// default power switch behavior
 		RTC_Backup.power = RTC_MAGIC_COOKIE;
-		RTC_Backup.power_param = POWER_SWITCH2;
+		RTC_Backup.power_param = POWER_SWITCH1;
 	}
-	update_sw();
 }
 
 
@@ -136,7 +220,12 @@ void POWER_halt(void) {
 		// RTC is up and running and low power shutdown is activated
 
 		// switch off peripherals
-		OLED_switchOff();
+#if OLED == 1
+		OLED_off();
+#endif
+#if QUAD == 1
+		QUAD_shutdown(0);
+#endif
 
 		// request halt
 		RTC_Backup.power_param |= POWER_SHUTDOWN;
@@ -155,7 +244,6 @@ void POWER_halt(void) {
  */
 void POWER_setSwitch(int sw) {
 	RTC_Backup.power_param = sw;
-	update_sw();
 }
 
 
@@ -192,48 +280,8 @@ void POWER_switchEvent(int sw) {
 // Private Functions
 // *****************
 
-void update_sw(void) {
-	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-
-	if (RTC_Backup.power_param & POWER_SWITCH1) {
-		// enable halt switch1
-		// halt on switch button 1 release (rising edge)
-		GPIO_InitStruct.Pin = B1_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_12);
-		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
-		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
-	} else {
-		// disable halt switch1
-		GPIO_InitStruct.Pin = B1_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-	}
-	if (RTC_Backup.power_param & POWER_SWITCH2) {
-		// enable halt switch2
-		// halt on switch button 2 release (rising edge)
-		GPIO_InitStruct.Pin = B2_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(B2_GPIO_Port, &GPIO_InitStruct);
-		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
-		HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
-		HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-	} else {
-		// disable halt switch2
-		GPIO_InitStruct.Pin = B2_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(B2_GPIO_Port, &GPIO_InitStruct);
-	}
-}
-
 
 // Callbacks
 // *********
 
-
+#endif // POWER

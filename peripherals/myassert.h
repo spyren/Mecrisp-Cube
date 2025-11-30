@@ -67,8 +67,6 @@
 
 #define ASSERT_CRS_SIGINT				22
 
-#define ASSERT_HSEM_CLK48				23
-
 #define ASSERT_UNKNOWN					99
 
 void ASSERT_init(void);

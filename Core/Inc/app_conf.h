@@ -178,12 +178,12 @@
 // ****************
 
 #ifdef DEBUG
-#define MECRISP_CUBE_TAG "1.6.0 deb"
+#define MECRISP_CUBE_TAG "1.6.1 deb"
 #else
-#define MECRISP_CUBE_TAG "1.6.0 rel"
+#define MECRISP_CUBE_TAG "1.6.1 rel"
 #endif
 
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2024 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2025 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required set define to 0 */
@@ -511,7 +511,13 @@
  *  When set to 1, the low power mode is enable
  *  When set to 0, the device stays in RUN mode
  */
-#define CFG_LPM_SUPPORTED    0
+#ifdef DEBUG
+// debug configuration
+#define CFG_LPM_SUPPORTED    1
+#else
+// release configuration
+#define CFG_LPM_SUPPORTED    1
+#endif
 
 /******************************************************************************
  * RTC interface
@@ -614,6 +620,10 @@ typedef enum
  * This shall be set to 0 in a final product
  *
  */
+
+#ifdef DEBUG
+// debug configuration
+
 #define CFG_HW_RESET_BY_FW         1
 
 /**
@@ -684,6 +694,78 @@ typedef enum
  */
 #define DBG_TRACE_MSG_QUEUE_SIZE 4096
 #define MAX_DBG_TRACE_MSG_SIZE   1024
+#else
+// release configuration
+/**
+ * keep debugger enabled while in any low power mode when set to 1
+ * should be set to 0 in production
+ */
+#define CFG_DEBUGGER_SUPPORTED    0
+
+/**
+ * When set to 1, the traces are enabled in the BLE services
+ */
+#define CFG_DEBUG_BLE_TRACE     0
+
+/**
+ * Enable or Disable traces in application
+ */
+#define CFG_DEBUG_APP_TRACE     0
+
+#if (CFG_DEBUG_APP_TRACE != 0)
+#define APP_DBG_MSG                 PRINT_MESG_DBG
+#else
+#define APP_DBG_MSG                 PRINT_NO_MESG
+#endif
+
+#if ( (CFG_DEBUG_BLE_TRACE != 0) || (CFG_DEBUG_APP_TRACE != 0) )
+#define CFG_DEBUG_TRACE             1
+#endif
+
+#if (CFG_DEBUG_TRACE != 0)
+#undef CFG_LPM_SUPPORTED
+#undef CFG_DEBUGGER_SUPPORTED
+#define CFG_LPM_SUPPORTED           0
+#define CFG_DEBUGGER_SUPPORTED      1
+#endif
+
+/**
+ * When CFG_DEBUG_TRACE_FULL is set to 1, the trace are output with the API name, the file name and the line number
+ * When CFG_DEBUG_TRACE_LIGHT is set to 1, only the debug message is output
+ *
+ * When both are set to 0, no trace are output
+ * When both are set to 1,  CFG_DEBUG_TRACE_FULL is selected
+ */
+#define CFG_DEBUG_TRACE_LIGHT     0
+#define CFG_DEBUG_TRACE_FULL      0
+
+#if (( CFG_DEBUG_TRACE != 0 ) && ( CFG_DEBUG_TRACE_LIGHT == 0 ) && (CFG_DEBUG_TRACE_FULL == 0))
+#undef CFG_DEBUG_TRACE_FULL
+#undef CFG_DEBUG_TRACE_LIGHT
+#define CFG_DEBUG_TRACE_FULL      0
+#define CFG_DEBUG_TRACE_LIGHT     1
+#endif
+
+#if ( CFG_DEBUG_TRACE == 0 )
+#undef CFG_DEBUG_TRACE_FULL
+#undef CFG_DEBUG_TRACE_LIGHT
+#define CFG_DEBUG_TRACE_FULL      0
+#define CFG_DEBUG_TRACE_LIGHT     0
+#endif
+
+/**
+ * When not set, the traces is looping on sending the trace over UART
+ */
+#define DBG_TRACE_USE_CIRCULAR_QUEUE 1
+
+/**
+ * max buffer Size to queue data traces and max data trace allowed.
+ * Only Used if DBG_TRACE_USE_CIRCULAR_QUEUE is defined
+ */
+#define DBG_TRACE_MSG_QUEUE_SIZE 4096
+#define MAX_DBG_TRACE_MSG_SIZE   1024
+
+#endif  // DEBUG
 
 /* USER CODE BEGIN Defines */
 
@@ -742,7 +824,16 @@ typedef enum
   CFG_LPM_APP,
   CFG_LPM_APP_BLE,
   /* USER CODE BEGIN CFG_LPM_Id_t */
-
+  CFG_LPM_USB,
+  CFG_LPM_ADC,
+  CFG_LPM_FLASH,
+  CFG_LPM_IIC,
+  CFG_LPM_IIC3,
+  CFG_LPM_RTSPI,
+  CFG_LPM_FDSPI,
+  CFG_LPM_SDSPI,
+  CFG_LPM_UART_TX,
+  CFG_LPM_UART_RX,
   /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
@@ -761,7 +852,12 @@ typedef enum
 #define LCDISPLAY				0
 #define PLEX					1
 #define EPD						0
+#define QUAD					0
 #define FPU_IP					1
+#define BUTTON					0
+#define BUTTON_MATRIX			0
+#define POWER					1
+#define SD_DRIVE                0
 
 // Thread flag, is set after BLE has been started
 #define BLE_IS_READY			0x01

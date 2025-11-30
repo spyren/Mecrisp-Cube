@@ -2,7 +2,7 @@
  *  @brief
  *      Secure Digital Memory Card block read and write.
  *
- *      SPI is used as interface. SD_CS is chip select.
+ *      SPI is used as interface. D10 is chip select.
  *      Based on stm32_adafruit_sd.c and sd_diskio.c.
  *      Pullup for MISO.
  *      fd seems to disturb sd, SPI?
@@ -39,11 +39,11 @@
 // *************************
 #include "app_common.h"
 #include "main.h"
-#include "sd_spi.h"
+#include "rt_spi.h"
 #include "sd.h"
 #include "bsp.h"
 
-
+#if SD_DRIVE == 1
 // Defines
 // *******
 #define SD_DUMMY_BYTE			0xFF
@@ -160,19 +160,19 @@ typedef enum {
 // Private function prototypes
 // ***************************
 
-static uint8_t get_cid_register(SD_CID* Cid);
-static uint8_t get_csd_register(SD_CSD* Csd);
-static uint8_t get_data_response(void);
-static uint8_t go_idle_state(void);
-static SD_CmdAnswer_typedef send_cmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer);
-static uint8_t wait_data(uint8_t data);
-static uint8_t read_data(void);
+static uint8_t SD_GetCIDRegister(SD_CID* Cid);
+static uint8_t SD_GetCSDRegister(SD_CSD* Csd);
+static uint8_t SD_GetDataResponse(void);
+static uint8_t SD_GoIdleState(void);
+static SD_CmdAnswer_typedef SD_SendCmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer);
+static uint8_t SD_WaitData(uint8_t data);
+static uint8_t SD_ReadData(void);
 
 // SD IO functions
-static void io_init(void);
-static void io_cs_state(uint8_t state);
-static void io_write_read_data(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
-static uint8_t io_write_byte(uint8_t Data);
+static void SD_IO_Init(void);
+static void SD_IO_CSState(uint8_t state);
+static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
+static uint8_t SD_IO_WriteByte(uint8_t Data);
 
 
 // Global Variables
@@ -228,14 +228,13 @@ void SD_getSize(void) {
 	uint8_t state;
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
-	io_init();
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
+	SD_IO_Init();
 	/* SD detection pin is not physically mapped on the Adafruit shield */
 	SdStatus = SD_PRESENT;
 	/* SD initialized and set to SPI mode properly */
-	state = go_idle_state();
-	osMutexRelease(SDSPI_MutexID);
-
+	state = SD_GoIdleState();
+	osMutexRelease(RTSPI_MutexID);
 	if (state != 0) {
 		// no SD Card found
 		sd_size = 0;
@@ -274,21 +273,22 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 	uint8_t status;
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
-	status = get_csd_register(&(pCardInfo->Csd));
-	status|= get_cid_register(&(pCardInfo->Cid));
+	status = SD_GetCSDRegister(&(pCardInfo->Csd));
+	status|= SD_GetCIDRegister(&(pCardInfo->Cid));
 
-	osMutexRelease(SDSPI_MutexID);
-
-	if(flag_SDHC == 1 ) {
+	if(flag_SDHC == 1 )
+	{
 		pCardInfo->LogBlockSize = SD_BLOCK_SIZE;
 		pCardInfo->CardBlockSize = SD_BLOCK_SIZE;
 		pCardInfo->CardCapacity =
 				(uint64_t)(pCardInfo->Csd.version.v2.DeviceSize + 1) *
 				1024ULL * (uint64_t) pCardInfo->LogBlockSize;
 		pCardInfo->LogBlockNbr = (pCardInfo->CardCapacity) / (pCardInfo->LogBlockSize);
-	} else {
+	}
+	else
+	{
 		pCardInfo->CardCapacity = (pCardInfo->Csd.version.v1.DeviceSize + 1) ;
 		pCardInfo->CardCapacity *= (1 << (pCardInfo->Csd.version.v1.DeviceSizeMul + 2));
 		pCardInfo->LogBlockSize = SD_BLOCK_SIZE;
@@ -296,6 +296,7 @@ uint8_t SD_GetCardInfo(SD_CardInfo *pCardInfo) {
 		pCardInfo->CardCapacity *= pCardInfo->CardBlockSize;
 		pCardInfo->LogBlockNbr = (pCardInfo->CardCapacity) / (pCardInfo->LogBlockSize);
 	}
+	osMutexRelease(RTSPI_MutexID);
 
 	return status;
 }
@@ -324,13 +325,13 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	BSP_setSysLED(SYSLED_DISK_READ_OPERATION);
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
-	response = send_cmd(SD_CMD_SET_BLOCKLEN, BlockSize, 0xFF, SD_ANSWER_R1_EXPECTED);
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	response = SD_SendCmd(SD_CMD_SET_BLOCKLEN, BlockSize, 0xFF, SD_ANSWER_R1_EXPECTED);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 	if ( response.r1 != SD_R1_NO_ERROR) {
 		goto error;
 	}
@@ -344,40 +345,40 @@ uint8_t SD_ReadBlocks(uint8_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks) {
 	while (NumOfBlocks--) {
 		/* Send CMD17 (SD_CMD_READ_SINGLE_BLOCK) to read one block */
 		/* Check if the SD acknowledged the read block command: R1 response (0x00: no errors) */
-		response = send_cmd(SD_CMD_READ_SINGLE_BLOCK, addr, 0xFF, SD_ANSWER_R1_EXPECTED);
+		response = SD_SendCmd(SD_CMD_READ_SINGLE_BLOCK, addr, 0xFF, SD_ANSWER_R1_EXPECTED);
 		if ( response.r1 != SD_R1_NO_ERROR) {
 			goto error;
 		}
 
 		/* Now look for the data token to signify the start of the data */
-		if (wait_data(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
+		if (SD_WaitData(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
 			/* Read the SD block data : read NumByteToRead data */
-			io_write_read_data(&scratch_block[0], (uint8_t*)pData + offset, BlockSize);
+			SD_IO_WriteReadData(&scratch_block[0], (uint8_t*)pData + offset, BlockSize);
 
 			/* Set next read address*/
 			offset += BlockSize;
 			addr = ((flag_SDHC == 1) ? (addr + 1) : (addr + BlockSize));
 
 			/* get CRC bytes (not really needed by us, but required by SD) */
-			io_write_byte(SD_DUMMY_BYTE);
-			io_write_byte(SD_DUMMY_BYTE);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 		} else {
 			goto error;
 		}
 
 		/* End the command data read cycle */
-		io_cs_state(1);
-		io_write_byte(SD_DUMMY_BYTE);
+		SD_IO_CSState(1);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 	}
 
 	retr = SD_OK;
 
 	error :
 	/* Send dummy byte: 8 Clock pulses of delay */
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
-	osMutexRelease(SDSPI_MutexID);
+	osMutexRelease(RTSPI_MutexID);
 
 	BSP_clearSysLED(SYSLED_DISK_READ_OPERATION);
 	/* Return the reponse */
@@ -408,13 +409,13 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	BSP_setSysLED(SYSLED_DISK_WRITE_OPERATION);
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	/* Send CMD16 (SD_CMD_SET_BLOCKLEN) to set the size of the block and
      Check if the SD acknowledged the set block length command: R1 response (0x00: no errors) */
-	response = send_cmd(SD_CMD_SET_BLOCKLEN, BlockSize, 0xFF, SD_ANSWER_R1_EXPECTED);
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	response = SD_SendCmd(SD_CMD_SET_BLOCKLEN, BlockSize, 0xFF, SD_ANSWER_R1_EXPECTED);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 	if ( response.r1 != SD_R1_NO_ERROR) {
 		goto error;
 	}
@@ -426,46 +427,46 @@ uint8_t SD_WriteBlocks(uint8_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
 	while (NumOfBlocks--) {
 		/* Send CMD24 (SD_CMD_WRITE_SINGLE_BLOCK) to write blocks  and
        Check if the SD acknowledged the write block command: R1 response (0x00: no errors) */
-		response = send_cmd(SD_CMD_WRITE_SINGLE_BLOCK, addr, 0xFF, SD_ANSWER_R1_EXPECTED);
+		response = SD_SendCmd(SD_CMD_WRITE_SINGLE_BLOCK, addr, 0xFF, SD_ANSWER_R1_EXPECTED);
 		if (response.r1 != SD_R1_NO_ERROR) {
 			goto error;
 		}
 
 		/* Send dummy byte for NWR timing : one byte between CMDWRITE and TOKEN */
-		io_write_byte(SD_DUMMY_BYTE);
-		io_write_byte(SD_DUMMY_BYTE);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 		/* Send the data token to signify the start of the data */
-		io_write_byte(SD_TOKEN_START_DATA_SINGLE_BLOCK_WRITE);
+		SD_IO_WriteByte(SD_TOKEN_START_DATA_SINGLE_BLOCK_WRITE);
 
 		/* Write the block data to SD */
-		io_write_read_data((uint8_t*)pData + offset, &scratch_block[0], BlockSize);
+		SD_IO_WriteReadData((uint8_t*)pData + offset, &scratch_block[0], BlockSize);
 
 		/* Set next write address */
 		offset += BlockSize;
 		addr = ((flag_SDHC == 1) ? (addr + 1) : (addr + BlockSize));
 
 		/* Put CRC bytes (not really needed by us, but required by SD) */
-		io_write_byte(SD_DUMMY_BYTE);
-		io_write_byte(SD_DUMMY_BYTE);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 		/* Read data response */
-		if (get_data_response() != SD_DATA_OK) {
+		if (SD_GetDataResponse() != SD_DATA_OK) {
 			/* Set response value to failure */
 			goto error;
 		}
 
-		io_cs_state(1);
-		io_write_byte(SD_DUMMY_BYTE);
+		SD_IO_CSState(1);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 	}
 	retr = SD_OK;
 
 	error :
 	/* Send dummy byte: 8 Clock pulses of delay */
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
-	osMutexRelease(SDSPI_MutexID);
+	osMutexRelease(RTSPI_MutexID);
 
 	BSP_clearSysLED(SYSLED_DISK_WRITE_OPERATION);
 	/* Return the reponse */
@@ -489,29 +490,29 @@ uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr) {
 	uint16_t BlockSize = SD_BLOCK_SIZE;
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	/* Send CMD32 (Erase group start) and check if the SD acknowledged the erase command: R1 response (0x00: no errors) */
-	response = send_cmd(SD_CMD_SD_ERASE_GRP_START, (StartAddr) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	response = SD_SendCmd(SD_CMD_SD_ERASE_GRP_START, (StartAddr) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 	if (response.r1 == SD_R1_NO_ERROR) {
 		/* Send CMD33 (Erase group end) and Check if the SD acknowledged the erase command: R1 response (0x00: no errors) */
-		response = send_cmd(SD_CMD_SD_ERASE_GRP_END, (EndAddr*SD_BLOCK_SIZE) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
-		io_cs_state(1);
-		io_write_byte(SD_DUMMY_BYTE);
+		response = SD_SendCmd(SD_CMD_SD_ERASE_GRP_END, (EndAddr*SD_BLOCK_SIZE) * (flag_SDHC == 1 ? 1 : BlockSize), 0xFF, SD_ANSWER_R1_EXPECTED);
+		SD_IO_CSState(1);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 		if (response.r1 == SD_R1_NO_ERROR) {
 			/* Send CMD38 (Erase) and Check if the SD acknowledged the erase command: R1 response (0x00: no errors) */
-			response = send_cmd(SD_CMD_ERASE, 0, 0xFF, SD_ANSWER_R1B_EXPECTED);
+			response = SD_SendCmd(SD_CMD_ERASE, 0, 0xFF, SD_ANSWER_R1B_EXPECTED);
 			if (response.r1 == SD_R1_NO_ERROR) {
 				retr = SD_OK;
 			}
-			io_cs_state(1);
-			io_write_byte(SD_DUMMY_BYTE);
+			SD_IO_CSState(1);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 		}
 	}
 
-	osMutexRelease(SDSPI_MutexID);
+	osMutexRelease(RTSPI_MutexID);
 
 	/* Return the reponse */
 	return retr;
@@ -528,14 +529,14 @@ uint8_t SD_GetCardState(void) {
 	SD_CmdAnswer_typedef retr;
 
 	// only one thread is allowed to use the SPI
-	osMutexAcquire(SDSPI_MutexID, osWaitForever);
+	osMutexAcquire(RTSPI_MutexID, osWaitForever);
 
 	/* Send CMD13 (SD_SEND_STATUS) to get SD status */
-	retr = send_cmd(SD_CMD_SEND_STATUS, 0, 0xFF, SD_ANSWER_R2_EXPECTED);
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	retr = SD_SendCmd(SD_CMD_SEND_STATUS, 0, 0xFF, SD_ANSWER_R2_EXPECTED);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
-	osMutexRelease(SDSPI_MutexID);
+	osMutexRelease(RTSPI_MutexID);
 
 	/* Find SD status according to card state */
 	if(( retr.r1 == SD_R1_NO_ERROR) && ( retr.r2 == SD_R2_NO_ERROR)) {
@@ -549,8 +550,6 @@ uint8_t SD_GetCardState(void) {
 // Private Functions
 // *****************
 
-// get SPI mutex for IO operations
-
 /**
   * @brief
   *     Reads the SD card SCD register.
@@ -562,24 +561,24 @@ uint8_t SD_GetCardState(void) {
   * @retval
   *     SD status
   */
-static uint8_t get_csd_register(SD_CSD* Csd) {
+static uint8_t SD_GetCSDRegister(SD_CSD* Csd) {
 	uint16_t counter = 0;
 	uint8_t CSD_Tab[16];
 	uint8_t retr = SD_ERROR;
 	SD_CmdAnswer_typedef response;
 
 	/* Send CMD9 (CSD register) or CMD10(CSD register) and Wait for response in the R1 format (0x00 is no errors) */
-	response = send_cmd(SD_CMD_SEND_CSD, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
+	response = SD_SendCmd(SD_CMD_SEND_CSD, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
 	if(response.r1 == SD_R1_NO_ERROR) {
-		if (wait_data(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
+		if (SD_WaitData(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
 			for (counter = 0; counter < 16; counter++) {
 				/* Store CSD register value on CSD_Tab */
-				CSD_Tab[counter] = io_write_byte(SD_DUMMY_BYTE);
+				CSD_Tab[counter] = SD_IO_WriteByte(SD_DUMMY_BYTE);
 			}
 
 			/* Get CRC bytes (not really needed by us, but required by SD) */
-			io_write_byte(SD_DUMMY_BYTE);
-			io_write_byte(SD_DUMMY_BYTE);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 
 			// CSD header decoding
@@ -654,8 +653,8 @@ static uint8_t get_csd_register(SD_CSD* Csd) {
 	}
 
 	/* Send dummy byte: 8 Clock pulses of delay */
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 	/* Return the reponse */
 	return retr;
@@ -673,24 +672,24 @@ static uint8_t get_csd_register(SD_CSD* Csd) {
   * @retval
   *     SD status
   */
-static uint8_t get_cid_register(SD_CID* Cid) {
+static uint8_t SD_GetCIDRegister(SD_CID* Cid) {
 	uint32_t counter = 0;
 	uint8_t retr = SD_ERROR;
 	uint8_t CID_Tab[16];
 	SD_CmdAnswer_typedef response;
 
 	/* Send CMD10 (CID register) and Wait for response in the R1 format (0x00 is no errors) */
-	response = send_cmd(SD_CMD_SEND_CID, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
+	response = SD_SendCmd(SD_CMD_SEND_CID, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
 	if(response.r1 == SD_R1_NO_ERROR) {
-		if(wait_data(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
+		if(SD_WaitData(SD_TOKEN_START_DATA_SINGLE_BLOCK_READ) == SD_OK) {
 			/* Store CID register value on CID_Tab */
 			for (counter = 0; counter < 16; counter++) {
-				CID_Tab[counter] = io_write_byte(SD_DUMMY_BYTE);
+				CID_Tab[counter] = SD_IO_WriteByte(SD_DUMMY_BYTE);
 			}
 
 			/* Get CRC bytes (not really needed by us, but required by SD) */
-			io_write_byte(SD_DUMMY_BYTE);
-			io_write_byte(SD_DUMMY_BYTE);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 			/* Byte 0 */
 			Cid->ManufacturerID = CID_Tab[0];
@@ -747,8 +746,8 @@ static uint8_t get_cid_register(SD_CID* Cid) {
 	}
 
 	/* Send dummy byte: 8 Clock pulses of delay */
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 	/* Return the reponse */
 	return retr;
@@ -758,8 +757,6 @@ static uint8_t get_cid_register(SD_CID* Cid) {
 /**
   * @brief
   *     Sends 5 bytes command to the SD card and get response
-  *
-  *     The CS stays active.
   * @param
   *     Cmd: The user expected command to send to SD card.
   * @param
@@ -771,7 +768,7 @@ static uint8_t get_cid_register(SD_CID* Cid) {
   * @retval
   *     SD status
   */
-static SD_CmdAnswer_typedef send_cmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer) {
+static SD_CmdAnswer_typedef SD_SendCmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uint8_t Answer) {
 	uint8_t frame[SD_CMD_LENGTH], frameout[SD_CMD_LENGTH];
 	SD_CmdAnswer_typedef retr = {0xFF, 0xFF , 0xFF, 0xFF, 0xFF};
 
@@ -788,38 +785,36 @@ static SD_CmdAnswer_typedef send_cmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uin
 	frame[5] = (Crc | 0x01);         /* Construct byte 6 */
 
 	/* Send the command */
-	io_cs_state(0);
-	io_write_read_data(frame, frameout, SD_CMD_LENGTH); /* Send the Cmd bytes */
+	SD_IO_CSState(0);
+	SD_IO_WriteReadData(frame, frameout, SD_CMD_LENGTH); /* Send the Cmd bytes */
 
 	switch(Answer) {
 	case SD_ANSWER_R1_EXPECTED :
-		retr.r1 = read_data();
+		retr.r1 = SD_ReadData();
 		break;
 	case SD_ANSWER_R1B_EXPECTED :
-		retr.r1 = read_data();
-		retr.r2 = io_write_byte(SD_DUMMY_BYTE);
+		retr.r1 = SD_ReadData();
+		retr.r2 = SD_IO_WriteByte(SD_DUMMY_BYTE);
 		/* Set CS High */
-		io_cs_state(1);
-		osDelay(1);
+		SD_IO_CSState(1);
+		HAL_Delay(1);
 		/* Set CS Low */
-		io_cs_state(0);
+		SD_IO_CSState(0);
 
 		/* Wait IO line return 0xFF */
-		while (io_write_byte(SD_DUMMY_BYTE) != 0xFF) {
-			;
-		}
+		while (SD_IO_WriteByte(SD_DUMMY_BYTE) != 0xFF);
 		break;
 	case SD_ANSWER_R2_EXPECTED :
-		retr.r1 = read_data();
-		retr.r2 = io_write_byte(SD_DUMMY_BYTE);
+		retr.r1 = SD_ReadData();
+		retr.r2 = SD_IO_WriteByte(SD_DUMMY_BYTE);
 		break;
 	case SD_ANSWER_R3_EXPECTED :
 	case SD_ANSWER_R7_EXPECTED :
-		retr.r1 = read_data();
-		retr.r2 = io_write_byte(SD_DUMMY_BYTE);
-		retr.r3 = io_write_byte(SD_DUMMY_BYTE);
-		retr.r4 = io_write_byte(SD_DUMMY_BYTE);
-		retr.r5 = io_write_byte(SD_DUMMY_BYTE);
+		retr.r1 = SD_ReadData();
+		retr.r2 = SD_IO_WriteByte(SD_DUMMY_BYTE);
+		retr.r3 = SD_IO_WriteByte(SD_DUMMY_BYTE);
+		retr.r4 = SD_IO_WriteByte(SD_DUMMY_BYTE);
+		retr.r5 = SD_IO_WriteByte(SD_DUMMY_BYTE);
 		break;
 	default :
 		break;
@@ -831,8 +826,6 @@ static SD_CmdAnswer_typedef send_cmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uin
 /**
   * @brief
   *     Gets the SD card data response and check the busy flag.
-  *
-  *     The CS has to be active.
   * @retval
   *      The SD status: Read data response xxx0<status>1
   *         - status 010: Data accecpted
@@ -840,12 +833,12 @@ static SD_CmdAnswer_typedef send_cmd(uint8_t Cmd, uint32_t Arg, uint8_t Crc, uin
   *         - status 110: Data rejected due to a Write error.
   *         - status 111: Data rejected due to other error.
   */
-static uint8_t get_data_response(void) {
+static uint8_t SD_GetDataResponse(void) {
 	uint8_t dataresponse;
 	uint8_t rvalue = SD_DATA_OTHER_ERROR;
 
-	dataresponse = io_write_byte(SD_DUMMY_BYTE);
-	io_write_byte(SD_DUMMY_BYTE); /* read the busy response byte*/
+	dataresponse = SD_IO_WriteByte(SD_DUMMY_BYTE);
+	SD_IO_WriteByte(SD_DUMMY_BYTE); /* read the busy response byte*/
 
 	/* Mask unused bits */
 	switch (dataresponse & 0x1F) {
@@ -853,12 +846,12 @@ static uint8_t get_data_response(void) {
 		rvalue = SD_DATA_OK;
 
 		/* Set CS High */
-		io_cs_state(1);
+		SD_IO_CSState(1);
 		/* Set CS Low */
-		io_cs_state(0);
+		SD_IO_CSState(0);
 
 		/* Wait IO line return 0xFF */
-		while (io_write_byte(SD_DUMMY_BYTE) != 0xFF) {
+		while (SD_IO_WriteByte(SD_DUMMY_BYTE) != 0xFF) {
 			;
 		}
 		break;
@@ -883,16 +876,16 @@ static uint8_t get_data_response(void) {
   * @retval
   *     SD status
   */
-static uint8_t go_idle_state(void) {
+static uint8_t SD_GoIdleState(void) {
 	SD_CmdAnswer_typedef response;
 	__IO uint8_t counter = 0;
 	/* Send CMD0 (SD_CMD_GO_IDLE_STATE) to put SD in SPI mode and
      wait for In Idle State Response (R1 Format) equal to 0x01 */
 	do {
 		counter++;
-		response = send_cmd(SD_CMD_GO_IDLE_STATE, 0, 0x95, SD_ANSWER_R1_EXPECTED);
-		io_cs_state(1);
-		io_write_byte(SD_DUMMY_BYTE);
+		response = SD_SendCmd(SD_CMD_GO_IDLE_STATE, 0, 0x95, SD_ANSWER_R1_EXPECTED);
+		SD_IO_CSState(1);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 		if(counter >= SD_MAX_TRY) {
 			return SD_ERROR;
 		}
@@ -901,22 +894,22 @@ static uint8_t go_idle_state(void) {
 
 	/* Send CMD8 (SD_CMD_SEND_IF_COND) to check the power supply status
      and wait until response (R7 Format) equal to 0xAA and */
-	response = send_cmd(SD_CMD_SEND_IF_COND, 0x1AA, 0x87, SD_ANSWER_R7_EXPECTED);
-	io_cs_state(1);
-	io_write_byte(SD_DUMMY_BYTE);
+	response = SD_SendCmd(SD_CMD_SEND_IF_COND, 0x1AA, 0x87, SD_ANSWER_R7_EXPECTED);
+	SD_IO_CSState(1);
+	SD_IO_WriteByte(SD_DUMMY_BYTE);
 	if((response.r1  & SD_R1_ILLEGAL_COMMAND) == SD_R1_ILLEGAL_COMMAND) {
 		/* initialise card V1 */
 		do {
 			/* initialise card V1 */
 			/* Send CMD55 (SD_CMD_APP_CMD) before any ACMD command: R1 response (0x00: no errors) */
-			response = send_cmd(SD_CMD_APP_CMD, 0x00000000, 0xFF, SD_ANSWER_R1_EXPECTED);
-			io_cs_state(1);
-			io_write_byte(SD_DUMMY_BYTE);
+			response = SD_SendCmd(SD_CMD_APP_CMD, 0x00000000, 0xFF, SD_ANSWER_R1_EXPECTED);
+			SD_IO_CSState(1);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 			/* Send ACMD41 (SD_CMD_SD_APP_OP_COND) to initialize SDHC or SDXC cards: R1 response (0x00: no errors) */
-			response = send_cmd(SD_CMD_SD_APP_OP_COND, 0x00000000, 0xFF, SD_ANSWER_R1_EXPECTED);
-			io_cs_state(1);
-			io_write_byte(SD_DUMMY_BYTE);
+			response = SD_SendCmd(SD_CMD_SD_APP_OP_COND, 0x00000000, 0xFF, SD_ANSWER_R1_EXPECTED);
+			SD_IO_CSState(1);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 		} while(response.r1 == SD_R1_IN_IDLE_STATE);
 		flag_SDHC = 0;
 	} else if (response.r1 == SD_R1_IN_IDLE_STATE) {
@@ -924,36 +917,36 @@ static uint8_t go_idle_state(void) {
 		do {
 
 			/* Send CMD55 (SD_CMD_APP_CMD) before any ACMD command: R1 response (0x00: no errors) */
-			response = send_cmd(SD_CMD_APP_CMD, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
-			io_cs_state(1);
-			io_write_byte(SD_DUMMY_BYTE);
+			response = SD_SendCmd(SD_CMD_APP_CMD, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
+			SD_IO_CSState(1);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 
 			/* Send ACMD41 (SD_CMD_SD_APP_OP_COND) to initialize SDHC or SDXC cards: R1 response (0x00: no errors) */
-			response = send_cmd(SD_CMD_SD_APP_OP_COND, 0x40000000, 0xFF, SD_ANSWER_R1_EXPECTED);
-			io_cs_state(1);
-			io_write_byte(SD_DUMMY_BYTE);
+			response = SD_SendCmd(SD_CMD_SD_APP_OP_COND, 0x40000000, 0xFF, SD_ANSWER_R1_EXPECTED);
+			SD_IO_CSState(1);
+			SD_IO_WriteByte(SD_DUMMY_BYTE);
 		} while(response.r1 == SD_R1_IN_IDLE_STATE);
 
 		if ((response.r1 & SD_R1_ILLEGAL_COMMAND) == SD_R1_ILLEGAL_COMMAND) {
 			do {
 				/* Send CMD55 (SD_CMD_APP_CMD) before any ACMD command: R1 response (0x00: no errors) */
-				response = send_cmd(SD_CMD_APP_CMD, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
-				io_cs_state(1);
-				io_write_byte(SD_DUMMY_BYTE);
+				response = SD_SendCmd(SD_CMD_APP_CMD, 0, 0xFF, SD_ANSWER_R1_EXPECTED);
+				SD_IO_CSState(1);
+				SD_IO_WriteByte(SD_DUMMY_BYTE);
 				if(response.r1 != SD_R1_IN_IDLE_STATE) {
 					return SD_ERROR;
 				}
 				/* Send ACMD41 (SD_CMD_SD_APP_OP_COND) to initialize SDHC or SDXC cards: R1 response (0x00: no errors) */
-				response = send_cmd(SD_CMD_SD_APP_OP_COND, 0x00000000, 0xFF, SD_ANSWER_R1_EXPECTED);
-				io_cs_state(1);
-				io_write_byte(SD_DUMMY_BYTE);
+				response = SD_SendCmd(SD_CMD_SD_APP_OP_COND, 0x00000000, 0xFF, SD_ANSWER_R1_EXPECTED);
+				SD_IO_CSState(1);
+				SD_IO_WriteByte(SD_DUMMY_BYTE);
 			} while(response.r1 == SD_R1_IN_IDLE_STATE);
 		}
 
 		/* Send CMD58 (SD_CMD_READ_OCR) to initialize SDHC or SDXC cards: R3 response (0x00: no errors) */
-		response = send_cmd(SD_CMD_READ_OCR, 0x00000000, 0xFF, SD_ANSWER_R3_EXPECTED);
-		io_cs_state(1);
-		io_write_byte(SD_DUMMY_BYTE);
+		response = SD_SendCmd(SD_CMD_READ_OCR, 0x00000000, 0xFF, SD_ANSWER_R3_EXPECTED);
+		SD_IO_CSState(1);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 		if (response.r1 != SD_R1_NO_ERROR) {
 			return SD_ERROR;
 		}
@@ -969,18 +962,16 @@ static uint8_t go_idle_state(void) {
 /**
   * @brief
   *     Waits a data until a value different from SD_DUMMY_BITE
-  *
-  *     The CS has to be active and stays active.
   * @retval
   *     the value read
   */
-static uint8_t read_data(void) {
+static uint8_t SD_ReadData(void) {
 	uint8_t timeout = 0x08;
 	uint8_t readvalue;
 
 	/* Check if response is got or a timeout is happen */
 	do {
-		readvalue = io_write_byte(SD_DUMMY_BYTE);
+		readvalue = SD_IO_WriteByte(SD_DUMMY_BYTE);
 		timeout--;
 
 	} while ((readvalue == SD_DUMMY_BYTE) && timeout);
@@ -993,21 +984,19 @@ static uint8_t read_data(void) {
 /**
   * @brief
   *     Waits a data from the SD card
-  *
-  *     The CS has to be active and stays active.
   * @param
   *     data : Expected data from the SD card
   * @retval
   *     SD_OK or SD_TIMEOUT
   */
-static uint8_t wait_data(uint8_t data) {
+static uint8_t SD_WaitData(uint8_t data) {
 	uint16_t timeout = 0xFFFF;
 	uint8_t readvalue;
 
 	/* Check if response is got or a timeout is happen */
 
 	do {
-		readvalue = io_write_byte(SD_DUMMY_BYTE);
+		readvalue = SD_IO_WriteByte(SD_DUMMY_BYTE);
 		timeout--;
 	} while ((readvalue != data) && timeout);
 
@@ -1028,17 +1017,17 @@ static uint8_t wait_data(uint8_t data) {
   * @retval
   *     None
   */
-static void io_init(void) {
+static void SD_IO_Init(void) {
 	uint8_t	counter;
 
 	/* SD chip select high */
-	io_cs_state(1);
+	SD_IO_CSState(1);
 
 	/* Send dummy byte 0xFF, 10 times with CS high */
 	/* Rise CS and MOSI for 80 clocks cycles */
 	for (counter = 0; counter <= 9; counter++) {
 		/* Send dummy byte 0xFF */
-		io_write_byte(SD_DUMMY_BYTE);
+		SD_IO_WriteByte(SD_DUMMY_BYTE);
 	}
 }
 
@@ -1051,7 +1040,7 @@ static void io_init(void) {
   * @retval
   *     None
   */
-static void io_cs_state(uint8_t val) {
+static void SD_IO_CSState(uint8_t val) {
 	if(val != 0) {
 		HAL_GPIO_WritePin(SD_CS_GPIO_Port, SD_CS_Pin, GPIO_PIN_SET);
 	} else {
@@ -1062,9 +1051,7 @@ static void io_cs_state(uint8_t val) {
 
 /**
   * @brief
-  *     Write and read byte(s) on the SD
-  *
-  *     The CS has to be active and stays active.
+  *     Write byte(s) on the SD
   * @param
   *     DataIn: Pointer to data buffer to write
   * @param
@@ -1074,28 +1061,26 @@ static void io_cs_state(uint8_t val) {
   * @retval
   *     None
   */
-static void io_write_read_data(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
+static void SD_IO_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength) {
 	/* Send the byte */
-	SDSPI_WriteReadData(DataIn, DataOut, DataLength);
+	RTSPI_WriteReadData(DataIn, DataOut, DataLength);
 }
 
 
 /**
   * @brief
   *     Write a byte on the SD.
-  *
-  *     The CS has to be active and stays active.
   * @param
   *     Data: byte to send.
   * @retval
   *     Data written
   */
-static uint8_t io_write_byte(uint8_t Data) {
+static uint8_t SD_IO_WriteByte(uint8_t Data) {
 	uint8_t tmp;
 
 	/* Send the byte */
-	SDSPI_WriteReadData(&Data,&tmp,1);
+	RTSPI_WriteReadData(&Data,&tmp,1);
 	return tmp;
 }
 
-
+#endif // SD_DRIVE == 1

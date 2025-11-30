@@ -38,6 +38,7 @@
 #include "sd_spi.h"
 #include "rt_spi.h"
 #include "myassert.h"
+#include "stm32_lpm.h"
 
 
 // Private function prototypes
@@ -120,6 +121,7 @@ int SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLe
 	osStatus_t os_status = osOK;
 
 	SDSPI_SpiStatus = 0;
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_DISABLE);
 	hal_status = HAL_SPI_TransmitReceive_DMA(&hspi2, (uint8_t*) DataIn, DataOut, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
@@ -130,6 +132,7 @@ int SDSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLe
 	} else {
 		SDSPI_SpiStatus = -3;
 	}
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_ENABLE);
 
 	if (SDSPI_SpiStatus != 0) {
 		Error_Handler();
@@ -155,6 +158,7 @@ int SDSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
 	osStatus_t os_status = osOK;
 
 	SDSPI_SpiStatus = FALSE;
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_DISABLE);
 	hal_status = HAL_SPI_Transmit_DMA(&hspi2, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
@@ -165,6 +169,7 @@ int SDSPI_WriteData(const uint8_t *Data, uint16_t DataLength) {
 	} else {
 		SDSPI_SpiStatus = -3;
 	}
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_ENABLE);
 
 	if (SDSPI_SpiStatus != 0) {
 		Error_Handler();
@@ -190,6 +195,7 @@ int SDSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
 	osStatus_t os_status = osOK;
 
 	SDSPI_SpiStatus = FALSE;
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_DISABLE);
 	hal_status = HAL_SPI_Transmit_DMA(&hspi2, (uint8_t*) Data, DataLength);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
@@ -200,6 +206,7 @@ int SDSPI_ReadData(const uint8_t *Data, uint16_t DataLength) {
 	} else {
 		SDSPI_SpiStatus = -3;
 	}
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_ENABLE);
 
 	if (SDSPI_SpiStatus != 0) {
 		Error_Handler();
@@ -224,6 +231,7 @@ int SDSPI_Write(uint8_t Value) {
 	uint8_t data = Value;
 
 	SDSPI_SpiStatus = FALSE;
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_DISABLE);
 	hal_status = HAL_SPI_Transmit_DMA(&hspi2, &data, 1);
 	if (hal_status == HAL_OK) {
 		// blocked till read/write is finished
@@ -234,6 +242,7 @@ int SDSPI_Write(uint8_t Value) {
 	} else {
 		SDSPI_SpiStatus = -3;
 	}
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_SDSPI, UTIL_LPM_ENABLE);
 
 	if (SDSPI_SpiStatus != 0) {
 		Error_Handler();

@@ -71,6 +71,8 @@ void HAL_MspInit(void)
   // CubeMX does not create code for the IPCC interrupt priority
   HAL_NVIC_SetPriority(IPCC_C1_RX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
   HAL_NVIC_SetPriority(IPCC_C1_TX_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY + 1, 0);
+  HAL_NVIC_EnableIRQ(IPCC_C1_RX_IRQn);
+  HAL_NVIC_EnableIRQ(IPCC_C1_TX_IRQn);
 
   /* USER CODE END MspInit 0 */
 

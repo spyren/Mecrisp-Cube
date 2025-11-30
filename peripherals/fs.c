@@ -70,11 +70,7 @@
 // Global Variables
 // ****************
 
-#if EXTERNAL_FLASH == 1
-const char FS_Version[] = "  * FatFs for external flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN\n";
-#else
 const char FS_Version[] = "  * FatFs for internal flash and microSD - Generic FAT fs module  R0.12c (C) 2017 ChaN\n";
-#endif
 
 FATFS FatFs_FD;	/* Work area (filesystem object) for logical flash drive (0) */
 FATFS FatFs_SD;	/* Work area (filesystem object) for logical SD drive (1) */
@@ -1272,6 +1268,7 @@ uint64_t FS_mount(uint64_t forth_stack) {
 				strcpy(line, ": Can't mount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#if SD_DRIVE == 1
 		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
 			SD_getSize();
 			fr = f_mount(&FatFs_SD, "1:", 0);
@@ -1280,6 +1277,7 @@ uint64_t FS_mount(uint64_t forth_stack) {
 				strcpy(line, ": Can't mount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#endif
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": unknown drive");
@@ -1332,6 +1330,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 				strcpy(line, ": Can't unmount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#if SD_DRIVE == 1
 		} else if (! strcmp (line, "1:") || ! strcmp (line, "SD:")){
 			SD_getSize();
 			fr = f_mount(0, "1:", 0);
@@ -1340,6 +1339,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 				strcpy(line, ": Can't unmount drive");
 				stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			}
+#endif
 		} else {
 			stack = FS_type(stack, (uint8_t*)line, strlen(line));
 			strcpy(line, ": unknown drive");
@@ -1351,7 +1351,7 @@ uint64_t FS_umount(uint64_t forth_stack) {
 	return stack;
 }
 
-
+#if SD_DRIVE == 1
 /**
  *  @brief
  *      Changes the current drive.
@@ -1408,7 +1408,7 @@ uint64_t FS_chdrv(uint64_t forth_stack) {
 
 	return stack;
 }
-
+#endif
 
 /**
  *  @brief
@@ -1669,12 +1669,12 @@ int FS_getc(FIL* fp) {
 	int buffer = ' ';
 	unsigned int count;
 
-	if (f_write(fp, &buffer, 1, &count) != FR_OK) {
-		return -1;
+	if (f_read(fp, &buffer, 1, &count) != FR_OK) {
+		return 0x04; // EOF
 	}
 
 	if (count != 1) {
-		return -2;
+		return 0x04; // EOF
 	}
 	return buffer;
 }

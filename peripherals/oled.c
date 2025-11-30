@@ -257,24 +257,6 @@ void OLED_init(void) {
 	}
 #endif
 
-//	OLED_clear();
-//	OLED_setPos(127-spyr_height-8, 0);
-//	OLED_putXBM(spyr_bits, spyr_width, spyr_height);
-//
-//	OLED_setPos(0, 0);
-//	OLED_setFont(OLED_FONT8X8);
-//	OLED_puts("Mecrisp-");
-//	OLED_setPos(93, 0);
-//	OLED_puts("Cube\r\n");
-//	OLED_puts("v" MECRISP_CUBE_TAG "\r\n\r\n");
-//
-//	OLED_setFont(OLED_FONT6X8);
-//	OLED_puts(BOARD "\r\n");
-//	OLED_puts("Forth for\r\n");
-//	OLED_puts("the STM32WB \r\n");
-//	OLED_puts("(c)2022\r\n");
-//	OLED_puts("peter@spyr.ch");
-
 	OLED_clear();
 	OLED_setPos(0, 0);
 	OLED_putXBM(mecrisp_cube_logo_bits, mecrisp_cube_logo_width, mecrisp_cube_logo_height);
@@ -284,12 +266,13 @@ void OLED_init(void) {
 	OLED_puts("MECRISP\r\n");
 	OLED_setPos(34, 2);
 	OLED_puts("CUBE4TH\r\n");
-
+#if	OLED_Y_RESOLUTION >= 64
 	OLED_setFont(OLED_FONT6X8);
 	OLED_setPos(0, 5);
 	OLED_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
 	OLED_puts("Forth for the STM32WB\r\n");
-	OLED_puts("(c)2024 peter@spyr.ch");
+	OLED_puts("(c)2025 peter@spyr.ch");
+#endif
 
 
 }
@@ -297,12 +280,27 @@ void OLED_init(void) {
 
 /**
  *  @brief
- *      Switch off the OLED controller.
+ *      Switch off the OLED.
+ *
+ *      Sleep mode, about 10 uA
  *  @return
  *      None
  */
-void OLED_switchOff(void) {
+void OLED_off(void) {
 	OLED_sendCommand(display_off);
+}
+
+
+/**
+ *  @brief
+ *      Switch on the OLED.
+ *
+ *      Terminate the sleep mode.
+ *  @return
+ *      None
+ */
+void OLED_on(void) {
+	OLED_sendCommand(display_on);
 }
 
 

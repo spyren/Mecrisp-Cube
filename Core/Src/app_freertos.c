@@ -30,6 +30,7 @@
 #include "app_entry.h"
 #include "uart.h"
 #include "flash.h"
+#include "usb_cdc.h"
 #include "bsp.h"
 #include "rt_spi.h"
 #include "sd_spi.h"
@@ -56,8 +57,16 @@
 #if EPD == 1
 #include "epd.h"
 #endif
-#include "usb_cdc.h"
+#if QUAD == 1
+#include "quad.h"
+#endif
+#if BUTTON == 1
+#include "button.h"
+#endif
 #include "tiny.h"
+#if POWER == 1
+#include "power.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -105,6 +114,9 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
+#if POWER == 1
+	POWER_init();
+#endif
 	WATCHDOG_init();
 	BSP_init();
 	RTC_init();
@@ -115,7 +127,6 @@ void MX_FREERTOS_Init(void) {
 	FLASH_init();
 	RTSPI_init();
 	SDSPI_init();
-	BLOCK_init();
 	VI_init();
 	TINY_init();
 
@@ -164,7 +175,10 @@ void MainThread(void *argument)
   /* USER CODE BEGIN MainThread */
 	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
 	ASSERT_init();
+#if SD_DRIVE == 1
+	BLOCK_init();
 	SD_init();
+#endif
 	FD_init();
 	FS_init();
 #if OLED == 1
@@ -178,6 +192,9 @@ void MainThread(void *argument)
 #endif
 #if EPD == 1
 	EPD_init();
+#endif
+#if BUTTON == 1
+	BUTTON_init();
 #endif
 	MEMS_init();
 

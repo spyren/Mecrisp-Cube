@@ -30,6 +30,48 @@
 
 
 @ -----------------------------------------------------------------------------
+		Wortbirne Flag_visible, ".greet"
+print_greet:
+		@ ( --  ) print greeting
+@ -----------------------------------------------------------------------------
+	push	{lr}
+@	pushdatos
+@	ldr		tos, =ForthCalculator	// print 4TH Calculator
+@	bl		fs_strlen
+@	bl		stype
+	pushdatos
+	ldr		tos, =MecrispCubeVersion	// print Mecrisp-Cube version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =MecrispVersion
+	bl		fs_strlen
+	bl		stype
+	welcome " by Matthias Koch. "
+	pushdatos
+	ldr		tos, =BSP_Version	// print Cube and BLE version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =RTOS_Version	// print RTOS version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =FS_Version	// print file system version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =VI_Version	// print vi system version
+	bl		fs_strlen
+	bl		stype
+	pushdatos
+	ldr		tos, =TINY_Version	// print TinyUSB system version
+	bl		fs_strlen
+	bl		stype
+	pop		{pc}
+
+
+@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "rgbled!"
 set_rgbled:
 		@ ( n --  ) set RGB LED (rgb)
@@ -724,9 +766,13 @@ StackVersion:
 	movs	tos, r0
 	pop		{pc}
 
+
+// POWER words only if needed
+.if POWER == 1
+
 @ -----------------------------------------------------------------------------
-	Wortbirne Flag_visible, "halt"
-pow_halt:
+	Wortbirne Flag_visible, "shutdown"
+shutdown:
 	@ ( --  )      Halt (power off) the MCU and wait for wake up
 // void POWER_halt(void);
 @ -----------------------------------------------------------------------------
@@ -757,6 +803,9 @@ set_halt:
 	drop
 	bl		POWER_setSwitch
 	pop		{pc}
+
+.endif // POWER
+
 
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "MEMStemp@"

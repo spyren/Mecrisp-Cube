@@ -18,7 +18,7 @@
  *
  *  	See https://www.mikrocontroller.net/topic/54860 for the fonts.
  *  @file
- *      MIP.h
+ *      mip.h
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date

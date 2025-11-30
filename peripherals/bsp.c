@@ -51,6 +51,7 @@
 #include "rt_spi.h"
 #include "power.h"
 #include "mems.h"
+#include "stm32_lpm.h"
 
 // Private function prototypes
 // ***************************
@@ -176,12 +177,12 @@ void BSP_init(void) {
 	// ADC calibration
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 	adc_calibration = HAL_ADCEx_Calibration_GetValue(&hadc1, ADC_SINGLE_ENDED);
-//	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
+	HAL_ADCEx_Calibration_SetValue(&hadc1, ADC_SINGLE_ENDED, adc_calibration);
 
 	// Configure Regular Channel
 	sConfig.Channel = ADC_CHANNEL_1;
 	sConfig.Rank = ADC_REGULAR_RANK_1;
-	sConfig.SamplingTime = ADC_SAMPLETIME_92CYCLES_5;
+	sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;
 	sConfig.SingleDiff = ADC_SINGLE_ENDED;
 	sConfig.OffsetNumber = ADC_OFFSET_NONE;
 	sConfig.Offset = 0;
@@ -311,28 +312,29 @@ typedef struct {
 } PortPin_t;
 
 static const PortPin_t PortPin_a[22] = {
-		{ D0_GPIO_Port, D0_Pin },
-		{ D1_GPIO_Port, D1_Pin },
-		{ D2_GPIO_Port, D2_Pin },
-		{ D3_GPIO_Port, D3_Pin },
-		{ D4_GPIO_Port, D4_Pin },
-		{ D5_GPIO_Port, D5_Pin },
-		{ D6_GPIO_Port, D6_Pin },
-		{ D7_GPIO_Port, D7_Pin },
-		{ D8_GPIO_Port, D8_Pin },
-		{ D9_GPIO_Port, D9_Pin },
-		{D10_GPIO_Port, D10_Pin},
-		{D11_GPIO_Port, D11_Pin},
-		{D12_GPIO_Port, D12_Pin},
-		{D13_GPIO_Port, D13_Pin},
-		{D14_GPIO_Port, D14_Pin},
-		{D15_GPIO_Port, D15_Pin},
-		{A0_GPIO_Port, A0_Pin },
-		{ A1_GPIO_Port, A1_Pin },
-		{ A2_GPIO_Port, A2_Pin },
-		{ A3_GPIO_Port, A3_Pin },
-		{ A4_GPIO_Port, A4_Pin },
-		{ A5_GPIO_Port, A5_Pin }
+		{ D0_GPIO_Port, D0_Pin } ,
+		{ D1_GPIO_Port, D1_Pin } ,
+		{ D2_GPIO_Port, D2_Pin } ,
+		{ D3_GPIO_Port, D3_Pin } ,
+		{ D4_GPIO_Port, D4_Pin } ,
+		{ D5_GPIO_Port, D5_Pin } ,
+		{ D6_GPIO_Port, D6_Pin } ,
+		{ D7_GPIO_Port, D7_Pin } ,
+		{ D8_GPIO_Port, D8_Pin } ,
+		{ D9_GPIO_Port, D9_Pin } ,
+		{ D10_GPIO_Port, D10_Pin } ,
+		{ D11_GPIO_Port, D11_Pin } ,
+		{ D12_GPIO_Port, D12_Pin } ,
+		{ D13_GPIO_Port, D13_Pin } ,
+		{ D14_GPIO_Port, D14_Pin } ,
+		{ D15_GPIO_Port, D15_Pin } ,
+		{ A0_GPIO_Port,  A0_Pin } ,             // 16
+		{ A1_GPIO_Port,  A1_Pin } ,             // 17
+		{ A2_GPIO_Port,  A2_Pin } ,             // 18
+		{ A3_GPIO_Port,  A3_Pin } ,             // 19
+		{ A4_GPIO_Port,  A4_Pin } ,             // 20
+		{ A5_GPIO_Port,  A5_Pin } ,             // 21
+
 };
 
 /**
@@ -448,6 +450,7 @@ int BSP_getAnalogPin(int pin_number) {
 	int return_value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -461,9 +464,10 @@ int BSP_getAnalogPin(int pin_number) {
 	}
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return_value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
 	return return_value;
@@ -471,7 +475,7 @@ int BSP_getAnalogPin(int pin_number) {
 
 /**
  *  @brief
- *	    Get the Vref
+ *	    Get the Vref intern
  *
  *		The Vref is actually the VDDA
  *  @return
@@ -481,6 +485,7 @@ int BSP_getVref(void) {
 	int value;
 	HAL_StatusTypeDef status;
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -495,9 +500,10 @@ int BSP_getVref(void) {
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_VREFANALOG_VOLTAGE(value, ADC_RESOLUTION_12B);
 }
@@ -517,6 +523,7 @@ int BSP_getVbat(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -531,9 +538,10 @@ int BSP_getVbat(void) {
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return 3 * __HAL_ADC_CALC_DATA_TO_VOLTAGE(ref_voltage_mv, value, ADC_RESOLUTION_12B) ;
 }
@@ -553,6 +561,7 @@ int BSP_getCpuTemperature(void) {
 
 	ref_voltage_mv = BSP_getVref();
 
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_DISABLE);
 	// only one thread is allowed to use the ADC
 	osMutexAcquire(Adc_MutexID, osWaitForever);
 
@@ -567,9 +576,10 @@ int BSP_getCpuTemperature(void) {
 	// blocked till ADC conversion is finished
 	status = osSemaphoreAcquire(Adc_SemaphoreID, osWaitForever);
 	value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
+	HAL_ADC_Stop_IT(&hadc1);
 
 	osMutexRelease(Adc_MutexID);
+	UTIL_LPM_SetStopMode(1U << CFG_LPM_ADC, UTIL_LPM_ENABLE);
 
 	return __HAL_ADC_CALC_TEMPERATURE(ref_voltage_mv, value, ADC_RESOLUTION_12B);
 }
@@ -583,29 +593,30 @@ typedef struct {
 	uint32_t alternate;
 } PortPinMode_t;
 
-static const PortPinMode_t DigitalPortPinMode_a[] = { { GPIO_MODE_INPUT,
-		GPIO_NOPULL, 0 },				// 0 in
-		{ GPIO_MODE_INPUT, GPIO_PULLUP, 0 },				// 1 pullup
-		{ GPIO_MODE_INPUT, GPIO_PULLDOWN, 0 },				// 2 pulldow
-		{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0 },				// 3 pushpull
-		{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL, 0 },				// 4 opendrain
-		{ GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_AF1_TIM1 },	// 5 pwm pushpull
-		{ GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_AF1_TIM2 },// 6 input capture in
-		{ GPIO_MODE_AF_PP, GPIO_NOPULL, GPIO_AF1_TIM2 },// 7 output compare pushpull
-		{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP, GPIO_AF4_I2C1 },// 8 I2C opendrain pullup
-		{ GPIO_MODE_AF_PP, GPIO_PULLUP, GPIO_AF7_USART1 },	// 9 USART pullup
-		{ GPIO_MODE_ANALOG, GPIO_NOPULL, 0 } 				// 10 analog in
+static const PortPinMode_t DigitalPortPinMode_a[] = {
+		{ GPIO_MODE_INPUT,     GPIO_NOPULL,   0 } ,				//  0 in
+		{ GPIO_MODE_INPUT,     GPIO_PULLUP,   0 } ,				//  1 pullup
+		{ GPIO_MODE_INPUT,     GPIO_PULLDOWN, 0 } ,				//  2 pulldow
+		{ GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,   0 } ,				//  3 pushpull
+		{ GPIO_MODE_OUTPUT_OD, GPIO_NOPULL,   0 } ,				//  4 opendrain
+		{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM1 } ,	//  5 pwm pushpull
+		{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  6 input capture in
+		{ GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF1_TIM2 } ,	//  7 output compare pushpull
+		{ GPIO_MODE_OUTPUT_OD, GPIO_PULLUP,   GPIO_AF4_I2C1 } ,	//  8 I2C opendrain pullup
+		{ GPIO_MODE_AF_PP,     GPIO_PULLUP,   GPIO_AF7_USART1 },//  9 UART
+	    { GPIO_MODE_AF_PP,     GPIO_NOPULL,   GPIO_AF5_SPI1 },  // 10 SPI
+	    { GPIO_MODE_ANALOG,    GPIO_NOPULL,   0 }               // 11 analog
 };
 /**
  *  @brief
- *	    Sets the digital port pin mode (D0 .. D15).
+ *	    Sets the digital port pin mode (D0 .. D15, A0 .. A5).
  *
  *      0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain,
  *      5 out pwm, 6 input capture, 7 output compare, 8 I2C
  *	@param[in]
- *      pin_number    0 to 15.
+ *      pin_number    0 to 21
  *	@param[in]
- *      mode          0 to 8
+ *      mode          0 to 11
  *  @return
  *      none
  *
