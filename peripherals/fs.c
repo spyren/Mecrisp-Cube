@@ -164,6 +164,12 @@ uint64_t FS_include(uint64_t forth_stack, uint8_t *str, int count) {
 
 	/* Read every line and interprets it */
 	while (f_gets(line, LINE_LENGTH-1, &fil)) {
+		while (line[strlen(line)-2] == '\\') {
+			// concatenate lines till there is no \ at the end of line
+			line[strlen(line)-2] = 0; // cut line at backslash
+			f_gets(path, LINE_LENGTH-1, &fil);
+			strncat(line, path, LINE_LENGTH-1);
+		}
 		// line without \n
 		stack = FS_evaluate(stack, (uint8_t*)line, strlen(line)-1);
 	}
