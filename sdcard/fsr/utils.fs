@@ -43,7 +43,7 @@ CR .( utils.fs loading ... )
   begin
     token          \ Fetch new token.
   dup 0= while      \ If length of token is zero, end of line is reached.
-    2drop cr query   \ Fetch new line.
+    2drop cr query   \ Fetch new line, this will not work in evaluate 
   repeat
 ;
 
