@@ -493,7 +493,7 @@ cr              ( -- )                Emits line feed
 bl              ( -- c )              ASCII (32) for space 	 
 space           ( -- )                Emits space 	 
 spaces          ( n -- )              Emits n spaces if n is positive
-compare         ( c-1 u-1 c-2 u-2 -- f )    Compares two strings
+compare         ( c-1 u-1 c-2 u-2 -- f )    Compares two strings (ignore case, true if match) NOT ANS
 accept          ( c- u1 -- u2 )       Read input into a string.
 ```
 
@@ -690,5 +690,6 @@ irq-collection  ( -- a- )       Collection of all unhandled interrupts
 
 The original of this document can be found at https://mecrisp-stellaris-folkdoc.sourceforge.io
 Copyright 2016-2020, Terry Porter, released under the GPL V3.
+
 
 
