@@ -493,7 +493,7 @@ cr              ( -- )                Emits line feed
 bl              ( -- c )              ASCII (32) for space 	 
 space           ( -- )                Emits space 	 
 spaces          ( n -- )              Emits n spaces if n is positive
-compare         ( c-1 u-1 c-2 u-2 -- f )    Compares two strings
+compare         ( c-1 u-1 c-2 u-2 -- f )    Compares two strings (ignore case, true if match) NOT ANS
 accept          ( c- u1 -- u2 )       Read input into a string.
 ```
 
@@ -658,11 +658,11 @@ execute         ( a- -- )                 Calls subroutine
 recurse         ( -- )                    Lets the current definition call itself
 '               ( "<spaces>name" -- xt )  Tries to find name in dictionary gives back executable address
 [']             ( "<spaces>name" -- xt)   Tick that compiles the executable address of found word as literal
-postpone        ( -- )                    See Glossary
-does>           ( -- )                    executes: ( --a-addr ) Gives address to where you have stored data.
+postpone        ( "<spaces>name" -- )     Find name. Append the compilation semantics of name to the current definition
+does>           ( -- )                    executes: ( -- a-addr ) Gives address to where you have stored data.
 <builds         ( -- )                    Makes Dictionary header and reserves space for special call.
 create          ( "<spaces>name" -- )     Names a location; space may be allocated at this location, or it can be set to contain a string or other initialized value.
-  name          ( -- a- )                 Instance behavior returns the address of the beginning of this space. Use FIG-style <builds .. does> !
+name Execution  ( -- a- )                 Instance behavior returns the address of the beginning of this space. Use FIG-style <builds .. does> !
 state           ( -- a- )                 Address of state variable
 ]               ( -- ) 	                  Switch to compile state
 [               ( -- )                    Switch to execute state
@@ -690,5 +690,7 @@ irq-collection  ( -- a- )       Collection of all unhandled interrupts
 
 The original of this document can be found at https://mecrisp-stellaris-folkdoc.sourceforge.io
 Copyright 2016-2020, Terry Porter, released under the GPL V3.
+
+
 
 
