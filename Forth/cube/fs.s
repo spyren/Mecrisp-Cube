@@ -1859,4 +1859,4 @@ clktime:
 	movs	tos, r0;
 	pop		{pc}
 
-
+.ltorg

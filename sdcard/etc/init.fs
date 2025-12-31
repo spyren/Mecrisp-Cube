@@ -32,7 +32,7 @@
 CR .( init.fs Loading started) CR 
 
 include /fsr/utils.fs
-include /fsr/conditional.fs
+\ include /fsr/conditional.fs
 include /fsr/ansification.fs
 include /fsr/dump.fs
 include /fsr/disassembler-m3.fs

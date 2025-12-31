@@ -49,16 +49,13 @@
 */
 tolower:
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	movs	r0, tos
-	sub		r0, #'A'
-	bne		1f
-	movs	r0, tos
-	sub		r0, #'Z'
-	bne		1f
-	or		tos, #32
+	cmp		tos, #'A'
+	blo.n	1f
+	cmp		tos, #'Z'
+	bhi.n	1f
+	orrs	tos, #32
 1:
-	pop		{pc}
+	bx		lr
 
 
 @ -----------------------------------------------------------------------------
@@ -72,8 +69,13 @@ tolower:
 */
 toupper:
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	pop		{pc}
+	cmp		tos, #'a'
+	blo.n	1f
+	cmp		tos, #'z'
+	bhi.n	1f
+	ands	tos, #0x5f
+1:
+	bx		lr
 
 
 @ -----------------------------------------------------------------------------
@@ -89,6 +91,20 @@ toupper:
 lower:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	movs	r0, tos		// len
+	drop
+	movs	r1, tos		// addr
+1:
+	cmp		r0, #0
+	ble.n	2f
+	ldrb	tos, [r1]
+	bl		tolower		// does not change r0 and r1
+	strb	tos, [r1]
+	adds	r1, #1
+	subs	r0, #1
+	b.n		1b
+2:
+	drop
 	pop		{pc}
 
 
@@ -105,6 +121,20 @@ lower:
 upper:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	movs	r0, tos		// len
+	drop
+	movs	r1, tos		// addr
+1:
+	cmp		r0, #0
+	ble.n	2f
+	ldrb	tos, [r1]
+	bl		toupper		// does not change r0 and r1
+	strb	tos, [r1]
+	adds	r1, #1
+	subs	r0, #1
+	b.n		1b
+2:
+	drop
 	pop		{pc}
 
 
@@ -126,6 +156,7 @@ nexttoken:
 	cmp		tos, #0
 	bne 	2f
 	ddrop
+	bl		cr
 	bl 		query
 	b.n		1b
 2:	pop		{pc}
@@ -214,18 +245,21 @@ bracket_endif_star:
   1 \ Initial level of nesting
   begin
     nexttoken ( level addr len )
-    2dup upper
-
-    2dup [IF*]?  if
+    2dup [IF*]? if
       2drop 1+  \ One more level of nesting
     else
-      2dup s" [ELSE]" compare  if
-        2drop 1- dup if 1+ then  \ Finished if [ELSE] is reached in level 1. Skip [ELSE] branch otherwise.
+      2dup s" [ELSE]" compare if
+        2drop 1- dup if
+          1+   	\ Finished if [ELSE] is reached in level 1. Skip [ELSE] branch otherwise.
+        then
       else
-        [ENDIF*]? if 1- then  \ Level completed.
+\ 4:
+        [ENDIF*]? if
+          1-  	\ Level completed.
+        then
       then
     then
-
+\ 3:
     ?dup 0=
   until
 
@@ -234,15 +268,44 @@ bracket_endif_star:
 */
 bracket_else:
 @ -----------------------------------------------------------------------------
+
 	push	{lr}
-	pushdaconst 1
+	pushdaconst 1		//  Initial level of nesting
 1:
 	bl		nexttoken
 	ddup
-	bl		upper
-	ddup
 	bl		bracket_if_star
+	cmp		tos, #-1
+	drop
+	bne		2f
+	ddrop
+	adds	tos, #1		// One more level of nesting
+	b.n		3f
 2:
+	ddup
+	bl 		dotsfuesschen
+	.byte 	8f - 7f  	// length of name field
+7:  .ascii 	"[ELSE]"
+8:  .p2align 1
+	bl		compare
+	cmp		tos, #-1
+	drop
+	bne		4f
+	ddrop
+	subs	tos, #1
+	beq		3f
+	adds	tos, #1		// Finished if [ELSE] is reached in level 1. Skip [ELSE] branch otherwise.
+	b.n		3f
+4:
+	bl		bracket_endif_star
+	cmp		tos, #-1
+	drop
+	bne		3f
+	subs	tos, #1		// level completed
+3:
+	cmp		tos, #0
+	bne		1b
+	drop
 	pop		{pc}
 
 
@@ -279,6 +342,12 @@ bracket_endif:
 bracket_if:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	cmp		tos, #0
+	drop
+	bne		1f
+//	bl 		postpone
+	bl		bracket_else
+1:
 	pop		{pc}
 
 
@@ -296,6 +365,15 @@ bracket_if:
 bracket_ifdef:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	bl		token
+	bl		find
+	drop
+	cmp		tos, #0
+	drop
+	bne		1f
+//	bl 		postpone
+	bl		bracket_else
+1:
 	pop		{pc}
 
 
@@ -313,6 +391,15 @@ bracket_ifdef:
 bracket_ifndef:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	bl		token
+	bl		find
+	drop
+	cmp		tos, #0
+	drop
+	beq		1f
+//	bl 		postpone
+	bl		bracket_else
+1:
 	pop		{pc}
 
 
@@ -328,6 +415,11 @@ bracket_ifndef:
 bracket_undefined:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	bl		token
+	bl		find
+	subs 	tos, #1		// 0=
+	sbcs 	tos, tos
+	mvns	tos, tos
 	pop		{pc}
 
 
@@ -343,6 +435,10 @@ bracket_undefined:
 bracket_defined:
 @ -----------------------------------------------------------------------------
 	push	{lr}
+	bl		token
+	bl		find
+	subs	tos, #1		// 0<>
+	sbcs 	tos, tos
 	pop		{pc}
 
 

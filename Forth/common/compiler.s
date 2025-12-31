@@ -43,6 +43,7 @@ tick: @ Nimmt das nächste Token aus dem Puffer, suche es und gibt den Einsprung
 @------------------------------------------------------------------------------
   Wortbirne Flag_immediate_compileonly, "postpone" @ Sucht das nächste Wort im Eingabestrom  Search next token and fill it in Dictionary in a special way.
                                        @ und fügt es auf besondere Weise ein.
+postpone:
 @------------------------------------------------------------------------------
   push {lr}
 
