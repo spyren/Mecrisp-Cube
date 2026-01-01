@@ -417,9 +417,9 @@ bracket_undefined:
 	push	{lr}
 	bl		token
 	bl		find
+	drop
 	subs 	tos, #1		// 0=
 	sbcs 	tos, tos
-	mvns	tos, tos
 	pop		{pc}
 
 
@@ -437,8 +437,10 @@ bracket_defined:
 	push	{lr}
 	bl		token
 	bl		find
+	drop
 	subs	tos, #1		// 0<>
 	sbcs 	tos, tos
+	mvns	tos, tos
 	pop		{pc}
 
 
