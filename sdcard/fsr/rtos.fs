@@ -19,7 +19,7 @@
 CR .( rtos.fs loading ... )
 
 32 constant MAX_THREAD_COUNT
-MAX_THREAD_COUNT buffer: threadList
+MAX_THREAD_COUNT cells buffer: threadList
 
 : .osState ( n -- )
   case
