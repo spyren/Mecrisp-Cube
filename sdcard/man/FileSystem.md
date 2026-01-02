@@ -4,7 +4,7 @@
     <td><img src="img/mecrisp-cube-logo-red-h.svg"  ></td>
   </tr>
 </table> 
-
+Forth/cube/conditional.s
 microSD and internal Flash Mass Storage for Blockheads and Fatties
 ==================================================================
 
@@ -102,6 +102,8 @@ Quote [Gforth](https://gforth.org/manual/Interpreter-Directives.html)
 
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
+I recently written these words in assembler, to use it right from the start.
+[conditional.s](../../Forth/cube/conditional.s)
 
 `query` is not working in `include`, because it uses `evaluate`! 
 Therefore all the conditionals have to be on the same line. 
@@ -994,5 +996,6 @@ Nucleo:
     ...
     20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
      ok.
+
 
 
