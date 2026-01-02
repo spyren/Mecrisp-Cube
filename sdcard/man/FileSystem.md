@@ -103,8 +103,8 @@ Quote [Gforth](https://gforth.org/manual/Interpreter-Directives.html)
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
 
-`query` not working in include, because it uses evaluate! 
-All the conditionals have to be on the same line. 
+`query` is not working in `include`, because it uses `evaluate`! 
+Therefore all the conditionals have to be on the same line. 
 But it is possible to use line continuation with a backslash at the EOL.
 Be aware: the max. length of the concatenated string is 255 chars.
 
@@ -994,4 +994,5 @@ Nucleo:
     ...
     20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
      ok.
+
 
