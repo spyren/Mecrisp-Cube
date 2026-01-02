@@ -102,8 +102,8 @@ Quote [Gforth](https://gforth.org/manual/Interpreter-Directives.html)
 
 Words from [conditional.fs](../fsr/conditional.fs). 
 See also https://forth-standard.org/standard/tools.
-I recently written these words in assembler, to use it right from the start.
-[conditional.s](../../Forth/cube/conditional.s)
+I recently written these words in assembler [conditional.s](../../Forth/cube/conditional.s), 
+so you can use it right from the start.
 
 `query` is not working in `include`, because it uses `evaluate`! 
 Therefore all the conditionals have to be on the same line. 
@@ -996,6 +996,7 @@ Nucleo:
     ...
     20021BB0 :  00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00  | ........  ........ |
      ok.
+
 
 
 
