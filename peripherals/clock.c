@@ -90,6 +90,7 @@ void RTC_init(void) {
 	__HAL_RTC_WAKEUPTIMER_EXTI_ENABLE_IT();
 
     HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
+
 }
 
 
@@ -287,6 +288,8 @@ void RTC_setAlarmA(int hour, int minute, int second) {
 	{
 		Error_Handler();
 	}
+	HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 5, 0);
+	HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
 
 }
 

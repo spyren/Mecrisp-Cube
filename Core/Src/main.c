@@ -228,6 +228,7 @@ int main(void)
   MX_CRC_Init();
 //  MX_USB_PCD_Init();
   MX_RF_Init();
+
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
