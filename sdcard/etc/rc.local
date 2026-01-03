@@ -2,4 +2,4 @@
 cr .( include 0:/etc/rc.local ) cr
 
 watchdog? [IF] .( Watchdog has bitten, # bites: ) watchdog# . cr [THEN]
-assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert [THEN]
+assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert cr [THEN]

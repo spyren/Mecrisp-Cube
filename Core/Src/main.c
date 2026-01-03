@@ -103,7 +103,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb.h"
 #include "wwdg.h"
 #include "gpio.h"
 
@@ -198,7 +197,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
   /* IPCC initialisation */
@@ -358,7 +357,10 @@ void PeriphCommonClock_Config(void)
     Error_Handler();
   }
   /* USER CODE BEGIN Smps */
+
   // USB clock configuration
+  // ***********************
+
   RCC_CRSInitTypeDef RCC_CRSInitStruct= {0};
   __HAL_RCC_CRS_CLK_ENABLE();
 
@@ -389,6 +391,7 @@ void PeriphCommonClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName ) {
 	ASSERT_fatal(0, ASSERT_STACK_OVERFLOW, (uint32_t) pcTaskName);
 }
