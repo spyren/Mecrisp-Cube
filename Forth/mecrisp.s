@@ -78,10 +78,10 @@
 .equ	EPD,				0
 .equ	FPU,				1
 .equ	QUAD,				1
-.equ	BUTTON,				0
-.equ	BUTTON_MATRIX,		0
+.equ	BUTTON,				1
+.equ	BUTTON_MATRIX,		1
 .equ	POWER,				1
-.equ	SD_DRIVE,			1
+.equ	SD_DRIVE,			0
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
