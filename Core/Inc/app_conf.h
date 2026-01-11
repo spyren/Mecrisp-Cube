@@ -178,12 +178,12 @@
 // ****************
 
 #ifdef DEBUG
-#define MECRISP_CUBE_TAG "1.6.1 deb"
+#define MECRISP_CUBE_TAG "1.6.2 deb"
 #else
-#define MECRISP_CUBE_TAG "1.6.1 rel"
+#define MECRISP_CUBE_TAG "1.6.2 rel"
 #endif
 
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2025 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2026 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
 /* if asserts are not required set define to 0 */

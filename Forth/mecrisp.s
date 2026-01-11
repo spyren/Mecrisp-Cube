@@ -360,6 +360,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "bsp.s"
 .include "wings.s"
 .include "fs.s"
+.include "conditional.s"
 .ltorg
 
 .include "interrupts-common.s"
@@ -414,6 +415,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 .include "rtos.s"
 .include "bsp.s"
 .include "fs.s"
+.include "conditional.s"
 .ltorg
 
 .include "interrupts-common.s"
@@ -536,10 +538,10 @@ Forth:
 	cmp		r0, #0
 	bne		3f
     // include 0:/etc/rc.local
-    pushdatos
-   	ldr		tos, =rc_local
-    bl		fs_strlen
-    bl		included
+//    pushdatos
+//   	ldr		tos, =rc_local
+//    bl		fs_strlen
+//    bl		included
 3:
 	@ Ready to fly !
 .include "boot.s"
