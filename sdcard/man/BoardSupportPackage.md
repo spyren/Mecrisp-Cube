@@ -105,7 +105,7 @@ DCCfunction!  ( u1 u2 -- )    store function u1 to DCC slot u2
 DCCfunction@  ( u1 -- u2 )    fetch function u2 from DCC slot u1
 ```
 
-From dcc-ex.fs
+From [dcc-ex.fs](/sdcard/fsr/dcc-ex.fs)
 ```
 main?         ( c- u -- f ) 
 prog?         ( c- u -- f ) 
