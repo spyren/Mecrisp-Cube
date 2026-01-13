@@ -209,7 +209,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
+//  MX_USART1_UART_Init();	// UART is disabled, because D0 and D1 is used for PPP
   MX_RTC_Init();
   MX_ADC1_Init();
   MX_TIM1_Init();
