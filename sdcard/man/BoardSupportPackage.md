@@ -79,7 +79,10 @@ SPIput       ( c- u -- )      put a message with length u from buffer at c- to t
 SPIputget    ( c- u1 u2 -- )  put a message with length u1 from buffer at c- to the SPI slave device 
                               and get a message with length u2 from device to buffer at c-
 SPImutex     ( -- a- )        get the SPI mutex address
+```
 
+DCC specific words
+```
 DCCstart     ( -- )           start DCC
                               all enabled slots are written every 30 ms
 DCCstop      ( -- )           stop DCC
