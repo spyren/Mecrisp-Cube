@@ -97,7 +97,7 @@ but I prefer Forth.
 
 Instant real-time programming with Forth. 
 
-### Minor Design Flaws
+### Minor Firefly Design Flaws
 
 #### USB Supply
 
@@ -270,22 +270,17 @@ Glue the OLED Display to the underside .
 
 #### Flash the PPP Firmware
 
-Flash the Pocket Power Pack [binary](/sdcard/boot/MecrispCubeCalcFS.bin) `MecrispCubeCalcFS.bin` to the WB55 Nucleo dongle. Using the built-in USB DFU bootloader.
+Flash the Mecrisp-Cube [binary](/Release/MecrispCubeFirefly.bin) `MecrispCubeFirefly.bin` or 
+better the [fs-binary](/sdcard/boot/MecrispCubeFireflyFS.bin) 
+`MecrispCubeFireflyFS.bin` to the Firefly BLE STM32WB55 Development Board. 
+The Firefly does not have a SWD/JTAG connector but the SWD pins are available 
+on the Arduino connector (see [JTAG/SWD Pinout](sdcard/man/BoardSupportPackage.md#jtagswd)). 
+If you do not have a STLINK you can use the built-in USB DFU bootloader, for details see 
+[Flash Mecrisp-Cube to the Target](#flash-mecrisp-cube-to-the-target).
 
-The USB Dongle does not have a ST-Link interface, but the STM32WB has a built-in 
-boot-loader. This bootloader works via USB. As programming tool I use the 
-the [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html) package. 
+ 1. Connect the Firefly Board to the STLINK and the STLINK to the USB PC
+ 1. Copy binary (MecrispCubeFirefly.bin or better the MecrispCubeFireflyFS.bin) to the USB mass storage NODE_WB55RG 
 
-1. For programming the switch SW2 has to be in position BOOT0.
-2. Connect the dongle USB with the computer.
-3. Flash the firmware with STM32CubeProgrammer, either with the CLI (see below) or the GUI (open file .., Download)
-4. Disconnect dongle from the computer.
-5. Set the switch SW2 to position 0.
-
-<pre>
-$ <b>alias cubepgmcli='/opt/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI'</b>
-$ <b>cubepgmcli -c port=USB1 -d MecrispCubeCalcFS.bin 0x8000000 </b>
-</pre>
 
 #### Update BLE Stack (optional)
 
