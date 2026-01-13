@@ -105,6 +105,26 @@ DCCfunction!  ( u1 u2 -- )    store function u1 to DCC slot u2
 DCCfunction@  ( u1 -- u2 )    fetch function u2 from DCC slot u1
 ```
 
+From dcc-ex.fs
+```
+main?         ( c- u -- f ) 
+prog?         ( c- u -- f ) 
+join?         ( c- u -- f ) 
+main_inv?     ( c- u -- f ) 
+main_auto?    ( c- u -- f ) 
+dc?           ( c- u -- f ) 
+dc_inv?       ( c- u -- f ) 
+dcx?          ( c- u -- f )
+
+<1>           ( -- )                     power on
+<0>           ( -- )                     power off
+<1            ( "ccc"<greaterthan> -- )  power on track <1 MAIN|PROG|JOIN>
+<0            ( "ccc"<greaterthan> -- )  power off track <0 MAIN|PROG>
+<=            ( "ccc"<greaterthan> -- )  configure track manager <= trackletter mode [cab]>
+<t            ( "ccc"<greaterthan> -- )  Set Cab (Loco) speed 
+<!>           ( -- )                     Emergency stop
+```
+
 Using the Digital Port Pins (Input and Output)
 ==============================================
 
