@@ -31,6 +31,7 @@ typedef struct DCC_LocoSlot_t {
 	uint8_t		speed;
 	uint8_t		direction;
 	uint32_t	function;
+	uint32_t	function_new;
 	uint32_t	function_repetition;
 
 } DCC_LocoSlot_t;
