@@ -24,15 +24,15 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
      - Small HO locomotive (100 mA): 2.5 h
      - Medium HO locomotive (250 mA): 1 h
    - Charging time about 2 h (micro USB charger, 500 mA)
-
-### DC-Mode
  - Display shows
-   - PWM duty cycle 0 .. 100 %
+   - PWM duty cycle 0 .. 100 % (DC) or speed (DCC)
    - Direction
    - Current consumption
    - Rail voltage
    - Battery voltage
    - Menu
+
+### DC-Mode
  - PWM frequencies: 250 Hz, 500 Hz, 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
  - Brake mode (fast/slow [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
 
@@ -43,7 +43,7 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
  - Light (F0), bell (F1), airhorn (F2), mute (F8)
  - 8 programmable functions (out of F0 .. F28)
    
-### Bluetooth Remote Control
+### Bluetooth Remote Control (Throttle)
   - Use your smart phone as a additional remote throttle
   - [DCC-EX commands](https://dcc-ex.com/reference/software/command-summary-consolidated.html) over BLE
   - [JMRI Engine Driver Throttle](https://enginedriver.mstevetodd.com/)
