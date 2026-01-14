@@ -14,10 +14,18 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
 
 ## Features
 
-### DC-Mode
+### General
  - Max. current 0.5 A (limited by the DCDC-converter Purecrea MT3608)
  - Short circuit proof
  - Adjustable rail voltage between 5 V and 20 V
+ - With 1000 mA LiPo battery
+   - Operating time
+     - Small HOe or N-scale locomotive (50 mA): 5 h 
+     - Small HO locomotive (100 mA): 2.5 h
+     - Medium HO locomotive (250 mA): 1 h
+   - Charging time about 2 h (micro USB charger, 500 mA)
+
+### DC-Mode
  - Display shows
    - PWM duty cycle 0 .. 100 %
    - Direction
@@ -27,25 +35,21 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
    - Menu
  - PWM frequencies: 250 Hz, 500 Hz, 1 kHz, 2 kHz, 4 kHz, 8 kHz, and 16 kHz
  - Brake mode (fast/slow [decay mode](https://learn.adafruit.com/improve-brushed-dc-motor-performance/current-decay-mode))
- - With 1000 mA LiPo battery
-   - Operating time
-     - Small HOe or N-scale locomotive (50 mA): 5 h 
-     - Small HO locomotive (100 mA): 2.5 h
-     - Medium HO locomotive (250 mA): 1 h
-   - Charging time about 2 h (micro USB charger, 500 mA)
 
 ### DCC-Mode
-Not implemented yet.
- - 4 locomotive slots (address range 0 .. 9999)
+ - 4 locomotive slots (address range 0 .. 9999), similar to the DCC-EX reminders
  - Speed 0 .. 127
  - Direction
  - Light (F0), bell (F1), airhorn (F2), mute (F8)
- - 8 programmable functions (F0 .. F28)
+ - 8 programmable functions (out of F0 .. F28)
    
 ### Bluetooth Remote Control
   - Use your smart phone as a additional remote throttle
   - [DCC-EX commands](https://dcc-ex.com/reference/software/command-summary-consolidated.html) over BLE
   - [JMRI Engine Driver Throttle](https://enginedriver.mstevetodd.com/)
+
+### DCC-EX serial (USB CDC)
+  - [DCC-EX commands](https://dcc-ex.com/reference/software/command-summary-consolidated.html) over serial line (USB CDC)
 
 
 ## How to Use the Pocket Power Pack
