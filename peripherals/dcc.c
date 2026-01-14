@@ -344,64 +344,6 @@ static void DCC_Thread(void *argument) {
 			// blocked till packet is sent
 			osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
 
-#ifdef SPEED_DIRECTION_FUNCTION
-			// only one thread is allowed to use DCC
-			osMutexAcquire(DCC_MutexID, osWaitForever);
-			if (loco_slots[i].state) {
-				// slot is active
-				len = 0;
-				if (loco_slots[i].address <= 127) {
-					packet[len++] = loco_slots[i].address;
-				} else {
-					packet[len++] = DCC_COMMAND_ADDRESS | (loco_slots[i].address >> 8);
-					packet[len++] = loco_slots[i].address & 0xFF;
-				}
-				if (loco_slots[i].function_repetition) {
-					// speed, direction, and function
-					packet[len++] = DCC_COMMAND_SPEED_FUNCTION;
-					packet[len++] = loco_slots[i].speed | loco_slots[i].direction;
-					// F0 .. F7
-					packet[len++] = loco_slots[i].function & 0xff;
-					if (loco_slots[i].function & 0xffffff00) {
-						// F8 .. F15
-						packet[len++] =(loco_slots[i].function & 0x0000ff00) >> 8;
-						if (loco_slots[i].function & 0xffff0000) {
-							// blocked till packet is sent
-							osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
-						// F16 .. F23
-							packet[len++] =(loco_slots[i].function & 0x00ff0000) >> 16;
-							if (loco_slots[i].function & 0xff000000) {
-								// F24 .. F28
-								packet[len++] =(loco_slots[i].function & 0xff000000) >> 24;
-							}
-						}
-					}
-					loco_slots[i].function_repetition--;
-				} else {
-					// speed and direction
-					packet[len++] = DCC_COMMAND_SPEED_128;					// speed and direction
-					packet[len++] = DCC_COMMAND_SPEED_128;
-					packet[len++] = loco_slots[i].speed | loco_slots[i].direction;
-
-					packet[len++] = loco_slots[i].speed | loco_slots[i].direction;
-				}
-
-				// calculate checksum
-				packet[len] = 0;
-				for (j=0; j<len; j++) {
-					packet[len] ^= packet[j];
-				}
-			}
-			osMutexRelease(DCC_MutexID);
-
-			// min. time to the next packet 18*2*58 us = 2 ms
-			osDelay(3);
-		    HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
-			packet_len = len+1;
-			byte_count = 0;
-			bit_count  = 9;
-		    HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
-#else
 			if (loco_slots[i].state) {
 				// only one thread is allowed to use DCC
 				osMutexAcquire(DCC_MutexID, osWaitForever);
@@ -496,10 +438,7 @@ static void DCC_Thread(void *argument) {
 				    }
 				}
 
-
 			}
-
-#endif
 		}
 
 	}
