@@ -113,6 +113,11 @@ void DCC_init(void) {
 	// creation of DCC_Thread
 	DCC_ThreadId = osThreadNew(DCC_Thread, NULL, &DCC_ThreadAttr);
 	ASSERT_fatal(DCC_ThreadId != NULL, ASSERT_THREAD_CREATION, __get_PC());
+
+	loco_slots[0].direction = 0x80;
+	loco_slots[1].direction = 0x80;
+	loco_slots[2].direction = 0x80;
+	loco_slots[3].direction = 0x80;
 }
 
 
@@ -157,6 +162,10 @@ void DCC_stop(void) {
  *  @brief
  *      Set the state of a DCC slot
  *
+ *	@param[in]
+ *	 	slot  0..3
+ *	@param[in]
+ *		state 0 deactivated, 1 activated
  *  @return
  *      None
  */
@@ -175,8 +184,10 @@ void DCC_setState(int slot, int state) {
  *  @brief
  *      Get the state of a DCC slot
  *
+ *	@param[in]
+ *	 	slot  0..3
  *  @return
- *      None
+ *      state
  */
 int DCC_getState(int slot) {
 	return loco_slots[slot].state;
@@ -185,8 +196,12 @@ int DCC_getState(int slot) {
 
 /**
  *  @brief
- *      Set the address of a DCC slot
+ *      Assign an address for a slot
  *
+ *	@param[in]
+ *	 	slot  0..3
+ *	@param[in]
+ *		address
  *  @return
  *      None
  */
@@ -202,8 +217,10 @@ void DCC_setAddress(int slot, int address) {
  *  @brief
  *      Get the address of a DCC slot
  *
+ *	@param[in]
+ *	 	slot  0..3
  *  @return
- *      None
+ *      address
  */
 int DCC_getAddress(int slot) {
 	return loco_slots[slot].address;
@@ -214,7 +231,10 @@ int DCC_getAddress(int slot) {
  *  @brief
  *      Set the speed of a DCC slot
  *
- *		0 stop, 126 max. speed
+ *	@param[in]
+ *	 	slot  0..3
+ *	@param[in]
+ *		speed 0 stop, 126 max. speed
  *  @return
  *      None
  */
@@ -230,8 +250,10 @@ void DCC_setSpeed(int slot, int speed) {
  *  @brief
  *      Get the speed of a DCC slot
  *
+ *	@param[in]
+ *	 	slot  0..3
  *  @return
- *      None
+ *      speed
  */
 int DCC_getSpeed(int slot) {
 	return loco_slots[slot].speed;
@@ -241,8 +263,11 @@ int DCC_getSpeed(int slot) {
 /**
  *  @brief
  *      Set the direction of a DCC slot
- *speed
- *		0 forward
+ *
+ *	@param[in]
+ *	 	slot  0..3
+ *	@param[in]
+ *		0 reverse
  *  @return
  *      None
  */
@@ -262,8 +287,10 @@ void DCC_setDirection(int slot, int direction) {
  *  @brief
  *      Get the direction of a DCC slot
  *
- *  @return
- *      None
+ *	@param[in]
+ *	 	slot  0..3
+  *  @return
+ *      direction
  */
 int DCC_getDirection(int slot) {
 	return loco_slots[slot].direction;
@@ -274,7 +301,10 @@ int DCC_getDirection(int slot) {
  *  @brief
  *      Set the function of a DCC slot
  *
- *		F0 to F23
+ *	@param[in]
+ *	 	slot  0..3
+ *	@param[in]
+ *		function F0 to F23, F0 is 2^0, F1 is 2^1 ..
  *  @return
  *      None
  */
@@ -291,6 +321,10 @@ void DCC_setFunction(int slot, int function) {
  *  @brief
  *      Reset the function of a DCC slot
  *
+ *	@param[in]
+ *	 	slot  0..3
+ *	@param[in]
+ *		function F0 to F23, F0 is 2^0, F1 is 2^1 ..
  *  @return
  *      None
  */
@@ -307,8 +341,10 @@ void DCC_resetFunction(int slot, int function) {
  *  @brief
  *      Get the functions of a DCC slot
  *
+ *	@param[in]
+ *	 	slot  0..3
  *  @return
- *      None
+ *      function bits
  */
 int DCC_getFunction(int slot) {
 	return loco_slots[slot].function;
@@ -417,13 +453,18 @@ static void DCC_Thread(void *argument) {
 						packet[len++] = DCC_COMMAND_F21_F28 |
 								(loco_slots[i].function_new & 0x1fe00000) >> 21;
 					}
+
+				    if (! loco_slots[i].function_repetition) {
+				    	loco_slots[i].function = loco_slots[i].function_new;
+				    }
+
 					// calculate checksum
 					packet[len] = 0;
 					for (j=0; j<len; j++) {
 						packet[len] ^= packet[j];
 					}
 
-					osMutexRelease(DCC_MutexID);
+				    osMutexRelease(DCC_MutexID);
 
 					// min. time to the next packet 18*2*58 us = 2 ms
 					osDelay(3);
@@ -433,9 +474,6 @@ static void DCC_Thread(void *argument) {
 					bit_count  = 9;
 				    HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
 
-				    if (! loco_slots[i].function_repetition) {
-				    	loco_slots[i].function = loco_slots[i].function_new;
-				    }
 				}
 
 			}
