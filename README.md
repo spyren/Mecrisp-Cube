@@ -97,7 +97,7 @@ Firefly BLE STM32WB55 Development Board on
 ![](/sdcard/man/img/Firefly_top.jpg)
 
 There is an [Arduino Core](https://github.com/GrumpyOldPizza/ArduinoCore-stm32wb) for this board
-but I prefer Forth.
+but I prefer Forth and C.
 
 Instant real-time programming with Forth. 
 
