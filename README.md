@@ -1,4 +1,4 @@
-![calculator](/sdcard/man/img/calculator-header.jpg)
+![ppp](/sdcard/man/img/ppp-header.jpg)
 
 # Pocket Power Pack (Mecrisp-Cube ppp branch)
 
