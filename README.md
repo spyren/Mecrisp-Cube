@@ -161,7 +161,7 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
   * Firefly BLE STM32WB55 Development Board available from [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/), $30
   * Perfboard square grid of 0.1 inches, pads on both sides (plate-through holes), 3" x 2", $3
   * OLED display 128x64 pixels, SSD1306, [Octopus PIS-1277](https://www.digikey.ch/de/products/detail/pi-supply/PIS-1277/10315759), [Grove - OLED Display 0.96"](https://www.seeedstudio.com/Grove-OLED-Display-0-96-SSD1315-p-4294.html), $5
-  * 7 pcs push buttons, fit in 0.4" grid
+  * 8 pcs push buttons, fit in 0.4" grid
     * Würth 430473035826, DigiKey #732-7021-1-ND, data sheet, $0.5
     * TE Connectivity ALCOSWITCH Switches 1825910-6, $0.15
     * C&K PTS 647 SN50 SMTR2 LFS, DigiKey #PTS647SN50SMTR2LFSCT-ND, smaller 4.5 x 4.5 mm, $0.2
@@ -229,7 +229,7 @@ Remove the screw terminals. Capacitor
 #### Wire the buttons to the SBC
 Wire the button to the SBC.
 
-#### Wire the JTAG SWD (optional)
+#### Wire the JTAG SWD (optional, For Developers)
 Only needed if you want to debug the board.
 
 |*Description*|*Dongle*|*Function* | *JTAG 10pin* |
@@ -307,7 +307,7 @@ $ <b>cubepgmcli -c port=USB1 -fwupgrade stm32wb5x_BLE_Stack_full_fw.bin 0x080CE0
 </pre>
 
 
-### Use the Terminal (USB CDC)
+### Use the Terminal (USB CDC, For Developers)
 
 Connect the WB55 Dongle USB to the PC. Start the terminal emulator application on the PC. 
 Check for the serial communication port (e.g. for Linux `/dev/ttyACM0`).
@@ -422,13 +422,11 @@ The compiled word `hello` needs only 14 bytes in the dictionary.
 
 #### LEDs as Status Indicator
 
-The LEDs on the dongle displays the status
-  * *Green* USB enumerated
-  * *Red* Error occured
-  * *Blue* BLE connected
+The LED on the Firefly displays the status
+  * *Blue* flash on startup, continuous on error
 
 
-## Installing Development Environment 
+## Installing Development Environment (For Developers)
 
 A step by step series of examples that tell you how to get a development env running
 
