@@ -94,7 +94,7 @@ The GPIOs are very carefully selected. JTAG SWD is on the pin header too!
 Firefly BLE STM32WB55 Development Board on 
 [tindie](https://www.tindie.com/products/tleracorp/firefly-ble-stm32wb55-development-board/)
 
-![](/sdcard/man/img/Firefly-top.jpg)
+![](/sdcard/man/img/Firefly_top.jpg)
 
 There is an [Arduino Core](https://github.com/GrumpyOldPizza/ArduinoCore-stm32wb) for this board
 but I prefer Forth.
