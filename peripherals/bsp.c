@@ -112,7 +112,7 @@ static osSemaphoreId_t EXTI_4_SemaphoreID;
 ADC_ChannelConfTypeDef sConfig = {0};
 extern ADC_HandleTypeDef hadc1;
 uint32_t neo_pixel = 0;
-static uint32_t adc_calibration;
+// static uint32_t adc_calibration;
 
 //static int sys_led_status = SYSLED_ACTIVATE;
 static int sys_led_status = 0;

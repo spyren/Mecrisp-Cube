@@ -39,19 +39,20 @@ CR .( ppp.fs loading ... )
 0 variable funcselect  \ F0 .. F28, bitwise coding
 
 : speed@ ( -- u ) \  get speed u 0 .. 1000
-    0 apin@ 4 / dup
-    1000 > if  drop 1000 then dup speed !
+  0 apin@ 4 / dup
+  1000 > if  drop 1000 then dup speed !
 ;
 
 : dcc-speed@ ( -- u ) \  get speed u 0, 2 .. 126
-    0 apin@ 32 / dup
-    1 = if 
-      drop 0 
-    else dup 127 >= if 
+  0 apin@ 32 / dup
+  1 = if 
+    drop 0 
+  else 
+    dup 127 >= if 
       drop 126
-      then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
-    then 
-    dup dcc-speed !
+    then
+  then 
+  dup dcc-speed !
 ;
 
 : %pwm ( -- u ) \ get PWM u 0 .. 100 %
