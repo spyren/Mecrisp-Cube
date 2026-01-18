@@ -271,7 +271,7 @@ void OLED_init(void) {
 	OLED_setPos(0, 5);
 	OLED_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
 	OLED_puts("Forth for the STM32WB\r\n");
-	OLED_puts("(c)2025 peter@spyr.ch");
+	OLED_puts("(c)2026 peter@spyr.ch");
 #endif
 }
 

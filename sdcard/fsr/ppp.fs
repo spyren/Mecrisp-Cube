@@ -49,7 +49,7 @@ CR .( ppp.fs loading ... )
       drop 0 
     else dup 127 >= if 
       drop 126
-      then
+      then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
     then 
     dup dcc-speed !
 ;
@@ -438,11 +438,11 @@ task ppp-menu&
 \ this should part of /etc/rc.local to start the threads
 \
 \ 2000 osDelay drop \ time to display flash screen
-oledclr  
-throttle& construct
-' throttle throttle& start-task
-ppp-menu& construct
-' ppp-menu ppp-menu& start-task
+\ oledclr  
+\ throttle& construct
+\ ' throttle throttle& start-task
+\ ppp-menu& construct
+\ ' ppp-menu ppp-menu& start-task
 
 
 

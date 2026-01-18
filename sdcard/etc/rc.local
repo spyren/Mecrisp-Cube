@@ -2,9 +2,19 @@
 cr .( include 0:/etc/rc.local ) cr
 
 watchdog? [IF] .( Watchdog has bitten, # bites: ) watchdog# . cr [THEN]
-assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert [THEN]
+assert? [IF] assert# . .( Assertations since cold startup, last one: ) assert@ drop .assert cr [THEN]
 
 2000 osDelay drop
+
+.( Pocket Power Pack V1.0 ) cr
+.( ********************** ) cr
+
+\ change the locomotive addresses
+\ 3    slot0 !     \ default locomotive address for slot0
+\ 56   slot1 !     \ Bangor and Aroostook BL2
+\ 118  slot2 !     \ PRR Atlantic E6
+\ 6775 slot3 !     \ PRR Mountain M1a
+
 oledclr  
 throttle& construct
 ' throttle throttle& start-task
