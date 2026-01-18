@@ -331,7 +331,7 @@ void DCC_setFunction(int slot, int function) {
 void DCC_resetFunction(int slot, int function) {
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
-	loco_slots[slot].function_new &= !function;
+	loco_slots[slot].function_new &= ~function;
 	loco_slots[slot].function_repetition = DCC_FUNCTION_REPETITION;
 	osMutexRelease(DCC_MutexID);
 }
@@ -378,7 +378,7 @@ static void DCC_Thread(void *argument) {
 			}
 
 			// blocked till packet is sent
-			osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
+			osSemaphoreAcquire(DCC_SemaphoreID, 1000);
 
 			if (loco_slots[i].state) {
 				// only one thread is allowed to use DCC

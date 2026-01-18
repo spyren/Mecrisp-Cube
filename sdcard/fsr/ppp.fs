@@ -13,36 +13,45 @@
 \      Language: Mecrisp-Stellaris Forth
 \  @copyright
 \      Peter Schmid, Switzerland
-\
-\      This project Mecrsip-Cube is free software: you can redistribute it
-\      and/or modify it under the terms of the GNU General Public License
-\      as published by the Free Software Foundation, either version 3 of
-\      the License, or (at your option) any later version.
-\
-\      Mecrsip-Cube is distributed in the hope that it will be useful, but
-\      WITHOUT ANY WARRANTY; without even the implied warranty of
-\      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-\      General Public License for more details.
-\
-\      You should have received a copy of the GNU General Public License
-\      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
+\      For details see copyright.txt
+
 CR .( ppp.fs loading ... )
 
-5 constant PWM_MODE
+5  constant PWM_MODE
 
-0 variable menu      \ 0 mode, 1 pwm1, 2 pwm2
+3    variable slot0    \ default locomotive address for slot0
+56   variable slot1    \ Bangor and Aroostook BL2
+118  variable slot2    \ PRR Atlantic E6
+6775 variable slot3    \ PRR Mountain M1a
+
+0 variable menu        \ 0 mode, 1 pwm1, 2 pwm2
 2 constant maxmenu
-0 variable dcc       \ 0 DC, 1 DCC
-0 variable reverse   \ 0 forward, 1 reverse
-1 variable brake     \ 1 brake
-0 variable speed     \ 0 off, 1000 max
-5 variable pwmselect \ 0 0.5 kHz, 1 1 kHz, 2 2 kHz, 
-                     \ 3 4 kHz,   4 8 kHz, 5 16 kHz, 6 32 kHz
+0 variable dcc         \ 0 DC, 1 DCC
+1 variable direction   \ 1 forward, 0 reverse
+1 variable brake       \ 1 brake
+0 variable speed       \ 0 off, 1000 max
+0 variable dcc-speed   \ 0 off, 1 emergency off, 2 min, 126 max
+5 variable pwmselect   \ 0 0.5 kHz, 1 1 kHz, 2 2 kHz, 
+                       \ 3 4 kHz,   4 8 kHz, 5 16 kHz, 6 32 kHz
 0 variable display-off
+ 
+0 variable slotselect  \ active slot 0..3
+0 variable funcselect  \ F0 .. F28, bitwise coding
 
 : speed@ ( -- u ) \  get speed u 0 .. 1000
     0 apin@ 4 / dup
     1000 > if  drop 1000 then dup speed !
+;
+
+: dcc-speed@ ( -- u ) \  get speed u 0, 2 .. 126
+    0 apin@ 32 / dup
+    1 = if 
+      drop 0 
+    else dup 127 >= if 
+      drop 126
+      then
+    then 
+    dup dcc-speed !
 ;
 
 : %pwm ( -- u ) \ get PWM u 0 .. 100 %
@@ -91,17 +100,47 @@ CR .( ppp.fs loading ... )
   ." I " Irail f. ." A"
 ;
 
-: .%pwm ( -- )
+: u.pwm ( u -- )
+  dup 10 < if
+    u.   ." %    "
+  else
+    dup 100 < if
+      u.  ." %   "
+    else
+      u.   ." %  "
+    then
+  then
+;
+
+: u.speed ( u -- )
+  dup 10 < if
+    u.   ." st   "
+  else
+    dup 100 < if
+      u.  ." st  "
+    else
+      u.   ." st " 
+    then
+  then
+;
+
+: .speed ( -- )
   3 oledfont
   0 2 oledpos!
   
-  \ 0123456789
-  \ < 100 %  > 
-  reverse @ if 
-    ." < " %pwm . ." %    "
-  else 
-    ."   " %pwm . ." %  > " 
-  then
+  dcc @ if
+    direction @ if 
+      ."   " dcc-speed @ u.speed ." >"
+    else 
+      ." < " dcc-speed @ u.speed ."  " 
+    then
+  else
+    direction @ if 
+     ."   " %pwm u.pwm           ." >" 
+    else 
+     ." < " %pwm u.pwm           ."  "
+    then
+ then
 ;
 
 : .mode
@@ -127,10 +166,10 @@ CR .( ppp.fs loading ... )
   pwmselect @ case
           \ 012345678901234567890
           \ [BRK]
-    0 of .BRK ." [.5]   1    2  " endof
-    1 of .BRK ."  .5   [1]   2  " endof
+    0 of .BRK ." [.5]   1    2   " endof
+    1 of .BRK ."  .5   [1]   2   " endof
     2 of .BRK ."  .5    1   [2]  " endof
-         .BRK ."  .5    1    2  "
+         .BRK ."  .5    1    2   "
   endcase
 ;
 
@@ -150,7 +189,7 @@ CR .( ppp.fs loading ... )
   endcase
 ;
 
-: .menu ( -- ) 
+: .dc-menu ( -- )
   menu @ case
     0 of .mode endof
     1 of .pwm-menu endof
@@ -158,43 +197,117 @@ CR .( ppp.fs loading ... )
   endcase
 ;
 
-: throttle ( -- ) \ control the PWM pins, update every 10 ms
-  0 0 pwmpin!
-  0 1 pwmpin!
-  2 pwmprescale     \ 16 kHz
-  PWM_MODE 0 dmod   \ set D0 to pwm
-  PWM_MODE 1 dmod   \ set D1 to pwm
+: u-. ( u -- ) \ like u. but without trailing space
+  0 <# #s #> TYPE 
+;
 
+: [u-]. ( u -- ) \ like u-. but with brackets
+  0 [char] [ emit <# #s #> TYPE [char] ] emit
+;
+
+: .dcc-slot-item ( u f -- ) \ print u item, f selected
+  if
+    dup 10 < if
+      space [u-]. space
+    else dup 100 <  if [u-]. space 
+      else
+        [u-].
+      then
+    then
+  else
+    dup 10 <  if
+      space space  u-.  space space
+    else dup 100 <  if
+        space u-. space space
+      else
+        space u-. space
+      then
+    then
+  then
+; 
+
+: .dcc-menu-slot
+  0 oledfont
+  0 6 oledpos!
+  ." Slots                " 
+  slotselect @ 
+  4 0 do
+    dup i =  i DCCaddress@ swap .dcc-slot-item
+  loop
+  drop
+;
+
+: .dcc-menu-functions
+  0 oledfont
+  0 6 oledpos!
+  ." Functions            "
+  slotselect @ DCCfunction@ funcselect ! funcselect
+  dup 1 swap bit@ if ." [Lgt]" else ." Lght " then \ F0
+  dup 2 swap bit@ if ." [Bll]" else ." Bell " then \ F1
+  dup 4 swap bit@ if ." [Hrn]" else ." Horn " then \ F2
+    256 swap bit@ if ." [Mte]" else ." Mute " then \ F8
+;
+
+: .dcc-menu ( -- ) 
+  menu @ case
+    0 of .mode endof
+    1 of .dcc-menu-slot endof
+    2 of .dcc-menu-functions endof
+  endcase
+;
+
+: dc-throttle ( -- ) \ control the PWM pins
+  speed@
+  direction @ if
+    \ forward
+    brake @ if
+      1000        0 pwmpin!
+      1000 swap - 1 pwmpin!
+    else
+      0           1 pwmpin!
+                  0 pwmpin!
+    then
+  else
+    \ reverse
+    brake @ if
+      1000        1 pwmpin!
+      1000 swap - 0 pwmpin!
+    else
+      0           0 pwmpin!
+                  1 pwmpin!
+    then
+ then
+;
+
+: dcc-throttle ( -- ) \ set speed and direction of the selected slot
+  dcc-speed@ slotselect @ DCCspeed!
+  direction @  slotselect @ DCCdirection!
+;
+
+: throttle ( -- ) \ control the speed, update every 10 ms
   begin
     10 osdelay drop
-    speed@
-    reverse @ if
-      \ reverse
-      brake @ if
-        1000            1 pwmpin!
-        1000 swap -     0 pwmpin!
-      else
-        0               0 pwmpin!
-                        1 pwmpin!
-      then
+    dcc @ if
+      dcc-throttle
     else
-      \ forward
-      brake @ if
-        1000            0 pwmpin!
-        1000 swap -     1 pwmpin!
-      else
-        0               1 pwmpin!
-                        0 pwmpin!
-      then
+      dc-throttle
     then
   again
 ;
+
+: .menu ( -- ) \ main menu
+  dcc @ if
+    .dcc-menu
+  else
+    .dc-menu
+  then
+ ;
 
 : ppp-display ( -- )  \ display throttle infos every 200 ms till button is pressed
   >oled
   begin
      .Vrail .Vlipo 
-     .%pwm
+     .speed
      .Irail 
      .menu
      200 osDelay drop
@@ -205,7 +318,21 @@ CR .( ppp.fs loading ... )
 : mode-button ( u -- ) \ mode buttons
   case
     [char] d of 1 display-off ! oledclr endof \ switch off display
-    [char] e of dcc @ 0= dcc ! endof          \ toggle DCC
+    [char] e of 
+      dcc @ 0= dcc ! \ toggle DCC
+      dcc @ if
+        \ DCC
+        DCCstart
+      else
+        DCCstop
+        \ DC -> PWM
+        0 0 pwmpin!
+        0 1 pwmpin!
+        2 pwmprescale     \ 16 kHz
+        PWM_MODE 0 dmod   \ set D0 to pwm
+        PWM_MODE 1 dmod   \ set D1 to pwm
+      then
+    endof          
   endcase
 ;
 
@@ -227,26 +354,78 @@ CR .( ppp.fs loading ... )
   endcase
 ;
 
+: slot-button ( u -- ) \ select DCC slot
+  0 slotselect @ DCCstate!  \ disable old slot
+  case
+    [char] d of 0 endof
+    [char] e of 1 endof
+    [char] f of 2 endof
+    [char] g of 3 endof
+    ( default)  0
+  endcase
+  dup slotselect ! -1 swap DCCstate!
+;
+
+: functions-button ( u -- ) \ functions buttons
+  case
+    [char] d of 1   endof \ F0 Light
+    [char] e of 2   endof \ F1 Bell
+    [char] f of 4   endof \ F2 Horn
+    [char] g of 256 endof \ F8 Mute
+    ( default)  0
+  endcase
+  dup if 
+    \ there is something to change
+    slotselect @ DCCfunction@ funcselect !
+    dup funcselect bit@ if
+      \ bit already set
+      slotselect @ -DCCfunction!
+    else
+      \ bit already reset
+      slotselect @ DCCfunction!
+    then
+  else
+    drop
+  then
+;
+
 : menu-button ( u -- ) \ menu buttons
   display-off @ if
     drop 0 display-off !
   else
     menu @ case
       0 of mode-button endof 
-      1 of pwm-button  endof
-      2 of pwm-button1 endof
+      1 of 
+        dcc @ if 
+          slot-button
+        else
+          pwm-button
+        then
+      endof
+      2 of 
+        dcc @ if
+          functions-button
+        else
+          pwm-button1 
+        then
+      endof
     endcase
   then
 ;
 
 : ppp-menu ( -- ) \ display throttle infos till a button is pressed
+  \ default slots
+  slot0 @ 0 DCCaddress!
+  slot1 @ 1 DCCaddress!
+  slot2 @ 2 DCCaddress!
+  slot3 @ 3 DCCaddress!
   begin
     display-off @ 0= if ppp-display then
     button case
-      [char] a of 1 reverse ! endof      \ reverse
+      [char] a of 0 direction ! endof      \ reverse
       [char] b of menu @ 1+ dup maxmenu > if drop 0 then menu ! endof \ menu down
       [char] h of menu @ 1- dup 0 < if drop maxmenu then menu ! endof \ menu up
-      [char] c of 0 reverse ! endof      \ forward
+      [char] c of 1 direction ! endof      \ forward
       menu-button
     endcase
   again
@@ -259,11 +438,11 @@ task ppp-menu&
 \ this should part of /etc/rc.local to start the threads
 \
 \ 2000 osDelay drop \ time to display flash screen
-\ oledclr  
-\ throttle& construct
-\ ' throttle throttle& start-task
-\ ppp-menu& construct
-\ ' ppp-menu ppp-menu& start-task
+oledclr  
+throttle& construct
+' throttle throttle& start-task
+ppp-menu& construct
+' ppp-menu ppp-menu& start-task
 
 
 

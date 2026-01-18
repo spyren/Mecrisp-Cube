@@ -814,7 +814,7 @@ static const char char_a[BUTTON_COUNT] = {
 static osThreadId_t BUTTON_ThreadId;
 static const osThreadAttr_t BUTTON_ThreadAttr = {
 		.name = "BUTTON",
-		.priority = (osPriority_t) osPriorityLow,
+		.priority = (osPriority_t) osPriorityNormal,
 		.stack_size = 512 * 2
 };
 
