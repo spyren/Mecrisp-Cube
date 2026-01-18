@@ -25,7 +25,7 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
      - Medium HO locomotive (250 mA): 1 h
    - Charging time about 2 h (micro USB charger, 500 mA)
  - Display shows
-   - PWM duty cycle 0 .. 100 % (DC) or speed (DCC)
+   - PWM duty cycle 0 .. 100 % (DC) or speed 0 .. 126 (DCC)
    - Direction
    - Current consumption
    - Rail voltage
@@ -38,7 +38,7 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
 
 ### DCC-Mode
  - 4 locomotive slots (address range 0 .. 9999), similar to the DCC-EX reminders
- - Speed 0 .. 127
+ - Speed 0 .. 126
  - Direction
  - Light (F0), bell (F1), airhorn (F2), mute (F8)
  - 8 programmable functions (out of F0 .. F28)
