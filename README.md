@@ -181,9 +181,6 @@ machine (Pocket Power Pack, Firefly Dev Board) for development and testing purpo
 
 ![](sdcard/man/img/ppp-parts.jpg) 
 
-![](sdcard/man/img/ppp-open.jpg) 
-
-
 For developers:
   * Terminal emulator application for PC, e.g.:
     * [tio](https://github.com/tio/tio), my favourite - Windows and Linux 
@@ -198,7 +195,7 @@ For developers:
 
 ### Build the Hardware
 
-![](sdcard/man/img/ppp-in-case.jpg) 
+![](sdcard/man/img/ppp-open.jpg) 
 
 
 #### Schematic 
