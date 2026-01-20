@@ -10,7 +10,7 @@ No power supply is required as long as the battery lasts. You can recharge the b
 
 Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655-4th-calculator).
 
-![](sdcard/man/img/ppp.jpg) 
+![](sdcard/man/img/ppp-top.jpg) 
 
 [![IMAGE ALT TEXT HERE](sdcard/man/img/ppp-youtube.jpg)](https://www.youtube.com/watch?v=rmGzOfeAQwQ?si=T9_IeNJNjeRBUKQS) 
 
