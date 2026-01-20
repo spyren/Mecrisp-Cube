@@ -21,7 +21,7 @@ CR .( ppp.fs loading ... )
 
 3    variable slot0    \ default locomotive address for slot0
 56   variable slot1    \ Bangor and Aroostook BL2
-118  variable slot2    \ PRR Atlantic E6
+45   variable slot2    \ FAUR L45H
 6775 variable slot3    \ PRR Mountain M1a
 
 0 variable menu        \ 0 mode, 1 pwm1, 2 pwm2

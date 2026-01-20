@@ -46,8 +46,8 @@
 #include "bsp.h"
 #include "dcc.h"
 
-#define TIME_0BIT_HALF_PERIOD	(116-1)		// 0 bit is 116 us
-#define TIME_1BIT_HALF_PERIOD	(58-1)
+#define TIME_0BIT_HALF_PERIOD	(100-1)		// 0 bit is 100 us
+#define TIME_1BIT_HALF_PERIOD	(58-1)		// 1 bit is 58 us
 
 // Private function prototypes
 // ***************************
