@@ -58,8 +58,8 @@ Also featured in HACKADAY [Pocket Power Pack](https://hackaday.io/project/196655
 
 ## How to Use the Pocket Power Pack
 It could not be simpler. Connect the power to the rails and turn the knob. 
-Change direction with the arrow buttons. 
-Choose the menu line with the M button, select the option with the button A, B, C, or D.
+Change direction with the arrow buttons &larr; &rarr;. 
+Choose the menu line with the &darr; &uarr; buttons, select the option with the button A, B, C, or D.
 
 ## About Forth (For Developers)
 Forth is an interactive and extensible language, with built-in lexical analysis 
