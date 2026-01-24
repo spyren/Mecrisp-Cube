@@ -19,15 +19,13 @@ CR .( ppp.fs loading ... )
 
 5  constant PWM_MODE
 3  constant OUTPUT_MODE
+4  constant #SLOT
 
-3    variable slot0    \ default locomotive address for slot0
-56   variable slot1    \ Bangor and Aroostook BL2
-45   variable slot2    \ FAUR L45H
-6775 variable slot3    \ PRR Mountain M1a
-
-0 variable menu        \ 0 mode, 1 pwm1, 2 pwm2
+0 variable menu        \ DC:  0 mode, 1 pwm1, 2 pwm2; 
+                       \ DCC: 0 mode, 1 slots, 2 functions, 
+                       \      3 user functions 1st, 4 user functions 2nd
 2 constant maxmenu-dc
-5 constant maxmenu-dcc
+4 constant maxmenu-dcc
 maxmenu-dc variable maxmenu
 0 variable power       \ power off
 0 variable dcc         \ 0 DC, 1 DCC
@@ -42,8 +40,11 @@ maxmenu-dc variable maxmenu
 0 variable slotselect  \ active slot 0..3
 0 variable funcselect  \ F0 .. F28, bitwise coding
 
+create slots      3 , 56 , 45 , 6775 , \ default slot addresses
+
 create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
                   7 ,  9 , 10 , 11 , \ second row
+
 
 : speed@ ( -- u ) \  get speed u (0 .. 1000) from potentiometer
   0 apin@ 4 / dup
@@ -90,6 +91,10 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   1.25e f*                       \ correction factor
 ;
 
+
+\ Manage display
+\ **************
+
 : .Vrail ( -- ) \ print rail voltage
   2 oledfont
   0 0 oledpos! 1 set-precision
@@ -101,6 +106,7 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   64 0 oledpos! 2 set-precision
   ." Vb " Vlipo f. 
 ;
+
 
 : .Irail ( -- ) \ print rail current [A]
   3 oledfont
@@ -135,7 +141,6 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
 : .speed ( -- ) \ print speed (PWM or DCC step)
   3 oledfont
   0 2 oledpos!
-  
   dcc @ if
     direction @ if 
       ."   " dcc-speed @ u.speed ." >"
@@ -156,8 +161,11 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   0 6 oledpos!
    \ 012345678901234567890
   ." Display, Mode        " 
-  0 7 oledpos!
+  power @ if 
   ."  ON  "
+  else
+  ." [ON] "
+  then
   dcc @ if 
        ." [DCC] " 
   else ." [DC]C " then 
@@ -173,7 +181,6 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   0 6 oledpos!
           \ 012345678901234567890
          ." PWM Frequency [kHz] 1"
-  0 7 oledpos!
   pwmselect @ case
           \ 012345678901234567890
           \ [BRK]
@@ -189,7 +196,6 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   0 6 oledpos!
           \ 012345678901234567890
          ." PWM Frequency [kHz] 2"
-  0 7 oledpos!
   pwmselect @ case
           \ 012345678901234567890
     3 of ."  [4]   8    16   32 " endof
@@ -243,7 +249,7 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
    \ 012345678901234567890
   ." Slots                " 
   slotselect @ 
-  4 0 do
+  #SLOT 0 do
     dup i =  i DCCaddress@ swap .dcc-slot-item
   loop
   drop
@@ -262,11 +268,11 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
 ;
 
 : .function-bit ( u -- ) \ print function bit u from active slot, if set with [u]
-    cells user-func + @  dup \ get the function number
-    slotselect @ DCCfunction@ funcselect ! funcselect  \ get the function bits
-    swap bit@ 
-    swap dup 10 < if space then \ add a space 
-    swap if [u-]. else space u-. space then space \ F0
+  cells user-func + @  dup \ get the function number
+  1 swap lshift
+  slotselect @ DCCfunction@ funcselect ! funcselect bit@ \ get the function bits
+  swap dup 10 < if space then \ add a space 
+  swap if [u-]. else space u-. space then space \ F0
 ;
 
 : .dcc-menu-user-1 ( -- ) \ print user functions line 1
@@ -294,6 +300,182 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
     4 of .dcc-menu-user-2 endof
   endcase
 ;
+
+: .menu ( -- ) \ main menu
+  dcc @ if
+    .dcc-menu
+  else
+    .dc-menu
+  then
+ ;
+
+: ppp-display ( -- )  \ display throttle infos every 200 ms till button is pressed
+  >oled
+  begin
+     .Vrail .Vlipo 
+     .speed
+     .Irail 
+     .menu
+     200 osDelay drop
+  button? until
+  >term
+;
+
+
+\ Evaluate buttons
+\ ****************
+
+: mode-power ( -- ) \ set power mode
+  power @ if
+    \ switch on
+    dcc @ if
+      \ DCC
+      DCCstart
+      -1 slotselect @ DCCstate!
+    else
+      DCCstop
+      \ DC -> PWM
+      0 0 pwmpin!
+      0 1 pwmpin!
+      2 pwmprescale     \ 16 kHz
+      PWM_MODE 0 dmod   \ set D0 to pwm
+      PWM_MODE 1 dmod   \ set D1 to pwm
+    then
+  else
+    \ switch off rails
+    0 0 pwmpin!
+    0 1 pwmpin!
+    OUTPUT_MODE 0 dmod   \ set D0 to output
+    OUTPUT_MODE 1 dmod   \ set D1 to output
+  then
+;
+
+: mode-button ( u -- ) \ mode buttons, u key (d .. g)
+  case
+    [char] d of         \ switch on/off
+      power @ 0= power ! \ toggle power
+      mode-power
+    endof
+    [char] e of     \ DC or DCC
+      dcc @ 0= dcc ! \ toggle DCC
+      dcc @ if maxmenu-dcc else maxmenu-dc then maxmenu !
+      mode-power
+    endof          
+    [char] f of  endof \ not used yet
+    [char] g of  \ switch off display (dark)
+      1 display-off ! oledclr 
+    endof 
+  endcase
+;
+
+: pwm-button ( u -- ) \ Brake and PWM1 buttons, u key (d .. g)
+  case
+    [char] d of brake @ 0= brake ! endof           \ toggle brake
+    [char] e of 0 pwmselect ! 64 pwmprescale endof \ 500 Hz
+    [char] f of 1 pwmselect ! 32 pwmprescale endof \ 1 kHz
+    [char] g of 2 pwmselect ! 16 pwmprescale endof \ 2 kHz
+  endcase
+;
+
+: pwm-button1 ( u -- ) \ PWM2 buttons, u key (d .. g)
+  case
+    [char] d of 3 pwmselect !  8 pwmprescale endof \ 4 kHz
+    [char] e of 4 pwmselect !  4 pwmprescale endof \ 8 kHz
+    [char] f of 5 pwmselect !  2 pwmprescale endof \ 16 kHz
+    [char] g of 6 pwmselect !  1 pwmprescale endof \ 32  kHz
+  endcase
+;
+
+: slot-button ( u -- ) \ select DCC slot, u key (d .. g)
+  0 slotselect @ DCCstate!  \ disable old slot
+  case
+    [char] d of 0 endof
+    [char] e of 1 endof
+    [char] f of 2 endof
+    [char] g of 3 endof
+    ( default)  0
+  endcase
+  dup slotselect ! -1 swap DCCstate!
+;
+
+: functions-button ( u -- ) \ functions buttons, u key (d .. g)
+  case
+    [char] d of 1   endof \ F0 Light
+    [char] e of 2   endof \ F1 Bell
+    [char] f of 4   endof \ F2 Horn
+    [char] g of 256 endof \ F8 Mute
+    ( default)  0
+  endcase
+  dup if 
+    \ there is something to change
+    slotselect @ DCCfunction@ funcselect !
+    dup funcselect bit@ if
+      \ bit already set
+      slotselect @ -DCCfunction!
+    else
+      \ bit already reset
+      slotselect @ DCCfunction!
+    then
+  else
+    drop
+  then
+;
+
+: user-button ( u -- ) \ u 0..7 user functions
+  cells user-func + @  \ get the function number
+  1 swap lshift dup
+  slotselect @ DCCfunction@ funcselect !   \ get the function bits
+  funcselect bit@ if
+    slotselect @ -DCCfunction!
+  else
+    slotselect @ DCCfunction!
+  then
+;
+
+: user-button-1 ( u -- ) \ functions buttons, u key (d .. g)
+  [char] d - user-button \ 'd'=0, .., 'g'=3
+;
+
+: user-button-2 ( u -- ) \ functions buttons, u key (d .. g)
+  [char] d - 4 + user-button \ 'd'=4, .., 'g'=7
+;
+
+: menu-button ( u -- ) \ menu buttons
+  display-off @ if
+    drop 0 display-off !
+  else
+    menu @ case
+      0 of mode-button endof 
+      1 of dcc @ if slot-button else pwm-button then endof
+      2 of dcc @ if functions-button else pwm-button1 then endof
+      3 of user-button-1 endof
+      4 of user-button-2 endof
+   endcase
+  then
+;
+
+: ppp-menu ( -- ) \ display throttle infos till a button is pressed (task)
+  #SLOT 0 do
+    \ default slot addresses
+    slots i cells + @ i DCCaddress!
+  loop
+  begin
+    display-off @ 0= if ppp-display then
+    button case
+      [char] a of 0 direction ! endof      \ reverse
+      [char] b of menu @ 1+ dup maxmenu @ > if drop 0 then menu ! endof \ menu down
+      [char] h of menu @ 1- dup 0 < if drop maxmenu @ then menu ! endof \ menu up
+      [char] c of 1 direction ! endof      \ forward
+      menu-button
+    endcase
+  again
+;
+
+task ppp-menu&
+
+
+\ Throttle
+\ ********
 
 : dc-throttle ( -- ) \ control the PWM pins
   speed@
@@ -323,169 +505,14 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   direction @  slotselect @ DCCdirection!
 ;
 
-: throttle ( -- ) \ control the speed, update every 10 ms
+: throttle ( -- ) \ control the speed, update every 10 ms (task)
   begin
     10 osdelay drop
     dcc @ if dcc-throttle else dc-throttle then
   again
 ;
 
-: .menu ( -- ) \ main menu
-  dcc @ if
-    .dcc-menu
-  else
-    .dc-menu
-  then
- ;
-
-: ppp-display ( -- )  \ display throttle infos every 200 ms till button is pressed
-  >oled
-  begin
-     .Vrail .Vlipo 
-     .speed
-     .Irail 
-     .menu
-     200 osDelay drop
-  button? until
-  >term
-;
-
-: mode-power ( -- ) \ set power mode
-  power @ if
-    \ switch on
-    dcc @ if
-      \ DCC
-      DCCstart
-    else
-      DCCstop
-      \ DC -> PWM
-      0 0 pwmpin!
-      0 1 pwmpin!
-      2 pwmprescale     \ 16 kHz
-      PWM_MODE 0 dmod   \ set D0 to pwm
-      PWM_MODE 1 dmod   \ set D1 to pwm
-    then
-  else
-    \ switch off rails
-    0 0 pwmpin!
-    0 1 pwmpin!
-    OUTPUT_MODE 0 dmod   \ set D0 to output
-    OUTPUT_MODE 1 dmod   \ set D1 to output
-  endif
-;
-
-: mode-button ( u -- ) \ mode buttons
-  case
-    [char] d of  \ switch on/off
-      power @ 0= power ! \ toggle power
-      mode-power
-    endof
-    [char] e of  \ DC or DCC
-      dcc @ 0= dcc ! \ toggle DCC
-      dcc @ if maxmenu-dcc else maxmenu-dc then maxmenu !
-      mode-power
-    endof          
-    [char] f of  \ not used yet
-    [char] g of  \ switch off display (dark)
-      1 display-off ! oledclr 
-    endof 
-  endcase
-;
-
-: pwm-button ( u -- ) \ Brake and PWM1 buttons
-  case
-    [char] d of brake @ 0= brake ! endof           \ toggle brake
-    [char] e of 0 pwmselect ! 64 pwmprescale endof \ 500 Hz
-    [char] f of 1 pwmselect ! 32 pwmprescale endof \ 1 kHz
-    [char] g of 2 pwmselect ! 16 pwmprescale endof \ 2 kHz
-  endcase
-;
-
-: pwm-button1 ( u -- ) \ PWM2 buttons
-  case
-    [char] d of 3 pwmselect !  8 pwmprescale endof \ 4 kHz
-    [char] e of 4 pwmselect !  4 pwmprescale endof \ 8 kHz
-    [char] f of 5 pwmselect !  2 pwmprescale endof \ 16 kHz
-    [char] g of 6 pwmselect !  1 pwmprescale endof \ 32  kHz
-  endcase
-;
-
-: slot-button ( u -- ) \ select DCC slot
-  0 slotselect @ DCCstate!  \ disable old slot
-  case
-    [char] d of 0 endof
-    [char] e of 1 endof
-    [char] f of 2 endof
-    [char] g of 3 endof
-    ( default)  0
-  endcase
-  dup slotselect ! -1 swap DCCstate!
-;
-
-: functions-button ( u -- ) \ functions buttons
-  case
-    [char] d of 1   endof \ F0 Light
-    [char] e of 2   endof \ F1 Bell
-    [char] f of 4   endof \ F2 Horn
-    [char] g of 256 endof \ F8 Mute
-    ( default)  0
-  endcase
-  dup if 
-    \ there is something to change
-    slotselect @ DCCfunction@ funcselect !
-    dup funcselect bit@ if
-      \ bit already set
-      slotselect @ -DCCfunction!
-    else
-      \ bit already reset
-      slotselect @ DCCfunction!
-    then
-  else
-    drop
-  then
-;
-
-: user-button-1 ( u -- ) \ functions buttons
-;
-
-: user-button-2 ( u -- ) \ functions buttons
-;
-
-: menu-button ( u -- ) \ menu buttons
-  display-off @ if
-    drop 0 display-off !
-  else
-    menu @ case
-      0 of mode-button endof 
-      1 of dcc @ if slot-button else pwm-button then endof
-      2 of dcc @ if functions-button else pwm-button1 then endof
-      3 of user-button-1 endof
-      4 of user-button-2 endof
-   endcase
-  then
-;
-
-: ppp-menu ( -- ) \ display throttle infos till a button is pressed
-  \ default slots
-  slot0 @ 0 DCCaddress!
-  slot1 @ 1 DCCaddress!
-  slot2 @ 2 DCCaddress!
-  slot3 @ 3 DCCaddress!
-  begin
-    display-off @ 0= if ppp-display then
-    button case
-      [char] a of 0 direction ! endof      \ reverse
-      [char] b of menu @ 1+ dup maxmenu @ > if drop 0 then menu ! endof \ menu down
-      [char] h of menu @ 1- dup 0 < if drop maxmenu @ then menu ! endof \ menu up
-      [char] c of 1 direction ! endof      \ forward
-      menu-button
-    endcase
-  again
-;
-
 task throttle&
-task ppp-menu&
-
 
 \ this should part of /etc/rc.local to start the threads
 \
