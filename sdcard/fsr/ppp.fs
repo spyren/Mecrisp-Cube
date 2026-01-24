@@ -18,6 +18,7 @@
 CR .( ppp.fs loading ... )
 
 5  constant PWM_MODE
+3  constant OUTPUT_MODE
 
 3    variable slot0    \ default locomotive address for slot0
 56   variable slot1    \ Bangor and Aroostook BL2
@@ -25,7 +26,10 @@ CR .( ppp.fs loading ... )
 6775 variable slot3    \ PRR Mountain M1a
 
 0 variable menu        \ 0 mode, 1 pwm1, 2 pwm2
-2 constant maxmenu
+2 constant maxmenu-dc
+5 constant maxmenu-dcc
+maxmenu-dc variable maxmenu
+0 variable power       \ power off
 0 variable dcc         \ 0 DC, 1 DCC
 1 variable direction   \ 1 forward, 0 reverse
 1 variable brake       \ 1 brake
@@ -38,12 +42,15 @@ CR .( ppp.fs loading ... )
 0 variable slotselect  \ active slot 0..3
 0 variable funcselect  \ F0 .. F28, bitwise coding
 
-: speed@ ( -- u ) \  get speed u 0 .. 1000
+create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
+                  7 ,  9 , 10 , 11 , \ second row
+
+: speed@ ( -- u ) \  get speed u (0 .. 1000) from potentiometer
   0 apin@ 4 / dup
   1000 > if  drop 1000 then dup speed !
 ;
 
-: dcc-speed@ ( -- u ) \  get speed u 0, 2 .. 126
+: dcc-speed@ ( -- u ) \  get dcc-speed u (0, 2 .. 126) from potentiometer
   0 apin@ 32 / dup
   1 = if 
     drop 0 
@@ -83,25 +90,25 @@ CR .( ppp.fs loading ... )
   1.25e f*                       \ correction factor
 ;
 
-: .Vrail ( -- )
+: .Vrail ( -- ) \ print rail voltage
   2 oledfont
   0 0 oledpos! 1 set-precision
   ." Vr " Vrail f. 
 ;
 
-: .Vlipo ( -- )
+: .Vlipo ( -- ) \ print LiPo voltage
   2 oledfont
   64 0 oledpos! 2 set-precision
   ." Vb " Vlipo f. 
 ;
 
-: .Irail ( -- )
+: .Irail ( -- ) \ print rail current [A]
   3 oledfont
   0 4 oledpos! 3 set-precision
   ." I " Irail f. ." A"
 ;
 
-: u.pwm ( u -- )
+: u.pwm ( u -- ) \ print PWM
   dup 10 < if
     u.   ." %    "
   else
@@ -113,7 +120,7 @@ CR .( ppp.fs loading ... )
   then
 ;
 
-: u.speed ( u -- )
+: u.speed ( u -- ) \ print speed step
   dup 10 < if
     u.   ." st   "
   else
@@ -125,7 +132,7 @@ CR .( ppp.fs loading ... )
   then
 ;
 
-: .speed ( -- )
+: .speed ( -- ) \ print speed (PWM or DCC step)
   3 oledfont
   0 2 oledpos!
   
@@ -144,21 +151,24 @@ CR .( ppp.fs loading ... )
  then
 ;
 
-: .mode
+: .mode ( -- ) \ print mode menu
   0 oledfont
   0 6 oledpos!
    \ 012345678901234567890
   ." Display, Mode        " 
   0 7 oledpos!
-  ."  OFF  "
-  dcc @ if ." [DCC]        " else ." [DC]C         " then 
+  ."  ON  "
+  dcc @ if 
+       ." [DCC] " 
+  else ." [DC]C " then 
+              ."  -   DARK"
 ;
 
 : .BRK ( -- )
   brake @ if ." [BRK]" else ."  BRK " then
 ;
 
-: .pwm-menu
+: .pwm-menu ( -- ) \ print first PWM menu
   0 oledfont
   0 6 oledpos!
           \ 012345678901234567890
@@ -174,7 +184,7 @@ CR .( ppp.fs loading ... )
   endcase
 ;
 
-: .pwm-menu1
+: .pwm-menu1 ( -- ) \ print second PWM menu
   0 oledfont
   0 6 oledpos!
           \ 012345678901234567890
@@ -190,7 +200,7 @@ CR .( ppp.fs loading ... )
   endcase
 ;
 
-: .dc-menu ( -- )
+: .dc-menu ( -- ) \ print DC menus
   menu @ case
     0 of .mode endof
     1 of .pwm-menu endof
@@ -227,9 +237,10 @@ CR .( ppp.fs loading ... )
   then
 ; 
 
-: .dcc-menu-slot
+: .dcc-menu-slot ( -- ) \ print slots
   0 oledfont
   0 6 oledpos!
+   \ 012345678901234567890
   ." Slots                " 
   slotselect @ 
   4 0 do
@@ -238,9 +249,10 @@ CR .( ppp.fs loading ... )
   drop
 ;
 
-: .dcc-menu-functions
+: .dcc-menu-functions ( -- ) \ print functions
   0 oledfont
   0 6 oledpos!
+   \ 012345678901234567890
   ." Functions            "
   slotselect @ DCCfunction@ funcselect ! funcselect
   dup 1 swap bit@ if ." [Lgt]" else ." Lght " then \ F0
@@ -249,11 +261,37 @@ CR .( ppp.fs loading ... )
     256 swap bit@ if ." [Mte]" else ." Mute " then \ F8
 ;
 
-: .dcc-menu ( -- ) 
+: .function-bit ( u -- ) \ print function bit u from active slot, if set with [u]
+    cells user-func + @  dup \ get the function number
+    slotselect @ DCCfunction@ funcselect ! funcselect  \ get the function bits
+    swap bit@ 
+    swap dup 10 < if space then \ add a space 
+    swap if [u-]. else space u-. space then space \ F0
+;
+
+: .dcc-menu-user-1 ( -- ) \ print user functions line 1
+  0 oledfont
+  0 6 oledpos!
+   \ 012345678901234567890
+  ." User Functions 1st   "
+  4 0 do i .function-bit loop
+;
+
+: .dcc-menu-user-2 ( -- ) \ print user functions line 2
+  0 oledfont
+  0 6 oledpos!
+   \ 012345678901234567890
+  ." User Functions 2nd   "
+  8 4 do i .function-bit loop
+;
+
+: .dcc-menu ( -- ) \ print DCC menus
   menu @ case
     0 of .mode endof
     1 of .dcc-menu-slot endof
     2 of .dcc-menu-functions endof
+    3 of .dcc-menu-user-1 endof
+    4 of .dcc-menu-user-2 endof
   endcase
 ;
 
@@ -288,11 +326,7 @@ CR .( ppp.fs loading ... )
 : throttle ( -- ) \ control the speed, update every 10 ms
   begin
     10 osdelay drop
-    dcc @ if
-      dcc-throttle
-    else
-      dc-throttle
-    then
+    dcc @ if dcc-throttle else dc-throttle then
   again
 ;
 
@@ -316,24 +350,45 @@ CR .( ppp.fs loading ... )
   >term
 ;
 
+: mode-power ( -- ) \ set power mode
+  power @ if
+    \ switch on
+    dcc @ if
+      \ DCC
+      DCCstart
+    else
+      DCCstop
+      \ DC -> PWM
+      0 0 pwmpin!
+      0 1 pwmpin!
+      2 pwmprescale     \ 16 kHz
+      PWM_MODE 0 dmod   \ set D0 to pwm
+      PWM_MODE 1 dmod   \ set D1 to pwm
+    then
+  else
+    \ switch off rails
+    0 0 pwmpin!
+    0 1 pwmpin!
+    OUTPUT_MODE 0 dmod   \ set D0 to output
+    OUTPUT_MODE 1 dmod   \ set D1 to output
+  endif
+;
+
 : mode-button ( u -- ) \ mode buttons
   case
-    [char] d of 1 display-off ! oledclr endof \ switch off display
-    [char] e of 
+    [char] d of  \ switch on/off
+      power @ 0= power ! \ toggle power
+      mode-power
+    endof
+    [char] e of  \ DC or DCC
       dcc @ 0= dcc ! \ toggle DCC
-      dcc @ if
-        \ DCC
-        DCCstart
-      else
-        DCCstop
-        \ DC -> PWM
-        0 0 pwmpin!
-        0 1 pwmpin!
-        2 pwmprescale     \ 16 kHz
-        PWM_MODE 0 dmod   \ set D0 to pwm
-        PWM_MODE 1 dmod   \ set D1 to pwm
-      then
+      dcc @ if maxmenu-dcc else maxmenu-dc then maxmenu !
+      mode-power
     endof          
+    [char] f of  \ not used yet
+    [char] g of  \ switch off display (dark)
+      1 display-off ! oledclr 
+    endof 
   endcase
 ;
 
@@ -390,27 +445,23 @@ CR .( ppp.fs loading ... )
   then
 ;
 
+: user-button-1 ( u -- ) \ functions buttons
+;
+
+: user-button-2 ( u -- ) \ functions buttons
+;
+
 : menu-button ( u -- ) \ menu buttons
   display-off @ if
     drop 0 display-off !
   else
     menu @ case
       0 of mode-button endof 
-      1 of 
-        dcc @ if 
-          slot-button
-        else
-          pwm-button
-        then
-      endof
-      2 of 
-        dcc @ if
-          functions-button
-        else
-          pwm-button1 
-        then
-      endof
-    endcase
+      1 of dcc @ if slot-button else pwm-button then endof
+      2 of dcc @ if functions-button else pwm-button1 then endof
+      3 of user-button-1 endof
+      4 of user-button-2 endof
+   endcase
   then
 ;
 
@@ -424,8 +475,8 @@ CR .( ppp.fs loading ... )
     display-off @ 0= if ppp-display then
     button case
       [char] a of 0 direction ! endof      \ reverse
-      [char] b of menu @ 1+ dup maxmenu > if drop 0 then menu ! endof \ menu down
-      [char] h of menu @ 1- dup 0 < if drop maxmenu then menu ! endof \ menu up
+      [char] b of menu @ 1+ dup maxmenu @ > if drop 0 then menu ! endof \ menu down
+      [char] h of menu @ 1- dup 0 < if drop maxmenu @ then menu ! endof \ menu up
       [char] c of 1 direction ! endof      \ forward
       menu-button
     endcase
