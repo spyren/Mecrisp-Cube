@@ -160,16 +160,16 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   0 oledfont
   0 6 oledpos!
    \ 012345678901234567890
-  ." Display, Mode        " 
+  ." Rail Mode     Display" 
   power @ if 
-  ."  ON  "
-  else
   ." [ON] "
+   else
+  ."  ON  "
   then
   dcc @ if 
        ." [DCC] " 
   else ." [DC]C " then 
-              ."  -   DARK"
+             ."   -  DARK "
 ;
 
 : .BRK ( -- )
@@ -309,14 +309,14 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
   then
  ;
 
-: ppp-display ( -- )  \ display throttle infos every 200 ms till button is pressed
+: ppp-display ( -- )  \ display throttle infos every 100 ms till button is pressed
   >oled
   begin
      .Vrail .Vlipo 
      .speed
      .Irail 
      .menu
-     200 osDelay drop
+     100 osDelay drop
   button? until
   >term
 ;
@@ -456,17 +456,19 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
 
 : ppp-menu ( -- ) \ display throttle infos till a button is pressed (task)
   #SLOT 0 do
-    \ default slot addresses
+    \ init default slot addresses
     slots i cells + @ i DCCaddress!
   loop
   begin
-    display-off @ 0= if ppp-display then
+    display-off @ 0= if 
+      ppp-display \ display is on (not dark)
+    then
     button case
       [char] a of 0 direction ! endof      \ reverse
       [char] b of menu @ 1+ dup maxmenu @ > if drop 0 then menu ! endof \ menu down
       [char] h of menu @ 1- dup 0 < if drop maxmenu @ then menu ! endof \ menu up
       [char] c of 1 direction ! endof      \ forward
-      menu-button
+      menu-button \ any other button (d, e, f, g)
     endcase
   again
 ;
