@@ -343,6 +343,7 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
     then
   else
     \ switch off rails
+    DCCstop
     0 0 pwmpin!
     0 1 pwmpin!
     OUTPUT_MODE 0 dmod   \ set D0 to output
