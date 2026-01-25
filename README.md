@@ -141,7 +141,7 @@ Set LSE drive at least to medium low.
 
 ### Board Support Package [BSP](/sdcard/man/BoardSupportPackage.md)
 
-  * 1 push button
+  * 8 push buttons
   * 1 LED
   * 14 GPIO pins, D0 .. D13
   * 5 ADC pins, A0 .. A4; internal VBAT and VREF (VDD), chip temperature
@@ -421,7 +421,7 @@ The compiled word `hello` needs only 14 bytes in the dictionary.
 
 #### Special Functions on Startup 
 
-  * *SW1* do not include `0:/etc/rc.local` on startup
+  * *SW1* (button A) pressed, do not include `0:/etc/rc.local` on startup
 
 
 #### LEDs as Status Indicator
