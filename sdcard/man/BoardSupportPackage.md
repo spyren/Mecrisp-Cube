@@ -29,7 +29,14 @@ D10, D11, D12, and D13 are for the SD card. You are free to use the GPIO pins fo
 led1!        ( f -- )         set LED1 (blue)
 led1@        ( -- f )         get LED1 (blue)
 
-switch1?     ( -- f )         get switch1, closed=TRUE
+switch1?     ( -- f )         get switch1 (button a), closed=TRUE
+switch2?     ( -- f )         get switch1 (button b), closed=TRUE
+switch3?     ( -- f )         get switch1 (button c), closed=TRUE
+button       ( -- c )         Receive one character (a, b, c, d, e, f, g, h) 
+button?      ( -- f )         Is there any key press
+                              a b h c
+                              d e f g
+
 dport!       ( n -- )         set the digital output port (D0=bit0 .. D15=bit15).
 dport@       ( -- n )         get the digital input/output port (D0=bit0 .. D15=bit15).
 
