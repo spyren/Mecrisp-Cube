@@ -1,6 +1,6 @@
 <table>
   <tr>
-    <td><img src="/sdcard/man/img/firefly-header.jpg">
+    <td><img src="/sdcard/man/img/ppp-header.jpg">
  </td>
     <td><img src="/sdcard/man/img/mecrisp-cube-logo-red-h.svg"></td>
   </tr>
