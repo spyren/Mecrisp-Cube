@@ -25,18 +25,18 @@ CR .( dcc-ex.fs loading ... )
 
 \ Turn power on or off to the MAIN and PROG tracks
 
-0 variable main-track
-0 variable prog-track
-0 variable dc-cab
-0 variable dc-inverse
-0 variable main-inverse
+false variable main-track
+false variable prog-track
+false variable dc-inverse
+false variable main-inverse
+
 
 : <1> ( -- ) \  <1> - power on
   \ switch on
   dcc @ if
     \ DCC
     DCCstart
-    -1 slotselect @ DCCstate!
+    true slotselect @ DCCstate!
   else
     DCCstop
     \ DC -> PWM
@@ -46,8 +46,8 @@ CR .( dcc-ex.fs loading ... )
     PWM_MODE 0 dmod   \ set D0 to pwm
     PWM_MODE 1 dmod   \ set D1 to pwm
   then
-  -1 power !
-  -1 main-track ! -0 prog-track !
+  true power !
+  true main-track ! false prog-track !
   ." <p1>"
 ;
 
@@ -58,9 +58,9 @@ CR .( dcc-ex.fs loading ... )
 : <1  ( "ccc"<greaterthan> -- ) \  <1 MAIN|PROG|JOIN> - power on track 
   [char] > parse
   case 
-    2dup main? ?of -1 main-track ! -0 prog-track ! ." <p1 MAIN>" <1> endof
-    2dup prog? ?of  0 main-track ! -1 prog-track ! ." <p1 PROG>" <1> endof
-    2dup join? ?of -1 main-track ! -1 prog-track ! ." <p1 JOIN>" <1> endof
+    2dup main? ?of true  main-track ! false prog-track ! ." <p1 MAIN>" <1> endof
+    2dup prog? ?of false main-track ! true  prog-track ! ." <p1 PROG>" <1> endof
+    2dup join? ?of true  main-track ! true  prog-track ! ." <p1 JOIN>" <1> endof
   endcase
   drop
 ;
@@ -72,15 +72,15 @@ CR .( dcc-ex.fs loading ... )
   0 1 pwmpin!
   OUTPUT_MODE 0 dmod   \ set D0 to output
   OUTPUT_MODE 1 dmod   \ set D1 to output
-  0 power !
+  false power !
   ." <p0>"
 ;
 
 : <0  ( "ccc"<greaterthan> -- ) \  <0 MAIN|PROG> - power off track 
   [char] > parse
   case 
-    2dup main? ?of 0 main-track ! ." <p0 MAIN>" endof
-    2dup prog? ?of 0 prog-track ! ." <p0 PROG>" endof
+    2dup main? ?of false main-track ! ." <p0 MAIN>" endof
+    2dup prog? ?of false prog-track ! ." <p0 PROG>" endof
   endcase
   drop
 ;
@@ -99,6 +99,10 @@ CR .( dcc-ex.fs loading ... )
 \ Track Manager aka DC-District
 \ *****************************
 
+0 variable dc-cab
+0 variable dc-speed
+0 variable dc-direction
+
 : <=> ( -- ) \ <=> - Request the current Track Manager configuration
 ;
 
@@ -109,16 +113,18 @@ CR .( dcc-ex.fs loading ... )
 : dcx?       ( c- u -- f )  s" DCX" compare ;
 : none?      ( c- u -- f )  s" NONE" compare ;
 
-: dc-track ( u -- )   \ inverse
-  dc-inverse !  0 dcc !  token evaluate dc-cab !  <1>
+: dc-track ( f -- )   \ inverse
+  dc-inverse !  false dcc !  token evaluate dc-cab !  <1>
 ;
 
-: dcc-track ( u -- )  \ inverse
-  main-inverse !  -1 dcc !  <1>
+: dcc-track ( f -- )  \ inverse
+  main-inverse !  true dcc !  <1>
 ;
+
 
 : trackA
-  token case 
+  ." TrackA "
+  token 2dup cr type case 
     2dup main?      ?of false dcc-track endof
     2dup main_inv?  ?of true  dcc-track endof
     2dup main_auto? ?of false dcc-track endof
@@ -131,12 +137,15 @@ CR .( dcc-ex.fs loading ... )
 ;
 
 : <= ( "ccc"<greaterthan> -- ) \ <= trackletter mode [cab]> - configure track manager 
+  source \ save source
+  [char] > parse setsource \ set new source
+  >in @  \ save old source offset
+  0 >in ! \ set new source offset
   token s" A" compare if 
     trackA
-  else
-    \ throw away till >
-    [char] > parse 2drop
   then
+  >in !    \ restore source offset
+  setsource \ restore source
 ;
 
 
@@ -183,11 +192,15 @@ CR .( dcc-ex.fs loading ... )
 ;
 
 : <- ( "ccc"<greaterthan> -- ) \ <- cab> - Remove one loco from reminders
+  [char] > parse
+  evaluate ( -- cab )
+  drop \ not supported yet
 ;
 
 : <D ( "ccc"<greaterthan> -- ) \ <D speedsteps> - Switch between 28 and 128 speed steps 
   [char] > parse 
-  2drop \ not supported
+  evaluate ( -- speedsteps )
+  drop \ not supported
 ;
 
 : <m ( "ccc"<greaterthan> -- ) \ <m [type] | [cab acceleration [deceleration]]> - set the momentum of a loco
@@ -244,7 +257,7 @@ CR .( dcc-ex.fs loading ... )
 \ ***********************
 
 \ Programming track - Tuning
-\ **************************\ not supported
+\ **************************
 
 
 \ Configuring the EX-CommandStation
@@ -277,3 +290,4 @@ CR .( dcc-ex.fs loading ... )
 
 \ Other Commands
 \ **************
+
