@@ -47,8 +47,8 @@ false variable main-inverse
     PWM_MODE 1 dmod   \ set D1 to pwm
   then
   true power !
-  true main-track ! false prog-track !
-  ." <p1>"
+  true main-track ! false prog-track
+  ." <p1>" cr
 ;
 
 : main? ( c- u -- f )  s" MAIN" compare ;
@@ -73,37 +73,81 @@ false variable main-inverse
   OUTPUT_MODE 0 dmod   \ set D0 to output
   OUTPUT_MODE 1 dmod   \ set D1 to output
   false power !
-  ." <p0>"
+  ." <p0>" cr
 ;
 
 : <0  ( "ccc"<greaterthan> -- ) \  <0 MAIN|PROG> - power off track 
   [char] > parse
   case 
-    2dup main? ?of false main-track ! ." <p0 MAIN>" endof
-    2dup prog? ?of false prog-track ! ." <p0 PROG>" endof
+    2dup main? ?of true  main-track ! ." <p0 MAIN>" cr endof
+    2dup prog? ?of false prog-track ! ." <p0 PROG>" cr endof
   endcase
   drop
 ;
 
-: reset?  ( c- u -- f )  s" RESET" compare ;
+: reset?   ( c- u -- f )  s" RESET" compare ;
+: ack?     ( c- u -- f )  s" ACK" compare ;
+: cabs?    ( c- u -- f )  s" CABS" compare ;
+: speed28  ( c- u -- f )  s" SPEED28" compare ;
+: speed128 ( c- u -- f )  s" SPEED128" compare ;
+
+: show-cabs ( -- )
+  #SLOT 0 do
+    i DCCstate@ if
+      \ slot enabled
+      ." <cab " i DCCaddress@ . i DCCspeed@ . i DCCdirection@ 
+      if ." forward>" else ." reverse>" then cr
+    then 
+  loop
+;
 
 : <D ( "ccc"<greaterthan> -- ) \ <D RESET|> - Re-boot the command Station
   [char] > parse
   case 
-    2dup reset? ?of reset endof
+    2dup reset?    ?of reset endof
+    2dup ack?      ?of  endof      \ not supported yet
+    2dup cabs?     ?of show-cabs endof
+    2dup speed28?  ?of  endof      \ supports only 128 speed steps
+    2dup speed128  ?of  endof       \ "
   endcase
   drop
+;
+
+: <JI>  ( -- ) \ <J I> <JI> - Request current values list
+  \ <jI [cA cB cC ...]> c: Raw current value for each defined Track, in milliAmps 
+  ." <jI " Irail 1000E f* f>s u-. ." A>" cr
+;
+
+: <JG>  ( -- ) \ <J G> <JG> - Request max current list
+  \ not supported yet
+  ." <jG 1000A>" cr
 ;
 
 
 \ Track Manager aka DC-District
 \ *****************************
 
-0 variable dc-cab
-0 variable dc-speed
-0 variable dc-direction
+99 variable dc-cab
+0  variable dc-speed
+1  variable dc-direction
 
 : <=> ( -- ) \ <=> - Request the current Track Manager configuration
+  \ for each track/channel supported by the Motor Shield <= trackletter state cab>
+  ." <= A " 
+  dcc @ if 
+    main-track @ prog-track @ or if
+      main-track @ if
+        main-inverse @ if ." MAIN_INV>" else ." MAIN>" then 
+      else
+        main-inverse @ if ." PROG_INV>" else ." PROG>" then
+      then
+    else
+      main-inverse @ if ." MAIN_INV>" else ." MAIN>" then
+    then
+  else
+    dc-inverse @ if ." DCX " else ." DC " then dc-cab @ u-. ." >"
+  then 
+  cr
 ;
 
 : main_inv?  ( c- u -- f )  s" MAIN_INV" compare ;
@@ -114,26 +158,28 @@ false variable main-inverse
 : none?      ( c- u -- f )  s" NONE" compare ;
 
 : dc-track ( f -- )   \ inverse
-  dc-inverse !  false dcc !  token evaluate dc-cab !  <1>
+  dc-inverse !  false dcc !  token evaluate dc-cab !
 ;
 
 : dcc-track ( f -- )  \ inverse
-  main-inverse !  true dcc !  <1>
+  main-inverse !  true dcc !
 ;
 
-
 : trackA
-  ." TrackA "
-  token 2dup cr type case 
+  token case 
     2dup main?      ?of false dcc-track endof
     2dup main_inv?  ?of true  dcc-track endof
-    2dup main_auto? ?of false dcc-track endof
+    2dup main_auto? ?of false dcc-track endof \ not supported yet
     2dup dc?        ?of false dc-track endof
     2dup dc_inv?    ?of true  dc-track endof
-    2dup dcx?       ?of true  dc-track endof
-    2dup none?      ?of endof
+    2dup dcx?       ?of true  dc-track endof<t 56 20 1>
+    2dup none?      ?of 
+      false main-track !    false prog-track ! 
+      false main-inverse !  false dc-inverse !
+    endof
   endcase
   drop
+  <0> \ Whenever the track mode is changed, track power is automatically turned off.
 ;
 
 : <= ( "ccc"<greaterthan> -- ) \ <= trackletter mode [cab]> - configure track manager 
@@ -146,6 +192,7 @@ false variable main-inverse
   then
   >in !    \ restore source offset
   setsource \ restore source
+  <=>
 ;
 
 
@@ -170,31 +217,56 @@ false variable main-inverse
   -1
 ;
 
+: slot-info ( u -- ) \ slot info <l cab reg speedByte functMap>
+  ." <l " 
+  dup DCCaddress@ .
+  0 .
+  dup dup DCCspeed@ swap DCCdirection@ + .
+  DCCFunction@ u-.
+  ." >" cr
+;
+
 : <t ( "ccc"<greaterthan> -- ) \ <t cab speed dir> - Set Cab (Loco) speed 
   [char] > parse
-  evaluate ( -- cab speed dir)
-  rot cab2slot dup ( -- speed dir slot slot)
-  rot DCCdirection!
-  DCCspeed!
+  evaluate rot cab2slot ( -- speed dir slot)
+  tuck ( -- speed slot dir slot)
+  DCCdirection! ( -- speed slot)
+  tuck ( -- slot speed slot) 
+  DCCspeed! ( -- slot)
+  dup true swap DCCstate!
+  slot-info
 ;
 
 : <!> ( -- ) \ Emergency stop
+  #SLOT 0 do
+    i DCCstate@ if
+      \ slot enabled -> stop
+      1 i DCCspeed!
+      i slot-info
+    then 
+  loop
 ;
 
 : <F ( "ccc"<greaterthan> -- ) \ <F cab funct state> - Turn loco decoder functions ON or OFF
   [char] > parse
-  evaluate ( -- cab func state)
-  rot cab2slot swap ( -- func slot state )
+  evaluate rot cab2slot ( -- func state slot)
+  dup >r swap ( -- func slot state ) ( R: -- slot )
   if DCCfunction! else -DCCfunction! then
+  r> slot-info
 ;
 
 : <-> ( -- ) \ <-> - Remove all locos from reminders
+  #SLOT 0 do
+    slotselect @ i <> if
+      false i DCCstate!
+    then 
+  loop
 ;
 
 : <- ( "ccc"<greaterthan> -- ) \ <- cab> - Remove one loco from reminders
   [char] > parse
   evaluate ( -- cab )
-  drop \ not supported yet
+  false swap DCCstate!
 ;
 
 : <D ( "ccc"<greaterthan> -- ) \ <D speedsteps> - Switch between 28 and 128 speed steps 
@@ -209,12 +281,17 @@ false variable main-inverse
 ;
 
 : <c> ( -- ) \ <c> - Request Current on the Track(s)
+\ Irail ( -- r ) \ rail current [A]
+
 ;
 
 : <s> ( -- ) \ <s> - Request the DCC-EX version and hardware info, along with listing defined turnouts
+  \ <iDCCEX version / microprocessorType / MotorControllerType / buildNumber>
+  ." <iDCCEX PPP1.0 STM32WB DRV8871 0>" cr
 ;
 
 : <#> ( -- ) \ <#> - Request the number of supported cabs(locos)
+  ." <# " #SLOT u-.  ." >"
 ;
 
 
@@ -283,11 +360,4 @@ false variable main-inverse
 
 \ I/O (HAL) Diagnostics
 \ *********************
-
-
-\ Other
-\ *****
-
-\ Other Commands
-\ **************
 

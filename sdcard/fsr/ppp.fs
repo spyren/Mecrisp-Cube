@@ -19,7 +19,7 @@ CR .( ppp.fs loading ... )
 
 5  constant PWM_MODE
 3  constant OUTPUT_MODE
-4  constant #SLOT
+10 constant #SLOT
 
 0 variable menu        \ DC:  0 mode, 1 pwm1, 2 pwm2; 
                        \ DCC: 0 mode, 1 slots, 2 functions, 
@@ -45,6 +45,7 @@ create slots      3 , 56 , 45 , 6775 , \ default slot addresses
 create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
                   7 ,  9 , 10 , 11 , \ second row
 
+slotselect @ DCCstate!
 
 : speed@ ( -- u ) \  get speed u (0 .. 1000) from potentiometer
   0 apin@ 4 / dup
