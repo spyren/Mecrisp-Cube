@@ -250,7 +250,7 @@ true slotselect @ DCCstate!
    \ 012345678901234567890
   ." Slots                " 
   slotselect @ 
-  #SLOT 0 do
+  #PPP_SLOT 0 do
     dup i =  i DCCaddress@ swap .dcc-slot-item
   loop
   drop
@@ -457,7 +457,7 @@ true slotselect @ DCCstate!
 ;
 
 : ppp-menu ( -- ) \ display throttle infos till a button is pressed (task)
-  #SLOT 0 do
+  #PPP_SLOT 0 do
     \ init default slot addresses
     slots i cells + @ i DCCaddress!
   loop

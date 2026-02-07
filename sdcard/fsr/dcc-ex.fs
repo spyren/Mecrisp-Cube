@@ -311,6 +311,11 @@ false variable main-inverse
 \ Roster Commands
 \ ***************
 
+: <JR> ( -- ) \ <J R> <JR> - Request the list defined Roster Entry IDs
+  ." <jR>" \ roster not supported yet
+;
+
+
 \ Turnouts/Points
 \ ***************
 
