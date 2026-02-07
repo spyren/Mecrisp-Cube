@@ -19,13 +19,18 @@
 
 CR .( dcc-ex.fs loading ... )
 
+true dcc !
+
+: crlf ( -- ) 
+  13 emit 10 emit
+;
 
 \ Power Management
 \ ****************
 
 \ Turn power on or off to the MAIN and PROG tracks
 
-false variable main-track
+true  variable main-track
 false variable prog-track
 false variable dc-inverse
 false variable main-inverse
@@ -36,6 +41,13 @@ false variable main-inverse
   dcc @ if
     \ DCC
     DCCstart
+    ." <p1 A>" crlf
+    ." <p1>" crlf
+    main-track @ if 
+      ." <p1 MAIN>" crlf 
+    else 
+      prog-track @ if ." <p1 PROG>" crlf then 
+    then
     true slotselect @ DCCstate!
   else
     DCCstop
@@ -45,10 +57,11 @@ false variable main-inverse
     2 pwmprescale     \ 16 kHz
     PWM_MODE 0 dmod   \ set D0 to pwm
     PWM_MODE 1 dmod   \ set D1 to pwm
+    ." <p1 A>" crlf
+    ." <p1>" crlf
+    ." <p1 DC>" crlf 
   then
   true power !
-  true main-track ! false prog-track
-  ." <p1>" cr
 ;
 
 : main? ( c- u -- f )  s" MAIN" compare ;
@@ -58,9 +71,9 @@ false variable main-inverse
 : <1  ( "ccc"<greaterthan> -- ) \  <1 MAIN|PROG|JOIN> - power on track 
   [char] > parse
   case 
-    2dup main? ?of true  main-track ! false prog-track ! ." <p1 MAIN>" <1> endof
-    2dup prog? ?of false main-track ! true  prog-track ! ." <p1 PROG>" <1> endof
-    2dup join? ?of true  main-track ! true  prog-track ! ." <p1 JOIN>" <1> endof
+    2dup main? ?of true  main-track ! false prog-track ! ." <p1 MAIN>" crlf endof
+    2dup prog? ?of false main-track ! true  prog-track ! ." <p1 PROG>" crlf endof
+    2dup join? ?of true  main-track ! true  prog-track ! ." <p1 JOIN>" crlf endof
   endcase
   drop
 ;
@@ -73,30 +86,31 @@ false variable main-inverse
   OUTPUT_MODE 0 dmod   \ set D0 to output
   OUTPUT_MODE 1 dmod   \ set D1 to output
   false power !
-  ." <p0>" cr
+  ." <p0 A>" crlf
+  ." <p0>" crlf
 ;
 
 : <0  ( "ccc"<greaterthan> -- ) \  <0 MAIN|PROG> - power off track 
   [char] > parse
   case 
-    2dup main? ?of true  main-track ! ." <p0 MAIN>" cr endof
-    2dup prog? ?of false prog-track ! ." <p0 PROG>" cr endof
+    2dup main? ?of true  main-track ! ." <p0 MAIN>" crlf endof
+    2dup prog? ?of false prog-track ! ." <p0 PROG>" crlf endof
   endcase
   drop
 ;
 
-: reset?   ( c- u -- f )  s" RESET" compare ;
-: ack?     ( c- u -- f )  s" ACK" compare ;
-: cabs?    ( c- u -- f )  s" CABS" compare ;
-: speed28  ( c- u -- f )  s" SPEED28" compare ;
-: speed128 ( c- u -- f )  s" SPEED128" compare ;
+: reset?    ( c- u -- f )  s" RESET" compare ;
+: ack?      ( c- u -- f )  s" ACK" compare ;
+: cabs?     ( c- u -- f )  s" CABS" compare ;
+: speed28?  ( c- u -- f )  s" SPEED28" compare ;
+: speed128? ( c- u -- f )  s" SPEED128" compare ;
 
 : show-cabs ( -- )
   #SLOT 0 do
     i DCCstate@ if
       \ slot enabled
       ." <cab " i DCCaddress@ . i DCCspeed@ . i DCCdirection@ 
-      if ." forward>" else ." reverse>" then cr
+      if ." forward>" else ." reverse>" then crlf
     then 
   loop
 ;
@@ -108,19 +122,19 @@ false variable main-inverse
     2dup ack?      ?of  endof      \ not supported yet
     2dup cabs?     ?of show-cabs endof
     2dup speed28?  ?of  endof      \ supports only 128 speed steps
-    2dup speed128  ?of  endof       \ "
+    2dup speed128? ?of  endof       \ "
   endcase
   drop
 ;
 
 : <JI>  ( -- ) \ <J I> <JI> - Request current values list
   \ <jI [cA cB cC ...]> c: Raw current value for each defined Track, in milliAmps 
-  ." <jI " Irail 1000E f* f>s u-. ." A>" cr
+  ." <jI " Irail 1000E f* f>s u-. ." A>" crlf
 ;
 
 : <JG>  ( -- ) \ <J G> <JG> - Request max current list
   \ not supported yet
-  ." <jG 1000A>" cr
+  ." <jG 1000A>" crlf
 ;
 
 
@@ -147,7 +161,7 @@ false variable main-inverse
   else
     dc-inverse @ if ." DCX " else ." DC " then dc-cab @ u-. ." >"
   then 
-  cr
+  crlf
 ;
 
 : main_inv?  ( c- u -- f )  s" MAIN_INV" compare ;
@@ -172,7 +186,7 @@ false variable main-inverse
     2dup main_auto? ?of false dcc-track endof \ not supported yet
     2dup dc?        ?of false dc-track endof
     2dup dc_inv?    ?of true  dc-track endof
-    2dup dcx?       ?of true  dc-track endof<t 56 20 1>
+    2dup dcx?       ?of true  dc-track endof
     2dup none?      ?of 
       false main-track !    false prog-track ! 
       false main-inverse !  false dc-inverse !
@@ -183,6 +197,7 @@ false variable main-inverse
 ;
 
 : <= ( "ccc"<greaterthan> -- ) \ <= trackletter mode [cab]> - configure track manager 
+  \ this word is already defined for comparison!
   source \ save source
   [char] > parse setsource \ set new source
   >in @  \ save old source offset
@@ -223,7 +238,7 @@ false variable main-inverse
   0 .
   dup dup DCCspeed@ swap DCCdirection@ + .
   DCCFunction@ u-.
-  ." >" cr
+  ." >" crlf
 ;
 
 : <t ( "ccc"<greaterthan> -- ) \ <t cab speed dir> - Set Cab (Loco) speed 
@@ -249,8 +264,10 @@ false variable main-inverse
 
 : <F ( "ccc"<greaterthan> -- ) \ <F cab funct state> - Turn loco decoder functions ON or OFF
   [char] > parse
-  evaluate rot cab2slot ( -- func state slot)
-  dup >r swap ( -- func slot state ) ( R: -- slot )
+  evaluate swap 1 swap lshift ( -- cab state funcbit) 
+  swap rot ( -- funcbit state cab )
+  cab2slot ( -- funcbit state slot) 
+  dup >r swap ( -- funcbit slot state ) ( R: -- slot )
   if DCCfunction! else -DCCfunction! then
   r> slot-info
 ;
@@ -269,12 +286,6 @@ false variable main-inverse
   false swap DCCstate!
 ;
 
-: <D ( "ccc"<greaterthan> -- ) \ <D speedsteps> - Switch between 28 and 128 speed steps 
-  [char] > parse 
-  evaluate ( -- speedsteps )
-  drop \ not supported
-;
-
 : <m ( "ccc"<greaterthan> -- ) \ <m [type] | [cab acceleration [deceleration]]> - set the momentum of a loco
   [char] > parse
   2drop \ not supported
@@ -287,7 +298,7 @@ false variable main-inverse
 
 : <s> ( -- ) \ <s> - Request the DCC-EX version and hardware info, along with listing defined turnouts
   \ <iDCCEX version / microprocessorType / MotorControllerType / buildNumber>
-  ." <iDCCEX PPP1.0 STM32WB DRV8871 0>" cr
+  ." <iDCCEX PPP1.0 STM32WB DRV8871 0>" crlf
 ;
 
 : <#> ( -- ) \ <#> - Request the number of supported cabs(locos)

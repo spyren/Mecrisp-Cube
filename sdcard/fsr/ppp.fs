@@ -26,9 +26,9 @@ CR .( ppp.fs loading ... )
                        \      3 user functions 1st, 4 user functions 2nd
 2 constant maxmenu-dc
 4 constant maxmenu-dcc
-maxmenu-dc variable maxmenu
+maxmenu-dcc variable maxmenu
 0 variable power       \ power off
-0 variable dcc         \ 0 DC, 1 DCC
+1 variable dcc         \ 0 DC, 1 DCC
 1 variable direction   \ 1 forward, 0 reverse
 1 variable brake       \ 1 brake
 0 variable speed       \ 0 off, 1000 max
@@ -45,7 +45,7 @@ create slots      3 , 56 , 45 , 6775 , \ default slot addresses
 create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
                   7 ,  9 , 10 , 11 , \ second row
 
-slotselect @ DCCstate!
+true slotselect @ DCCstate!
 
 : speed@ ( -- u ) \  get speed u (0 .. 1000) from potentiometer
   0 apin@ 4 / dup
