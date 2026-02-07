@@ -19,6 +19,8 @@
 
 CR .( dcc-ex.fs loading ... )
 
+10 constant #SLOT
+
 true dcc !
 
 : crlf ( -- ) 

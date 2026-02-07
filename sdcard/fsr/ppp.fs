@@ -17,9 +17,9 @@
 
 CR .( ppp.fs loading ... )
 
-5  constant PWM_MODE
-3  constant OUTPUT_MODE
-10 constant #SLOT
+5 constant PWM_MODE
+3 constant OUTPUT_MODE
+4 constant #PPP_SLOT
 
 0 variable menu        \ DC:  0 mode, 1 pwm1, 2 pwm2; 
                        \ DCC: 0 mode, 1 slots, 2 functions, 
