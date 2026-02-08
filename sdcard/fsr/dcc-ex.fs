@@ -220,14 +220,17 @@ false variable main-inverse
   #SLOT 0 do
     dup i DCCaddress@ = if
       \ slot found
-      drop i unloop exit
+      drop 
+      true i DCCstate! 
+      unloop i exit
     then
   loop
   \ look for a free slot
   #SLOT 0 do
     dup 0 i DCCaddress@ = if
-      \ free slot found
-      drop i unloop exit
+      \ free slot found -> fill in address and activate slot
+      i DCCaddress!  true i DCCdirection!  true i DCCstate!
+      unloop i exit
     then
   loop
   drop
@@ -235,6 +238,7 @@ false variable main-inverse
 ;
 
 : slot-info ( u -- ) \ slot info <l cab reg speedByte functMap>
+  dup <0 if drop exit then
   ." <l " 
   dup DCCaddress@ .
   0 .
@@ -244,14 +248,28 @@ false variable main-inverse
 ;
 
 : <t ( "ccc"<greaterthan> -- ) \ <t cab speed dir> - Set Cab (Loco) speed 
+                               \ <t cab> - Request a deliberate update on 
+                                \ the cab (loco) speed/functions
+  depth >r
   [char] > parse
-  evaluate rot cab2slot ( -- speed dir slot)
-  tuck ( -- speed slot dir slot)
-  DCCdirection! ( -- speed slot)
-  tuck ( -- slot speed slot) 
-  DCCspeed! ( -- slot)
-  dup true swap DCCstate!
-  slot-info
+  evaluate ( -- cab [speed] [dir])
+  depth r> - \ calculate number of parameter
+  case
+    1 of 
+      cab2slot slot-info
+    endof
+    3 of 
+      rot cab2slot ( -- speed dir slot)
+      dup <0 if 2drop drop exit then
+      tuck ( -- speed slot dir slot)
+      DCCdirection! ( -- speed slot)
+      tuck ( -- slot speed slot) 
+      DCCspeed! ( -- slot)
+      dup true swap DCCstate!
+      slot-info
+    endof
+    ( default) 
+  endcase
 ;
 
 : <!> ( -- ) \ Emergency stop
@@ -269,6 +287,7 @@ false variable main-inverse
   evaluate swap 1 swap lshift ( -- cab state funcbit) 
   swap rot ( -- funcbit state cab )
   cab2slot ( -- funcbit state slot) 
+  dup <0 if 2drop drop exit then
   dup >r swap ( -- funcbit slot state ) ( R: -- slot )
   if DCCfunction! else -DCCfunction! then
   r> slot-info
@@ -285,6 +304,8 @@ false variable main-inverse
 : <- ( "ccc"<greaterthan> -- ) \ <- cab> - Remove one loco from reminders
   [char] > parse
   evaluate ( -- cab )
+  cab2slot
+  dup <0 if drop exit then
   false swap DCCstate!
 ;
 
