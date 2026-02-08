@@ -35,7 +35,7 @@
 #include "clock.h"
 
 #ifndef CFG_ASSERT_ON
-#define CFG_ASSERT_ON	1
+#define CFG_ASSERT_ON	0
 #endif
 
 #define ASSERT_HARD_FAULT				1
