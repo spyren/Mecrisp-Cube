@@ -222,7 +222,7 @@ false variable main-inverse
       \ slot found
       drop 
       true i DCCstate! 
-      unloop i exit
+      i unloop exit
     then
   loop
   \ look for a free slot
@@ -230,7 +230,7 @@ false variable main-inverse
     dup 0 i DCCaddress@ = if
       \ free slot found -> fill in address and activate slot
       i DCCaddress!  true i DCCdirection!  true i DCCstate!
-      unloop i exit
+      i unloop exit
     then
   loop
   drop
@@ -238,7 +238,7 @@ false variable main-inverse
 ;
 
 : slot-info ( u -- ) \ slot info <l cab reg speedByte functMap>
-  dup <0 if drop exit then
+  dup 0< if drop exit then
   ." <l " 
   dup DCCaddress@ .
   0 .
@@ -260,7 +260,7 @@ false variable main-inverse
     endof
     3 of 
       rot cab2slot ( -- speed dir slot)
-      dup <0 if 2drop drop exit then
+      dup 0< if 2drop drop exit then
       tuck ( -- speed slot dir slot)
       DCCdirection! ( -- speed slot)
       tuck ( -- slot speed slot) 
@@ -287,7 +287,7 @@ false variable main-inverse
   evaluate swap 1 swap lshift ( -- cab state funcbit) 
   swap rot ( -- funcbit state cab )
   cab2slot ( -- funcbit state slot) 
-  dup <0 if 2drop drop exit then
+  dup 0< if 2drop drop exit then
   dup >r swap ( -- funcbit slot state ) ( R: -- slot )
   if DCCfunction! else -DCCfunction! then
   r> slot-info
@@ -305,7 +305,7 @@ false variable main-inverse
   [char] > parse
   evaluate ( -- cab )
   cab2slot
-  dup <0 if drop exit then
+  dup 0< if drop exit then
   false swap DCCstate!
 ;
 

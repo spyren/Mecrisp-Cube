@@ -32,7 +32,6 @@
 CR .( init.fs Loading started) CR 
 
 include /fsr/utils.fs
-include /fsr/conditional.fs
 include /fsr/ansification.fs
 include /fsr/dump.fs
 include /fsr/disassembler-m3.fs
@@ -46,6 +45,7 @@ include /fsr/memory.fs
 \ include /fsr/struct.fs
 include /fsr/control.fs
 include /fsr/ppp.fs
+include /fsr/dcc-ex.fs
 
 CR 
 compiletoram? [IF] .( RAM Dictionary: ) [ELSE] .( FLASH Dictionary: ) [THEN]
