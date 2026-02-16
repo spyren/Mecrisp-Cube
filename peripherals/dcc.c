@@ -49,9 +49,19 @@
 #define TIME_0BIT_HALF_PERIOD	(100-1)		// 0 bit is 100 us
 #define TIME_1BIT_HALF_PERIOD	(58-1)		// 1 bit is 58 us
 
+// Types
+// *****
+
+typedef struct accessory_t {
+	uint16_t 	adr;
+	uint8_t 	D;
+	uint8_t		R;
+} accessory_t;
+
 // Private function prototypes
 // ***************************
 static void DCC_Thread(void *argument);
+static void prepare_packet(int delay);
 
 // Global Variables
 // ****************
@@ -91,6 +101,9 @@ static uint32_t	half_bit = FALSE;
 static uint32_t bit_count;
 static uint32_t byte_count = 0;
 static uint32_t packet_len = 0;
+static int len;
+
+static 	accessory_t accessory;
 
 
 // Public Functions
@@ -129,7 +142,8 @@ void DCC_init(void) {
  *      None
  */
 void DCC_start(void) {
-	BSP_setDigitalPinMode(0, 3);  // D0 pushpull
+	BSP_setDigitalPinMode(0, 3);  // D0 pushpull	int len;
+
 	BSP_setDigitalPinMode(1, 3);  // D1 pushpull
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
@@ -186,7 +200,8 @@ void DCC_setState(int slot, int state) {
  *
  *	@param[in]
  *	 	slot  0..3
- *  @return
+ *  @return	int len;
+ *
  *      state
  */
 int DCC_getState(int slot) {
@@ -217,7 +232,8 @@ void DCC_setAddress(int slot, int address) {
  *  @brief
  *      Get the address of a DCC slot
  *
- *	@param[in]
+ *	@param[in]	int len;
+ *
  *	 	slot  0..3
  *  @return
  *      address
@@ -253,7 +269,8 @@ void DCC_setSpeed(int slot, int speed) {
  *	@param[in]
  *	 	slot  0..3
  *  @return
- *      speed
+ *      speed	int len;
+ *
  */
 int DCC_getSpeed(int slot) {
 	return loco_slots[slot].speed;
@@ -351,6 +368,33 @@ int DCC_getFunction(int slot) {
 }
 
 
+/**
+ *  @brief
+ *      Control accessory.
+ *
+ *	@param[in]
+ *	 	address  0..2047
+ *	@param[in]
+ *	 	activate_D  0 deactivate, <>0 activate
+ *	@param[in]
+ *	 	direction_R  0 diverging, <>0 normal
+ *  @return
+ *      function bits
+ */
+void DCC_controlAccessory(int address, int activate_D, int direction_R) {
+	osMutexAcquire(DCC_MutexID, osWaitForever);
+	if (address <= 2044) {
+		accessory.adr = address+3;
+	} else {
+		accessory.adr = address-2045;
+	}
+	accessory.adr = address;
+	accessory.D = activate_D;
+	accessory.R = direction_R;
+	osMutexRelease(DCC_MutexID);
+}
+
+
 // Private Functions
 // *****************
 
@@ -359,14 +403,14 @@ int DCC_getFunction(int slot) {
   * 	Function implementing the DCC thread
   *
   * 	Data for the packets are prepared here.
+  * 	Synchronized with DCC_TIM16_PeriodElapsedIRQHandler by DCC_SemaphoreID.
   * @param
   * 	argument: Not used
   * @retval
   * 	None
   */
 static void DCC_Thread(void *argument) {
-	int len;
-	int i, j;
+	int i;
 
 	// Infinite loop
 	for(;;) {
@@ -396,27 +440,13 @@ static void DCC_Thread(void *argument) {
 				packet[len++] = DCC_COMMAND_SPEED_128;
 				packet[len++] = loco_slots[i].speed | loco_slots[i].direction;
 
-				// calculate checksum
-				packet[len] = 0;
-				for (j=0; j<len; j++) {
-					packet[len] ^= packet[j];
-				}
-
-			    osMutexRelease(DCC_MutexID);
-
-			    osDelay(3);
-			    HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
-				packet_len = len+1;
-				byte_count = 0;
-				bit_count  = 9;
-			    HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
+				prepare_packet(3);
 
 				if (loco_slots[i].function_repetition) {
 					loco_slots[i].function_repetition--;
 
 					// blocked till packet is sent
 					osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
-
 					// only one thread is allowed to use DCC
 					osMutexAcquire(DCC_MutexID, osWaitForever);
 
@@ -458,28 +488,50 @@ static void DCC_Thread(void *argument) {
 				    	loco_slots[i].function = loco_slots[i].function_new;
 				    }
 
-					// calculate checksum
-					packet[len] = 0;
-					for (j=0; j<len; j++) {
-						packet[len] ^= packet[j];
-					}
-
-				    osMutexRelease(DCC_MutexID);
-
-					// min. time to the next packet 18*2*58 us = 2 ms
-					osDelay(3);
-				    HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
-					packet_len = len+1;
-					byte_count = 0;
-					bit_count  = 9;
-				    HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
-
+				    prepare_packet(3);
 				}
 
 			}
 		}
+		// accessory
+		if (accessory.adr > 0) {
+			// blocked till packet is sent
+			osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
+			// only one thread is allowed to use DCC
+			osMutexAcquire(DCC_MutexID, osWaitForever);
+
+			len = 0;
+			packet[len++] = ( (accessory.adr << 2) & 0x3F) | 0x80;
+			packet[len++] = (( accessory.adr & 0x03) << 1) |
+					        ((~accessory.adr & 0x700) >> 4) |
+							   accessory.D?0x08:0x00 |
+						       accessory.R?0x01:0x00 ;
+			accessory.adr = -1;
+			prepare_packet(3);
+		}
 
 	}
+}
+
+
+static void prepare_packet(int delay) {
+	int j;
+
+	// calculate checksum
+	packet[len] = 0;
+	for (j=0; j<len; j++) {
+		packet[len] ^= packet[j];
+	}
+
+	osMutexRelease(DCC_MutexID);
+
+	// min. time to the next packet 18*2*58 us = 2 ms
+	osDelay(delay);
+	HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
+	packet_len = len+1;
+	byte_count = 0;
+	bit_count  = 9;
+	HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
 }
 
 

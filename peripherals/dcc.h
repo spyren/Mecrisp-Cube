@@ -50,6 +50,7 @@ int DCC_getDirection(int slot);
 void DCC_setFunction(int slot, int function);
 void DCC_resetFunction(int slot, int function);
 int DCC_getFunction(int slot);
+void DCC_controlAccessory(int address, int activate_D, int direction_R);
 
 void DCC_TIM16_PeriodElapsedIRQHandler();
 
