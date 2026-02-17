@@ -53,9 +53,9 @@
 // *****
 
 typedef struct accessory_t {
-	uint16_t 	adr;
-	uint8_t 	D;
-	uint8_t		R;
+	int 	adr;
+	int 	D;
+	int		R;
 } accessory_t;
 
 // Private function prototypes
@@ -370,10 +370,12 @@ int DCC_getFunction(int slot) {
 
 /**
  *  @brief
- *      Control accessory.
+ *      Control basic accessory.
  *
+ *		LinearAddress = (DecoderAddress - 1) × 4 + Subaddress + 1
+ *		DecoderAddress=10, Subaddress=0: (10-1)*4 + 0 + 1 = 37
  *	@param[in]
- *	 	address  0..2047
+ *	 	address  1..2048 (Linear Address)
  *	@param[in]
  *	 	activate_D  0 deactivate, <>0 activate
  *	@param[in]
@@ -388,7 +390,6 @@ void DCC_controlAccessory(int address, int activate_D, int direction_R) {
 	} else {
 		accessory.adr = address-2045;
 	}
-	accessory.adr = address;
 	accessory.D = activate_D;
 	accessory.R = direction_R;
 	osMutexRelease(DCC_MutexID);
@@ -411,6 +412,7 @@ void DCC_controlAccessory(int address, int activate_D, int direction_R) {
   */
 static void DCC_Thread(void *argument) {
 	int i;
+	int tmp;
 
 	// Infinite loop
 	for(;;) {
@@ -446,7 +448,7 @@ static void DCC_Thread(void *argument) {
 					loco_slots[i].function_repetition--;
 
 					// blocked till packet is sent
-					osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
+					osSemaphoreAcquire(DCC_SemaphoreID, 1000);
 					// only one thread is allowed to use DCC
 					osMutexAcquire(DCC_MutexID, osWaitForever);
 
@@ -496,16 +498,19 @@ static void DCC_Thread(void *argument) {
 		// accessory
 		if (accessory.adr > 0) {
 			// blocked till packet is sent
-			osSemaphoreAcquire(DCC_SemaphoreID, osWaitForever);
+			osSemaphoreAcquire(DCC_SemaphoreID, 1000);
 			// only one thread is allowed to use DCC
 			osMutexAcquire(DCC_MutexID, osWaitForever);
-
 			len = 0;
-			packet[len++] = ( (accessory.adr << 2) & 0x3F) | 0x80;
-			packet[len++] = (( accessory.adr & 0x03) << 1) |
-					        ((~accessory.adr & 0x700) >> 4) |
-							   accessory.D?0x08:0x00 |
-						       accessory.R?0x01:0x00 ;
+			tmp = 0x80;
+			tmp |= ((accessory.adr >> 2) & 0x3F);
+			packet[len++] = tmp;
+			tmp = 0x80;
+			tmp |= ((  accessory.adr  & 0x003) << 1);
+			tmp |= ((~(accessory.adr) & 0x700) >> 4);
+			tmp |= accessory.D?0x08:0x00;
+			tmp |= accessory.R?0x01:0x00;
+			packet[len++] = tmp;
 			accessory.adr = -1;
 			prepare_packet(3);
 		}

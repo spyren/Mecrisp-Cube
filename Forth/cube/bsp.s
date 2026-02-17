@@ -1027,5 +1027,22 @@ fetch_dccfunction:
 	pop		{pc}
 
 
+@ -----------------------------------------------------------------------------
+	Wortbirne Flag_visible, "DCCaccessory!"
+store_dccaccessory:
+	@ ( f1 f2 n -- ) control basic accessory on linear address n, activate f1, direction f2
+// void DCC_controlAccessory(int address, int activate_D, int direction_R)
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	movs	r0, tos		// n -> address
+	drop
+	movs	r2, tos		// f2 -> direction
+	drop
+	movs	r1, tos		// f1 -> activate
+	drop
+	bl		DCC_controlAccessory
+	pop		{pc}
+
+
 .endif // DCC
 
