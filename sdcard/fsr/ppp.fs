@@ -329,7 +329,7 @@ true slotselect @ DCCstate!
     3 of .dcc-menu-user-1 endof
     4 of .dcc-menu-user-2 endof
     5 of .dcc-menu-switch-1 endof
-    5 of .dcc-menu-switch-2 endof
+    6 of .dcc-menu-switch-2 endof
   endcase
 ;
 
