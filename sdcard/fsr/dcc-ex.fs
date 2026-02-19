@@ -400,3 +400,26 @@ false variable main-inverse
 \ I/O (HAL) Diagnostics
 \ *********************
 
+
+\ Tools
+\ *****
+
+: decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
+  swap 1 - 4 *
+  1 + +
+; 
+
+: linear2decoder ( u1 -- u2 u3 ) \ convert linear address (1..2044) u1 to decoder address u2 and sub address u3
+  3 + dup 4 / swap
+  4 mod
+;
+
+: close-switch ( u1 u2 -- ) \ close switch at decoder address u1, sub address u2
+  decoder2linear
+  1 0 rot DCCaccessory!
+;
+
+: throw-switch ( u1 u2 -- ) \ throw switch at decoder address u1, sub address u2
+  decoder2linear
+  1 1 rot DCCaccessory!
+;

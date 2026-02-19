@@ -25,7 +25,7 @@ CR .( ppp.fs loading ... )
                        \ DCC: 0 mode, 1 slots, 2 functions, 
                        \      3 user functions 1st, 4 user functions 2nd
 2 constant maxmenu-dc
-4 constant maxmenu-dcc
+6 constant maxmenu-dcc
 maxmenu-dcc variable maxmenu
 0 variable power       \ power off
 1 variable dcc         \ 0 DC, 1 DCC
@@ -44,6 +44,12 @@ create slots      3 , 56 , 45 , 6775 , \ default slot addresses
 
 create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
                   7 ,  9 , 10 , 11 , \ second row
+
+create switches  37 , 41 , 45 , 49 , \ first switches row (linear address)
+                 53 , 57 , 61 , 65 , \ second row
+create switch-state
+     false , false , false , false , 
+     false , false , false , false , 
 
 true slotselect @ DCCstate!
 
@@ -292,6 +298,29 @@ true slotselect @ DCCstate!
   8 4 do i .function-bit loop
 ;
 
+: .switch ( u -- ) \ print switch address u, if set with [u]
+  dup cells switch-state + @ \ get state 
+  swap cells switches + @     \ get switch address
+  dup 10 < if space then  \ add a space 
+  swap if [u-]. else space u-. space then space 
+;
+
+: .dcc-menu-switch-1 ( -- ) \ print switch addresses and their state
+  0 oledfont
+  0 6 oledpos!
+   \ 012345678901234567890
+  ." Switches 1st         " 
+  4 0 do i .switch loop
+;
+
+: .dcc-menu-switch-2 ( -- ) \ print switch addresses and their state
+  0 oledfont
+  0 6 oledpos!
+   \ 012345678901234567890
+  ." Switches 2nd         " 
+  8 4 do i .switch loop
+;
+
 : .dcc-menu ( -- ) \ print DCC menus
   menu @ case
     0 of .mode endof
@@ -299,6 +328,8 @@ true slotselect @ DCCstate!
     2 of .dcc-menu-functions endof
     3 of .dcc-menu-user-1 endof
     4 of .dcc-menu-user-2 endof
+    5 of .dcc-menu-switch-1 endof
+    5 of .dcc-menu-switch-2 endof
   endcase
 ;
 
@@ -442,6 +473,22 @@ true slotselect @ DCCstate!
   [char] d - 4 + user-button \ 'd'=4, .., 'g'=7
 ;
 
+: switch-button ( u -- ) \ u 0..7 switches
+  dup cells switch-state +  \ get state address ( -- id a- )
+  dup @ 0= dup  ( -- id a- state state )
+  rot !
+  swap cells switches + @     \ get switch address
+  true -rot DCCaccessory!
+;
+
+: switch-button-1 ( u --- )
+  [char] d - switch-button \ 'd'=0, .., 'g'=3
+;
+
+: switch-button-2 ( u --- )
+  [char] d - 4 + switch-button \ 'd'=4, .., 'g'=7
+;
+
 : menu-button ( u -- ) \ menu buttons
   display-off @ if
     drop 0 display-off !
@@ -452,6 +499,8 @@ true slotselect @ DCCstate!
       2 of dcc @ if functions-button else pwm-button1 then endof
       3 of user-button-1 endof
       4 of user-button-2 endof
+      5 of switch-button-1 endof
+      6 of switch-button-2 endof
    endcase
   then
 ;
