@@ -124,7 +124,7 @@ false variable main-inverse
     2dup ack?      ?of  endof      \ not supported yet
     2dup cabs?     ?of show-cabs endof
     2dup speed28?  ?of  endof      \ supports only 128 speed steps
-    2dup speed128? ?of  endof       \ "
+    2dup speed128? ?of  endof       \ 
   endcase
   drop
 ;
@@ -199,6 +199,7 @@ false variable main-inverse
 ;
 
 : <= ( "ccc"<greaterthan> -- ) \ <= trackletter mode [cab]> - configure track manager 
+                                \ name conflict
   \ this word is already defined for comparison!
   source \ save source
   [char] > parse setsource \ set new source
@@ -340,6 +341,82 @@ false variable main-inverse
 \ Turnouts/Points
 \ ***************
 
+create switch-name 16 cell allot \ string array c- u
+  switch-name dup
+  s0" First Switch"   rot 2! 2+ dup
+  s0" Second Switch"  rot 2! 2+ dup
+  s0" Third Switch"   rot 2! 2+ dup
+  s0" Fourth Switch"  rot 2! 2+ dup
+  s0" Fifth Switch"   rot 2! 2+ dup
+  s0" Sixth Switch"   rot 2! 2+ dup
+  s0" Seventh Switch" rot 2! 2+
+  s0" Eighth Switch"  rot 2! 
+
+: decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
+  swap 1 - 4 *
+  1 + +
+; 
+
+: linear2decoder ( u1 -- u2 u3 ) \ convert linear address (1..2044) u1 to decoder address u2 and sub address u3
+  3 + dup 4 / swap
+  4 mod
+;
+
+: close-switch ( u1 u2 -- ) \ close switch at decoder address u1, sub address u2
+  decoder2linear
+  1 0 rot DCCaccessory!
+;
+
+: throw-switch ( u1 u2 -- ) \ throw switch at decoder address u1, sub address u2
+  decoder2linear
+  1 1 rot DCCaccessory!
+;
+
+: <T> ( -- ) \ <T> - Request a list all defined turnouts/Points
+  #SWITCH_ID 0 do
+    ." <H " i . \ <H id 
+    i cells switch-state + @ 
+    if ." 1>" else ." 0>" then crlf \ state>
+  loop
+;
+
+: <T ( "ccc"<greaterthan> -- ) \ <T id state> - Throw or Close a defined turnout/point
+  [char] > parse
+  evaluate >r
+  r@ cells switches + @ 
+  DCCaccessory!
+  \ <H id DCC address subaddress state>
+  r@ ." <H " . ." DCC " \ <H id DCC
+  r@ cells switches + @ linear2decoder swap . . \ address subaddress
+  r> cells switch-state + @ u-. ." >" \ state> crlf
+;
+
+: <JT ( "ccc"<greaterthan> -- ) \ <J T id> <JT id> - Request details of a specific Turnout/Point
+  [char] > parse
+  evaluate >r
+  \ <jT id X|state |"[desc]">
+  ." <jT " @r .
+  r@ #SWITCH_ID > if
+    \ invalid ID
+    ." X>" crlf
+  else
+    r@ cells switch-state + @
+    if ." T " else ." C " then
+    [char] " dup emit switch-name r@ cells 2 * + 2@ type emit ." >" crlf \ "switchname"
+  then
+  r> drop
+;
+ 
+: <JT> ( -- ) \ <J T> <JT> - Request the list of defined turnout/Point IDs
+  <jT [id1 id2 id3 ...]>
+  ." <jT"
+  #SWITCH_ID 0 do
+    space i u-.
+  loop
+  ." >" crlf
+;
+
+
 \ Turntables/Traversers
 \ *********************
 
@@ -351,6 +428,29 @@ false variable main-inverse
 
 \ DCC Accessories
 \ ***************
+
+: <a ( "ccc"<greaterthan> -- ) \ <a addr subaddr activate> - Control an Accessory Decoder with Address and Subaddress
+                               \ <a linear_addr activate> - Control an Accessory Decoder with linear address
+                               \ <A address aspect> - Command for DCC Extended Accessories.
+  depth >r
+  [char] > parse
+  evaluate
+  r> depth - \ # arguments
+  case
+    1 of \ <A address aspect>
+      \ not supported yet
+      drop
+    endof
+    2 of \ <a linear_addr activate>
+      swap DCCaccessory!
+    endof
+    3 of \ <a addr subaddr activate> 
+      -rot decoder2linear swap DCCaccessory!
+    endof
+    ( default) 
+  endcase
+;
+
 
 \ Sensors
 \ *******
@@ -365,8 +465,30 @@ false variable main-inverse
 \ Writing Configuration Variable (CVs)
 \ ************************************
 
+\ Writing CVs - Program on the main
+\ *********************************
+
+\ <b cab cv bit value> - Write Configuration Variable (CV) bit on main track
+
+\ <w cab cv value> - Write Configuration Variable (CV) on main track
+
+
 \ Reading/Writing Configuration Variables (CVs) - Programming track
 \ *****************************************************************
+
+\ <R cv> - Read Configuration Variables (CVs)
+
+\ <R> - Read DCC decoder (cab) address
+
+\ <V cv bit onOff> - Verify/Read bit of Configuration Variable (CV) with guessed value
+
+\ <V cv value> - Verify/Read of Configuration Variable (CV) with guessed value
+
+\ <B cv bit onOff> - Write bit to Configuration Variable (CV)
+
+\ <W cv value> - Write Configuration Variable (CV)
+
+\ <W address> - Write DCC address to cab (loco)
 
 
 \ Write direct DCC packet
@@ -400,26 +522,3 @@ false variable main-inverse
 \ I/O (HAL) Diagnostics
 \ *********************
 
-
-\ Tools
-\ *****
-
-: decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
-  swap 1 - 4 *
-  1 + +
-; 
-
-: linear2decoder ( u1 -- u2 u3 ) \ convert linear address (1..2044) u1 to decoder address u2 and sub address u3
-  3 + dup 4 / swap
-  4 mod
-;
-
-: close-switch ( u1 u2 -- ) \ close switch at decoder address u1, sub address u2
-  decoder2linear
-  1 0 rot DCCaccessory!
-;
-
-: throw-switch ( u1 u2 -- ) \ throw switch at decoder address u1, sub address u2
-  decoder2linear
-  1 1 rot DCCaccessory!
-;

@@ -20,6 +20,7 @@ CR .( ppp.fs loading ... )
 5 constant PWM_MODE
 3 constant OUTPUT_MODE
 4 constant #PPP_SLOT
+8 constant #SWITCH_ID
 
 0 variable menu        \ DC:  0 mode, 1 pwm1, 2 pwm2; 
                        \ DCC: 0 mode, 1 slots, 2 functions, 
@@ -47,10 +48,11 @@ create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
 
 create switches  37 , 41 , 45 , 49 , \ first switches row (linear address)
                  53 , 57 , 61 , 65 , \ second row
+
 create switch-state
      false , false , false , false , 
      false , false , false , false , 
-
+ 
 true slotselect @ DCCstate!
 
 : speed@ ( -- u ) \  get speed u (0 .. 1000) from potentiometer
@@ -309,7 +311,7 @@ true slotselect @ DCCstate!
   0 oledfont
   0 6 oledpos!
    \ 012345678901234567890
-  ." Switches 1st         " 
+  ." Switches [thrown] 1st" 
   4 0 do i .switch loop
 ;
 
@@ -317,7 +319,7 @@ true slotselect @ DCCstate!
   0 oledfont
   0 6 oledpos!
    \ 012345678901234567890
-  ." Switches 2nd         " 
+  ." Switches [thrown] 2nd" 
   8 4 do i .switch loop
 ;
 
