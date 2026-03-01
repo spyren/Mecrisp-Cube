@@ -271,7 +271,7 @@ void OLED_init(void) {
 	OLED_setPos(0, 5);
 	OLED_puts(BOARD " v"  MECRISP_CUBE_TAG "\r\n");
 	OLED_puts("Forth for the STM32WB\r\n");
-	OLED_puts("(c)2025 peter@spyr.ch");
+	OLED_puts("(c)2026 peter@spyr.ch");
 #endif
 }
 
@@ -873,7 +873,7 @@ static void putGlyph8x16(int ch) {
 	#endif // OLED_SPI
 
 	for (i = 0; i < 8; i++) {
-		buf[i+1] = display_buffer->rows[CurrentPosY+i][CurrentPosX+1];
+		buf[i+1] = display_buffer->rows[CurrentPosY+1][CurrentPosX+i];
 	}
 	setPos(CurrentPosX, CurrentPosY+1);
 	#ifndef OLED_SPI

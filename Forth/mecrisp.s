@@ -78,10 +78,10 @@
 .equ	EPD,				0
 .equ	FPU,				1
 .equ	QUAD,				1
-.equ	BUTTON,				0
+.equ	BUTTON,				1
 .equ	BUTTON_MATRIX,		0
 .equ	POWER,				1
-.equ	SD_DRIVE,			1
+.equ	SD_DRIVE,			0
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -538,9 +538,9 @@ Forth:
 	bne		3f
     // include 0:/etc/rc.local
     pushdatos
-   	ldr		tos, =rc_local
-    bl		fs_strlen
-    bl		included
+//   	ldr		tos, =rc_local
+//    bl		fs_strlen
+//    bl		included
 3:
 	@ Ready to fly !
 .include "boot.s"

@@ -177,12 +177,12 @@
 // ****************
 
 #ifdef DEBUG
-#define MECRISP_CUBE_TAG "1.6.1 deb"
+#define MECRISP_CUBE_TAG "1.6.2 deb"
 #else
-#define MECRISP_CUBE_TAG "1.6.1 rel"
+#define MECRISP_CUBE_TAG "1.6.2 rel"
 #endif
 
-#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2025 peter@spyr.ch\n"
+#define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2026 peter@spyr.ch\n"
 #define RC_LOCAL "0:/etc/rc.local"
 
 #define FORTH_CALCULATOR "4TH Calculator\n--------------\n"
@@ -514,7 +514,7 @@
  */
 #ifdef DEBUG
 // debug configuration
-#define CFG_LPM_SUPPORTED    1
+#define CFG_LPM_SUPPORTED    0
 #else
 // release configuration
 #define CFG_LPM_SUPPORTED    1
@@ -832,6 +832,7 @@ typedef enum
   CFG_LPM_RTSPI,
   CFG_LPM_UART_TX,
   CFG_LPM_UART_RX,
+  CFG_LPM_DCC,
   /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
@@ -852,10 +853,10 @@ typedef enum
 #define EPD						0
 #define QUAD					0
 #define FPU_IP					1
-#define BUTTON					0
+#define BUTTON					1
 #define BUTTON_MATRIX			0
 #define POWER					1
-#define SD_DRIVE                1
+#define SD_DRIVE                0
 
 // Thread flag, is set after BLE has been started
 #define BLE_IS_READY			0x01

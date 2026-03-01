@@ -10,6 +10,7 @@
  *        - SPI: D11 MOSI, D12 MISO, D13 SCK (display, memory)
  *        - Timer Capture/Compare
  *        - NeoPixel D8 (Dongle D6)
+ *        - 8 Buttons D2 A, D3 B, D4 C, D5 D, D6 E, D7 F, D8 G, D9 H or Button matrix 5x7
  *
  *      Forth TRUE is -1, C TRUE is 1.
  *      No timeout (osWaitForever) for mutex ->
@@ -373,6 +374,14 @@ int BSP_getSwitch1(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
+#if BUTTON == 1
+#if BUTTON_MATRIX == 0
+	if (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port, BUTTON_A_Pin) == GPIO_PIN_RESET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+#else
 	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
 		// QFN48 Package -> Dongle
 		if (HAL_GPIO_ReadPin(B1_DONGLE_GPIO_Port, B1_DONGLE_Pin) == GPIO_PIN_RESET) {
@@ -388,6 +397,8 @@ int BSP_getSwitch1(void) {
 			return_value = FALSE;
 		}
 	}
+#endif
+#endif
 
 	osMutexRelease(DigitalPort_MutexID);
 	return return_value;
@@ -407,6 +418,14 @@ int BSP_getSwitch2(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
+#if BUTTON == 1
+#if BUTTON_MATRIX == 0
+	if (HAL_GPIO_ReadPin(BUTTON_B_GPIO_Port, BUTTON_B_Pin) == GPIO_PIN_RESET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+#else
 	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
 		// QFN48 Package -> Dongle has no switch2
 		return_value = FALSE;
@@ -418,6 +437,8 @@ int BSP_getSwitch2(void) {
 			return_value = FALSE;
 		}
 	}
+#endif
+#endif
 
 	osMutexRelease(DigitalPort_MutexID);
 	return return_value;
@@ -437,6 +458,14 @@ int BSP_getSwitch3(void) {
 	// only one thread is allowed to use the digital port
 	osMutexAcquire(DigitalPort_MutexID, osWaitForever);
 
+#if BUTTON == 1
+#if BUTTON_MATRIX == 0
+	if (HAL_GPIO_ReadPin(BUTTON_C_GPIO_Port, BUTTON_C_Pin) == GPIO_PIN_RESET) {
+		return_value = -1;
+	} else {
+		return_value = FALSE;
+	}
+#else
 	if (LL_GetPackageType() == LL_UTILS_PACKAGETYPE_QFN48) {
 		// QFN48 Package -> Dongle has no switch3
 		return_value = FALSE;
@@ -448,6 +477,8 @@ int BSP_getSwitch3(void) {
 			return_value = FALSE;
 		}
 	}
+#endif
+#endif
 
 	osMutexRelease(DigitalPort_MutexID);
 	return return_value;
