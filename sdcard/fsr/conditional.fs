@@ -15,7 +15,6 @@
 \  @copyright
 \      Peter Schmid, Switzerland
 \      For details see copyright.txt
-
 CR .( conditional.fs loading ... )
 
 : [IF*]? ( addr len -- flag )

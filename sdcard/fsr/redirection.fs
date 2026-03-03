@@ -132,11 +132,6 @@ CR .( redirection.fs loading ... )
 
 [IFDEF] epd-emit : >epd  hook-emit @  hook-emit? @  ['] epd-emit hook-emit !  ['] epd-emit? hook-emit? ! ; [THEN]
 
-\ lcd display
-\ ************
-
-[IFDEF] lcd-emit : >lcd  hook-emit @  hook-emit? @  ['] lcd-emit hook-emit !  ['] lcd-emit? hook-emit? ! ; [THEN]
-
 \ terminate redirection
 \ ********************
 

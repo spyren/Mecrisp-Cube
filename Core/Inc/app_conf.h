@@ -28,6 +28,23 @@
 #include "ble_bufsize.h"
 
 /******************************************************************************
+ * Display and other modules
+ ******************************************************************************/
+#define	OLED					1	// OLED display
+#define MIP						0   // MIP display
+#define LCDISPLAY				0	// LCD display
+#define PLEX					1   // PLEX display
+#define EPD						0	// EPD display
+#define QUAD					0	// QUAD display
+#define FPU_IP					1	// Floating Point Unit
+#define BUTTON					1	// additional buttons
+#define BUTTON_MATRIX			0	// Button matrix e.g. for calculator
+#define POWER					1	// lower power support
+#define SD_DRIVE                0	// SD drive
+#define DCC						1	// Digital Command Control (model railroad)
+
+
+/******************************************************************************
  * Application Config
  ******************************************************************************/
 
@@ -832,7 +849,9 @@ typedef enum
   CFG_LPM_RTSPI,
   CFG_LPM_UART_TX,
   CFG_LPM_UART_RX,
+#if DCC == 1
   CFG_LPM_DCC,
+#endif
   /* USER CODE END CFG_LPM_Id_t */
 } CFG_LPM_Id_t;
 
@@ -843,20 +862,6 @@ typedef enum
 
 #define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
 
-/******************************************************************************
- * Display modules
- ******************************************************************************/
-#define	OLED					1
-#define MIP						0
-#define LCDISPLAY				0
-#define PLEX					1
-#define EPD						0
-#define QUAD					0
-#define FPU_IP					1
-#define BUTTON					1
-#define BUTTON_MATRIX			0
-#define POWER					1
-#define SD_DRIVE                0
 
 // Thread flag, is set after BLE has been started
 #define BLE_IS_READY			0x01

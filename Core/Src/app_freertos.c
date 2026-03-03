@@ -64,6 +64,9 @@
 #if POWER == 1
 #include "power.h"
 #endif
+#if DCC == 1
+#include "dcc.h"
+#endif
 
 
 
@@ -126,6 +129,9 @@ void MX_FREERTOS_Init(void) {
 	RTSPI_init();
 	VI_init();
 	TINY_init();
+#if DCC == 1
+	DCC_init();
+#endif
 
   /* USER CODE END Init */
 

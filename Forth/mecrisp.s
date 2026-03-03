@@ -82,6 +82,7 @@
 .equ	BUTTON_MATRIX,		0
 .equ	POWER,				1
 .equ	SD_DRIVE,			0
+.equ	DCC,				1
 
 @ -----------------------------------------------------------------------------
 @ Start with some essential macro definitions
@@ -537,7 +538,7 @@ Forth:
 	cmp		r0, #0
 	bne		3f
     // include 0:/etc/rc.local
-    pushdatos
+//    pushdatos
 //   	ldr		tos, =rc_local
 //    bl		fs_strlen
 //    bl		included

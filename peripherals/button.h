@@ -1,6 +1,6 @@
 /**
  *  @brief
- *  	Simple buttons (4) or matrix buttons (5x7)
+ *  	Simple buttons (8) or matrix buttons (5x7)
  *
  *  	Simple Buttons
  *  	e.g. for egg timer

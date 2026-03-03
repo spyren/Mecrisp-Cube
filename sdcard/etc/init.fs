@@ -33,7 +33,7 @@ include /fsr/memory.fs
 \ include /fsr/struct.fs
 include /fsr/control.fs
 \ include /fsr/ppp.fs
-[IFDEF] button include /fsr/calculator.fs [THEN]
+\ include /fsr/dcc-ex.fs
 
 CR 
 compiletoram? [IF] .( RAM Dictionary: ) [ELSE] .( FLASH Dictionary: ) [THEN]

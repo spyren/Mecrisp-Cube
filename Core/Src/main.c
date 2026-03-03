@@ -123,6 +123,9 @@
 #if POWER == 1
 #include "power.h"
 #endif
+#if DCC == 1
+#include "dcc.h"
+#endif
 
 /* USER CODE END Includes */
 
@@ -219,6 +222,9 @@ int main(void)
     Error_Handler();
   }
   MX_TIM2_Init();
+#if DCC == 1
+  MX_TIM16_Init();
+#endif
   MX_I2C1_Init();
 //  MX_WWDG_Init();
   MX_AES1_Init();
