@@ -105,12 +105,10 @@
 #define BUTTON_BUFFER_LENGTH	(100)
 
 #define BUTTON_CHAR_RECEIVED	0x01
-#define KEYS	6
 #define BUTTON_PRESSED		GPIO_PIN_RESET
 #define BUTTON_RELEASED		GPIO_PIN_SET
 
 #define DEBOUNCE_TIME		20							// 20 ms
-		'd',
 
 #define BUTTON_COLUMN_COUNT	5
 #define BUTTON_ROW_COUNT	7
@@ -744,19 +742,15 @@ static void put_key_string(uint8_t c) {
 }
 #else
 // simple buttons
+
 // Buffer Length
 // **************
 #define BUTTON_BUFFER_LENGTH	(20)
 
-#define BUTTON_CHAR_RECEIVED	0x01
-#define KEYS	4
 #define BUTTON_PRESSED		GPIO_PIN_RESET
 #define BUTTON_RELEASED		GPIO_PIN_SET
 
 #define DEBOUNCE_TIME		20							// 20 ms
-#define	BACKLIGHT_TIME		(60 * 1000 / DEBOUNCE_TIME)	// 1 Min
-#define HALT_TIME			(5 * 1000 / DEBOUNCE_TIME)	// 5 s
-#define MEASURE_INTERVAL	(1 * 1000 / DEBOUNCE_TIME)	// 1 s
 
 // Private function prototypes
 // ***************************
@@ -957,19 +951,12 @@ void BUTTON_OnOff(void) {
 #endif
 
 	osMutexAcquire(BUTTON_MutexID, 100);
-//	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
 
 	// wait till off-button is released
 	while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port,  BUTTON_A_Pin) == BUTTON_PRESSED) {
 		osDelay(10);
 	}
 	osDelay(10);
-
-	// wait for button event
-//	if (osSemaphoreGetCount(BUTTON_SemaphoreID)) {
-//		osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
-//	}
-//	osSemaphoreAcquire(BUTTON_SemaphoreID, osWaitForever);
 
 	// wait till off-button is released
 	while (HAL_GPIO_ReadPin(BUTTON_A_GPIO_Port,  BUTTON_A_Pin) == BUTTON_PRESSED) {
