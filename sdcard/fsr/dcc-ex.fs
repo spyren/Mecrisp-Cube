@@ -303,7 +303,7 @@ false variable main-inverse
 ;
 
 : <- ( "ccc"<greaterthan> -- ) \ <- cab> - Remove one loco from reminders
-  [char] > parse
+  [char] > parse@r
   evaluate ( -- cab )
   cab2slot
   dup 0< if drop exit then
@@ -341,16 +341,20 @@ false variable main-inverse
 \ Turnouts/Points
 \ ***************
 
-create switch-name 16 cell allot \ string array c- u
-  switch-name dup
-  s0" First Switch"   rot 2! 2+ dup
-  s0" Second Switch"  rot 2! 2+ dup
-  s0" Third Switch"   rot 2! 2+ dup
-  s0" Fourth Switch"  rot 2! 2+ dup
-  s0" Fifth Switch"   rot 2! 2+ dup
-  s0" Sixth Switch"   rot 2! 2+ dup
-  s0" Seventh Switch" rot 2! 2+
-  s0" Eighth Switch"  rot 2! 
+: (noname) ( -- a- ) \ create an array of counted strings pointers
+\ :noname ( -- a- ) \ create an array of counted strings -> does not work in include
+  here
+  c" First Switch"   ,
+  c" Second Switch"  ,
+  c" Third Switch"   ,
+  c" Fourth Switch"  ,
+  c" Fifth Switch"   ,
+  c" Sixth Switch"   ,
+  c" Seventh Switch" ,
+  c" Eighth Switch"  ,
+;
+\ ; execute constant switch-name
+(noname) constant switch-name
 
 : decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
   swap 1 - 4 *
@@ -362,14 +366,34 @@ create switch-name 16 cell allot \ string array c- u
   4 mod
 ;
 
+: switch2id ( u -- n ) \ find an ID for the switch linear address, if there is no ID -1
+  #SWITCH_ID 0 do
+    dup i cells switches + @ = if
+      \ id found
+      drop 
+      i unloop exit
+    then
+  loop
+  drop
+  -1
+;
+
+: activate-switch ( f u -- ) \ activate a switch, u linear address, f=true throw, f=false close
+  dup switch2id dup 0< not if 
+    \ there is a defined switch ( f u id )
+    rot 2dup swap  ( u id f f id )
+    cells switch-state + !
+    -rot ( f u id )
+  then
+  drop true -rot DCCaccessory!
+;
+
 : close-switch ( u1 u2 -- ) \ close switch at decoder address u1, sub address u2
-  decoder2linear
-  1 0 rot DCCaccessory!
+  decoder2linear false swap activate-switch
 ;
 
 : throw-switch ( u1 u2 -- ) \ throw switch at decoder address u1, sub address u2
-  decoder2linear
-  1 1 rot DCCaccessory!
+  decoder2linear true swap activate-switch
 ;
 
 : <T> ( -- ) \ <T> - Request a list all defined turnouts/Points
@@ -382,9 +406,9 @@ create switch-name 16 cell allot \ string array c- u
 
 : <T ( "ccc"<greaterthan> -- ) \ <T id state> - Throw or Close a defined turnout/point
   [char] > parse
-  evaluate >r
-  r@ cells switches + @ 
-  DCCaccessory!
+  evaluate swap >r true swap ( activate state  ) ( R: id )
+  dup r@ cells switch-state + ! \ update state
+  r@ cells switches + @ DCCaccessory!
   \ <H id DCC address subaddress state>
   r@ ." <H " . ." DCC " \ <H id DCC
   r@ cells switches + @ linear2decoder swap . . \ address subaddress
@@ -395,20 +419,20 @@ create switch-name 16 cell allot \ string array c- u
   [char] > parse
   evaluate >r
   \ <jT id X|state |"[desc]">
-  ." <jT " @r .
+  ." <jT " r@ .
   r@ #SWITCH_ID > if
     \ invalid ID
     ." X>" crlf
   else
     r@ cells switch-state + @
     if ." T " else ." C " then
-    [char] " dup emit switch-name r@ cells 2 * + 2@ type emit ." >" crlf \ "switchname"
+    [char] " dup emit switch-name r@ cells + @ ctype emit ." >" crlf \ "switchname"
   then
   r> drop
 ;
  
 : <JT> ( -- ) \ <J T> <JT> - Request the list of defined turnout/Point IDs
-  <jT [id1 id2 id3 ...]>
+  \ <jT [id1 id2 id3 ...]>
   ." <jT"
   #SWITCH_ID 0 do
     space i u-.
@@ -442,10 +466,10 @@ create switch-name 16 cell allot \ string array c- u
       drop
     endof
     2 of \ <a linear_addr activate>
-      swap DCCaccessory!
+      swap activate-switch
     endof
     3 of \ <a addr subaddr activate> 
-      -rot decoder2linear swap DCCaccessory!
+      -rot decoder2linear swap activate-switch
     endof
     ( default) 
   endcase
