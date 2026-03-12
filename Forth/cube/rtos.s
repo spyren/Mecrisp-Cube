@@ -756,6 +756,7 @@ rtos_osThreadNew:
 // \return		the thread object ID of the currently running thread or NULL in case of an error.
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetId
+.type 		rtos_osThreadGetId, %function
 rtos_osThreadGetId:
 	push	{lr}
 	pushdatos
@@ -772,6 +773,7 @@ rtos_osThreadGetId:
 // osThreadState_t 	osThreadGetState (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetState
+.type 		rtos_osThreadGetState, %function
 rtos_osThreadGetState:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -788,6 +790,7 @@ rtos_osThreadGetState:
 // const char * osThreadGetName(osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetName
+.type 		rtos_osThreadGetName, %function
 rtos_osThreadGetName:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -804,6 +807,7 @@ rtos_osThreadGetName:
 // osStatus_t 	osThreadSetPriority (osThreadId_t thread_id, osPriority_t priority)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadSetPriority
+.type 		rtos_osThreadSetPriority, %function
 rtos_osThreadSetPriority:
 	push	{lr}
 	movs	r1, tos		// priority
@@ -822,6 +826,7 @@ rtos_osThreadSetPriority:
 // osPriority_t 	osThreadGetPriority (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetPriority
+.type 		rtos_osThreadGetPriority, %function
 rtos_osThreadGetPriority:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -837,6 +842,7 @@ rtos_osThreadGetPriority:
 // osPriority_t 	osThreadGetPriority (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadYield
+.type 		rtos_osThreadYield, %function
 rtos_osThreadYield:
 	push	{lr}
 	pushdatos
@@ -853,6 +859,7 @@ rtos_osThreadYield:
 // osStatus_t 	osThreadSuspend (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadSuspend
+.type 		rtos_osThreadSuspend, %function
 rtos_osThreadSuspend:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -869,6 +876,7 @@ rtos_osThreadSuspend:
 // osStatus_t 	osThreadResume (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadResume
+.type 		rtos_osThreadResume, %function
 rtos_osThreadResume:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -913,6 +921,7 @@ rtos_osThreadResume:
 // __NO_RETURN void 	osThreadExit (void)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadExit
+.type 		rtos_osThreadExit, %function
 rtos_osThreadExit:
 	bl		osThreadExit
 
@@ -925,6 +934,7 @@ rtos_osThreadExit:
 // osStatus_t 	osThreadTerminate (osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadTerminate
+.type 		rtos_osThreadTerminate, %function
 rtos_osThreadTerminate:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -956,6 +966,7 @@ rtos_osThreadTerminate:
 // uint32_t osThreadGetStackSpace(osThreadId_t thread_id)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetStackSpace
+.type 		rtos_osThreadGetStackSpace, %function
 rtos_osThreadGetStackSpace:
 	push	{lr}
 	movs	r0, tos		// set Thread ID
@@ -971,6 +982,7 @@ rtos_osThreadGetStackSpace:
 // uint32_t 	osThreadGetCount (void)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadGetCount
+.type 		rtos_osThreadGetCount, %function
 rtos_osThreadGetCount:
 	push	{lr}
 	pushdatos
@@ -988,6 +1000,7 @@ rtos_osThreadGetCount:
 // uint32_t 	osThreadEnumerate (osThreadId_t *thread_array, uint32_t array_items)
 // -----------------------------------------------------------------------------
 .global		rtos_osThreadEnumerate
+.type 		rtos_osThreadEnumerate, %function
 rtos_osThreadEnumerate:
 	push	{lr}
 	movs	r1, tos		// array items
@@ -1004,6 +1017,7 @@ rtos_osThreadEnumerate:
 		@			unallocated when the function is called
 // -----------------------------------------------------------------------------
 .global		rtos_xPortGetFreeHeapSize
+.type 		rtos_xPortGetFreeHeapSize, %function
 rtos_xPortGetFreeHeapSize:
 	push	{lr}
 	pushdatos
@@ -1018,6 +1032,7 @@ rtos_xPortGetFreeHeapSize:
 		@			void* pvPortMalloc (size_t xWantedSize)
 // -----------------------------------------------------------------------------
 .global		rtos_pvPortMalloc
+.type 		rtos_pvPortMalloc, %function
 rtos_pvPortMalloc:
 	push	{lr}
 	movs	r0, tos
@@ -1032,6 +1047,7 @@ rtos_pvPortMalloc:
 		@			void vPortFree (* void)
 // -----------------------------------------------------------------------------
 .global		rtos_vPortFree
+.type 		rtos_vPortFree, %function
 rtos_vPortFree:
 	push	{lr}
 	movs	r0, tos

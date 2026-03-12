@@ -639,6 +639,7 @@ null_qemit:
 
 // uint64_t TERMINAL_emit(uint64_t forth_stack, uint8_t c);
 .global		TERMINAL_emit
+.type 		TERMINAL_emit, %function
 TERMINAL_emit:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -653,6 +654,7 @@ TERMINAL_emit:
 
 // uint64_t TERMINAL_key(uint64_t forth_stack, uint8_t *c);
 .global		TERMINAL_key
+.type 		TERMINAL_key, %function
 TERMINAL_key:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -669,6 +671,7 @@ TERMINAL_key:
 
 // uint64_t TERMINAL_qemit(uint64_t forth_stack, uint8_t *c);
 .global		TERMINAL_qemit
+.type 		TERMINAL_qemit, %function
 TERMINAL_qemit:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -685,6 +688,7 @@ TERMINAL_qemit:
 
 // uint64_t TERMINAL_qkey(uint64_t forth_stack, uint8_t *c);
 .global		TERMINAL_qkey
+.type 		TERMINAL_qkey, %function
 TERMINAL_qkey:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos

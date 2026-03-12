@@ -226,6 +226,7 @@ crs_terminal:
   Wortbirne Flag_visible, "redirect" @ ( -- )
 @------------------------------------------------------------------------------
 .global 	TERMINAL_redirect
+.type 		TERMINAL_redirect, %function
 TERMINAL_redirect:
 	push	{lr}
 	ldr		r0, =0		// current task xTaskToQuery = 0
@@ -261,6 +262,7 @@ TERMINAL_redirect:
   Wortbirne Flag_visible, "unredirect" @ ( -- )
 @------------------------------------------------------------------------------
 .global		TERMINAL_unredirect
+.type 		TERMINAL_unredirect, %function
 TERMINAL_unredirect:
 	push	{lr}
 	ldr		r0, =0		// current task xTaskToQuery = 0

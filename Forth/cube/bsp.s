@@ -32,6 +32,7 @@
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, ".greet"
 print_greet:
+.type print_greet, %function
 		@ ( --  ) print greeting
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -74,6 +75,7 @@ print_greet:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1!"
 set_led1:
+.type set_led1, %function
 		@ ( n --  ) set LED1 (blue)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -85,6 +87,7 @@ set_led1:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led1@"
 get_led1:
+.type get_led1, %function
 		@ (  -- n ) get LED1 (blue)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -96,6 +99,7 @@ get_led1:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2!"
 set_led2:
+.type set_led2, %function
 		@ ( n --  ) set LED2 (green)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -107,6 +111,7 @@ set_led2:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led2@"
 get_led2:
+.type get_led2, %function
 		@ (  -- n ) get LED2 (green)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -118,6 +123,7 @@ get_led2:
 	@ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3!"
 set_led3:
+.type set_led3, %function
 		@ ( n --  ) set LED3 (red)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -129,6 +135,7 @@ set_led3:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "led3@"
 get_led3:
+.type get_led3, %function
 		@ (  -- n ) get LED3 (red)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -141,6 +148,7 @@ get_led3:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch1?"
 get_switch1:
+.type get_switch1, %function
 		@ (  -- n ) get switch1
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -153,6 +161,7 @@ get_switch1:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch2?"
 get_switch2:
+.type get_switch2, %function
 		@ (  -- n ) get switch2
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -164,6 +173,7 @@ get_switch2:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "switch3?"
 get_switch3:
+.type get_switch3, %function
 		@ (  -- n ) get switch3
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -175,6 +185,7 @@ get_switch3:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dport!"
 set_dport:
+.type set_dport, %function
 		@ ( n --  ) Sets the digital output port (D0 .. D15).
 // void BSP_setDigitalPort(int state);
 @ -----------------------------------------------------------------------------
@@ -187,6 +198,7 @@ set_dport:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dport@"
 get_dport:
+.type get_dport, %function
 		@ (  -- n ) Gets the digital input port (D0 .. D15).
 // int BSP_getDigitalPort(void);
 @ -----------------------------------------------------------------------------
@@ -200,6 +212,7 @@ get_dport:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dpin!"
 set_dpin:
+.type set_dpin, %function
 		@ ( u a --  ) Sets the digital output port pin (D0 .. D15).
 // void BSP_setDigitalPin(int pin_number, int state);
 @ -----------------------------------------------------------------------------
@@ -215,6 +228,7 @@ set_dpin:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dpin@"
 get_dpin:
+.type get_dpin, %function
 		@ ( a -- u ) Gets the digital input port pin (D0 .. D15).
 // int BSP_getDigitalPin(int pin_number);
 @ -----------------------------------------------------------------------------
@@ -228,6 +242,7 @@ get_dpin:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "apin@"
 get_apin:
+.type get_apin, %function
 		@ ( a -- u ) Gets the analog input port pin (A0 .. A5).
 // int BSP_getAnalogPin(int pin_number)
 @ -----------------------------------------------------------------------------
@@ -240,6 +255,7 @@ get_apin:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "vref@"
 get_vref:
+.type get_vref, %function
 		@ (  -- u ) Get the Vref
 // int BSP_getVref(void)
 @ -----------------------------------------------------------------------------
@@ -252,6 +268,7 @@ get_vref:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "vbat@"
 get_vbat:
+.type get_vbat, %function
 		@ (  -- u ) Get the Vbat
 // int BSP_getVbat(void)
 @ -----------------------------------------------------------------------------
@@ -264,6 +281,7 @@ get_vbat:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "cputemp@"
 get_cputemp:
+.type get_cputemp, %function
 		@ (  -- u ) Get the CPU temperature
 // int BSP_getCpuTemperature(void)
 @ -----------------------------------------------------------------------------
@@ -277,6 +295,7 @@ get_cputemp:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "dmod"
 set_dmod:
+.type set_dmod, %function
 		@ ( u a --  ) sets the pin mode: 0 in, 1 in pullup, 2 in pulldown, 3 out pushpull, 4 out open drain.
 		@                                5 out pwm, 6 input capture, 7 output compare, 8 I2C
 // int BSP_setDigitalPinMode(int pin_number, int mode)
@@ -293,6 +312,7 @@ set_dmod:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "pwmpin!"
 set_pwmpin:
+.type set_pwmpin, %function
 		@ ( u a --  ) sets the digital output port pin (D3=3, D6=6, D9=9) to a PWM value (0..1000). Frequency is 1 kHz
 // int BSP_setPwmPin(int pin_number, int value)
 @ -----------------------------------------------------------------------------
@@ -308,6 +328,7 @@ set_pwmpin:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "pwmprescale"
 pwmprescale:
+.type pwmprescale, %function
 		@ ( u --  ) Sets the PWM prescale for TIMER1 (D3=3, D6=6, D9=9)
 // void BSP_setPwmPrescale(int16_t value)
 @ -----------------------------------------------------------------------------
@@ -321,6 +342,7 @@ pwmprescale:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "wait-alarm"
 wait_alarm:		@ ( --  ) Wait for alarm A
+.type wait_alarm, %function
 // void RTC_waitAlarmA()
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -331,6 +353,7 @@ wait_alarm:		@ ( --  ) Wait for alarm A
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "alarm!"
 set_alarm:
+.type set_alarm, %function
 		@ ( n1 n2 n3 --  ) sets the alarm
 // void RTC_setAlarmA(int hour, int minute, int second)
 @ -----------------------------------------------------------------------------
@@ -348,6 +371,7 @@ set_alarm:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCprescale"
 ICOCprescale:
+.type ICOCprescale, %function
 		@ ( u -- )   Sets the input capture / output compare prescale for TIMER2.
 		@            default 32 -> 32 MHz / 32 = 1 MHz, timer resolution 1 us
 // void BSP_setPrescaleICOC(uint32_t prescale);
@@ -362,6 +386,7 @@ ICOCprescale:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCperiod!"
 set_ICOCperiod:
+.type set_ICOCperiod, %function
 		@ ( u -- )    Sets the input capture / output compare (TIMER2) period.
 		@             default $FFFFFFFF (4'294'967'295).
         @             When the up counter reaches the period, the counter is set to 0.
@@ -378,6 +403,7 @@ set_ICOCperiod:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCcount!"
 set_ICOCcount:
+.type set_ICOCcount, %function
 		@ ( u -- )    Sets the input capture / output compare counter for TIMER2
 // void BSP_setCounterICOC(uint32_t count);
 @ -----------------------------------------------------------------------------
@@ -391,6 +417,7 @@ set_ICOCcount:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCcount@"
 get_ICOCcount:
+.type get_ICOCcount, %function
 		@ ( -- u )    Gets the input capture / output compare counter for TIMER2
 // uint32_t BSP_getCounterICOC(void);
 @ -----------------------------------------------------------------------------
@@ -404,6 +431,7 @@ get_ICOCcount:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCstart"
 ICOCstart:
+.type ICOCstart, %function
 		@ ( -- )      Starts the ICOC period
 // void BSP_startPeriodICOC(void) {
 @ -----------------------------------------------------------------------------
@@ -415,6 +443,7 @@ ICOCstart:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICOCstop"
 ICOCstop:
+.type ICOCstop, %function
 		@ ( -- )      Stops the ICOC period
 // void BSP_stopPeriodICOC(void) {
 @ -----------------------------------------------------------------------------
@@ -426,6 +455,7 @@ ICOCstop:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCmod"
 OCmod:
+.type OCmod, %function
 		@ ( u a -- )  Sets for pin a the OC mode u  0 frozen, 1 active level on match,
 		@             inactive level on match, 3 toggle on match
         @             4 forced active, 5 forced inactive
@@ -443,6 +473,7 @@ OCmod:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCstart"
 OCstart:
+.type OCstart, %function
 		@ ( u a -- )  Starts the output compare mode for pin a with pulse u
 // void BSP_startOC(int pin_number, uint32_t pulse);
 @ -----------------------------------------------------------------------------
@@ -458,6 +489,7 @@ OCstart:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCstop"
 OCstop:
+.type OCstop, %function
 		@ ( a -- )    Stops output compare for pin a
 // void BSP_stopOC(int pin_number);
 @ -----------------------------------------------------------------------------
@@ -471,6 +503,7 @@ OCstop:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICstart"
 ICstart:
+.type ICstart, %function
 		@ ( u -- )    Starts input capture u: 0 rising edge, 1 falling edge, 2 both edges
 // void BSP_startIC(uint32_t mode);
 @ -----------------------------------------------------------------------------
@@ -484,6 +517,7 @@ ICstart:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "ICstop"
 ICstop:
+.type ICstop, %function
 		@ ( -- )      Stops input capture
 // void BSP_stopIC(void);
 @ -----------------------------------------------------------------------------
@@ -495,6 +529,7 @@ ICstop:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "waitperiod"
 waitperiod:
+.type waitperiod, %function
 		@ ( -- )      wait for the end of the TIMER2 period
 // void BSP_waitPeriod(void);
 @ -----------------------------------------------------------------------------
@@ -506,6 +541,7 @@ waitperiod:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "OCwait"
 OCwait:
+.type OCwait, %function
 		@ ( a -- )    wait for the end of output capture pin a
 // void BSP_waitOC(int pin_number);
 @ -----------------------------------------------------------------------------
@@ -520,6 +556,7 @@ OCwait:
 		Wortbirne Flag_visible, "ICwait"
 		@ ( u -- u )    wait for the end of input capture, returns counter u
 ICwait:
+.type ICwait, %function
 // uint32_t BSP_waitIC(uint32_t timeout);
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -533,6 +570,7 @@ ICwait:
 		Wortbirne Flag_visible, "EXTImod"
 		@ ( u a --  )    Sets for pin a the EXTI mode u: 0 rising edge, 1 falling edge, 2 both edges, 3 none
 EXTImod:
+.type EXTImod, %function
 // void BSP_setModeEXTI(int pin_number, uint32_t mode)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -548,6 +586,7 @@ EXTImod:
 		Wortbirne Flag_visible, "EXTIwait"
 		@ ( u a --  u )    Waits for EXTI line (interrupt driven by port pin edge)
 EXTIwait:
+.type EXTIwait, %function
 // void BSP_waitEXTI(int pin_number, int32_t timeout)
 @ -----------------------------------------------------------------------------
 	push	{lr}
@@ -565,6 +604,7 @@ EXTIwait:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "I2Cget"
 I2Cget:
+.type I2Cget, %function
 		@ ( a size -- ) Get a message
 // int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
@@ -581,6 +621,7 @@ I2Cget:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "I2Cput"
 I2Cput:
+.type I2Cput, %function
 		@ ( a size --  ) Put a message
 // int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
@@ -597,6 +638,7 @@ I2Cput:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "I2Cputget"
 I2Cputget:
+.type I2Cputget, %function
 		@ ( a size1 size2 dev --  ) Put and get a message
 // int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uint16_t dev)
 @ -----------------------------------------------------------------------------
@@ -619,6 +661,7 @@ I2Cputget:
 @ -----------------------------------------------------------------------------
 	   Wortbirne Flag_visible, "SPIget"
 SPIget:
+.type SPIget, %function
 	   @ ( a size -- ) Get a message
 // int RTSPI_ReadData(const uint8_t *Data, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
@@ -633,6 +676,7 @@ SPIget:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "SPIput"
 SPIput:
+.type SPIput, %function
 		@ ( a size --  ) Put a message
 // int RTSPI_WriteData(const uint8_t *Data, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
@@ -647,6 +691,7 @@ SPIput:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "SPIputget"
 SPIputget:
+.type SPIputget, %function
 		@ ( a1 a2 size --  ) Put and get a message
 // int RTSPI_WriteReadData(const uint8_t *DataIn, uint8_t *DataOut, uint16_t DataLength);
 @ -----------------------------------------------------------------------------
@@ -663,6 +708,7 @@ SPIputget:
 @ -----------------------------------------------------------------------------
 		Wortbirne Flag_visible, "SPImutex"
 SPImutex:
+.type SPImutex, %function
 		@ ( -- a ) Get the SPI mutex address
 // uint32_t* RTSPI_getMutex(void)
 @ -----------------------------------------------------------------------------
@@ -675,6 +721,7 @@ SPImutex:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "watchdog"
 watchdog:
+.type watchdog, %function
 	@ ( -- )      activate watchdog
 // void WATCHDOG_activate(void);
 @ -----------------------------------------------------------------------------
@@ -685,6 +732,7 @@ watchdog:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "watchdog?"
 get_watchdog_bitten:
+.type get_watchdog_bitten, %function
 	@ ( -- flag )      Has the WATCHDOG bitten?
 // int WATCHDOG_bitten(void);
 @ -----------------------------------------------------------------------------
@@ -701,6 +749,7 @@ get_watchdog_bitten:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "watchdog#"
 get_watchdog_bites:
+.type get_watchdog_bites, %function
 	@ ( -- u )      How many times has the watchdog bitten since cold startup?
 // int WATCHDOG_bites(void);
 @ -----------------------------------------------------------------------------
@@ -713,6 +762,7 @@ get_watchdog_bites:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "watchdog@"
 get_watchdog_adr:
+.type get_watchdog_adr, %function
 	@ ( -- a )      How many times has the watchdog bitten since cold startup?
 // int WATCHDOG_adr(void);
 @ -----------------------------------------------------------------------------
@@ -726,6 +776,7 @@ get_watchdog_adr:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "assert"
 assert:
+.type assert, %function
 	@ ( -- u )      How many asserts occurred since cold startup?
 // int ASSERT_getCount(void);
 @ -----------------------------------------------------------------------------
@@ -740,6 +791,7 @@ assert:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "assert?"
 get_assert:
+.type get_assert, %function
 	@ ( -- flag )      ASSERT occurred since cold startup?
 // int ASSERT_occurred(void);
 @ -----------------------------------------------------------------------------
@@ -756,6 +808,7 @@ get_assert:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "assert#"
 get_assert_count:
+.type get_assert_count, %function
 	@ ( -- u )      How many asserts occurred since cold startup?
 // int ASSERT_getCount(void);
 @ -----------------------------------------------------------------------------
@@ -768,6 +821,7 @@ get_assert_count:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "assert@"
 get_assert_adr:
+.type get_assert_adr, %function
 	@ ( -- u1 u2 )      Assert number u1 and parameter u2 e.g. address where the assert occurred
 // int ASSERT_getId(void);  int ASSERT_getParam(void);
 @ -----------------------------------------------------------------------------
@@ -783,6 +837,7 @@ get_assert_adr:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, ".assert"
 print_assert:
+.type print_assert, %function
 	@ ( u --  )      Print assert message
 // char* ASSERT_getMsg(int index);
 @ -----------------------------------------------------------------------------
@@ -798,6 +853,7 @@ print_assert:
 @ -----------------------------------------------------------------------------
     Wortbirne Flag_visible, "FusVersion"
 FusVersion:
+.type FusVersion, %function
     @ ( -- u ) Get FUS version
 // int APP_BLE_getFusVersion(void)
 @ -----------------------------------------------------------------------------
@@ -810,6 +866,7 @@ FusVersion:
 @ -----------------------------------------------------------------------------
     Wortbirne Flag_visible, "StackVersion"
 StackVersion:
+.type StackVersion, %function
     @ ( -- u ) Get Stack version
 // int APP_BLE_getStackVersion(void)
 @ -----------------------------------------------------------------------------
@@ -822,6 +879,7 @@ StackVersion:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "+sysled"
 set_sysled:
+.type set_sysled, %function
 	@ ( flags -- ) Set the system LED
 // void BSP_setSysLED(int status);
 @ -----------------------------------------------------------------------------
@@ -834,6 +892,7 @@ set_sysled:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "-sysled"
 clear_sysled:
+.type clear_sysled, %function
 	@ ( flags -- ) Clear the system LED
 // void BSP_clearSysLED(int status);
 @ -----------------------------------------------------------------------------
@@ -850,6 +909,7 @@ clear_sysled:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "shutdown"
 shutdown:
+.type shutdown, %function
 	@ ( --  )      Halt (power off) the MCU and wait for wake up
 // void POWER_halt(void);
 @ -----------------------------------------------------------------------------
@@ -860,6 +920,7 @@ shutdown:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "halt?"
 get_halt:
+.type get_halt, %function
 	@ ( -- flags ) Get power switch for halt
 // int POWER_getSwitch()
 @ -----------------------------------------------------------------------------
@@ -872,6 +933,7 @@ get_halt:
 @ -----------------------------------------------------------------------------
 	Wortbirne Flag_visible, "halt!"
 set_halt:
+.type set_halt, %function
 	@ ( flags -- ) Set power switch for halt
 // int POWER_setSwitch()
 @ -----------------------------------------------------------------------------

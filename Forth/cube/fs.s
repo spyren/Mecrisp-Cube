@@ -555,6 +555,7 @@ vi:
 // catch this abort.
 // uint64_t FS_catch_evaluate(uint64_t forth_stack, uint8_t* str, int count);
 .global		FS_catch_evaluate
+.type 		FS_catch_evaluate, %function
 FS_catch_evaluate:
 	push 	{r4-r7, lr}
 	movs	tos, r0			// get tos
@@ -595,6 +596,7 @@ quit_evaluate:
 
 // uint64_t FS_evaluate(uint64_t forth_stack, uint8_t* str, int count);
 .global		FS_evaluate
+.type 		FS_evaluate, %function
 FS_evaluate:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -611,6 +613,7 @@ FS_evaluate:
 
 // uint64_t FS_cr(uint64_t forth_stack);
 .global		FS_cr
+.type 		FS_cr, %function
 FS_cr:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -623,6 +626,7 @@ FS_cr:
 
 // uint64_t FS_type(uint64_t forth_stack, uint8_t* str, int count);
 .global		FS_type
+.type 		FS_type, %function
 FS_type:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -638,7 +642,8 @@ FS_type:
 
 // token ( -- c-addr len )
 // uint64_t  FS_token(uint64_t forth_stack, uint8_t **str, int *count);
-.global	FS_token
+.global		FS_token
+.type 		FS_token, %function
 FS_token:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos
@@ -658,7 +663,8 @@ FS_token:
 
 // accept ( c-addr maxlength - - length )
 // uint64_t  FS_accept(uint64_t forth_stack, uint8_t *str, int *count);
-.global	FS_accept
+.global		FS_accept
+.type 		FS_accept, %function
 FS_accept:
 	push 	{r4-r7, lr}
 	movs	tos, r0		// get tos

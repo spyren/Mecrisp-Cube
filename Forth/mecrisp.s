@@ -162,15 +162,27 @@ RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 .endif // FPU == 1
 
 .global		Dictionarypointer
+.type 		Dictionarypointer, %object
+
 .global		Fadenende
+.type 		Fadenende, %object
+
 .global		ZweitDictionaryPointer
+.type 		ZweitDictionaryPointer, %object
+
 .global		ZweitFadenende
+.type 		ZweitFadenende, %object
+
 .global		EvaluateState
+.type 		EvaluateState, %object
+
 .global		DriveNumber
+.type 		DriveNumber, %object
 
 // FPU variable only if needed
 .if FPU == 1
 .global		Fprecision
+.type 		Fprecision, %object
 .endif // FPU == 1
 
 .ifdef registerallocator
@@ -436,7 +448,7 @@ CoreDictionaryAnfang: @ Dictionary-Einsprungpunkt setzen
 @ -----------------------------------------------------------------------------
 
 .global		Forth
-
+.type 		Forth, %function
 @ -----------------------------------------------------------------------------
 Forth:
 @ -----------------------------------------------------------------------------

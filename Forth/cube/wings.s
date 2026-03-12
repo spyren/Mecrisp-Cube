@@ -84,6 +84,7 @@ neopixels:
 
 
 .global		BSP_neopixelDataTx
+.type 		BSP_neopixelDataTx, %function
 BSP_neopixelDataTx:
 	push	{r4-r6, lr}
 	lsl		r2, r2, #8			// r2 = rrggbb00
@@ -139,6 +140,7 @@ bit_loop:
 
 
 .global		BSP_neopixelBufferTx
+.type 		BSP_neopixelBufferTx, %function
 BSP_neopixelBufferTx:
 	push	{r4-r8, lr}
 	lsl		r8, r1, #16			// clear port pin for BSRR
