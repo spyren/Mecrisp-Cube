@@ -35,6 +35,7 @@
 
 // System include files
 // ********************
+#include "freertos_os2.h"
 #include "cmsis_os.h"
 #include "shci.h"
 
@@ -212,16 +213,19 @@ int aquire_flash(uint8_t Erase) {
 		}
 
 		// enter critical section
-		taskENTER_CRITICAL();
+//		taskENTER_CRITICAL();
+		portENTER_CRITICAL();
 
 		if (HAL_HSEM_IsSemTaken(6)) {
 			// exit critical section
-			taskEXIT_CRITICAL();
+//			taskEXIT_CRITICAL();
+			portEXIT_CRITICAL();
 			continue; // busy wait
 		}
 		if (HAL_HSEM_FastTake(7)) {
 			// exit critical section
-			taskEXIT_CRITICAL();
+//			taskEXIT_CRITICAL();
+			portEXIT_CRITICAL();
 			continue; // busy wait
 		}
 
@@ -236,7 +240,8 @@ int release_flash(uint8_t Erase) {
 	HAL_HSEM_Release(7, 0);
 
 	// exit critical section
-	taskEXIT_CRITICAL();
+//	taskEXIT_CRITICAL();
+	portEXIT_CRITICAL();
 
 	while (__HAL_FLASH_GET_FLAG(FLASH_FLAG_CFGBSY)) {
 		 ;

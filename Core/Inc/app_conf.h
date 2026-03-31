@@ -28,28 +28,8 @@
 #include "ble_bufsize.h"
 
 /******************************************************************************
- * Display and other modules
- ******************************************************************************/
-#define	OLED					1	// OLED display
-#define MIP						0   // MIP display
-#define LCDISPLAY				0	// LCD display
-#define PLEX					1   // PLEX display
-#define EPD						0	// EPD display
-#define QUAD					0	// QUAD display
-#define FPU_IP					1	// Floating Point Unit
-#define BUTTON					1	// additional buttons
-#define BUTTON_MATRIX			0	// Button matrix e.g. for calculator
-#define POWER					1	// lower power support
-#define SD_DRIVE                0	// SD drive
-#define DCC						1	// Digital Command Control (model railroad)
-
-
-/******************************************************************************
  * Application Config
  ******************************************************************************/
-
-/**< generic parameters ******************************************************/
-
 /**< generic parameters ******************************************************/
 
 /**
@@ -66,7 +46,6 @@
  * Define BD_ADDR type: define proper address. Can only be GAP_PUBLIC_ADDR (0x00) or GAP_STATIC_RANDOM_ADDR (0x01)
  */
 #define CFG_IDENTITY_ADDRESS              GAP_PUBLIC_ADDR
-
 /**
  * Define privacy: PRIVACY_DISABLED or PRIVACY_ENABLED
  */
@@ -84,7 +63,6 @@
 #define CFG_FAST_CONN_ADV_INTERVAL_MAX    (0xA0)      /**< 100ms */
 #define CFG_LP_CONN_ADV_INTERVAL_MIN      (0x640)     /**< 1s */
 #define CFG_LP_CONN_ADV_INTERVAL_MAX      (0xFA0)     /**< 2.5s */
-
 /**
  * Define IO Authentication
  */
@@ -154,23 +132,39 @@
 #define RX_2M                                           0x02
 
 /**
-*   Identity root key used to derive LTK and CSRK
+*   Identity root key used to derive IRK and DHK(Legacy)
 */
-#define CFG_BLE_IRK     {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0}
+#define CFG_BLE_IR     {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0}
 
 /**
-* Encryption root key used to derive LTK and CSRK
+* Encryption root key used to derive LTK(Legacy) and CSRK
 */
-#define CFG_BLE_ERK     {0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21, 0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21}
+#define CFG_BLE_ER     {0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21, 0xFE, 0xDC, 0xBA, 0x09, 0x87, 0x65, 0x43, 0x21}
 
 /**
  * SMPS supply
  * SMPS not used when Set to 0
  * SMPS used when Set to 1
  */
-#define CFG_USE_SMPS    1
+#define CFG_USE_SMPS    0
 
 /* USER CODE BEGIN Generic_Parameters */
+
+/******************************************************************************
+ * Display and other modules
+ ******************************************************************************/
+#define OLED              	1       // OLED display
+#define MIP                 0   	// MIP display
+#define LCDISPLAY           0       // LCD display
+#define PLEX                1   	// PLEX display
+#define EPD                 0       // EPD display
+#define QUAD                0       // QUAD display
+#define FPU_IP              1       // Floating Point Unit
+#define BUTTON              1       // additional buttons
+#define BUTTON_MATRIX       0       // Button matrix e.g. for calculator
+#define POWER               1       // lower power support
+#define SD_DRIVE            0      	// SD drive
+#define DCC                 1       // Digital Command Control (model railroad)
 
 // Board Type
 // **********
@@ -230,6 +224,9 @@
 #else
 #define BLE_DBG_CRS_STM_MSG         PRINT_NO_MESG
 #endif
+
+// Thread flag, is set after BLE has been started
+#define BLE_IS_READY			0x01
 
 /* USER CODE END Generic_Parameters */
 
@@ -306,12 +303,12 @@
 #define CFG_BLE_DATA_LENGTH_EXTENSION   1
 
 /**
- * Sleep clock accuracy in Slave mode (ppm value)
+ * Sleep clock accuracy in Peripheral mode (ppm value)
  */
-#define CFG_BLE_SLAVE_SCA   500
+#define CFG_BLE_PERIPHERAL_SCA   500
 
 /**
- * Sleep clock accuracy in Master mode
+ * Sleep clock accuracy in Central mode
  * 0 : 251 ppm to 500 ppm
  * 1 : 151 ppm to 250 ppm
  * 2 : 101 ppm to 150 ppm
@@ -321,7 +318,7 @@
  * 6 : 21 ppm to 30 ppm
  * 7 : 0 ppm to 20 ppm
  */
-#define CFG_BLE_MASTER_SCA   0
+#define CFG_BLE_CENTRAL_SCA   0
 
 /**
  * LsSource
@@ -342,7 +339,7 @@
 #define CFG_BLE_HSE_STARTUP_TIME  0x148
 
 /**
- * Maximum duration of the connection event when the device is in Slave mode in units of 625/256 us (~2.44 us)
+ * Maximum duration of the connection event when the device is in Peripheral mode in units of 625/256 us (~2.44 us)
  */
 #define CFG_BLE_MAX_CONN_EVENT_LENGTH  (0xFFFFFFFF)
 
@@ -414,6 +411,13 @@
 #define CFG_BLE_MAX_TX_POWER            (0)
 
 /**
+ * BLE stack Maximum number of created Enhanced ATT bearers to be configured
+ * in addition to the number of links
+ *     - Range: 0 .. 4
+ */
+#define CFG_BLE_MAX_ADD_EATT_BEARERS            (4)
+
+/**
  * BLE Rx model configuration flags to be configured with:
  * - SHCI_C2_BLE_INIT_RX_MODEL_AGC_RSSI_LEGACY
  * - SHCI_C2_BLE_INIT_RX_MODEL_AGC_RSSI_BLOCKER
@@ -458,10 +462,11 @@
   /* BLE core version (16-bit signed integer).
    * - SHCI_C2_BLE_INIT_BLE_CORE_5_2
    * - SHCI_C2_BLE_INIT_BLE_CORE_5_3
-   * which are used to set: 11(5.2), 12(5.3).
+   * - SHCI_C2_BLE_INIT_BLE_CORE_5_4
+   * which are used to set: 11(5.2), 12(5.3), 13(5.4).
    */
 
-#define CFG_BLE_CORE_VERSION   (SHCI_C2_BLE_INIT_BLE_CORE_5_3)
+#define CFG_BLE_CORE_VERSION   (SHCI_C2_BLE_INIT_BLE_CORE_5_4)
 
 /******************************************************************************
  * Transport Layer
@@ -530,11 +535,11 @@
  *  When set to 0, the device stays in RUN mode
  */
 #ifdef DEBUG
-// debug configuration
-#define CFG_LPM_SUPPORTED    0
+  // debug configuration
+  #define CFG_LPM_SUPPORTED    0
 #else
-// release configuration
-#define CFG_LPM_SUPPORTED    1
+  // release configuration
+  #define CFG_LPM_SUPPORTED    1
 #endif
 
 /******************************************************************************
@@ -632,17 +637,13 @@ typedef enum
  * Debug
  ******************************************************************************/
 /**
- * When set, this resets some hw resources to set the device in the same state than the power up
- * The FW resets only register that may prevent the FW to run properly
+ * When set, this resets some hw resources to put the device in the same state as at power up.
+ * It resets only register that may prevent the FW to run properly.
  *
  * This shall be set to 0 in a final product
  *
  */
-
-#ifdef DEBUG
-// debug configuration
-
-#define CFG_HW_RESET_BY_FW         1
+#define CFG_HW_RESET_BY_FW         0
 
 /**
  * keep debugger enabled while in any low power mode when set to 1
@@ -712,78 +713,6 @@ typedef enum
  */
 #define DBG_TRACE_MSG_QUEUE_SIZE 4096
 #define MAX_DBG_TRACE_MSG_SIZE   1024
-#else
-// release configuration
-/**
- * keep debugger enabled while in any low power mode when set to 1
- * should be set to 0 in production
- */
-#define CFG_DEBUGGER_SUPPORTED    0
-
-/**
- * When set to 1, the traces are enabled in the BLE services
- */
-#define CFG_DEBUG_BLE_TRACE     0
-
-/**
- * Enable or Disable traces in application
- */
-#define CFG_DEBUG_APP_TRACE     0
-
-#if (CFG_DEBUG_APP_TRACE != 0)
-#define APP_DBG_MSG                 PRINT_MESG_DBG
-#else
-#define APP_DBG_MSG                 PRINT_NO_MESG
-#endif
-
-#if ( (CFG_DEBUG_BLE_TRACE != 0) || (CFG_DEBUG_APP_TRACE != 0) )
-#define CFG_DEBUG_TRACE             1
-#endif
-
-#if (CFG_DEBUG_TRACE != 0)
-#undef CFG_LPM_SUPPORTED
-#undef CFG_DEBUGGER_SUPPORTED
-#define CFG_LPM_SUPPORTED           0
-#define CFG_DEBUGGER_SUPPORTED      1
-#endif
-
-/**
- * When CFG_DEBUG_TRACE_FULL is set to 1, the trace are output with the API name, the file name and the line number
- * When CFG_DEBUG_TRACE_LIGHT is set to 1, only the debug message is output
- *
- * When both are set to 0, no trace are output
- * When both are set to 1,  CFG_DEBUG_TRACE_FULL is selected
- */
-#define CFG_DEBUG_TRACE_LIGHT     0
-#define CFG_DEBUG_TRACE_FULL      0
-
-#if (( CFG_DEBUG_TRACE != 0 ) && ( CFG_DEBUG_TRACE_LIGHT == 0 ) && (CFG_DEBUG_TRACE_FULL == 0))
-#undef CFG_DEBUG_TRACE_FULL
-#undef CFG_DEBUG_TRACE_LIGHT
-#define CFG_DEBUG_TRACE_FULL      0
-#define CFG_DEBUG_TRACE_LIGHT     1
-#endif
-
-#if ( CFG_DEBUG_TRACE == 0 )
-#undef CFG_DEBUG_TRACE_FULL
-#undef CFG_DEBUG_TRACE_LIGHT
-#define CFG_DEBUG_TRACE_FULL      0
-#define CFG_DEBUG_TRACE_LIGHT     0
-#endif
-
-/**
- * When not set, the traces is looping on sending the trace over UART
- */
-#define DBG_TRACE_USE_CIRCULAR_QUEUE 1
-
-/**
- * max buffer Size to queue data traces and max data trace allowed.
- * Only Used if DBG_TRACE_USE_CIRCULAR_QUEUE is defined
- */
-#define DBG_TRACE_MSG_QUEUE_SIZE 4096
-#define MAX_DBG_TRACE_MSG_SIZE   1024
-
-#endif  // DEBUG
 
 /* USER CODE BEGIN Defines */
 
@@ -801,7 +730,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_MEM   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
-#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 12)
+#define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
 
 #define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
@@ -809,7 +738,7 @@ typedef enum
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
 #define CFG_HCI_USER_EVT_PROCESS_STACK_MEM    (0)
 #define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
-#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 8)
+#define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 40)
 
 #define CFG_ADV_UPDATE_PROCESS_NAME           "BLE_ADV_UPDATE"
 #define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
@@ -817,7 +746,7 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
 #define CFG_ADV_UPDATE_PROCESS_STACK_MEM      (0)
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
-#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 8)
+#define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 20)
 
 #define CFG_HRS_PROCESS_NAME                  "BLE_HRS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
@@ -825,7 +754,7 @@ typedef enum
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
 #define CFG_HRS_PROCESS_STACK_MEM             (0)
 #define CFG_HRS_PROCESS_PRIORITY              osPriorityNone
-#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 8)
+#define CFG_HRS_PROCESS_STACK_SIZE            (128 * 20)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
 /* USER CODE END FreeRTOS_Defines */
@@ -862,9 +791,4 @@ typedef enum
 
 #define CFG_OTP_END_ADRESS      OTP_AREA_END_ADDR
 
-
-// Thread flag, is set after BLE has been started
-#define BLE_IS_READY			0x01
-
 #endif /*APP_CONF_H */
-

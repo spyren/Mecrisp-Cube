@@ -32,7 +32,6 @@ const struct UTIL_LPM_Driver_s UTIL_PowerDriver =
   PWR_EnterSleepMode,
   PWR_ExitSleepMode,
 
-
   PWR_EnterStopMode,
   PWR_ExitStopMode,
 
@@ -102,7 +101,7 @@ void PWR_EnterOffMode(void)
   /**
    * This option is used to ensure that store operations are completed
    */
-#if defined (__CC_ARM)
+#if defined (__CC_ARM) || defined (__ARMCC_VERSION)
   __force_stores();
 #endif
 
@@ -167,7 +166,7 @@ void PWR_EnterStopMode(void)
   /**
    * This option is used to ensure that store operations are completed
    */
-#if defined (__CC_ARM)
+#if defined (__CC_ARM) || defined (__ARMCC_VERSION)
   __force_stores();
 #endif
 
@@ -224,7 +223,7 @@ void PWR_EnterSleepMode(void)
   /**
    * This option is used to ensure that store operations are completed
    */
-#if defined (__CC_ARM)
+#if defined (__CC_ARM) || defined (__ARMCC_VERSION)
   __force_stores();
 #endif
 

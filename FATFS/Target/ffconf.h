@@ -26,6 +26,7 @@
 #include "main.h"
 #include "stm32wbxx_hal.h"
 #include "cmsis_os.h" /* _FS_REENTRANT set to 1 and CMSIS API chosen */
+#include "FreeRTOS.h"
 
 /*-----------------------------------------------------------------------------/
 / Function Configurations

@@ -75,3 +75,4 @@ void HAL_WWDG_MspInit(WWDG_HandleTypeDef* wwdgHandle)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+

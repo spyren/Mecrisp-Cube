@@ -83,3 +83,4 @@ void HAL_PKA_MspDeInit(PKA_HandleTypeDef* pkaHandle)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+

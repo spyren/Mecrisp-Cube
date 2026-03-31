@@ -43,6 +43,7 @@
 // System include files
 // ********************
 #include "cmsis_os.h"
+#include "freertos_os2.h"
 #include <stdio.h>
 
 // Application include files

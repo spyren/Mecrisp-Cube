@@ -95,3 +95,4 @@ void HAL_RNG_MspDeInit(RNG_HandleTypeDef* rngHandle)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+

@@ -36,6 +36,7 @@
 // System include files
 // ********************
 #include "cmsis_os.h"
+#include "freertos_os2.h"
 #include "time.h"
 #include <string.h>
 #include <ctype.h>

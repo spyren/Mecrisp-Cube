@@ -95,7 +95,8 @@ static const char vi_Version[] =
 // Application include files
 // *************************
 #include "app_common.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
+#include "FreeRTOS.h"
 #include "main.h"
 #include "fs.h"
 #include "terminal.h"

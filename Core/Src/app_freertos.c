@@ -22,7 +22,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "main.h"
-#include "cmsis_os.h"
+#include "cmsis_os2.h"
+#include "FreeRTOS.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -96,7 +97,7 @@ osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
   .name = "FORTH_Console",
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 20
+  .stack_size = 512 * 4
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -226,4 +227,3 @@ void MainThread(void *argument)
 /* USER CODE BEGIN Application */
      
 /* USER CODE END Application */
-
