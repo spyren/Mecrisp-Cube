@@ -344,6 +344,24 @@ oledupdate:
 	bl		OLED_update
 	pop		{pc}
 
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oleddisplay"
+oleddisplay:
+        @ ( --  ) Write direct to the display
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		OLED_writeDisplay
+	pop		{pc}
+
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible, "oledframe"
+oledframe:
+        @ ( --  ) Write only to the frame buffer
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	bl		OLED_writeFrameBuffer
+	pop		{pc}
+
 
 .endif  // OLED == 1
 

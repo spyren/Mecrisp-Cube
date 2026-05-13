@@ -103,5 +103,7 @@ int OLED_puts(const char *s);
 void OLED_setFont(OLED_FontT font);
 int OLED_readStatus(void);
 void OLED_putXBM(char* image, int width, int height);
+void OLED_writeDisplay(void);
+void OLED_writeFrameBuffer(void);
 
 #endif /* INC_OLED_H_ */
