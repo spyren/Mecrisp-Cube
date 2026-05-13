@@ -19,8 +19,6 @@ CR .( ppp.fs loading ... )
 
 5 constant PWM_MODE
 3 constant OUTPUT_MODE
-4 constant #PPP_SLOT
-8 constant #SWITCH_ID
 
 0 variable menu        \ DC:  0 mode, 1 pwm1, 2 pwm2; 
                        \ DCC: 0 mode, 1 slots, 2 functions, 
@@ -38,22 +36,24 @@ maxmenu-dcc variable maxmenu
                        \ 3 4 kHz,   4 8 kHz, 5 16 kHz, 6 32 kHz
 0 variable display-off
  
-0 variable slotselect  \ active slot 0..3
-0 variable funcselect  \ F0 .. F28, bitwise coding
 
-create slots      3 , 56 , 45 , 6775 , \ default slot addresses
+\ slots array
+4 constant #SLOT
+0 variable slot#  \ active slot 0..3
+#SLOT cells buffer: slots
+#SLOT cells buffer: slot-names
+#SLOT cells buffer: slot-functions
 
-create user-func  3 ,  4 ,  5 ,  6 , \ first user functions row
-                  7 ,  9 , 10 , 11 , \ second row
+\ user-functions array
+8 constant #USER_FUNCTION
+0 variable user-function#  \ active function 0..7 (F0 .. F28, bitwise coding
+#USER_FUNCTION cells buffer: user-functions
 
-create switches  37 , 41 , 45 , 49 , \ first switches row (linear address)
-                 53 , 57 , 61 , 65 , \ second row
-
-create switch-state
-     false , false , false , false , 
-     false , false , false , false , 
- 
-true slotselect @ DCCstate!
+\ switches arrays
+8 constant #SWITCH
+#SWITCH cells buffer: switches      \ switch numbers in linear address format
+#SWITCH cells buffer: switch-states \ false closed, true 
+#SWITCH cells buffer: switch-names  \ counted strings pointers, describe the switch
 
 : speed@ ( -- u ) \  get speed u (0 .. 1000) from potentiometer
   0 apin@ 4 / dup
@@ -257,8 +257,8 @@ true slotselect @ DCCstate!
   0 6 oledpos!
    \ 012345678901234567890
   ." Slots                " 
-  slotselect @ 
-  #PPP_SLOT 0 do
+  slot# @ 
+  #SLOT 0 do
     dup i =  i DCCaddress@ swap .dcc-slot-item
   loop
   drop
@@ -269,7 +269,7 @@ true slotselect @ DCCstate!
   0 6 oledpos!
    \ 012345678901234567890
   ." Functions            "
-  slotselect @ DCCfunction@ funcselect ! funcselect
+  slot# @ DCCfunction@ user-function# ! user-function#
   dup 1 swap bit@ if ." [Lgt]" else ." Lght " then \ F0
   dup 2 swap bit@ if ." [Bll]" else ." Bell " then \ F1
   dup 4 swap bit@ if ." [Hrn]" else ." Horn " then \ F2
@@ -277,9 +277,9 @@ true slotselect @ DCCstate!
 ;
 
 : .function-bit ( u -- ) \ print function bit u from active slot, if set with [u]
-  cells user-func + @  dup \ get the function number
+  cells user-functions + @  dup \ get the function number
   1 swap lshift
-  slotselect @ DCCfunction@ funcselect ! funcselect bit@ \ get the function bits
+  slot# @ DCCfunction@ user-function# ! user-function# bit@ \ get the function bits
   swap dup 10 < if space then \ add a space 
   swap if [u-]. else space u-. space then space \ F0
 ;
@@ -301,7 +301,7 @@ true slotselect @ DCCstate!
 ;
 
 : .switch ( u -- ) \ print switch address u, if set with [u]
-  dup cells switch-state + @ \ get state 
+  dup cells switch-states + @ \ get state 
   swap cells switches + @     \ get switch address
   dup 10 < if space then  \ add a space 
   swap if [u-]. else space u-. space then space 
@@ -365,7 +365,7 @@ true slotselect @ DCCstate!
     dcc @ if
       \ DCC
       DCCstart
-      -1 slotselect @ DCCstate!
+      -1 slot# @ DCCstate!
     else
       DCCstop
       \ DC -> PWM
@@ -422,7 +422,7 @@ true slotselect @ DCCstate!
 ;
 
 : slot-button ( u -- ) \ select DCC slot, u key (d .. g)
-  0 slotselect @ DCCstate!  \ disable old slot
+  0 slot# @ DCCstate!  \ disable old slot
   case
     [char] d of 0 endof
     [char] e of 1 endof
@@ -430,7 +430,7 @@ true slotselect @ DCCstate!
     [char] g of 3 endof
     ( default)  0
   endcase
-  dup slotselect ! -1 swap DCCstate!
+  dup slot# ! -1 swap DCCstate!
 ;
 
 : functions-button ( u -- ) \ functions buttons, u key (d .. g)
@@ -443,13 +443,13 @@ true slotselect @ DCCstate!
   endcase
   dup if 
     \ there is something to change
-    slotselect @ DCCfunction@ funcselect !
-    dup funcselect bit@ if
+    slot# @ DCCfunction@ user-function# !
+    dup user-function# bit@ if
       \ bit already set
-      slotselect @ -DCCfunction!
+      slot# @ -DCCfunction!
     else
       \ bit already reset
-      slotselect @ DCCfunction!
+      slot# @ DCCfunction!
     then
   else
     drop
@@ -457,13 +457,13 @@ true slotselect @ DCCstate!
 ;
 
 : user-button ( u -- ) \ u 0..7 user functions
-  cells user-func + @  \ get the function number
+  cells user-functions + @  \ get the function number
   1 swap lshift dup
-  slotselect @ DCCfunction@ funcselect !   \ get the function bits
-  funcselect bit@ if
-    slotselect @ -DCCfunction!
+  slot# @ DCCfunction@ user-function# !   \ get the function bits
+  user-function# bit@ if
+    slot# @ -DCCfunction!
   else
-    slotselect @ DCCfunction!
+    slot# @ DCCfunction!
   then
 ;
 
@@ -476,7 +476,7 @@ true slotselect @ DCCstate!
 ;
 
 : switch-button ( u -- ) \ u 0..7 switches
-  dup cells switch-state +  \ get state address ( -- id a- )
+  dup cells switch-states +  \ get state address ( -- id a- )
   dup @ 0= dup  ( -- id a- state state )
   rot !
   swap cells switches + @     \ get switch address
@@ -508,7 +508,7 @@ true slotselect @ DCCstate!
 ;
 
 : ppp-menu ( -- ) \ display throttle infos till a button is pressed (task)
-  #PPP_SLOT 0 do
+  #SLOT 0 do
     \ init default slot addresses
     slots i cells + @ i DCCaddress!
   loop
@@ -556,8 +556,8 @@ task ppp-menu&
 ;
 
 : dcc-throttle ( -- ) \ set speed and direction of the selected slot
-  dcc-speed@ slotselect @ DCCspeed!
-  direction @  slotselect @ DCCdirection!
+  dcc-speed@ slot# @ DCCspeed!
+  direction @  slot# @ DCCdirection!
 ;
 
 : throttle ( -- ) \ control the speed, update every 10 ms (task)

@@ -19,7 +19,7 @@
 
 CR .( dcc-ex.fs loading ... )
 
-10 constant #SLOT
+10 constant #DCC_SLOT
 
 true dcc !
 
@@ -50,7 +50,7 @@ false variable main-inverse
     else 
       prog-track @ if ." <p1 PROG>" crlf then 
     then
-    true slotselect @ DCCstate!
+    true slot# @ DCCstate!
   else
     DCCstop
     \ DC -> PWM
@@ -108,7 +108,7 @@ false variable main-inverse
 : speed128? ( c- u -- f )  s" SPEED128" compare ;
 
 : show-cabs ( -- )
-  #SLOT 0 do
+  #DCC_SLOT 0 do
     i DCCstate@ if
       \ slot enabled
       ." <cab " i DCCaddress@ . i DCCspeed@ . i DCCdirection@ 
@@ -217,25 +217,33 @@ false variable main-inverse
 \ Cab (Loco) Commands
 \ *******************
 
-: cab2slot ( n1 -- n2 ) \ find a slot for the cab, if there is no slot available -1
-  #SLOT 0 do
+: find-slot ( n1 -- n2 ) \ find the slot for the cab, if there is no slot -1
+  #DCC_SLOT 0 do
     dup i DCCaddress@ = if
       \ slot found
       drop 
-      true i DCCstate! 
       i unloop exit
     then
   loop
-  \ look for a free slot
-  #SLOT 0 do
-    dup 0 i DCCaddress@ = if
-      \ free slot found -> fill in address and activate slot
-      i DCCaddress!  true i DCCdirection!  true i DCCstate!
-      i unloop exit
-    then
-  loop
-  drop
-  -1
+  drop -1
+;
+
+: cab2slot ( n1 -- n2 ) \ find a slot for the cab, if there is no slot available -1
+  find-slot dup 0< if
+    \ look for a free slot
+    drop
+    #DCC_SLOT 0 do
+      dup 0 i DCCaddress@ = if
+        \ free slot found -> fill in address and activate slot
+        i DCCaddress!  true i DCCdirection!  true i DCCstate!
+        i unloop exit
+      then
+    loop
+    drop
+    -1
+  else
+    true swap DCCstate! 
+  then
 ;
 
 : slot-info ( u -- ) \ slot info <l cab reg speedByte functMap>
@@ -249,6 +257,7 @@ false variable main-inverse
 ;
 
 : <t ( "ccc"<greaterthan> -- ) \ <t cab speed dir> - Set Cab (Loco) speed 
+                               \ <T id state> - Throw or Close a defined turnout/point
                                \ <t cab> - Request a deliberate update on 
                                 \ the cab (loco) speed/functions
   depth >r
@@ -259,6 +268,15 @@ false variable main-inverse
     1 of 
       cab2slot slot-info
     endof
+    2 of
+      swap >r true swap ( activate state  ) ( R: id )
+      dup r@ cells switch-states + ! \ update state
+      r@ cells switches + @ DCCaccessory!
+      \ <H id DCC address subaddress state>
+      r@ ." <H " . ." DCC " \ <H id DCC
+      r@ cells switches + @ linear2decoder swap . . \ address subaddress
+      r> cells switch-states + @ u-. ." >" \ state> crlf
+    endif
     3 of 
       rot cab2slot ( -- speed dir slot)
       dup 0< if 2drop drop exit then
@@ -274,7 +292,7 @@ false variable main-inverse
 ;
 
 : <!> ( -- ) \ Emergency stop
-  #SLOT 0 do
+  #DCC_SLOT 0 do
     i DCCstate@ if
       \ slot enabled -> stop
       1 i DCCspeed!
@@ -295,15 +313,15 @@ false variable main-inverse
 ;
 
 : <-> ( -- ) \ <-> - Remove all locos from reminders
-  #SLOT 0 do
-    slotselect @ i <> if
+  #DCC_SLOT 0 do
+    slot# @ i <> if
       false i DCCstate!
     then 
   loop
 ;
 
 : <- ( "ccc"<greaterthan> -- ) \ <- cab> - Remove one loco from reminders
-  [char] > parse@r
+  [char] > parse
   evaluate ( -- cab )
   cab2slot
   dup 0< if drop exit then
@@ -326,22 +344,69 @@ false variable main-inverse
 ;
 
 : <#> ( -- ) \ <#> - Request the number of supported cabs(locos)
-  ." <# " #SLOT u-.  ." >"
+  ." <# " #DCC_SLOT u-.  ." >"
 ;
 
 
 \ Roster Commands
 \ ***************
 
+: (noname-slot) ( -- a- ) \ create an array of counted strings pointers
+\ :noname ( -- a- ) \ create an array of counted strings -> does not work in include
+  here
+  c" default address"         ,
+  c" BL2 Bangor & Aroostook"  ,
+  c" Faun Diesel"             ,
+  c" 2-10-0 Pennsy"           ,
+;
+\ ; execute constant default-slot-names
+(noname-slot) constant default-slot-names
+
+: (noname-function) ( -- a- ) \ create an array of counted strings pointers
+\ :noname ( -- a- ) \ create an array of counted strings -> does not work in include
+  here
+  c" F0/F1/F2/F8"   ,
+  c" F0/F1/F2/F8"   ,
+  c" F0/F1/F2/F8"   ,
+  c" F0/F1/F2/F8"   ,
+;
+\ ; execute constant default-slot-names
+(noname-function) constant default-slot-functions
+
 : <JR> ( -- ) \ <J R> <JR> - Request the list defined Roster Entry IDs
-  ." <jR>" \ roster not supported yet
+  ." <jR"
+  #SLOT 0 do
+    space
+    \ id aka loco address
+    slots i cells + @ u-.
+  loop
+  ." >" crlf
+;
+
+: <JR ( "ccc"<greaterthan> -- ) \ <JR id> - Request details of a specific loco ID
+  [char] > parse
+  evaluate >r
+  \ <jR id "[desc]" "[func]">
+  ." <jR " 
+  r@ . \ id
+  r@ find-slot dup 0< over #SLOT >= or if
+    \ invalid ID \ <jR id "" "">
+    drop
+    [char] "  dup emit dup emit  space  dup emit emit \ "" ""
+  else
+    dup
+    [char] " emit  cells slot-names + @ ctype  [char] " emit space \ slot name
+    [char] " emit  cells slot-functions + @ ctype  [char] " emit \ function name
+  then
+  ." >" crlf
+  r> drop
 ;
 
 
 \ Turnouts/Points
 \ ***************
 
-: (noname) ( -- a- ) \ create an array of counted strings pointers
+: (noname-switch) ( -- a- ) \ create an array of counted strings pointers
 \ :noname ( -- a- ) \ create an array of counted strings -> does not work in include
   here
   c" First Switch"   ,
@@ -353,8 +418,8 @@ false variable main-inverse
   c" Seventh Switch" ,
   c" Eighth Switch"  ,
 ;
-\ ; execute constant switch-name
-(noname) constant switch-name
+\ ; execute constant switch-names
+(noname-switch) constant default-switch-names
 
 : decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
   swap 1 - 4 *
@@ -367,7 +432,7 @@ false variable main-inverse
 ;
 
 : switch2id ( u -- n ) \ find an ID for the switch linear address, if there is no ID -1
-  #SWITCH_ID 0 do
+  #SWITCH 0 do
     dup i cells switches + @ = if
       \ id found
       drop 
@@ -382,7 +447,7 @@ false variable main-inverse
   dup switch2id dup 0< not if 
     \ there is a defined switch ( f u id )
     rot 2dup swap  ( u id f f id )
-    cells switch-state + !
+    cells switch-states + !
     -rot ( f u id )
   then
   drop true -rot DCCaccessory!
@@ -397,36 +462,28 @@ false variable main-inverse
 ;
 
 : <T> ( -- ) \ <T> - Request a list all defined turnouts/Points
-  #SWITCH_ID 0 do
+  #SWITCH 0 do
     ." <H " i . \ <H id 
-    i cells switch-state + @ 
+    i cells switch-states + @ 
     if ." 1>" else ." 0>" then crlf \ state>
   loop
 ;
 
-: <T ( "ccc"<greaterthan> -- ) \ <T id state> - Throw or Close a defined turnout/point
-  [char] > parse
-  evaluate swap >r true swap ( activate state  ) ( R: id )
-  dup r@ cells switch-state + ! \ update state
-  r@ cells switches + @ DCCaccessory!
-  \ <H id DCC address subaddress state>
-  r@ ." <H " . ." DCC " \ <H id DCC
-  r@ cells switches + @ linear2decoder swap . . \ address subaddress
-  r> cells switch-state + @ u-. ." >" \ state> crlf
-;
+\ <T id state> - Throw or Close a defined turnout/point
+\ see <t above
 
 : <JT ( "ccc"<greaterthan> -- ) \ <J T id> <JT id> - Request details of a specific Turnout/Point
   [char] > parse
   evaluate >r
   \ <jT id X|state |"[desc]">
   ." <jT " r@ .
-  r@ #SWITCH_ID > if
+  r@ #SWITCH > if
     \ invalid ID
     ." X>" crlf
   else
-    r@ cells switch-state + @
+    r@ cells switch-states + @
     if ." T " else ." C " then
-    [char] " dup emit switch-name r@ cells + @ ctype emit ." >" crlf \ "switchname"
+    [char] " dup emit switch-names r@ cells + @ ctype emit ." >" crlf \ "switchname"
   then
   r> drop
 ;
@@ -434,7 +491,7 @@ false variable main-inverse
 : <JT> ( -- ) \ <J T> <JT> - Request the list of defined turnout/Point IDs
   \ <jT [id1 id2 id3 ...]>
   ." <jT"
-  #SWITCH_ID 0 do
+  #SWITCH 0 do
     space i u-.
   loop
   ." >" crlf
@@ -542,6 +599,11 @@ false variable main-inverse
 
 \ Diagnostic Programming Commands (Configuring the EX-CommandStation)
 \ *******************************************************************
+: <echo(false);> ( -- ) \ turn off echo (not supported yet)
+;
+
+: <echo(true);>  ( -- ) \ turn on echo (not supported yet)
+;
 
 \ I/O (HAL) Diagnostics
 \ *********************

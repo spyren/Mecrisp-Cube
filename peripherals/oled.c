@@ -213,6 +213,8 @@ static const uint8_t *ssd1306_init_sequence[] = {	// Initialization Sequence
 		display_on
 };
 
+static uint8_t stripe[1+8*8];
+
 
 // Public Functions
 // ****************
@@ -493,24 +495,56 @@ void OLED_update(void) {
 	int oldx = CurrentPosX;
 	int oldy = CurrentPosY;
 
-	uint8_t buf[9];
-
 	if (!oledReady) {
 		return;
 	}
 
-	buf[0] = 0x40;
 	OLED_setPos(0, 0);
 
 #ifdef OLED_PAGE_VERTICAL
-	for (i=0; i<OLED_LINES; i++) {
-		for (j=0; j<(OLED_X_RESOLUTION/8); j++) {
-			transpose_page(0, 1, buf);
-			OLED_setPos(j*8, i);
+	int horizontal;
+	int vertical;
+	int column;
+
+	stripe[0] = 0x40; // write data
+
+//	for (i=0; i<OLED_LINES; i++) {
+//		for (j=0; j<(OLED_X_RESOLUTION/8); j++) {
+//			transpose_page(0, 1, buf);
+//			OLED_setPos(j*8, i);
+//		}
+//	}
+
+	// 8 byte blocks
+	// 8 * 16 = 128 write operations (9 bytes data + 4 bytes position)
+	// 128 blocks * 13 bytes * 10 bits * 10 us = 170 ms
+	// measured 260 ms, every block takes about 2 ms, the i2c clock has no influence
+
+	// 8*8 byte blocks (16 stripes)
+	// 16 * 2 ms + 100 kHz transmission = 140 ms
+	// 16 * 2 ms + 400 kHz transmission = 60 ms -> acceptable
+	for (vertical=0; vertical<16; vertical++) {
+		// 128 / 8 = 16 vertical stripes
+		memset(stripe+1, 0, 8*8); 	// clear the I2C array
+		for (horizontal=0; horizontal<8; horizontal++) {
+			// 64 / 8 = 8 horizontal stripes
+			for (i=0; i<8; i++) {
+				// 8 byte blocks
+				column = display_buffer->rows[horizontal][vertical*8+i];
+				for (j=0; j<8; j++) {
+					stripe[1 + j + horizontal*8] |= ((column & 0x01) << i);
+					column = column >> 1;
+				}
+			}
 		}
+		setPos(vertical*8, 0);
+		IIC_putMessage(stripe, 1+8*8, OLED_I2C_ADR);
 	}
 
 #else
+	uint8_t buf[9];
+	buf[0] = 0x40;
+
 	for (i=0; i<OLED_LINES; i++) {
 		for (j=0; j<(OLED_X_RESOLUTION/8); j++) {
 			memcpy(buf+1, &display_buffer->rows[i][j*8], 8);

@@ -132,7 +132,7 @@ int IIC_getMessage(uint8_t *RxBuffer, uint32_t RxSize, uint16_t dev) {
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
 		if (osSemaphoreAcquire(IIC_SemaphoreID, IIC_TIMEOUT) == osErrorTimeout) {
-			hal_status = -4;
+			IIC_Status = -4;
 		}
 	} else {
 		// can't get Message
@@ -174,7 +174,7 @@ int IIC_putMessage(uint8_t *TxBuffer, uint32_t TxSize, uint16_t dev) {
 	if (hal_status == HAL_OK) {
 		// blocked till message is sent
 		if (osSemaphoreAcquire(IIC_SemaphoreID, IIC_TIMEOUT) == osErrorTimeout) {
-			hal_status = -4;
+			IIC_Status = -4;
 		}
 	} else {
 		// can't get Message
@@ -219,7 +219,7 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 	if (hal_status == HAL_OK) {
 		// blocked till message is sent
 		if (osSemaphoreAcquire(IIC_SemaphoreID, IIC_TIMEOUT) == osErrorTimeout) {
-			hal_status = -4;
+			IIC_Status = -4;
 		}
 	} else {
 		// can't transmit Message
@@ -237,7 +237,7 @@ int IIC_putGetMessage(uint8_t *TxRxBuffer, uint32_t TxSize, uint32_t RxSize, uin
 	if (hal_status == HAL_OK) {
 		// blocked till message is received
 		if (osSemaphoreAcquire(IIC_SemaphoreID, IIC_TIMEOUT) == osErrorTimeout) {
-			hal_status = -4;
+			IIC_Status = -4;
 		}
 	} else {
 		// can't get Message

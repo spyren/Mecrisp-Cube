@@ -35,7 +35,7 @@
 #define OLED_4PIN_128X32	0		// the cheap one with 4 pins, Adafruit Raspberry Pi #3527
 #define	OLED_BONNET_128X64	1		// Adafruit Bonnet for Raspberry Pi #3531
 #define OLED_FEATHER_128X32	2		// Adafruit FeatherWing #2900
-#define OLED_FEATHER_128X64	3		// Adafruit FeatherWing #4650
+#define OLED_FEATHER_128X64	3		// Adafruit FeatherWing #4650 SH1107
 #define OLED_OCTOPUS_128X64	4		// Octopus PIS-1277
 #define OLED_WB5M_128x64    5		// STM WB55 Discovery Board
 
@@ -43,7 +43,7 @@
 #define	OLED_PORTRAIT		1
 
 // configure your OLED type
-#define OLED_DISPLAY_TYPE	OLED_BONNET_128X64
+#define OLED_DISPLAY_TYPE	OLED_FEATHER_128X64	// OLED_BONNET_128X64
 #define	OLED_ORIENTATION	OLED_LANDSCAPE
 
 #define OLED_I2C_ADR		60		// 0x3c
