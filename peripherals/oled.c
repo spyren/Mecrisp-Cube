@@ -99,7 +99,12 @@ extern I2C_HandleTypeDef hi2c1;
 // *****************
 
 static uint8_t oledReady = FALSE;
+
+#if OLED_DRIVER == OLED_SH1107
+static uint8_t writeToDisplay = FALSE;
+#else
 static uint8_t writeToDisplay = TRUE;
+#endif
 
 static uint8_t CurrentPosX = 0;
 static uint8_t CurrentPosY = 0;

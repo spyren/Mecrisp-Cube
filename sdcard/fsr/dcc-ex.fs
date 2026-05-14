@@ -217,6 +217,16 @@ false variable main-inverse
 \ Cab (Loco) Commands
 \ *******************
 
+: decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
+  swap 1 - 4 *
+  1 + +
+; 
+
+: linear2decoder ( u1 -- u2 u3 ) \ convert linear address (1..2044) u1 to decoder address u2 and sub address u3
+  3 + dup 4 / swap
+  4 mod
+;
+
 : find-slot ( n1 -- n2 ) \ find the slot for the cab, if there is no slot -1
   #DCC_SLOT 0 do
     dup i DCCaddress@ = if
@@ -276,7 +286,7 @@ false variable main-inverse
       r@ ." <H " . ." DCC " \ <H id DCC
       r@ cells switches + @ linear2decoder swap . . \ address subaddress
       r> cells switch-states + @ u-. ." >" \ state> crlf
-    endif
+    endof
     3 of 
       rot cab2slot ( -- speed dir slot)
       dup 0< if 2drop drop exit then
@@ -421,15 +431,6 @@ false variable main-inverse
 \ ; execute constant switch-names
 (noname-switch) constant default-switch-names
 
-: decoder2linear ( u1 u2 -- u3 ) \ convert decoder address u1 (1..511) and sub address u2 (0..3) to linear address u3
-  swap 1 - 4 *
-  1 + +
-; 
-
-: linear2decoder ( u1 -- u2 u3 ) \ convert linear address (1..2044) u1 to decoder address u2 and sub address u3
-  3 + dup 4 / swap
-  4 mod
-;
 
 : switch2id ( u -- n ) \ find an ID for the switch linear address, if there is no ID -1
   #SWITCH 0 do

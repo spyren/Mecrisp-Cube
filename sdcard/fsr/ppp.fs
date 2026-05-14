@@ -344,12 +344,14 @@ maxmenu-dcc variable maxmenu
  ;
 
 : ppp-display ( -- )  \ display throttle infos every 100 ms till button is pressed
+  oledframe
   >oled
   begin
      .Vrail .Vlipo 
      .speed
      .Irail 
      .menu
+     oledupdate
      100 osDelay drop
   button? until
   >term
@@ -398,7 +400,7 @@ maxmenu-dcc variable maxmenu
     endof          
     [char] f of  endof \ not used yet
     [char] g of  \ switch off display (dark)
-      1 display-off ! oledclr 
+      1 display-off ! oledclr oledupdate
     endof 
   endcase
 ;
