@@ -144,9 +144,13 @@ void DCC_init(void) {
  *      None
  */
 void DCC_start(void) {
+#if BOARD_TYPE == BOARD_TYPE_FIREFLY
 	BSP_setDigitalPinMode(0, 3);  // D0 pushpull
-
 	BSP_setDigitalPinMode(1, 3);  // D1 pushpull
+#else
+	BSP_setDigitalPinMode(3, 3);  // D3 pushpull
+	BSP_setDigitalPinMode(6, 3);  // D6 pushpull
+#endif
 	// only one thread is allowed to use DCC
 	osMutexAcquire(DCC_MutexID, osWaitForever);
 	UTIL_LPM_SetStopMode(1U << CFG_LPM_DCC, UTIL_LPM_DISABLE);
@@ -168,9 +172,13 @@ void DCC_stop(void) {
 	HAL_TIM_Base_Stop_IT(&htim16);
 	UTIL_LPM_SetStopMode(1U << CFG_LPM_DCC, UTIL_LPM_ENABLE);
 	osMutexRelease(DCC_MutexID);
+#if BOARD_TYPE == BOARD_TYPE_FIREFLY
 	BSP_setDigitalPin(0, 0);
 	BSP_setDigitalPin(1, 0);
-
+#else
+	BSP_setDigitalPin(3, 0);
+	BSP_setDigitalPin(6, 0);
+#endif
 }
 
 
@@ -562,13 +570,23 @@ void DCC_TIM16_PeriodElapsedIRQHandler() {
 
     if (half_bit) {
     	half_bit = FALSE;
+#if BOARD_TYPE == BOARD_TYPE_FIREFLY
     	HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 0);
     	HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 1);
+#else
+    	HAL_GPIO_WritePin(D1_GPIO_Port, D6_Pin, 0);
+    	HAL_GPIO_WritePin(D0_GPIO_Port, D3_Pin, 1);
+#endif
     	return;
     } else {
     	half_bit = TRUE;
+#if BOARD_TYPE == BOARD_TYPE_FIREFLY
     	HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, 0);
     	HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, 1);
+#else
+    	HAL_GPIO_WritePin(D0_GPIO_Port, D3_Pin, 0);
+    	HAL_GPIO_WritePin(D1_GPIO_Port, D6_Pin, 1);
+#endif
     }
 
     if (byte_count < packet_len) {

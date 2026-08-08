@@ -21,7 +21,8 @@ slots dup
    3 ( default address)          swap ! cell+ dup 
   56 ( BL2 Bangor & Aroostook )  swap ! cell+ dup
   45 ( Faun Diesel )             swap ! cell+ dup
-6775 ( 2-10-0 Pennsy )           swap ! drop
+\ 6775 ( 2-10-0 Pennsy )           swap ! drop
+ 460 ( 4-4-2 Pennsy )            swap ! drop
 
 user-functions dup
      ( Soundtraxx )

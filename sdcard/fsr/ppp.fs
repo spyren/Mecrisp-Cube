@@ -19,6 +19,8 @@ CR .( ppp.fs loading ... )
 
 5 constant PWM_MODE
 3 constant OUTPUT_MODE
+3 constant BRIDGE_PORT_A  \ Nucleo D3, Firefly D0
+6 constant BRIDGE_PORT_B  \ Nucleo D6, Firefly D1
 
 0 variable menu        \ DC:  0 mode, 1 pwm1, 2 pwm2; 
                        \ DCC: 0 mode, 1 slots, 2 functions, 
@@ -371,19 +373,19 @@ maxmenu-dcc variable maxmenu
     else
       DCCstop
       \ DC -> PWM
-      0 0 pwmpin!
-      0 1 pwmpin!
+      0 BRIDGE_PORT_A pwmpin!
+      0 BRIDGE_PORT_B pwmpin!
       2 pwmprescale     \ 16 kHz
-      PWM_MODE 0 dmod   \ set D0 to pwm
-      PWM_MODE 1 dmod   \ set D1 to pwm
+      PWM_MODE BRIDGE_PORT_A dmod   \ set port (e.g. D0) to pwm
+      PWM_MODE BRIDGE_PORT_B dmod   \ set port (e.e. D1) to pwm
     then
   else
     \ switch off rails
     DCCstop
-    0 0 pwmpin!
-    0 1 pwmpin!
-    OUTPUT_MODE 0 dmod   \ set D0 to output
-    OUTPUT_MODE 1 dmod   \ set D1 to output
+    0 BRIDGE_PORT_A pwmpin!
+    0 BRIDGE_PORT_B pwmpin!
+    OUTPUT_MODE BRIDGE_PORT_A dmod   \ set port (e.g. D0) to output
+    OUTPUT_MODE BRIDGE_PORT_B dmod   \ set port (e.g. D1) to output
   then
 ;
 
@@ -539,20 +541,20 @@ task ppp-menu&
   direction @ if
     \ forward
     brake @ if
-      1000        0 pwmpin!
-      1000 swap - 1 pwmpin!
+      1000        BRIDGE_PORT_A pwmpin!
+      1000 swap - BRIDGE_PORT_B pwmpin!
     else
-      0           1 pwmpin!
-                  0 pwmpin!
+      0           BRIDGE_PORT_B pwmpin!
+                  BRIDGE_PORT_A pwmpin!
     then
   else
     \ reverse
     brake @ if
-      1000        1 pwmpin!
-      1000 swap - 0 pwmpin!
+      1000        BRIDGE_PORT_B pwmpin!
+      1000 swap - BRIDGE_PORT_A pwmpin!
     else
-      0           0 pwmpin!
-                  1 pwmpin!
+      0           BRIDGE_PORT_A pwmpin!
+                  BRIDGE_PORT_B pwmpin!
     then
  then
 ;

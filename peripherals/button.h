@@ -98,14 +98,24 @@ extern osSemaphoreId_t BUTTON_SemaphoreID;
 #define BUTTON_G_GPIO_Port		D8_GPIO_Port
 #define BUTTON_F_Pin			D7_Pin
 #define BUTTON_F_GPIO_Port		D7_GPIO_Port
+#if BOARD_TYPE == BOARD_TYPE_FIREFLY
 #define BUTTON_E_Pin			D6_Pin
 #define BUTTON_E_GPIO_Port		D6_GPIO_Port
+#else
+#define BUTTON_E_Pin			D1_Pin
+#define BUTTON_E_GPIO_Port		D1_GPIO_Port
+#endif
 #define BUTTON_D_Pin			D5_Pin
 #define BUTTON_D_GPIO_Port		D5_GPIO_Port
 #define BUTTON_C_Pin			D4_Pin
 #define BUTTON_C_GPIO_Port		D4_GPIO_Port
+#if BOARD_TYPE == BOARD_TYPE_FIREFLY
 #define BUTTON_B_Pin			D3_Pin
 #define BUTTON_B_GPIO_Port		D3_GPIO_Port
+#else
+#define BUTTON_B_Pin			D0_Pin
+#define BUTTON_B_GPIO_Port		D0_GPIO_Port
+#endif
 #define BUTTON_A_Pin			D2_Pin
 #define BUTTON_A_GPIO_Port		D2_GPIO_Port
 
