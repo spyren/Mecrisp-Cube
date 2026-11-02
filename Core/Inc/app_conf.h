@@ -1,18 +1,18 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
-  * File Name          : app_conf.h
-  * Description        : Application configuration file for STM32WPAN Middleware.
+  ******************************************************************************
+  * @file    app_conf.h
+  * @author  MCD Application Team
+  * @brief   Application configuration file for STM32WPAN Middleware.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -67,8 +67,6 @@
  * Define IO Authentication
  */
 #define CFG_BONDING_MODE                 (1)
-#define CFG_FIXED_PIN                    (111111)
-#define CFG_USED_FIXED_PIN               (0)
 #define CFG_ENCRYPTION_KEY_SIZE_MAX      (16)
 #define CFG_ENCRYPTION_KEY_SIZE_MIN      (8)
 
@@ -149,7 +147,6 @@
 #define CFG_USE_SMPS    0
 
 /* USER CODE BEGIN Generic_Parameters */
-
 /******************************************************************************
  * Display and other modules
  ******************************************************************************/
@@ -328,9 +325,9 @@
  * - bit 2:   1: HSE/1024 Clock config                               0: LSE Clock config
  */
 #if defined(STM32WB5Mxx)
-  #define CFG_BLE_LS_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LS_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LS_MOD5MM_DEV | SHCI_C2_BLE_INIT_CFG_BLE_LS_CLK_LSE)
+  #define CFG_BLE_LS_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LS_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LS_MOD5MM_DEV | SHCI_C2_BLE_INIT_CFG_BLE_LS_CLK_HSE_1024)
 #else
-  #define CFG_BLE_LS_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LS_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LS_OTHER_DEV | SHCI_C2_BLE_INIT_CFG_BLE_LS_CLK_LSE)
+  #define CFG_BLE_LS_SOURCE  (SHCI_C2_BLE_INIT_CFG_BLE_LS_NOCALIB | SHCI_C2_BLE_INIT_CFG_BLE_LS_OTHER_DEV | SHCI_C2_BLE_INIT_CFG_BLE_LS_CLK_HSE_1024)
 #endif
 
 /**
@@ -513,7 +510,7 @@
 /**
  * Enable/Disable USB interface
  */
-#define CFG_USB_INTERFACE_ENABLE    1
+#define CFG_USB_INTERFACE_ENABLE    0
 
 /******************************************************************************
  * IPCC interface
@@ -534,13 +531,7 @@
  *  When set to 1, the low power mode is enable
  *  When set to 0, the device stays in RUN mode
  */
-#ifdef DEBUG
-  // debug configuration
-  #define CFG_LPM_SUPPORTED    0
-#else
-  // release configuration
-  #define CFG_LPM_SUPPORTED    1
-#endif
+#define CFG_LPM_SUPPORTED    0
 
 /******************************************************************************
  * RTC interface
@@ -571,7 +562,7 @@
  *  The following settings are computed with LSI as input to the RTC
  */
 
-#define CFG_RTCCLK_DIVIDER_CONF 4
+#define CFG_RTCCLK_DIVIDER_CONF 0
 
 #if (CFG_RTCCLK_DIVIDER_CONF == 0)
 /**
@@ -724,7 +715,7 @@ typedef enum
 /* USER CODE BEGIN FreeRTOS */
 
 /* USER CODE END FreeRTOS */
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "BLE_SHCI"
+#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
 #define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
@@ -732,7 +723,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
 
-#define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI"
+#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
@@ -740,7 +731,7 @@ typedef enum
 #define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
 #define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 40)
 
-#define CFG_ADV_UPDATE_PROCESS_NAME           "BLE_ADV_UPDATE"
+#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
 #define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
@@ -748,7 +739,7 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
 #define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 20)
 
-#define CFG_HRS_PROCESS_NAME                  "BLE_HRS"
+#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
 #define CFG_HRS_PROCESS_CB_MEM                (0)
 #define CFG_HRS_PROCESS_CB_SIZE               (0)
@@ -757,6 +748,7 @@ typedef enum
 #define CFG_HRS_PROCESS_STACK_SIZE            (128 * 20)
 
 /* USER CODE BEGIN FreeRTOS_Defines */
+
 /* USER CODE END FreeRTOS_Defines */
 
 /******************************************************************************

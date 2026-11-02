@@ -1,6 +1,6 @@
 /* USER CODE BEGIN Header */
 /*
- * FreeRTOS Kernel V10.2.1
+ * FreeRTOS Kernel V10.6.2
  * Portion Copyright (C) 2017 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  * Portion Copyright (C) 2019 StMicroelectronics, Inc.  All Rights Reserved.
  *
@@ -19,7 +19,7 @@
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE .
  *
  * http://www.FreeRTOS.org
  * http://aws.amazon.com/freertos
@@ -49,12 +49,13 @@
 /* Ensure definitions are only used by the compiler, and not by the assembler. */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__ARMCC_VERSION) || defined(__GNUC__)
 #include <stdint.h>
+extern uint32_t SystemCoreClock;
 #endif
 #ifndef CMSIS_device_header
 #define CMSIS_device_header "stm32wbxx.h"
 #endif /* CMSIS_device_header */
 
-#define configENABLE_FPU                         1
+#define configENABLE_FPU                         0
 #define configENABLE_MPU                         0
 
 #define configUSE_PREEMPTION                     1
@@ -62,14 +63,13 @@
 #define configSUPPORT_DYNAMIC_ALLOCATION         1
 #define configUSE_IDLE_HOOK                      0
 #define configUSE_TICK_HOOK                      0
-#define configUSE_TICKLESS_IDLE                  1
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 56 )
 #define configUSE_SB_COMPLETED_CALLBACK          ( 0 )
 #define configUSE_MINI_LIST_ITEM                 ( 1 )
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)196)
-#define configTOTAL_HEAP_SIZE                    ((size_t)90*1024)
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)192)
+#define configTOTAL_HEAP_SIZE                    ((size_t)81920)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configHEAP_CLEAR_MEMORY_ON_FREE          0
 #define configUSE_TRACE_FACILITY                 1
@@ -93,7 +93,7 @@
 #define configUSE_TIMERS                         1
 #define configTIMER_TASK_PRIORITY                ( 2 )
 #define configTIMER_QUEUE_LENGTH                 10
-#define configTIMER_TASK_STACK_DEPTH             196
+#define configTIMER_TASK_STACK_DEPTH             192
 
 /* The following flag must be enabled only when using newlib */
 #define configUSE_NEWLIB_REENTRANT          1
@@ -156,8 +156,8 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 /* Normal assert() semantics without relying on the provision of an assert.h
 header file. */
 /* USER CODE BEGIN 1 */
-#include "myassert.h"
-#define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC);}
+//#include "peripherals/myassert.h"
+//#define configASSERT( x ) if ((x) == 0) {ASSERT_fatal(1, ASSERT_FREERTOS, (uint32_t) __get_PC);}
 
 // for the user area variables (Forth tasks)
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS	1
@@ -173,9 +173,6 @@ standard names. */
 
 /* USER CODE BEGIN Defines */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
-#define configCHECK_FOR_STACK_OVERFLOW           1
-#define configUSE_MALLOC_FAILED_HOOK             1
-#define configTIMER_SERVICE_TASK_NAME			"OS_tmr_svc"
 /* USER CODE END Defines */
 
 #endif /* FREERTOS_CONFIG_H */

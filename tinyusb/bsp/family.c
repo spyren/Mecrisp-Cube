@@ -27,6 +27,7 @@
 #include "stm32wbxx_hal.h"
 #include "bsp/board_api.h"
 #include "board.h"
+#include "app_conf.h"
 #include "stm32_lpm.h"
 
 //--------------------------------------------------------------------+

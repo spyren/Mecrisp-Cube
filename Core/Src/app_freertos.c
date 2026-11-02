@@ -6,13 +6,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -95,15 +94,14 @@
 /* Definitions for FORTH_ConThread */
 osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
-  .name = "FORTH_Console",
+  .name = "FORTH_ConThread",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 512 * 4
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-void Forth(void);
-   
+
 /* USER CODE END FunctionPrototypes */
 
 void MainThread(void *argument);
@@ -168,7 +166,7 @@ void MX_FREERTOS_Init(void) {
 
 /* USER CODE BEGIN Header_MainThread */
 /**
-  * @brief  Function implementing the Main thread.
+  * @brief  Function implementing the FORTH_ConThread thread.
   * @param  argument: Not used
   * @retval None
   */
@@ -176,54 +174,15 @@ void MX_FREERTOS_Init(void) {
 void MainThread(void *argument)
 {
   /* USER CODE BEGIN MainThread */
-//	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
-	BSP_setLED2(TRUE);
-	ASSERT_init();
-#if SD_DRIVE == 1
-	BLOCK_init();
-	SD_init();
-#endif
-	FD_init();
-	FS_init();
-#if OLED == 1
-	OLED_init();
-#endif
-#if MIP == 1
-	MIP_init();
-#endif
-#if PLEX == 1
-	PLEX_init();
-#endif
-#if EPD == 1
-	EPD_init();
-#endif
-#if BUTTON == 1
-	BUTTON_init();
-#endif
-
-	// wait till BLE is ready
-	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
-		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
-		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
-//		BSP_clearSysLED(SYSLED_POWER_ON);
-		BSP_setLED2(FALSE);
-	} else {
-		// timeout -> BLE (CPU2) not started, flash operations not possible
-//		BSP_clearSysLED(SYSLED_POWER_ON);
-//		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
-		BSP_setLED2(FALSE);
-		BSP_setLED3(TRUE);
-	}
-
-
-	Forth();
-
-	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0);
-
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
   /* USER CODE END MainThread */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+
 /* USER CODE END Application */

@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -33,10 +33,10 @@ extern "C" {
 /* USER CODE END Includes */
 
 extern TIM_HandleTypeDef htim1;
+
 extern TIM_HandleTypeDef htim2;
-#if DCC == 1
+
 extern TIM_HandleTypeDef htim16;
-#endif
 
 /* USER CODE BEGIN Private defines */
 
@@ -44,9 +44,7 @@ extern TIM_HandleTypeDef htim16;
 
 void MX_TIM1_Init(void);
 void MX_TIM2_Init(void);
-#if DCC == 1
 void MX_TIM16_Init(void);
-#endif
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
 

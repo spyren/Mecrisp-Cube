@@ -1,5 +1,3 @@
-.metadata/
-Debug/
-RemoteSystemsTempFiles/
-Core/Inc/Backup/
-Core/Src/Backup/
+build
+mx.scratch
+!.settings
