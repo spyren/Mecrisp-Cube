@@ -23,7 +23,7 @@
 #include "stm32_lpm.h"
 #include "app_conf.h"
 /* USER CODE BEGIN include */
-
+#include "bsp.h"
 /* USER CODE END include */
 
 /* Exported variables --------------------------------------------------------*/
@@ -139,7 +139,7 @@ void PWR_ExitOffMode(void)
 void PWR_EnterStopMode(void)
 {
 /* USER CODE BEGIN PWR_EnterStopMode_1 */
-
+	BSP_setLED2(0);
 /* USER CODE END PWR_EnterStopMode_1 */
   /**
    * When HAL_DBGMCU_EnableDBGStopMode() is called to keep the debugger active in Stop Mode,
@@ -187,7 +187,7 @@ void PWR_EnterStopMode(void)
 void PWR_ExitStopMode(void)
 {
 /* USER CODE BEGIN PWR_ExitStopMode_1 */
-
+	BSP_setLED2(1);
 /* USER CODE END PWR_ExitStopMode_1 */
   /**
    * This function is called from CRITICAL SECTION

@@ -1,20 +1,90 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ *  @brief
+ *      Mecrisp-Cube, Forth for the STM32 Cube ecosystem.
+ *
+ *      Forth is a CMSIS-RTOS Thread (FreeRTOS Task) MainThread.
+ *      Console I/O (UART, USB-CDC, BLE) is buffered and RTOS aware.
+ *
+ *      STM32WB55C: 1 MiB FLASH
+ *      For details see STM32WB55RGVX_FLASH.ld
+ *
+ *      FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = 256K
+ *       20 KiB Forth Core
+ *      186 KiB Middleware (debug 187 KiB, only 128 font chars)
+ *
+ *      FLASH_FORTH (rx)           : ORIGIN = 0x08040000, LENGTH = 128K
+ *      128 KiB Flash Dictionary
+ *
+ *      FLASH_DRIVE (rx)           : ORIGIN = 0x08060000, LENGTH = 384K
+ *      384 KiB future use for built in flash drive
+ *
+ *      FLASH_BLESTACK (rx)        : ORIGIN = 0x080C0000, LENGTH = 256K
+ *
+ *      STM32WB55C: 256 KiB RAM
+ *
+ *      RAM_FORTH (xrw)            : ORIGIN = 0X20000000, LENGTH = 64K
+ *       1 KiB Core
+ *      63 KiB RAM Dictionary
+ *
+ *      RAM1 (xrw)                 : ORIGIN = 0x20010000, LENGTH = 128K
+ *       1 KiB Stack         (for startup and ISRs, MSP)
+ *       2 KiB Heap          (maybe not needed)
+ *       4 KiB Flash erase Buffer
+ *       4 KiB Block Buffer
+ *      10 KiB global variables
+ *      90 KiB RTOS Heap (about 17 KiB free)
+ *         Thread Stack size
+ *              4 KiB Forth (main)
+ *              1 KiB UART_Tx
+ *              5 KiB UART_Rx
+ *              2 KiB CDC_Rx
+ *            0.5 KiB CDC_Tx
+ *              1 KiB CRS
+ *              1 KiB HRS
+ *              1 KiB HCI_USER_EVT
+ *              1 KiB ADV_UPDATE
+ *              1 KiB SHCI_USER_EVT
+ *
+ *             40 KiB vi text buffer
+ *     107 KiB
+ *
+ *      RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
+ *       10 KiB communication between CPU1 and CPU2 (part of RAM2a)
+ *
+ *     (RAM2a                      : ORIGIN = 0x20030000, LENGTH = 32K)
+ *       10 KiB shared between CPU1 and CPU2
+ *       22 KiB secure RAM for CPU2
+ *
+ *     (RAM2b                      : ORIGIN = 0x20038000, LENGTH = 32K)
+ *       15 KiB shared between CPU1 and CPU2
+ *       17 KiB secure RAM for CPU2
+ *
+ *
+ *  @file
+ *      main.c
+ *  @author
+ *      Peter Schmid, peter@spyr.ch
+ *  @date
+ *      2020-03-12
+ *  @remark
+ *      Language: C, STM32CubeIDE GCC
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This project Mecrsip-Cube is free software: you can redistribute it
+ *      and/or modify it under the terms of the GNU General Public License
+ *      as published by the Free Software Foundation, either version 3 of
+ *      the License, or (at your option) any later version.
+ *
+ *      Mecrsip-Cube is distributed in the hope that it will be useful, but
+ *      WITHOUT ANY WARRANTY; without even the implied warranty of
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *      General Public License for more details.
+ *
+ *      You should have received a copy of the GNU General Public License
+ *      along with Mecrsip-Cube. If not, see http://www.gnu.org/licenses/.
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -34,7 +104,7 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb.h"
+//#include "usb.h"
 #include "wwdg.h"
 #include "gpio.h"
 
@@ -109,7 +179,9 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+#if POWER == 1
+	POWER_startup();
+#endif
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -155,17 +227,16 @@ int main(void)
     Error_Handler();
   }
   MX_TIM2_Init();
-  MX_WWDG_Init();
+#if DCC == 1
+  MX_TIM16_Init();
+#endif
+//  MX_WWDG_Init();
   MX_AES1_Init();
   MX_RNG_Init();
   MX_PKA_Init();
   MX_CRC_Init();
-  MX_USB_PCD_Init();
-  if (MX_FATFS_Init() != APP_OK) {
-    Error_Handler();
-  }
+//  MX_USB_PCD_Init();
   MX_I2C1_Init();
-  MX_TIM16_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
@@ -237,19 +308,16 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI1
-                              |RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE
-                              |RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSI
+                              |RCC_OSCILLATORTYPE_LSI1|RCC_OSCILLATORTYPE_HSE
+                              |RCC_OSCILLATORTYPE_LSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.MSICalibrationValue = RCC_MSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_10;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
@@ -259,7 +327,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK4|RCC_CLOCKTYPE_HCLK2
                               |RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSE;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
@@ -270,10 +338,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
-  /** Enable MSI Auto calibration
-  */
-  HAL_RCCEx_EnableMSIPLLMode();
 
   /** Enable the SYSCFG APB clock
   */
@@ -301,16 +365,8 @@ void PeriphCommonClock_Config(void)
 
   /** Initializes the peripherals clock
   */
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP
-                              |RCC_PERIPHCLK_USB|RCC_PERIPHCLK_ADC;
-  PeriphClkInitStruct.PLLSAI1.PLLN = 6;
-  PeriphClkInitStruct.PLLSAI1.PLLP = RCC_PLLP_DIV2;
-  PeriphClkInitStruct.PLLSAI1.PLLQ = RCC_PLLQ_DIV2;
-  PeriphClkInitStruct.PLLSAI1.PLLR = RCC_PLLR_DIV2;
-  PeriphClkInitStruct.PLLSAI1.PLLSAI1ClockOut = RCC_PLLSAI1_USBCLK|RCC_PLLSAI1_ADCCLK;
-  PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLLSAI1;
-  PeriphClkInitStruct.AdcClockSelection = RCC_ADCCLKSOURCE_PLLSAI1;
-  PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_HSE_DIV1024;
+  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP;
+  PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSI;
   PeriphClkInitStruct.SmpsDivSelection = RCC_SMPSCLKDIV_RANGE1;
 
@@ -399,10 +455,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+	BSP_setLED3(TRUE);
   /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT

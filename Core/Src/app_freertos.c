@@ -94,13 +94,14 @@
 /* Definitions for FORTH_ConThread */
 osThreadId_t FORTH_ConThreadHandle;
 const osThreadAttr_t FORTH_ConThread_attributes = {
-  .name = "FORTH_ConThread",
+  .name = "FORTH_Console",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 512 * 4
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
+void Forth(void);
 
 /* USER CODE END FunctionPrototypes */
 
@@ -173,12 +174,51 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-  /* USER CODE BEGIN MainThread */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+ /* USER CODE BEGIN MainThread */
+ //	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
+	BSP_setLED2(TRUE);
+	ASSERT_init();
+#if SD_DRIVE == 1
+	BLOCK_init();
+	SD_init();
+#endif
+	FD_init();
+	FS_init();
+#if OLED == 1
+	OLED_init();
+#endif
+#if MIP == 1
+	MIP_init();
+#endif
+#if PLEX == 1
+	PLEX_init();
+#endif
+#if EPD == 1
+	EPD_init();
+#endif
+#if BUTTON == 1
+	BUTTON_init();
+#endif
+
+	// wait till BLE is ready
+	if (osThreadFlagsWait(BLE_IS_READY, osFlagsWaitAny, 2000) == BLE_IS_READY) {
+		// sem7 is used by CPU2 to prevent CPU1 from writing/erasing data in Flash memory
+		SHCI_C2_SetFlashActivityControl(FLASH_ACTIVITY_CONTROL_SEM7);
+//		BSP_clearSysLED(SYSLED_POWER_ON);
+		BSP_setLED2(FALSE);
+	} else {
+		// timeout -> BLE (CPU2) not started, flash operations not possible
+//		BSP_clearSysLED(SYSLED_POWER_ON);
+//		BSP_setSysLED(SYSLED_ERROR); // dimmed red LED
+		BSP_setLED2(FALSE);
+		BSP_setLED3(TRUE);
+	}
+
+
+	Forth();
+
+	ASSERT_fatal(0, ASSERT_FORTH_UNEXPECTED_EXIT, 0);
+
   /* USER CODE END MainThread */
 }
 
