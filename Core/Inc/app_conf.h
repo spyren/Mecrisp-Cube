@@ -185,9 +185,9 @@
 // ****************
 
 #ifdef DEBUG
-#define MECRISP_CUBE_TAG "1.6.2 deb"
+#define MECRISP_CUBE_TAG "1.7.0 deb"
 #else
-#define MECRISP_CUBE_TAG "1.6.2 rel"
+#define MECRISP_CUBE_TAG "1.7.0 rel"
 #endif
 
 #define MECRISP_CUBE_VERSION "Mecrisp-Cube " MECRISP_CUBE_TAG " for " MCU_TYPE " " BOARD ", " RAM_FLASH_SIZE " KiB RAM/FLASH dictionary (C) 2026 peter@spyr.ch\n"
