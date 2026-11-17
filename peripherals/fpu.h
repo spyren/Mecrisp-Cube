@@ -10,6 +10,6 @@
 
 #define FPU_MAX_STR	40
 
-float FPU_str2f(char *str, int len);
+float FPU_str2f(char *str, int len, int *valid);
 
 #endif /* FPU_H_ */

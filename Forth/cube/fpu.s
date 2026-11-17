@@ -864,15 +864,11 @@ to_float:
 	mov 		r1, tos		// #
 	drop
 	mov			r0, tos		// a
-	bl			FPU_str2f
+	pushdaconst 0
+	mov			r2, psp		// valid points to first element of data stack
+	bl			FPU_str2f	// (char *str, int len, int *valid)
 	mov			tos, r0		// float
-	pushdatos
-	mov			tos, #-1
-	ldr			r2, =0x7fc00000  // NaN
-	cmp			r0, r2
-	bne			1f			// success
-	mov			tos, #0		// fail
-1:
+	swap
 	pop			{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------

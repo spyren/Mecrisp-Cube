@@ -48,6 +48,7 @@
 
 #if FPU_IP == 1
 
+
 // Private function prototypes
 // ***************************
 float pow10_to_f(int exp);
@@ -104,7 +105,7 @@ void FPU_init(void) {
  *  @return
  *      float, NAN for invalid numbers
  */
-float FPU_str2f(char *str, int len) {
+float FPU_str2f(char *str, int len, int *valid) {
 	int exponent = 0;
 	int sign = 1;
 	int integer = 0;
@@ -114,6 +115,7 @@ float FPU_str2f(char *str, int len) {
 	int i, j, k;
 	char *s;
 
+	*valid = FALSE;
 	s = str;
 
 	// eat white spaces
@@ -192,7 +194,7 @@ float FPU_str2f(char *str, int len) {
 			if (isdigit((unsigned char) s[strlen(s)-1])) {
 				exponent = s[strlen(s)-1] - '0';
 			} else {
-				return NAN;
+				return number;
 			}
 			s[strlen(s)-2] = 0;
 		} else if ( (toupper((unsigned char) s[strlen(s)-3]) == 'D') ||
@@ -203,7 +205,7 @@ float FPU_str2f(char *str, int len) {
 				if (isdigit((unsigned char) s[strlen(s)-1])) {
 					exponent = (s[strlen(s)-2] - '0')*10 + s[strlen(s)-1] - '0';
 				} else {
-					return NAN;
+					return number;
 				}
 
 			} else {
@@ -213,12 +215,12 @@ float FPU_str2f(char *str, int len) {
 				} else if (s[strlen(s)-2] == '+')  {
 					exponent = 1;
 				} else {
-					return NAN;
+					return number;
 				}
 				if (isdigit((unsigned char) s[strlen(s)-1])) {
 					exponent = exponent * (s[strlen(s)-1] - '0');
 				} else {
-					return NAN;
+					return number;
 				}
 			}
 			s[strlen(s)-3] = 0;
@@ -230,12 +232,12 @@ float FPU_str2f(char *str, int len) {
 			} else if (s[strlen(s)-3] == '+')  {
 				exponent = 1;
 			} else {
-				return NAN;
+				return number;
 			}
 			if (isdigit((unsigned char) s[strlen(s)-2]) && isdigit((unsigned char) s[strlen(s)-1])) {
 				exponent = exponent * ((s[strlen(s)-2] - '0')*10 + s[strlen(s)-1] - '0');
 			} else {
-				return NAN;
+				return number;
 			}
 			s[strlen(s)-4] = 0;
 		}
@@ -255,7 +257,7 @@ float FPU_str2f(char *str, int len) {
 			integer += (s[j]-'0')*k;
 			k=k*10;
 		} else {
-			return NAN;
+			return number;
 		}
 	}
 	// fract part
@@ -265,11 +267,12 @@ float FPU_str2f(char *str, int len) {
 			fract += ((float)(s[j]-'0'))/((float)k);
 			k=k*10;
 		} else {
-			return NAN;
+			return number;
 		}
 	}
 
 	number = sign * ((float) integer+fract) * pow10_to_f(exponent);
+	*valid = -1; // forth true
 	return number;
 }
 
