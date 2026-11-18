@@ -67,6 +67,8 @@
  * Define IO Authentication
  */
 #define CFG_BONDING_MODE                 (1)
+#define CFG_FIXED_PIN                    (111111)
+#define CFG_USED_FIXED_PIN               (0)
 #define CFG_ENCRYPTION_KEY_SIZE_MAX      (16)
 #define CFG_ENCRYPTION_KEY_SIZE_MIN      (8)
 
@@ -510,7 +512,7 @@
 /**
  * Enable/Disable USB interface
  */
-#define CFG_USB_INTERFACE_ENABLE    0
+#define CFG_USB_INTERFACE_ENABLE    1
 
 /******************************************************************************
  * IPCC interface
@@ -532,6 +534,13 @@
  *  When set to 0, the device stays in RUN mode
  */
 #define CFG_LPM_SUPPORTED    0
+#ifdef DEBUG
+  // debug configuration
+  #define CFG_LPM_SUPPORTED    0
+#else
+  // release configuration
+  #define CFG_LPM_SUPPORTED    1
+#endif
 
 /******************************************************************************
  * RTC interface
@@ -562,7 +571,7 @@
  *  The following settings are computed with LSI as input to the RTC
  */
 
-#define CFG_RTCCLK_DIVIDER_CONF 0
+#define CFG_RTCCLK_DIVIDER_CONF 4
 
 #if (CFG_RTCCLK_DIVIDER_CONF == 0)
 /**
@@ -715,7 +724,7 @@ typedef enum
 /* USER CODE BEGIN FreeRTOS */
 
 /* USER CODE END FreeRTOS */
-#define CFG_SHCI_USER_EVT_PROCESS_NAME        "SHCI_USER_EVT_PROCESS"
+#define CFG_SHCI_USER_EVT_PROCESS_NAME        "BLE_SHCI"
 #define CFG_SHCI_USER_EVT_PROCESS_ATTR_BITS   (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_MEM      (0)
 #define CFG_SHCI_USER_EVT_PROCESS_CB_SIZE     (0)
@@ -723,7 +732,7 @@ typedef enum
 #define CFG_SHCI_USER_EVT_PROCESS_PRIORITY    osPriorityNone
 #define CFG_SHCI_USER_EVT_PROCESS_STACK_SIZE  (128 * 20)
 
-#define CFG_HCI_USER_EVT_PROCESS_NAME         "HCI_USER_EVT_PROCESS"
+#define CFG_HCI_USER_EVT_PROCESS_NAME         "BLE_HCI"
 #define CFG_HCI_USER_EVT_PROCESS_ATTR_BITS    (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_MEM       (0)
 #define CFG_HCI_USER_EVT_PROCESS_CB_SIZE      (0)
@@ -731,7 +740,7 @@ typedef enum
 #define CFG_HCI_USER_EVT_PROCESS_PRIORITY     osPriorityNone
 #define CFG_HCI_USER_EVT_PROCESS_STACK_SIZE   (128 * 40)
 
-#define CFG_ADV_UPDATE_PROCESS_NAME           "ADV_UPDATE_PROCESS"
+#define CFG_ADV_UPDATE_PROCESS_NAME           "BLE_ADV_UPDATE"
 #define CFG_ADV_UPDATE_PROCESS_ATTR_BITS      (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_MEM         (0)
 #define CFG_ADV_UPDATE_PROCESS_CB_SIZE        (0)
@@ -739,7 +748,7 @@ typedef enum
 #define CFG_ADV_UPDATE_PROCESS_PRIORITY       osPriorityNone
 #define CFG_ADV_UPDATE_PROCESS_STACK_SIZE     (128 * 20)
 
-#define CFG_HRS_PROCESS_NAME                  "HRS_PROCESS"
+#define CFG_HRS_PROCESS_NAME                  "BLE_HRS"
 #define CFG_HRS_PROCESS_ATTR_BITS             (0)
 #define CFG_HRS_PROCESS_CB_MEM                (0)
 #define CFG_HRS_PROCESS_CB_SIZE               (0)

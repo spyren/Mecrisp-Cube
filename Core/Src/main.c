@@ -243,6 +243,7 @@ int main(void)
   // test for SWO debug trace
   printf("Hallo Velo\n");
 #endif
+
   /**
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
@@ -252,13 +253,14 @@ int main(void)
 	  // lock failed
 	  i--;
   }
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();
+  
   /* Init code for STM32_WPAN */
   MX_APPE_Init();
+
   /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
 
@@ -317,7 +319,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;  
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
@@ -358,13 +361,15 @@ void SystemClock_Config(void)
 /**
   * @brief Peripherals Common Clock Configuration
   * @retval None
+
   */
 void PeriphCommonClock_Config(void)
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Initializes the peripherals clock
-  */
+  */ 
+
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP;
   PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSI;
@@ -446,6 +451,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   /* USER CODE END Callback 1 */
 }
+
 
 /**
   * @brief  This function is executed in case of error occurrence.

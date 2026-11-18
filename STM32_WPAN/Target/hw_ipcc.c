@@ -676,7 +676,7 @@ static void HW_IPCC_ZIGBEE_StackM0RequestHandler( void )
 void HW_IPCC_ZIGBEE_SendM4AckToM0Request( void )
 {
   LL_C1_IPCC_ClearFlag_CHx( IPCC, HW_IPCC_ZIGBEE_M0_REQUEST_CHANNEL );
-  UTILS_ENTER_CRITICAL_SECTION();
+  UTILS_ENTER_CRITICAL_SECTION();MX_IPCC_Init
   LL_C1_IPCC_EnableReceiveChannel( IPCC, HW_IPCC_ZIGBEE_M0_REQUEST_CHANNEL );
   UTILS_EXIT_CRITICAL_SECTION();
 
@@ -703,7 +703,6 @@ void HW_IPCC_MM_SendFreeBuf( void (*cb)( void ) )
   else
   {
     cb();
-
     LL_C1_IPCC_SetFlag_CHx( IPCC, HW_IPCC_MM_RELEASE_BUFFER_CHANNEL );
   }
 

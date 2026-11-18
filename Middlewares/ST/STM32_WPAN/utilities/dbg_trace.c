@@ -224,9 +224,18 @@ void DbgTraceInit( void )
  * @param	...: arguments to be formatted in format string
  * @retval none
  */
-size_t _write(int handle, const unsigned char * buf, size_t bufSize)
-{
-  return ( DbgTraceWrite(handle, buf, bufSize) );
+// I prefer to use SWO (SWV ITM Data Console)
+//size_t _write(int handle, const unsigned char * buf, size_t bufSize)
+//{
+//  return ( DbgTraceWrite(handle, buf, bufSize) );
+//}
+// redirect the printf and puts to SWO (SWV ITM Data Console)
+int _write(int file, char *ptr, int len) {
+	int i;
+	for (i=0; i <len ; i++) {
+		ITM_SendChar((*ptr++));
+	}
+	return len;
 }
 
 #else

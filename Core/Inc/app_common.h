@@ -78,12 +78,14 @@ extern "C"{
 
 #define MODSUB( a, b, m )    MODADD( a, (m)-(b), m )
 
+#ifndef PAUSE
 #define PAUSE( t )           M_BEGIN \
                                __IO int _i; \
                                for ( _i = t; _i > 0; _i -- ); \
                              M_END
 
 #define DIVF( x, y )         ((x)/(y))
+#endif
 
 #define DIVC( x, y )         (((x)+(y)-1)/(y))
 
