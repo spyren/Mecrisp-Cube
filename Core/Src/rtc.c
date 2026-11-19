@@ -59,9 +59,6 @@ void MX_RTC_Init(void)
   /* USER CODE BEGIN Check_RTC_BKUP */
 
   if (HAL_RTCEx_BKUPRead(&hrtc, 0) == 0) {
-  //   HAL_RTCEx_BKUPWrite(&hrtc, 0, 0xA5);
-  //if (1) {
-
     // RTC not initialized
     // Initialize RTC and set the Time and Date to 2000-01-01T00:00:00 UTC
     sTime.Hours = 0;

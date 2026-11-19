@@ -271,7 +271,7 @@ float FPU_str2f(char *str, int len, int *valid) {
 		}
 	}
 
-	number = sign * ((float) integer+fract) * pow10_to_f(exponent);
+	number = sign * ((float) integer + fract) * pow10_to_f(exponent);
 	*valid = -1; // forth true
 	return number;
 }
