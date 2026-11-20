@@ -279,7 +279,7 @@ Resolving deltas: 100% (5788/5788), done.
 ```
 
 Open the folder in VS Code 
-``
+```
 File -> Open Folder... 
 ```
 
