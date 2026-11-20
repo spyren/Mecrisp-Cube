@@ -77,11 +77,11 @@ With float argument:
 fsin:
         @ ( r1 -- r2 )       r2 is the sine of the radian angle r1
 @ -----------------------------------------------------------------------------
-	push	{lr}
-	vmov  s0, tos
-	bl		sinf
-	vmov 	tos, s0
-	pop		{pc}
+    push    {lr}
+    vmov    s0, tos
+    bl      sinf
+    vmov    tos, s0
+    pop     {pc}
 ```
 
 If the C function itself calls Forth words the Data Stack Pointer SPS
