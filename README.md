@@ -134,12 +134,12 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
       Arduino™ Uno V3 and ST morpho connectors
     * [STM32WB USB Dongle](https://www.st.com/en/evaluation-tools/p-nucleo-wb55.html)
   * Terminal emulator application for PC, e.g.:
-    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00` 
+    * [tio](https://github.com/tio/tio) my favourite, find your device ID with `tio -l` and connect to it `tio --map ICRNL,INLCRNL /dev/serial/by-id/usb-TinyUSB_TinyUSB_Device_550039001850503542363220-if00`
+    * VS Code Serial Monitor
     * [PuTTY](http://www.putty.org/) - Windows and Linux
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
-    * Use the built in Eclipse console (but no LF)
     * for details see [TerminalIO]
   * STM32CubeProgrammer (optional)
 
