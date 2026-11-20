@@ -90,8 +90,6 @@
 #include "main.h"
 #include "cmsis_os2.h"
 #include "FreeRTOS.h"
-#include "task.h"
-
 #include "adc.h"
 #include "aes.h"
 #include "crc.h"
@@ -113,6 +111,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app_common.h"
+#include "task.h"
 #include "uart.h"
 #include "flash.h"
 #include "usb_cdc.h"
@@ -140,6 +139,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -212,7 +212,7 @@ int main(void)
   MX_IPCC_Init();
 
   /* USER CODE BEGIN SysInit */
- 
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -230,19 +230,20 @@ int main(void)
 #if DCC == 1
   MX_TIM16_Init();
 #endif
-  MX_I2C1_Init();
 //  MX_WWDG_Init();
   MX_AES1_Init();
   MX_RNG_Init();
   MX_PKA_Init();
   MX_CRC_Init();
 //  MX_USB_PCD_Init();
+  MX_I2C1_Init();
   MX_RF_Init();
   /* USER CODE BEGIN 2 */
 #if CFG_DEBUGGER_SUPPORTED == 1
   // test for SWO debug trace
   printf("Hallo Velo\n");
 #endif
+
   /**
    * This prevents the CPU2 to disable the HSI48 oscillator when
    * it does not use anymore the RNG IP
@@ -252,13 +253,14 @@ int main(void)
 	  // lock failed
 	  i--;
   }
-
   /* USER CODE END 2 */
 
   /* Init scheduler */
   osKernelInitialize();
+  
   /* Init code for STM32_WPAN */
   MX_APPE_Init();
+
   /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
 
@@ -288,6 +290,14 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_CRSInitTypeDef RCC_CRSInitStruct = {0};
 
+  /** Macro to configure the PLL multiplication factor
+  */
+  __HAL_RCC_PLL_PLLM_CONFIG(RCC_PLLM_DIV2);
+
+  /** Macro to configure the PLL clock source
+  */
+  __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_MSI);
+
   /** Configure LSE Drive Capability
   */
   HAL_PWR_EnableBkUpAccess();
@@ -309,7 +319,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;  
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -351,13 +361,15 @@ void SystemClock_Config(void)
 /**
   * @brief Peripherals Common Clock Configuration
   * @retval None
+
   */
 void PeriphCommonClock_Config(void)
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
   /** Initializes the peripherals clock
-  */
+  */ 
+
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS|RCC_PERIPHCLK_RFWAKEUP;
   PeriphClkInitStruct.RFWakeUpClockSelection = RCC_RFWKPCLKSOURCE_LSE;
   PeriphClkInitStruct.SmpsClockSelection = RCC_SMPSCLKSOURCE_HSI;
@@ -440,6 +452,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 1 */
 }
 
+
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
@@ -463,7 +476,7 @@ void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

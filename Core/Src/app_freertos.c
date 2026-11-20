@@ -6,13 +6,12 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -103,7 +102,7 @@ const osThreadAttr_t FORTH_ConThread_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 void Forth(void);
-   
+
 /* USER CODE END FunctionPrototypes */
 
 void MainThread(void *argument);
@@ -168,15 +167,15 @@ void MX_FREERTOS_Init(void) {
 
 /* USER CODE BEGIN Header_MainThread */
 /**
-  * @brief  Function implementing the Main thread.
+  * @brief  Function implementing the FORTH_ConThread thread.
   * @param  argument: Not used
   * @retval None
   */
 /* USER CODE END Header_MainThread */
 void MainThread(void *argument)
 {
-  /* USER CODE BEGIN MainThread */
-//	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
+ /* USER CODE BEGIN MainThread */
+ //	BSP_setSysLED(SYSLED_POWER_ON); // dimmed white LED
 	BSP_setLED2(TRUE);
 	ASSERT_init();
 #if SD_DRIVE == 1
@@ -225,5 +224,5 @@ void MainThread(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
-     
+
 /* USER CODE END Application */

@@ -42,7 +42,7 @@
 #include "app_common.h"
 #include "main.h"
 #include "stm32_lpm.h"
-
+#include "myassert.h"
 #include "bsp.h"
 #include "dcc.h"
 

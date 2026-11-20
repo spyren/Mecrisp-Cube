@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -43,7 +43,6 @@ void MX_I2C1_Init(void)
 //hi2c1.Init.Timing = 0x00707CBB; // 100 kHz standard
   hi2c1.Init.Timing = 0x00300F35; // 400 kHz fast
 //hi2c1.Init.Timing = 0x00100413; // 1 MHz fast plus
-
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -62,6 +61,13 @@ void MX_I2C1_Init(void)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+  /** I2C Enable Fast Mode Plus
+    */
+//    HAL_I2CEx_EnableFastModePlus(I2C_FASTMODEPLUS_I2C1);
 
   /** Configure Digital filter
   */
@@ -72,13 +78,6 @@ void MX_I2C1_Init(void)
   /* USER CODE BEGIN I2C1_Init 2 */
 
   /* USER CODE END I2C1_Init 2 */
-
-  /** I2C Enable Fast Mode Plus
-    */
-//    HAL_I2CEx_EnableFastModePlus(I2C_FASTMODEPLUS_I2C1);
-    /* USER CODE BEGIN I2C1_Init 2 */
-
-    /* USER CODE END I2C1_Init 2 */
 
 }
 
@@ -198,3 +197,4 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* i2cHandle)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+

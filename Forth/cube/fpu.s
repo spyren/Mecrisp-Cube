@@ -864,15 +864,11 @@ to_float:
 	mov 		r1, tos		// #
 	drop
 	mov			r0, tos		// a
-	bl			FPU_str2f
-	mov			tos, r0		// float
-	pushdatos
-	mov			tos, #-1
-	ldr			r2, =0x7fc00000  // NaN
-	cmp			r0, r2
-	bne			1f			// success
-	mov			tos, #0		// fail
-1:
+	pushdaconst 0
+	mov			r2, psp		// valid points to first element of data stack
+	bl			FPU_str2f	// (char *str, int len, int *valid)
+	vmov		r6, s0		// get float
+	swap
 	pop			{r0-r3, pc}
 
 @ -----------------------------------------------------------------------------
@@ -895,9 +891,9 @@ fsin:
         @ ( r1 -- r2 )       r2 is the sine of the radian angle r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		sinf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -906,9 +902,9 @@ fcos:
         @ ( r1 -- r2 )       r2 is the cosine of the radian angle r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		cosf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -917,9 +913,9 @@ ftan:
         @ ( r1 -- r2 )       r2 is the principal radian angle whose tangent is r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		tanf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -928,9 +924,9 @@ fasin:
         @ ( r1 -- r2 )       r2 is the principal radian angle whose sine is r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		asinf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -939,9 +935,9 @@ facos:
         @ ( r1 -- r2 )       r2 is the principal radian angle whose cosine is r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		acosf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -950,9 +946,9 @@ fatan:
         @ ( r1 -- r2 )       r2 is the principal radian angle whose tangent is r1.
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		atanf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -961,9 +957,9 @@ fsinh:
         @ ( r1 -- r2 )       r2 is the hyperbolic sine of r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		sinhf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -972,9 +968,9 @@ fcosh:
         @ ( r1 -- r2 )       r2 is the hyperbolic cosine of r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		coshf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -983,9 +979,9 @@ ftanh:
         @ ( r1 -- r2 )       r2 is the hyperbolic tangent of r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		tanhf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -994,9 +990,9 @@ fasinh:
         @ ( r1 -- r2 )       r2 is the floating-point value whose hyperbolic sine is r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		asinhf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1005,9 +1001,9 @@ facosh:
         @ ( r1 -- r2 )       r2 is the floating-point value whose hyperbolic cosine is r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		acoshf
-	mov 	tos, r0
+	vmov 	tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1016,9 +1012,9 @@ fatanh:
         @ ( r1 -- r2 )       r2 is the floating-point value whose hyperbolic tangent is r1.
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		atanhf
-	mov 	tos, r0
+	vmov    tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1027,9 +1023,9 @@ fceil:
         @ ( r1 -- r2 )       return the smallest integral value that is not less than r1
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		ceilf
-	mov 	tos, r0
+	vmov    tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1038,9 +1034,9 @@ ffloor:
         @ ( r1 -- r2 )       Round r1 to an integral value using the "round toward negative infinity" rule, giving r2
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		floorf
-	mov 	tos, r0
+	vmov    tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1049,9 +1045,9 @@ fexp:
         @ ( r1 -- r2 )       raise e to the power r1, giving r2.
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		expf
-	mov 	tos, r0
+	vmov    tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1060,9 +1056,9 @@ fln:
         @ ( r1 -- r2 )       r2 is the natural logarithm of r1. An ambiguous condition exists if r1 is less than or equal to zero
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		logf
-	mov 	tos, r0
+	vmov    tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1071,9 +1067,9 @@ flog:
         @ ( r1 -- r2 )       r2 is the base-ten logarithm of r1. An ambiguous condition exists if r1 is less than or equal to zero
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r0, tos
+	vmov    s0, tos
 	bl		log10f
-	mov 	tos, r0
+	vmov    tos, s0
 	pop		{pc}
 
 @ -----------------------------------------------------------------------------
@@ -1082,11 +1078,11 @@ fpow:
         @ ( r1 r2 -- r3 )       raise r1 to the power r2, giving the product r3
 @ -----------------------------------------------------------------------------
 	push	{lr}
-	mov 	r1, tos	// r2
+	vmov 	s1, tos	// r2
 	drop
-	mov		r0, tos // r1
+	vmov	s0, tos // r1
 	bl		powf
-	mov 	tos, r0 // r3
+	vmov    tos, s0 // r3
 	pop		{pc}
 
 .ltorg @ Hier werden viele spezielle Hardwarestellenkonstanten gebraucht, schreibe sie gleich !

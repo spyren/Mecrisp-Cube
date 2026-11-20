@@ -1,19 +1,18 @@
 /* USER CODE BEGIN Header */
 /**
- ******************************************************************************
-  * File Name          : Target/hw_ipcc.c
-  * Description        : Hardware IPCC source file for STM32WPAN Middleware.
-  *
- ******************************************************************************
+  ******************************************************************************
+  * @file    Target/hw_ipcc.c
+  * @author  MCD Application Team
+  * @brief   Hardware IPCC source file for STM32WPAN Middleware.
+  ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under Ultimate Liberty license
-  * SLA0044, the "License"; You may not use this file except in compliance with
-  * the License. You may obtain a copy of the License at:
-  *                             www.st.com/SLA0044
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -677,7 +676,7 @@ static void HW_IPCC_ZIGBEE_StackM0RequestHandler( void )
 void HW_IPCC_ZIGBEE_SendM4AckToM0Request( void )
 {
   LL_C1_IPCC_ClearFlag_CHx( IPCC, HW_IPCC_ZIGBEE_M0_REQUEST_CHANNEL );
-  UTILS_ENTER_CRITICAL_SECTION();
+  UTILS_ENTER_CRITICAL_SECTION();MX_IPCC_Init
   LL_C1_IPCC_EnableReceiveChannel( IPCC, HW_IPCC_ZIGBEE_M0_REQUEST_CHANNEL );
   UTILS_EXIT_CRITICAL_SECTION();
 
@@ -704,7 +703,6 @@ void HW_IPCC_MM_SendFreeBuf( void (*cb)( void ) )
   else
   {
     cb();
-
     LL_C1_IPCC_SetFlag_CHx( IPCC, HW_IPCC_MM_RELEASE_BUFFER_CHANNEL );
   }
 

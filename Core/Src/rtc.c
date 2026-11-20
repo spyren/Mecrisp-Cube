@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2022 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -31,15 +31,14 @@ void MX_RTC_Init(void)
 {
 
   /* USER CODE BEGIN RTC_Init 0 */
-
+  HAL_PWR_EnableBkUpAccess();
   /* USER CODE END RTC_Init 0 */
 
   RTC_TimeTypeDef sTime = {0};
   RTC_DateTypeDef sDate = {0};
-  RTC_AlarmTypeDef sAlarm = {0};
 
   /* USER CODE BEGIN RTC_Init 1 */
-
+  RTC_AlarmTypeDef sAlarm = {0};
   /* USER CODE END RTC_Init 1 */
 
   /** Initialize RTC Only
@@ -60,8 +59,6 @@ void MX_RTC_Init(void)
   /* USER CODE BEGIN Check_RTC_BKUP */
 
   if (HAL_RTCEx_BKUPRead(&hrtc, 0) == 0) {
-    HAL_RTCEx_BKUPWrite(&hrtc, 0, 0xA5);
-
     // RTC not initialized
     // Initialize RTC and set the Time and Date to 2000-01-01T00:00:00 UTC
     sTime.Hours = 0;
@@ -85,27 +82,6 @@ void MX_RTC_Init(void)
     HAL_RTCEx_BKUPWrite(&hrtc, 0, 0xA5);
   }
   /* USER CODE END Check_RTC_BKUP */
-
-//  /** Initialize RTC and set the Time and Date
-//  */
-//  sTime.Hours = 0;
-//  sTime.Minutes = 0;
-//  sTime.Seconds = 0;
-//  sTime.SubSeconds = 0x0;
-//  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-//  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-//  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
-//  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-//  sDate.Month = RTC_MONTH_JANUARY;
-//  sDate.Date = 1;
-//  sDate.Year = 0;
-//  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
 
   /** Enable the Alarm A
   */
@@ -154,8 +130,8 @@ void HAL_RTC_MspInit(RTC_HandleTypeDef* rtcHandle)
     __HAL_RCC_RTCAPB_CLK_ENABLE();
 
     /* RTC interrupt Init */
-//    HAL_NVIC_SetPriority(RTC_Alarm_IRQn, 5, 0);
-//    HAL_NVIC_EnableIRQ(RTC_Alarm_IRQn);
+    HAL_NVIC_SetPriority(RTC_WKUP_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(RTC_WKUP_IRQn);
   /* USER CODE BEGIN RTC_MspInit 1 */
 
   /* USER CODE END RTC_MspInit 1 */
@@ -175,8 +151,9 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle)
     __HAL_RCC_RTCAPB_CLK_DISABLE();
 
     /* RTC interrupt Deinit */
+    HAL_NVIC_DisableIRQ(RTC_WKUP_IRQn);
     HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
-  /* USER CODE BEGIN RTC_MspDeInit 1 */
+ /* USER CODE BEGIN RTC_MspDeInit 1 */
 
   /* USER CODE END RTC_MspDeInit 1 */
   }
@@ -185,3 +162,4 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle)
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
+

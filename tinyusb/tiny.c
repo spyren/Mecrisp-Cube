@@ -65,7 +65,7 @@
 #include "app_common.h"
 #include "cmsis_os.h"
 #include "stm32_lpm.h"
-
+#include "myassert.h"
 #include "usb_cdc.h"
 
 // Private function prototypes
