@@ -439,7 +439,9 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 ### v1.6.1 LPM Release
 * Low Power Mode
 * Egg Timer
-
+### v1.7.0 VS Code Release
+* VS Code CMake for development environment
+* Pocked Power Pack (DCC and DC model railroad throttle)
 
 ## Authors
 
