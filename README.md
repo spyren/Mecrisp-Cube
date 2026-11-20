@@ -215,7 +215,7 @@ You can use the built-in editor [vi](/sdcard/man/EditorVi.md) and save your sour
 
 The following part is only for people who are interested how Forth works and have knowledge about 
 the ARM Assembler.
-There is a built-in disassembler (consider the machine code `B500` is 16 bit hex number, but it is stored 
+There is a built-in disassembler (consr the machine code `B500` is 16 bit hex number, but it is stored 
 as `00` `B5`):
 ```
 see hello
@@ -260,10 +260,10 @@ The RGB LED  displays the status
 A step by step series of examples that tell you how to get a development env running
 
 Install the IDE [STM32CubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html), 
-it is Eclipse and GCC based. 
+(from version 1.17.0 the _Visual Studio Code_ flavour is used.
+It is CMake, VS Code and GCC based. 
 [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
-is included in the IDE, you need a stand alone installation only if 
-you do not want to use the STM32CubeIDE.  
+is not included in the IDE , you need a stand alone installation.
 
 Get the sources from github:
 
@@ -278,19 +278,14 @@ Receiving objects: 100% (8334/8334), 108.93 MiB | 13.49 MiB/s, done.
 Resolving deltas: 100% (5788/5788), done.
 ```
 
-Import the project into the IDE:
-
-```
-File -> Import -> General -> Existing Projects into Workspace -> Select root directory
-Copy project into workspace
-Browse to Mecrisp-Cube directory
+Open the folder in VS Code 
+``
+File -> Open Folder... 
 ```
 
-Generate code from the STM32CubeMX `MecrispCube.ioc` file:
-
-```
-Project -> Generate Code 
-```
+If you want to support new or change existing peripherals, open the
+`MecrispCube.ioc` file.
+Change the configuration and generate code.
 
 Restore changed source files
 ```
@@ -303,20 +298,13 @@ alternative
 $ git stash
 ```
 
-Select the Build Configuration (Debug if you want to debug the project) and Build the project:
-
-```
-Project -> Build Configurations -> Set Active -> Debug/Release 
-Project -> Build Project
-```
+Select the Build Configuration (Debug if you want to debug the project) and build the project.
 
 
 ## Built With
 
-* [STM32CubeIDE](https://www.st.com/en/development-tools/stm32cubeide.html) - 
-  STM32CubeIDE is an all-in-one multi-OS development tool, 
-  which is part of the STM32Cube software ecosystem. The IDE is used for 
-  development, GCC tools are included.
+* [STM32CubeIDE for Visual Studio Code ](https://www.st.com/en/development-tools/stm32cubeide.html) - 
+  STM32CubeIDE is based on VS Code, CMake and GCC. 
 * [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) - 
   STM32CubeMX is a graphical tool that allows a very easy configuration of 
   STM32 microcontrollers and microprocessors, as well as the generation of 
