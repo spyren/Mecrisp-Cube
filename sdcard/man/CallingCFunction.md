@@ -44,6 +44,11 @@ The VFP-v2 co-processor has 32 single-precision registers, s0-s31, which
 may also be accessed as 16 double-precision registers, d0-d15 (with d0
 overlapping s0, s1; d1 overlapping s2, s3; etc).
 
+GCC will use VFP registers e.g. S0 for argument, result register 1.
+If you want to use the general purpose register use the compiler option
+`-mgeneral-regs-only`.
+
+
 Calling C Functions from Forth
 ------------------------------
 
@@ -63,6 +68,20 @@ rtos_osDelay:
     bl      osDelay
     movs    tos, r0
     pop     {r0-r3, pc}
+```
+
+With float argument:
+```
+@ -----------------------------------------------------------------------------
+        Wortbirne Flag_visible|Flag_foldable_1, "fsin"
+fsin:
+        @ ( r1 -- r2 )       r2 is the sine of the radian angle r1
+@ -----------------------------------------------------------------------------
+	push	{lr}
+	vmov  s0, tos
+	bl		sinf
+	vmov 	tos, s0
+	pop		{pc}
 ```
 
 If the C function itself calls Forth words the Data Stack Pointer SPS
