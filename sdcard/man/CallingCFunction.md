@@ -71,7 +71,7 @@ rtos_osDelay:
 ```
 
 With float argument:
-```
+```assembly
 @ -----------------------------------------------------------------------------
         Wortbirne Flag_visible|Flag_foldable_1, "fsin"
 fsin:
