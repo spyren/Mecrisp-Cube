@@ -140,7 +140,7 @@ machine (WB55 Nucleo or Dongle) for development and testing purposes.
     * [Tera Term](http://en.sourceforge.jp/projects/ttssh2/) - Windows
     * [Realterm](http://realterm.sourceforge.net/) - Windows
     * minicom, microcom, screen - Linux
-    * for details see [TerminalIO]
+    * for details see [TerminalIO](/sdcard/man/TerminalIO.md)
   * STM32CubeProgrammer (optional)
 
 
